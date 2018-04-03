@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.dao.TransactionMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.Transaction">
+    <result column="txnhash" jdbcType="VARCHAR" property="txnhash" />
+    <result column="height" jdbcType="INTEGER" property="height" />
+    <result column="txntype" jdbcType="INTEGER" property="txntype" />
+    <result column="txntime" jdbcType="INTEGER" property="txntime" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="blockindex" jdbcType="INTEGER" property="blockindex" />
+    <result column="confirmflag" jdbcType="INTEGER" property="confirmflag" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+  </resultMap>
+  <insert id="insert" parameterType="com.github.ontio.model.Transaction">
+    insert into view_ont_transaction (txnhash, height, txntype, 
+      txntime, description, blockindex, 
+      confirmflag, fee)
+    values (#{txnhash,jdbcType=VARCHAR}, #{height,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
+      #{txntime,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
+      #{confirmflag,jdbcType=INTEGER}, #{fee,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.github.ontio.model.Transaction">
+    insert into view_ont_transaction
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="txnhash != null">
+        txnhash,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+      <if test="txntype != null">
+        txntype,
+      </if>
+      <if test="txntime != null">
+        txntime,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="blockindex != null">
+        blockindex,
+      </if>
+      <if test="confirmflag != null">
+        confirmflag,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="txnhash != null">
+        #{txnhash,jdbcType=VARCHAR},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=INTEGER},
+      </if>
+      <if test="txntype != null">
+        #{txntype,jdbcType=INTEGER},
+      </if>
+      <if test="txntime != null">
+        #{txntime,jdbcType=INTEGER},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="blockindex != null">
+        #{blockindex,jdbcType=INTEGER},
+      </if>
+      <if test="confirmflag != null">
+        #{confirmflag,jdbcType=INTEGER},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectNotOntIdTxnByPage" resultType="java.util.Map">
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, Description
+    from view_ont_transaction
+    where description not like "ontId%"
+    order by height DESC
+    limit #{param1}, #{param2}
+  </select>
+
+  <select id="selectTxnByHash" parameterType="java.lang.String" resultType="java.util.Map">
+    select TxnHash, Height, TxnType, TxnTime, Description, ConfirmFlag, BlockIndex, Fee
+    from view_ont_transaction
+    where txnhash = #{txnHash}
+  </select>
+
+  <select id="selectTxnByBlockHeight" parameterType="java.lang.Integer" resultType="java.util.Map">
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex
+    from view_ont_transaction
+    where height = #{height}
+  </select>
+
+  <select id="selectTransferTxnByTxnHash" parameterType="java.lang.String" resultType="java.util.Map">
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee
+    from view_ont_transaction
+    where Description = "transfer"
+    and txnhash = #{txnHash}
+  </select>
+
+  <select id="selectNotOntIdTxnAmount" resultType="java.lang.Integer">
+    select count(1)
+    from view_ont_transaction
+    where description not like "ontId%"
+  </select>
+
+</mapper>
