@@ -1,0 +1,299 @@
+<template>
+  <div class="container container-margin-top">
+    <div class="div-ont-id-detail-page form-group">
+      <div class="row">
+        <div class="col-lg-6">
+          <p  class=" font-Regular normal_color font-size18 title-more float-left block-detail-page-check-hand" @click="toReturn"><< {{ $t('all.return') }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <p  class="text-center font-size40 font-ExtraLight normal_color" >Claim DETAILS</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          </div>
+      </div>
+<div class="background-body" style="margin-top:100px;">
+  <div v-for="(claim,index) in getClaim.info">
+    <div class="card-cert" v-if="claim.Context =='claim:employment_authentication'">
+        <div class="card-cert-logo">
+            <img src="../../assets/share_ec.png" class="">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-content">
+            <div class="card-title">
+                <b>Employment certificate</b>
+            </div>
+            <div class="card-info">
+                <dl class="card-info-list">
+                    <dt class="card-info-line">Name: {{claim.Content.Name}}</dt>
+                    <dt class="card-info-line">Company:Onchain</dt>
+                    <dt class="card-info-line">Position: {{claim.Content.JobTitle}}</dt>
+                </dl>
+            </div>
+        </div>
+        <div class="card-cert-company">
+            <img src="../../assets/share_onchain.png" class="card-cert-company-image">
+            <p class="card-cert-company-text">onchain</p>
+        </div>
+    </div>
+    <div class="card-github" v-if="claim.Context =='claim:github_authentication'">
+        <div class="card-github-logo">
+            <img src="../../assets/share_gc.png" >
+        </div>
+        <div class="card-line"></div>
+        <div class="card-content">
+            <div class="card-title important_color">
+                <b>Github Claim</b>
+            </div>
+            <div class="card-info">
+                <dl class="card-info-list">
+                    <dt class="card-info-line">Name: {{claim.Content.Alias}}</dt>
+                    <dt class="card-info-line">Email: {{claim.Content.Email}}</dt>
+                </dl>
+            </div>
+        </div>
+        <div class="card-cert-company">
+            <img src="../../assets/share_TrustAlliance.png" class="card-cert-company-image">
+            <p class="card-cert-company-text">Trust Alliance</p>
+        </div>
+    </div>
+    <div class="card-link" v-if="claim.Context =='claim:linkedin_authentication'">
+        <div class="card-cert-logo">
+            <img src="../../assets/share_lc.png" class="">
+        </div>
+        <div class="card-line"></div>
+        <div class="card-content">
+            <div class="card-title">
+                <b>Linkedin Claim</b>
+            </div>
+            <div class="card-info">
+                <dl class="card-info-list">
+                    <dt class="card-info-line">Name: {{claim.Content.Name}}</dt>
+                    <dt class="card-info-line">Bio: {{claim.Content.Bio}}</dt>
+                  
+                </dl>
+            </div>
+        </div>
+        <div class="card-cert-company">
+            <img src="../../assets/share_TrustAlliance.png" class="card-cert-company-image">
+            <p class="card-cert-company-text">Trust Alliance</p>
+        </div>
+    </div>
+  </div>
+</div>
+<div class="text-center" style="margin-top:30px;">
+  <button v-if="verifyresult" class="veriy_btn1" @click="verifyClaim()">Verify Claim</button>
+  <div v-else class="font-size32 important_color" >Verification passed</div>
+</div>
+
+    </div>
+  </div>
+</template>
+
+<script>
+  import {mapState} from 'vuex'
+  import Helper from './../../helpers/helper.js'
+
+  export default {
+      name: "claim-detail-page",
+
+    data() {
+      return {
+        Ddo:{},
+        claimflag:true,
+        verifyresult:true
+
+      }
+    },
+    created() {
+      this.getClaimDetailPage()
+    },
+    watch: {
+      '$route': 'getgetClaimPage',
+      'getClaim.info':function(){
+        /* console.log(this.getClaim.info) */
+      }
+
+    },
+    computed: {
+      ...mapState({
+        getClaim: state => state.ClaimDetailPage.ClaimInfo,
+      })
+    },
+    methods: {
+      verifyClaim(){
+        this.verifyresult = !this.verifyresult
+      },
+      getClaimDetailPage() {
+        this.$store.dispatch('getClaim',this.$route.params).then(response => {
+          /* console.log(response) */
+        }).catch(error => {
+          console.log(error)
+        })
+      },
+      toReturn(){
+        this.$router.go(-1)
+      },
+      getTime($time){
+        return Helper.getDateTime($time)
+      },
+      getDate($time){
+        return Helper.getDate($time)
+      },
+      toTransactionDetailPage($TxnId){
+        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+      },
+      togetClaimPage($OntId){
+        this.$router.push({ name:'getClaim', params:{ontid:$OntId}})
+      },
+      getOntIDEvent:function($event){
+             switch ($event.substr(0,12)) {
+              case "register Ont":
+                return "Register ONT ID"
+              case "add publicke":
+                return "Add publickey"
+              case "delete publi":
+                return "Delete publickey"
+              case "add attribut":
+                return "Add identity attribute"
+              case "update attri":
+                return "Update identity attribute"
+              case "delete attri":
+                return "Delete identity attribute"
+            }
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .div-ont-id-detail-page {
+/*     border: 1px solid rgba(0, 0, 0, 0.1); */
+    border-radius: 0.25rem;
+    padding: 15px;
+  }
+  .ont-id-detail-page-hr {
+    height: 1px;
+  }
+  .ont-id-detail-page-check-hand{
+    cursor: pointer;
+  }
+  .oid-tab-border-top-none{
+    border-top: none;
+  }
+  .public-info{
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  .claim-info{
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding:10px
+  }
+
+    html,body{
+        margin:0;
+        height: 100%;
+
+    }
+    .background-head{
+        max-width: 1000px;
+        margin:0 auto;
+        background: linear-gradient(#125BA5, #249ED9); /* 标准的语法（必须放在最后） */
+        text-align: center;
+    }
+    .background-body{
+        max-width: 1000px;
+        margin:0 auto;
+        background: #F4F4F4;
+    }
+    .head-logo{
+        margin-top: 6.4%;
+    }
+    .head-title{
+        margin-top: 1.9%;
+        color: white;
+        font-size: 30px;
+    }
+    .head-info{
+        color: #8DD7FE;
+        margin-top: 0.5%;
+        font-size: 24px;
+        padding-bottom: 12%;
+    }
+    .card-cert{
+        width: 94%;
+        border:1px solid #FFFFFF;
+        border-radius:15px;
+        background: #FFFFFF;
+        margin: -10% 3% 2% 3%;
+        display: inline-flex;
+    }
+    .card-cert-logo{
+        margin-top: 8.7% ;
+        margin-left:5%;
+    }
+    .card-line{
+        border-left:1px solid #F0F0F0;
+        margin-left: 5%;
+    }
+    .card-content{
+        margin: 3.7% 0 3.7% 5%;
+        width: 55%;
+    }
+    .card-title{
+        color:#32A4BE;
+        font-size: 28px;
+    }
+    .card-info{
+        color: #C3C1C7;
+        font-size: 26px;
+        margin-top: 5.3%
+    }
+    .card-info-list{
+        margin: 0;
+    }
+    .card-info-line{
+        margin-top: 1.2%;
+    }
+    .card-cert-company{
+        float: right;
+        margin-top: 3.7%;
+        width: 15%;
+        margin-left: 2.5%;
+        text-align: center;
+    }
+    .card-cert-company-text{
+        color: #32A4BE;
+        text-align: center;
+        margin-top: 1%;
+        font-size: 24px;
+    }
+    .card-cert-company-image{
+        width: 75%;
+    }
+    .card-link{
+        width: 94%;
+        border:1px solid #FFFFFF;
+        border-radius:15px;
+        background: #FFFFFF;
+        margin: -10% 3% 2% 3%;
+        display: inline-flex;
+        margin-top: 1.06%;
+    }
+    .card-github{
+        width: 94%;
+        border:1px solid #FFFFFF;
+        border-radius:15px;
+        background: #FFFFFF;
+        margin: -10% 3% 2% 3%;
+        display: inline-flex;
+        margin-top: 1.06%;
+    }
+    .card-github-logo{
+        margin-top: 10.7% ;
+        margin-left: 5%;
+    }
+
+</style>
