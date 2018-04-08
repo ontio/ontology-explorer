@@ -201,4 +201,20 @@
   .transaction-detail-page-check-hand{
     cursor: pointer;
   }
+@media screen and (max-width:768px){
+    .mobile_display{
+        display: block !important
+    }
+    .pc_display{
+        display: none !important
+    }
+}
+@media screen and (min-width:769px){
+    .mobile_display{
+        display: none !important
+    }
+    .pc_display{
+        display: block !important
+    }
+}
 </style>
