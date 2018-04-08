@@ -3,7 +3,7 @@
 
 ### Overview
 
-This is the Explorer project for the Ontology blockchain. The project bases on  front and back separation framework.The Explorer back-end bases on Spring boot framework ,it synchronizes block and transaction information to the local database and provides Restful API for the Explorer front-end or DApp. The Explorer front-end bases on Vue framework . 
+This is the Explorer project for the Ontology blockchain. The project is based on front and back separation framework. The Explorer back-end is based on Spring boot framework, it synchronizes block and transaction information to the local database and provides Restful API for the Explorer front-end or DApp. The Explorer front-end is based on Vue framework. 
 
 ### Installation Environment
 
@@ -24,7 +24,7 @@ Download URL：
 
 >[http://maven.apache.org/download.cgi](http://maven.apache.org/download.cgi)
 
-Firstly,cd the Explorer back-end project **lib** directory , run the following command:
+Firstly, cd the Explorer back-end project **lib** directory, run the following command:
 
 ```
 mvn install:install-file -DgroupId=com.github.ontio -DartifactId=javasdk -Dversion=v1.0 -Dpackaging=jar -Dfile=ontology-sdk-java.jar
@@ -185,7 +185,7 @@ cd the Explorer back-end project **log** directory，check for the latest log di
 
 
 - check by your browser
-Input the ip and port into your browser according to your Nginx  server configuration, you can see the block and transaction information in your browser just like the [Ontology Explore](https://explorer.ont.io)
+Input the ip and port into your browser according to your Nginx server configuration, you can see the block and transaction information in your browser just like the [Ontology Explore](https://explorer.ont.io)
 
 
 
