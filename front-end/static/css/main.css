@@ -395,10 +395,6 @@ body{
   background: white;
   border: 4px solid #ffffff;
 }
-.container-padding{
-  padding-left:24px !important;
-  padding-right:24px !important;
-}
 .wordbreak{
   word-break: break-all;
 }
@@ -441,10 +437,27 @@ body{
 .p_margin_bottom_L{
   margin-bottom:32px;
 }
-.table td{
-  padding-left:24px;
-  padding-right:24px;
-  vertical-align:middle
+@media screen and (max-width:768px){
+  .table td{
+    padding-left:16px;
+    padding-right:16px;
+    vertical-align:middle
+  }
+  .container-padding{
+    padding-left:16px !important;
+    padding-right:16px !important;
+  }
+}
+@media screen and (min-width:768px){
+  .table td{
+    padding-left:24px;
+    padding-right:24px;
+    vertical-align:middle
+  }
+  .container-padding{
+    padding-left:24px !important;
+    padding-right:24px !important;
+  }
 }
 /* FONT */
 .normal_color{
