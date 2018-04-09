@@ -3,7 +3,7 @@ Navicat MySQL Data Transfer
 
 Source Server         : ont-testNet
 Source Server Version : 50721
-Source Host           : 128.1.132.167:3306
+Source Host           : 
 Source Database       : explorer
 
 Target Server Type    : MYSQL
