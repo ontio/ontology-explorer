@@ -122,9 +122,11 @@ public class BlockManagementService {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateCurrent(int height, int txnCount) throws Exception{
+
         Current currentDO = new Current();
         currentDO.setHeight(height);
         currentDO.setTxncount(txnCount);
+
         currentMapper.update(currentDO);
     }
 

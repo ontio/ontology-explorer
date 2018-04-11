@@ -95,7 +95,7 @@ public class TxnHandlerThread {
                             eventObjList) {
                         JSONObject eventObj = (JSONObject) temp;
 
-                        String codeHash = Helper.toHexString(format((List) eventObj.get("CodeHash")));
+                        String codeHash = Helper.toHexString(format((List) eventObj.get("CodeAddress")));
                         logger.info("####codeHash:{}####", codeHash);
                         //transfer transaction
                         if (configParam.ASSET_ONG_CODEHASH.equals(codeHash) || configParam.ASSET_ONT_CODEHASH.equals(codeHash)) {
