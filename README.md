@@ -74,7 +74,7 @@ Storage transaction information.
 - **tbl_ont_ontid_detail**
 Storage transaction information on the ontId operation.
 - **tbl_ont_current**
-Storage the current block and transaction amount.
+Storage the current block and transaction amount.(Don't forget the insert statements in the script.)
 - **view_ont_transaction**
 Storage the basic transaction information.
 
