@@ -107,7 +107,6 @@
         return Helper.getDate($time)
       },
       getShowDate($time){
-        debugger
         var time = this.getTime($time)
         return Helper.getshowDate(time)
       },
