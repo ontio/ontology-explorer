@@ -135,6 +135,11 @@ public class TxnHandlerThread {
      * @return
      */
     private byte[] format(List byteList) {
+
+        if ((byteList instanceof List) == false) {
+          return new byte[0];
+        }
+
         byte[] bys = new byte[byteList.toArray().length];
         for (int i = 0; i < bys.length; i++) {
             bys[i] = (byte) ((int) byteList.get(i) & 0xff);
