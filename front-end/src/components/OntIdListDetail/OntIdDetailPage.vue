@@ -13,10 +13,10 @@
       </div>
       <div class="row">
         <div class="col-lg-12">
-          <p class="font-size24 font-blod important_color">{{ $t('ontIdDetail.name')}}<span class="font-blod font-size14 important_color "> {{Ddo.OntId}}</span></p>
+          <p class="font-size24 font-blod important_color">{{ $t('ontIdDetail.name')}}<span class="font-blod font-size14 important_color "> {{$route.params.ontid}}</span></p>
         </div>
       </div>
-      <table v-if="Ddo.Owners.length >0" class="table table-hover">
+      <table v-if="Ddo.Owners" class="table table-hover">
         <thead>
         <tr>
           <td class="td11 font-size24 font-blod normal_color">
@@ -33,7 +33,7 @@
         </tr>
         </tbody>
       </table>
-      <table class="table table-hover">
+      <table v-if="Ddo.Attributes" class="table table-hover">
         <thead>
         <tr>
           <td class="td11 font-size24 font-blod normal_color">
@@ -52,7 +52,7 @@
         </tr>
         </tbody>
       </table>
-      <table v-if="OntIdDetail.info.TxnTotal != 0" class="table ">
+      <table v-if="OntIdDetail.info.TxnTotal" class="table ">
         <thead>
         <tr style="border-bottom:0px;">
           <td class="font-size24 font-blod normal_color">
@@ -119,11 +119,11 @@
       '$route': 'getOntIdDetailPage',
       'OntIdDetail.info':function(){
           this.Ddo = this.OntIdDetail.info.Ddo
-          if(this.Ddo.Attributes[0] == undefined){
+/*           if(this.Ddo.Attributes[0] == undefined){
             this.claimflag = false;
           }else{
             this.claimflag = true;
-          }
+          } */
       }
 
     },

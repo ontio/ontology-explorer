@@ -14,7 +14,8 @@
               <div class="col-lg-12 ">
                 <div class="col-lg-12 padding0 block-item-sub-wrapper">
                   <div :class="( index <1) ?'block-item col-lg-8 text-left padding0 font-size14':'block-item col-lg-8 text-left padding0 block-item-top font-size14'" @click="toOntIdDetailPage(OntId.OntId)"><span class="ontID-text font700">{{OntId.OntId.substr(0,12)}}...{{OntId.OntId.substr(32,45)}}</span></div>
-                  <span class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{getShowDate(OntId.TxnTime)}} ago</span>
+                  <span v-if="getTime(OntId.TxnTime) <60" class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
+                  <span v-else class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{getShowDate(OntId.TxnTime)}} ago</span>
                 </div>
                 <div class="col-lg-12 padding0 block-item-sub-wrapper">
                   <!-- <span :class="( index >4) ? ' block-item col-lg-12 text-left padding0 font-size14':'block-item col-lg-12 text-left padding0 block-item-bottom font-size14'">{{OntId.Description.substr(0,30)}}...</span> -->
@@ -36,51 +37,28 @@
     name: "ont-id-list",
     data() {
       return {
-          info:[
-            {
-              OntId:"TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme",
-              Description:"Create ONT ID",
-              BlockTime:1522047877,
-              showtime:0
-            },
-            {
-              OntId:"TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme",
-              Description:"Create ONT ID",
-              BlockTime:1522047877,
-              showtime:0
-            },
-            {
-              OntId:"TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme",
-              Description:"Create ONT ID",
-              BlockTime:1522047877,
-              showtime:0
-            },
-            {
-              OntId:"TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme",
-              Description:"Create ONT ID",
-              BlockTime:1522047877,
-              showtime:0
-            },
-            {
-              OntId:"TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme",
-              Description:"Create ONT ID",
-              BlockTime:1522047877,
-              showtime:0
-            },
-
-          ],
+          info:[],
+          showtime:[0,0,0,0,0]
       }
     },
     created() {
       this.getOntIdList()
       this.intervalBlock1 = setInterval(() => {
         this.getOntIdList()
+      }, 6000)
+      this.intervalBlockstandard = setInterval(() => {
+        for(var i =0;i<5;i++){
+          var time = this.showtime[i] + 1
+          this.$set(this.showtime,i,time)
+        }
       }, 1000)
     },
     watch: {
       '$route': 'getOntIdList',
       'latestOntIdList.info':function(){
-        /* console.log("thisis",this.latestOntIdList.info) */
+        for(var i =0;i<5;i++){
+          this.showtime[i] = this.getTime(this.latestOntIdList.info[i].TxnTime)
+        }
       }
     },
     computed: {
@@ -107,7 +85,6 @@
         return Helper.getDate($time)
       },
       getShowDate($time){
-        debugger
         var time = this.getTime($time)
         return Helper.getshowDate(time)
       },
@@ -144,6 +121,7 @@
     },
     beforeDestroy () {
       clearInterval(this.intervalBlock1)
+      clearInterval(this.intervalBlockstandard)
     },
   }
 </script>

@@ -144,7 +144,7 @@
       this.intervalBlock = setInterval(() => {
         this.generateTime(1)
         this.getRunStatus()
-      }, 1000)
+      }, 3000)
     },
     watch: {
       '$route': 'getRunStatus',

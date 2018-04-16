@@ -14,7 +14,8 @@
             <div v-for="(tx,index) in latestTransactionList.info" class="col-lg-12 block-item-wrapper2">
               <div class="col-lg-12  block-item-sub-wrapper">
                 <div :class="( index <1) ?'block-item col-lg-8 text-left padding0 font-size14':' font-size14 block-item col-lg-8 text-left padding0 block-item-top'" @click="toTransactionDetailPage(tx.TxnHash)"><span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span></div>
-                  <span  class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
+                  <span  v-if="getTime(tx.TxnTime) < 60" class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
+                  <span  v-else class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
               </div>
               <div class="col-lg-12  block-item-sub-wrapper">
                 <span :class="( index >4) ? ' block-item col-lg-12 text-left padding0  font-size14':'block-item col-lg-12 text-left padding0 block-item-bottom font-size14  '">{{getTxtype(tx.TxnType)}}</span>
@@ -34,49 +35,29 @@
     name: "transaction-list",
     data() {
       return {
-          info:[
-            {
-              TxnHash:"fdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgd",
-              TxnTime:1522047877,
-              amount:20,
-              showtime:0
-            },
-            {
-              TxnHash:"fdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgd",
-              TxnTime:1522047877,
-              amount:30,
-              showtime:0
-            },
-            {
-              TxnHash:"fdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgd",
-              TxnTime:1522047877,
-              amount:40,
-              showtime:0
-            },
-            {
-              TxnHash:"fdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgd",
-              TxnTime:1522047877,
-              amount:25,
-              showtime:0
-            },
-            {
-              TxnHash:"fdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgdfdsadfgd",
-              TxnTime:1522047877,
-              amount:35,
-              showtime:0
-            }
-
-          ],
+          info:[],
+        showtime:[0,0,0,0,0]
       }
     },
     created() {
       this.getTransactionList()
       this.intervalBlock2 = setInterval(() => {
         this.getTransactionList()
+      }, 6000)
+      this.intervalBlockstandard = setInterval(() => {
+        for(var i =0;i<5;i++){
+          var time = this.showtime[i] + 1
+          this.$set(this.showtime,i,time)
+        }
       }, 1000)
     },
     watch: {
-      '$route': 'getTransactionList'
+      '$route': 'getTransactionList',
+      'latestTransactionList.info':function(){
+        for(var i =0;i<5;i++){
+          this.showtime[i] = this.getTime(this.latestTransactionList.info[i].TxnTime)
+        }
+      }
     },
     computed: {
       ...mapState({
@@ -127,6 +108,7 @@
     },
     beforeDestroy () {
       clearInterval(this.intervalBlock2)
+      clearInterval(this.intervalBlockstandard)
     },
     }
 </script>
