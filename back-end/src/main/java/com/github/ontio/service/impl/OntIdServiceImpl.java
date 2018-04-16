@@ -17,7 +17,6 @@
  */
 
 
-
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSON;
@@ -84,7 +83,7 @@ public class OntIdServiceImpl implements IOntIdService {
         int count = ontIdMapper.selectOntIdCount();
         List<Map> ontIdList = ontIdMapper.selectOntIdByPage(start, pageSize);
 
-        if(ontIdList.size() > 0) {
+        if (ontIdList.size() > 0) {
             for (Map map :
                     ontIdList) {
                 map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
@@ -119,10 +118,21 @@ public class OntIdServiceImpl implements IOntIdService {
         }
 
         initSDK();
-        String ddoStr = sdk.getDDO(ontId);
-        logger.info("ddo info:{}", ddoStr);
+        String ddoStr = sdk.getDDO(ontId, configParam.ONTID_CODEHASH);
+        logger.info("{} query ddo info:{}", configParam.ONTID_CODEHASH, ddoStr);
+
         JSONObject ddoObj = new JSONObject();
-        if (!"".equals(ddoStr)) {
+        //目前测试环境有两个ontid codehash，兼容两种ddo查询
+        if (Helper.isEmptyOrNull(ddoStr)) {
+            ddoStr = sdk.getDDO(ontId, configParam.ONTID_CODEHASH2);
+            logger.info("{} query ddo info:{}", configParam.ONTID_CODEHASH2, ddoStr);
+
+            if (!Helper.isEmptyOrNull(ddoStr)) {
+                ddoObj = JSON.parseObject(ddoStr);
+                List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
+                ddoObj.replace("Attributes", formatedAttrList);
+            }
+        } else {
             ddoObj = JSON.parseObject(ddoStr);
             List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
             ddoObj.replace("Attributes", formatedAttrList);
@@ -152,8 +162,8 @@ public class OntIdServiceImpl implements IOntIdService {
             logger.info("Attribute Key:{}", key);
             JSONObject valueObj = (JSONObject) entry.getValue();
             logger.info("Attribute Value:{}", valueObj.toString());
-            //String type = valueObj.getString("Type");
-            //claim
+            String type = valueObj.getString("Type");
+            //standard claim attribute
             if (key.startsWith(ConstantParam.CLAIM)) {
 /*                "Attributes": {
                     "claim014Gb2f56d106dac92e891b6f7fc4d9546fdf2eb94a364208fa65a9996b03ba0": {
@@ -186,9 +196,18 @@ public class OntIdServiceImpl implements IOntIdService {
                 Map<String, Object> formatedAttrMap = new HashMap<>();
                 formatedAttrMap.put("Claim", claimObj);
                 formatedAttrList.add(formatedAttrMap);
+            }else {
+                //self-defined attribute
+                Map<String, Object> unFormatedMap = new HashMap<>();
+                unFormatedMap.put(key, valueObj.getString("Value"));
+                Map<String, Object> selfDefined = new HashMap<>();
+                selfDefined.put("SelfDefined",unFormatedMap);
+                formatedAttrList.add(selfDefined);
             }
         }
 
         return formatedAttrList;
     }
+
+
 }

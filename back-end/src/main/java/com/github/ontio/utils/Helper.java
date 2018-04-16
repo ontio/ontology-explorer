@@ -121,6 +121,11 @@ public class Helper {
     }
 
 
+    public static String currentMethod() {
+        return new Exception("").getStackTrace()[1].getMethodName();
+    }
+
+
     public static String asUnsignedDecimalString(long l) {
         BigInteger b = BigInteger.valueOf(l);
         if (b.signum() < 0) {
