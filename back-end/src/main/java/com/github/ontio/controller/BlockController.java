@@ -59,7 +59,7 @@ public class BlockController {
     @ResponseBody
     public Result queryBlockList(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("amount:{}", amount);
 
         Result rs = blockService.queryBlockList(amount);
@@ -78,7 +78,7 @@ public class BlockController {
     public Result queryBlockByPage(@PathVariable("pagenumber") Integer pageNumber,
                                 @PathVariable("pagesize") Integer pageSize) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
 
         Result rs = blockService.queryBlockList(pageSize, pageNumber);
@@ -94,7 +94,7 @@ public class BlockController {
     @ResponseBody
     public Result queryBlock(@PathVariable("param") String param) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("param:{}",param);
 
         Result rs = new Result();
@@ -123,16 +123,12 @@ public class BlockController {
     @ResponseBody
     public Result queryBlockGenerateTime(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("amount:{}",amount);
 
         Result rs = blockService.queryBlockGenerateTime(amount);
         return rs;
     }
 
-
-    private String currentMethod() {
-        return new Exception("").getStackTrace()[1].getMethodName();
-    }
 
 }

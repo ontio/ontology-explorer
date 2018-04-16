@@ -21,6 +21,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.OntIdServiceImpl;
+import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class OntIdController {
     @ResponseBody
     public Result queryOntIdList(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         logger.info("amount:{}",amount);
 
         Result rs = ontIdService.queryOntIdList(amount);
@@ -71,7 +72,7 @@ public class OntIdController {
     public Result queryOntIdListByPage(@PathVariable("pagesize") int pageSize,
                                        @PathVariable("pagenumber") int pageNumber) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pagenumber:{}", pageSize, pageNumber);
 
         Result rs = ontIdService.queryOntIdList(pageSize, pageNumber);
@@ -92,7 +93,7 @@ public class OntIdController {
                                    @PathVariable("pagesize") int pageSize,
                                    @PathVariable("pagenumber") int pageNumber) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         logger.info("ontId:{},pageSize:{},pageNumber", ontId, pageSize, pageNumber);
 
         Result rs = ontIdService.queryOntIdDetail(ontId, pageSize, pageNumber);
@@ -100,11 +101,6 @@ public class OntIdController {
 
     }
 
-
-
-    private String currentMethod() {
-        return new Exception("").getStackTrace()[1].getMethodName();
-    }
 
 
 }

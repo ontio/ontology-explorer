@@ -21,6 +21,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.CurrentServiceImpl;
+import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,16 +58,12 @@ public class CurrentController {
     @ResponseBody
     public Result querySummaryInfo() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = currentService.querySummaryInfo();
         return rs;
     }
 
 
-
-    private String currentMethod() {
-        return new Exception("").getStackTrace()[1].getMethodName();
-    }
 
 }

@@ -22,6 +22,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.TransactionServiceImpl;
+import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class TransactionController {
     @ResponseBody
     public Result queryTransactionList(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("amount:{}", amount);
 
         Result rs = transactionService.queryTxnList(amount);
@@ -73,7 +74,7 @@ public class TransactionController {
     public Result queryTxn(@PathVariable("pagesize") Integer pageSize,
                            @PathVariable("pagenumber") Integer pageNumber) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber:{}",pageSize, pageNumber);
 
         Result rs = transactionService.queryTxnList(pageSize,pageNumber);
@@ -89,7 +90,7 @@ public class TransactionController {
     @ResponseBody
     public Result queryTxnByHash(@PathVariable("txnhash") String txnHash) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("txnHash:{}",txnHash);
 
         Result rs = transactionService.queryTxnDetailByHash(txnHash);
@@ -109,7 +110,7 @@ public class TransactionController {
                                    @PathVariable("pagesize") int pageSize,
                                    @PathVariable("pagenumber") int pageNumber) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("address:{},pagesize:{},pagenumber:{}",address, pageSize, pageNumber);
 
         Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize);
@@ -129,16 +130,12 @@ public class TransactionController {
                                    @PathVariable("pagenumber") int pageNumber,
                                    @PathVariable("assetname") String assetName) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, this.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("address:{},pagesize:{},pagenumber:{}, assetname:{}",address, pageSize, pageNumber, assetName);
 
         Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize, assetName);
         return rs;
     }
 
-
-    private String currentMethod() {
-        return new Exception("").getStackTrace()[1].getMethodName();
-    }
 
 }
