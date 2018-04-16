@@ -28,7 +28,9 @@
         <tr v-for="owner in Ddo.Owners">
           <td class="td11">
             <p class="font-size14 font-Regular normal_color">Type: {{owner.Type}}</p>
+            <p class="font-size14 font-Regular normal_color">Curve: {{owner.Curve}}</p>
             <p class="font-size14 font-Regular normal_color">Value: {{owner.Value}}</p>
+            <p class="font-size14 font-Regular normal_color">PublicKeyId: {{owner.PublicKeyId}}</p>
           </td>
         </tr>
         </tbody>
