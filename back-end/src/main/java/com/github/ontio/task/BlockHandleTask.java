@@ -22,7 +22,7 @@ package com.github.ontio.task;
 
 import com.github.ontio.OntSdk;
 import com.github.ontio.core.block.Block;
-import com.github.ontio.asyncService.BlockManagementService;
+import com.github.ontio.asyncService.BlockHandleService;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.utils.ConfigParam;
 import org.slf4j.Logger;
@@ -52,18 +52,18 @@ public class BlockHandleTask extends Thread {
 
     private static String masterNodeRestfulUrl = "";
 
-    private static int retryMaxTime = 0;
-
     private static int masterNodeIndex = 0;
 
-    private static OntSdk sdk = null;
+    private static int retryMaxTime = 0;
+
+    private static OntSdk sdkService = null;
 
     @Autowired
     private CurrentMapper currentMapper;
     @Autowired
     private ConfigParam configParam;
     @Autowired
-    private BlockManagementService blockManagementService;
+    private BlockHandleService blockManagementService;
     @Autowired
     private Environment env;
 
@@ -76,7 +76,7 @@ public class BlockHandleTask extends Thread {
             masterNodeRestfulUrl = configParam.NODE_RESTFUL_URL;
 
             initNodeRestfulList();
-            sdk = initSdk();
+            sdkService = initSdkService();
 
             while (true) {
                 int remoteBlockHieght = getRemoteBlockHeight();
@@ -104,7 +104,7 @@ public class BlockHandleTask extends Thread {
                     if (tHeight > 1) {
                         blockBookKeeper = getBlockBookKeeperByHeight(tHeight - 1);
                     }
-                    blockManagementService.handleOneBlock(sdk, block, blockBookKeeper);
+                    blockManagementService.handleOneBlock(sdkService, block, blockBookKeeper);
                 }
 
             }
@@ -128,7 +128,7 @@ public class BlockHandleTask extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                remoteHeight = sdk.getConnectMgr().getBlockHeight();
+                remoteHeight = sdkService.getConnectMgr().getBlockHeight();
                 break;
             } catch (Exception ex) {
                 logger.error("getBlockHeight error, try again...restful:{},error:", masterNodeRestfulUrl, ex);
@@ -162,7 +162,7 @@ public class BlockHandleTask extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                block = sdk.getConnectMgr().getBlock(height);
+                block = sdkService.getConnectMgr().getBlock(height);
                 break;
             } catch (Exception ex) {
                 logger.error("getBlockByHeight error, try again...restful:{},error:", masterNodeRestfulUrl, ex);
@@ -196,7 +196,7 @@ public class BlockHandleTask extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                nextBookKeeper = sdk.getConnectMgr().getBlock(height).nextBookkeeper.toBase58();
+                nextBookKeeper = sdkService.getConnectMgr().getBlock(height).nextBookkeeper.toBase58();
                 break;
             } catch (Exception ex) {
                 logger.error("getBlockBookKeeperByHeight error, try again...restsful:{},error:", masterNodeRestfulUrl, ex);
@@ -220,7 +220,7 @@ public class BlockHandleTask extends Thread {
 
 
     /**
-     * switch to another node and initialize sdk object
+     * switch to another node and initialize sdkService object
      * when the master node have an exception
      *
      */
@@ -233,7 +233,7 @@ public class BlockHandleTask extends Thread {
         logger.warn("####switch node restfulurl to {}####", masterNodeRestfulUrl);
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(masterNodeRestfulUrl);
-        sdk = wm;
+        sdkService = wm;
     }
 
     /**
@@ -247,14 +247,14 @@ public class BlockHandleTask extends Thread {
     }
 
     /**
-     * initialize ontology sdk object
+     * initialize ontology sdkService object for synchronizing data
      *
      * @return
      */
-    private OntSdk initSdk() {
-        OntSdk sdk = OntSdk.getInstance();
-        sdk.setRestful(masterNodeRestfulUrl);
-        return sdk;
+    private OntSdk initSdkService() {
+        OntSdk sdkService = OntSdk.getInstance();
+        sdkService.setRestful(masterNodeRestfulUrl);
+        return sdkService;
     }
 
 

@@ -53,7 +53,7 @@ public class ExplorerApplication {
 		executor.setMaxPoolSize(30);
 		executor.setCorePoolSize(10);
 		executor.setQueueCapacity(8);
-		executor.setThreadNamePrefix("txnTask--");
+		executor.setThreadNamePrefix("txnHandleThread--");
 		executor.setKeepAliveSeconds(60);
 
 		// Rejection policies
