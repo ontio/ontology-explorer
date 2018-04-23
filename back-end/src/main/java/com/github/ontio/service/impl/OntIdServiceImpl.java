@@ -119,13 +119,22 @@ public class OntIdServiceImpl implements IOntIdService {
         }
 
         initSDK();
-        String ddoStr = sdk.getDDO(ontId);
+        String ddoStr = sdk.getDDO(ontId, configParam.ONTID_CODEHASH);
         logger.info("ddo info:{}", ddoStr);
         JSONObject ddoObj = new JSONObject();
-        if (!"".equals(ddoStr)) {
+
+        if (!Helper.isEmptyOrNull(ddoStr)) {
             ddoObj = JSON.parseObject(ddoStr);
             List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
             ddoObj.replace("Attributes", formatedAttrList);
+        }else {
+            ddoStr = sdk.getDDO(ontId, configParam.ONTID_CODEHASH2);
+            logger.info("ddo info:{}", ddoStr);
+            if(!Helper.isEmptyOrNull(ddoStr)) {
+                ddoObj = JSON.parseObject(ddoStr);
+                List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
+                ddoObj.replace("Attributes", formatedAttrList);
+            }
         }
 
         Map<String, Object> rs = new HashMap<>();

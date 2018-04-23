@@ -56,8 +56,8 @@ public class OntologySDKService {
     }
 
 
-    public String getDDO(String ontId) {
-        OntSdk ontSdk = getOntSdk();
+    public String getDDO(String ontId, String ontIdcodeHassh) {
+        OntSdk ontSdk = getOntSdkbyCodeHash(ontIdcodeHassh);
         String ddoStr = "";
         try {
             ddoStr = ontSdk.getOntIdTx().sendGetDDO(ontId);
@@ -114,6 +114,13 @@ public class OntologySDKService {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.NODE_RESTFUL_URL);
         wm.setCodeAddress(configParam.ONTID_CODEHASH);
+        return wm;
+    }
+
+    private OntSdk getOntSdkbyCodeHash(String ontIdCodeHash) {
+        OntSdk wm = OntSdk.getInstance();
+        wm.setRestful(configParam.NODE_RESTFUL_URL);
+        wm.getOntIdTx().setCodeAddress(ontIdCodeHash);
         return wm;
     }
 

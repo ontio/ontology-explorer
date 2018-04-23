@@ -95,12 +95,12 @@ public class TxnHandlerThread {
                             eventObjList) {
                         JSONObject eventObj = (JSONObject) temp;
 
-                        String codeHash = Helper.toHexString(format((List) eventObj.get("CodeAddress")));
+                        String codeHash = Helper.toHexString(format((List) eventObj.get("CodeHash")));
                         logger.info("####codeHash:{}####", codeHash);
                         //transfer transaction
                         if (configParam.ASSET_ONG_CODEHASH.equals(codeHash) || configParam.ASSET_ONT_CODEHASH.equals(codeHash)) {
                             handleTransferTxn(eventObj, txn, blockHeight, blockTime, indexInBlock, indexInTxn, codeHash);
-                        } else if (configParam.ONTID_CODEHASH.equals(codeHash)) {
+                        } else if (configParam.ONTID_CODEHASH.equals(codeHash) || configParam.ONTID_CODEHASH2.equals(codeHash)) {
                             //ontId operation transaction
                             handleOntIdTxn(eventObj, txn, blockHeight, blockTime, indexInBlock, indexInTxn);
                         } else {
