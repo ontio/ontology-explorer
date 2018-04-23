@@ -18,7 +18,7 @@
 
 
 
-package com.github.ontio.task;
+package com.github.ontio.thread;
 
 import com.github.ontio.OntSdk;
 import com.github.ontio.core.block.Block;
@@ -40,9 +40,9 @@ import java.util.List;
  * @version 1.0
  * @date 2018/3/13
  */
-@Component("BlockHandleTask")
+@Component("BlockHandlerThread")
 @Scope("prototype")
-public class BlockHandleTask extends Thread {
+public class BlockHandlerThread extends Thread {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

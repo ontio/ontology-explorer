@@ -18,7 +18,7 @@
 
 
 
-package com.github.ontio.task;
+package com.github.ontio.thread;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
@@ -141,13 +141,13 @@ public class TxnHandlerThread {
      * @param byteList
      * @return
      */
-    private byte[] format(List byteList) {
+/*    private byte[] format(List byteList) {
         byte[] bys = new byte[byteList.toArray().length];
         for (int i = 0; i < bys.length; i++) {
             bys[i] = (byte) ((int) byteList.get(i) & 0xff);
         }
         return bys;
-    }
+    }*/
 
     /**
      * insert transfer transaction
@@ -221,7 +221,7 @@ public class TxnHandlerThread {
         StringBuilder descriptionSb = new StringBuilder();
 
         List stateList = (List) eventObj.getJSONArray("States");
-//        List list = (List) statesList.get(0);
+
         String action = new String(Helper.hexToBytes((String) stateList.get(0)));
         logger.info("####action:{}####", action);
         String ontId = new String(Helper.hexToBytes((String) stateList.get(2)));

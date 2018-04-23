@@ -25,7 +25,7 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.model.Current;
-import com.github.ontio.task.*;
+import com.github.ontio.thread.*;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
