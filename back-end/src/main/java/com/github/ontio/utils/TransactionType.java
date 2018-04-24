@@ -29,12 +29,17 @@ public enum TransactionType {
     /**
      * DeployCodeTransaction
      */
-    DEPLOYCODETXN_TYPE(208),
+    BOOKKEEPER(0),
+
+    /**
+     * DeployCodeTransaction
+     */
+    DEPLOYCODE(208),
 
     /**
      * InvokeCodeTransaction
      */
-    INVOKECODETXN_TYPE(209);
+    INVOKECODE(209);
 
 
     private int type;

@@ -31,6 +31,7 @@ import com.github.ontio.model.TransactionDetail;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.OntIdEventDesType;
+import com.github.ontio.utils.TransactionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,7 @@ public class TxnHandlerThread {
         logger.info("####txnType:{}, txnHash:{}####", txnType, txnHash);
 
         //get rid of BookKeeperTransaction(txnType=0)
-        if (txnType != 0) {
+        if (txnType != TransactionType.BOOKKEEPER.type()) {
             try {
                 int indexInTxn = 1;
                 List eventObjList = (List) sdkService.getConnectMgr().getSmartCodeEvent(txnHash);
@@ -114,11 +115,11 @@ public class TxnHandlerThread {
 
                         indexInTxn++;
                     }
-                } else if (txnType == 208) {
-                    //deploy smartcontract transaction
+                } else if (txnType == TransactionType.DEPLOYCODE.type()) {
+                    //deploy smart contract transaction
                     insertTxnBasicInfo(txn, blockHeight, blockTime, indexInTxn, indexInBlock, 1, "");
                 } else {
-                    //invoke smartcontract transaction
+                    //invoke smart contract transaction
                     insertTxnBasicInfo(txn, blockHeight, blockTime, indexInTxn, indexInBlock, 2, "");
                 }
             } catch (Exception e) {
