@@ -129,13 +129,17 @@ public class OntIdServiceImpl implements IOntIdService {
 
             if (!Helper.isEmptyOrNull(ddoStr)) {
                 ddoObj = JSON.parseObject(ddoStr);
-                List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
-                ddoObj.replace("Attributes", formatedAttrList);
+                if(ddoObj.containsKey("Attributes")) {
+                    List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
+                    ddoObj.replace("Attributes", formatedAttrList);
+                }
             }
         } else {
             ddoObj = JSON.parseObject(ddoStr);
-            List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
-            ddoObj.replace("Attributes", formatedAttrList);
+            if(ddoObj.containsKey("Attributes")) {
+                List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
+                ddoObj.replace("Attributes", formatedAttrList);
+            }
         }
 
         Map<String, Object> rs = new HashMap<>();
