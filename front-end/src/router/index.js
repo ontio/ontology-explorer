@@ -10,6 +10,7 @@ import AddressDetailPage from '@/components/AddressDetail/AddressDetailPage'
 import TransactionPage from '@/components/TransactionListDetail/TransactionListPage'
 import TransactionDetailPage from '@/components/TransactionListDetail/TransactionDetailPage'
 import ClaimDetailPage from '@/components/claim/ClaimDetailPage'
+import ClaimVerifyPage from '@/components/claim/ClaimVerifyPage'
 
 Vue.use(Router)
 let routes = [
@@ -57,6 +58,11 @@ let routes = [
     path: '/claimverify/:cardId/:ownerOntId',
     name: 'ClaimDetai',
     component: ClaimDetailPage
+  },
+  {
+    path: '/claimverifyresult',
+    name: 'ClaimVerify',
+    component: ClaimVerifyPage
   },
 ]
 

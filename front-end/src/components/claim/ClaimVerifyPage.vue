@@ -8,7 +8,7 @@
       </div>
       <div class="row">
         <div class="col-lg-12">
-          <p  class="text-center font-size40 font-ExtraLight normal_color" >CLAIM DETAILS</p>
+          <p  class="text-center font-size40 font-ExtraLight normal_color" >CLAIM VERIFY RESULT</p>
         </div>
       </div>
       <div class="row">
@@ -16,80 +16,108 @@
           </div>
       </div>
 <div class="background-body" style="margin-top:60px;">
-  <div v-for="(claim,index) in getClaim.info" >
-    <div class="card-cert" v-if="claim.Context =='claim:employment_authentication'">
+  <div >
+    <div id="step1" class="card-cert">
         <div class="row card-row" >
             <div class="col-sm-2 col-xs-3 img_wrap">
-                <img src="../../assets/share_ec.png" class="">
-            </div>
-            <!-- <div class=" col-sm-1"></div> -->
-            <div class=" col-sm-7 col-xs-9 text_wrap">
                 <div class="card-title">
-                    <b>Employment certificate</b>
-                </div>
-                <div class="card-info">
-                    <dl class="card-info-list">
-                        <dt class="card-info-line">Name: {{claim.Content.Name}}</dt>
-                        <dt class="card-info-line">Company:Onchain</dt>
-                        <dt class="card-info-line">Position: {{claim.Content.JobTitle}}</dt>
-                    </dl>
+                    <b>STEP 1</b>
                 </div>
             </div>
-            <div class="col-sm-3 col-xs-12 img_wrap">
-                <img src="../../assets/share_onchain.png" class="card-cert-company-image" style="max-width:90px;">
-                <p class="card-cert-company-text">onchain</p>
-            </div>            
+            <div class=" col-sm-7 col-xs-9 text_wrap_verify">
+                <div class="card-title verify_text">
+                    <b>Use the Merkle proof to verify</b>
+                </div>
+            </div>
+            <div id="step1time" class="col-sm-3 col-xs-12 img_wrap">
+                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+            </div>  
+            <div id="step1result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
+                <div >
+                    <b>Height：8899</b>
+                </div>   
+                <div >
+                    <b class="font-size24 s_color">PASS</b>
+                </div> 
+            </div>          
         </div>
     </div>
-    <div class="card-github" v-if="claim.Context =='claim:github_authentication'">
-        <div class="row  card-row">
+    <div id="step2" class="card-cert" style="display:none">
+        <div class="row card-row" >
             <div class="col-sm-2 col-xs-3 img_wrap">
-                <img src="../../assets/share_gc.png" >
-            </div>
-            <div class=" col-sm-7 col-xs-9 text_wrap">
-                <div class="card-title important_color">
-                    <b>Github Claim</b>
-                </div>
-                <div class="card-info">
-                    <dl class="card-info-list">
-                        <dt class="card-info-line">Name: {{claim.Content.Alias}}</dt>
-                        <dt class="card-info-line">Email: {{claim.Content.Email}}</dt>
-                    </dl>
+                <div class="card-title">
+                    <b>STEP 2</b>
                 </div>
             </div>
-            <div class="col-sm-3 col-xs-12 img_wrap">
-                <img src="../../assets/share_TrustAlliance.png" class="card-cert-company-image"  style="max-width:90px;">
-                <p class="card-cert-company-text">Trust Alliance</p>
+            <div class=" col-sm-7 col-xs-9 text_wrap_verify">
+                <div class="card-title verify_text">
+                    <b>Verify the signature</b>
+                </div>
             </div>
+            <div id="step2time" class="col-sm-3 col-xs-12 img_wrap">
+                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+            </div>  
+            <div id="step2result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
+                <div >
+                    <b class="font-size24 s_color">PASS</b>
+                </div>  
+            </div>         
         </div>
     </div>
-    <div class="card-link" v-if="claim.Context =='claim:linkedin_authentication'">
-        <div class="row  card-row" >
+    <div id="step3" class="card-cert"  style="display:none">
+        <div class="row card-row" >
             <div class="col-sm-2 col-xs-3 img_wrap">
-                <img src="../../assets/share_lc.png" class="">
-            </div>
-            <div class=" col-sm-7 col-xs-9 text_wrap">
                 <div class="card-title">
-                    <b>Linkedin Claim</b>
-                </div>
-                <div class="card-info">
-                    <dl class="card-info-list">
-                        <dt class="card-info-line">Name: {{claim.Content.Name}}</dt>
-                        <dt class="card-info-line">Bio: {{claim.Content.Bio}}</dt>
-                    
-                    </dl>
+                    <b>STEP 3</b>
                 </div>
             </div>
-            <div class="col-sm-3 col-xs-12 img_wrap">
-                <img src="../../assets/share_TrustAlliance.png" class="card-cert-company-image"  style="max-width:90px;">
-                <p class="card-cert-company-text">Trust Alliance</p>
+            <div class=" col-sm-7 col-xs-9 text_wrap_verify">
+                <div class="card-title verify_text">
+                    <b>Verify whether it has expired</b>
+                </div>
             </div>
+            <div id="step3time" class="col-sm-3 col-xs-12 img_wrap">
+                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+            </div>  
+            <div id="step3result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
+                <div >
+                    <b>Not expired</b>
+                </div> 
+                <div >
+                    <b class="font-size24 s_color">PASS</b>
+                </div>   
+            </div>           
+        </div>
+    </div>
+    <div id="step4" class="card-cert" style="display:none">
+        <div class="row card-row" >
+            <div class="col-sm-2 col-xs-3 img_wrap">
+                <div class="card-title">
+                    <b>STEP 4</b>
+                </div>
+            </div>
+            <div class=" col-sm-7 col-xs-9 text_wrap_verify">
+                <div class="card-title verify_text">
+                    <b>Whether it has been revoked</b>
+                </div>
+            </div>
+            <div id="step4time" class="col-sm-3 col-xs-12 img_wrap">
+                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+            </div>
+            <div id="step4result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
+                <div >
+                    <b>Not revoked</b>
+                </div> 
+                <div >
+                    <b class="font-size24 s_color">PASS</b>
+                </div>   
+            </div>         
         </div>
     </div>
   </div>
 </div>
-<div class="text-center" style="margin-top:30px;">
-  <button v-if="verifyresult" class="veriy_btn1" @click="verifyClaim()">Verify Claim</button>
+<div id="return_key" class="text-center" style="margin-top:30px;display:none">
+  <button v-if="verifyresult" class="veriy_btn1" @click="toMain()">Return</button>
   <div v-else class="font-size32 important_color" >Verification passed</div>
 </div>
 
@@ -102,7 +130,7 @@
   import Helper from './../../helpers/helper.js'
 
   export default {
-      name: "claim-detail-page",
+      name: "claim-verify-page",
 
     data() {
       return {
@@ -114,6 +142,31 @@
     },
     created() {
       this.getClaimDetailPage()
+      this.setTimeoutstep2 = setTimeout(() => {
+          debugger
+        $('#step1time').css("display","none")
+        $('#step1result').css("display","block")
+        $('#step2').css("display","block")
+        }
+      ,2000)
+      this.setTimeoutstep3 = setTimeout(() => {
+        $('#step2time').css("display","none")
+        $('#step2result').css("display","block")
+        $('#step3').css("display","block")
+        }
+      ,4000)
+      this.setTimeoutstep4 = setTimeout(() => {
+        $('#step3time').css("display","none")
+        $('#step3result').css("display","block")
+        $('#step4').css("display","block")
+        }
+      ,6000)
+      this.setTimeoutstep4 = setTimeout(() => {
+        $('#step4time').css("display","none")
+        $('#step4result').css("display","block")
+        $('#return_key').css("display","block")
+        }
+      ,8000)
     },
     watch: {
       '$route': 'getgetClaimPage',
@@ -129,7 +182,10 @@
     },
     methods: {
       verifyClaim(){
-        this.$router.push({ name:'ClaimVerify'})
+        this.verifyresult = !this.verifyresult
+      },
+      toMain(){
+        this.$router.push({ name:'Home'})
       },
       getClaimDetailPage() {
         this.$store.dispatch('getClaim',this.$route.params).then(response => {
@@ -284,8 +340,9 @@
     .img_wrap{
         text-align: center;margin: auto;
     } 
-    .text_wrap{
-        padding:20px;border-left:1px solid #f0f0f0
+    .text_wrap_verify{
+        padding:20px;
+        border-left:1px solid #f0f0f0
     }
     .card-row{
         width:100% !important;
@@ -316,8 +373,8 @@
         color: white;
         font-size: 22px !important;
     }
-    .text_wrap{
-        padding:20px;border-left:0px solid #f0f0f0
+    .text_wrap_verify{
+        padding:10px 0px;border-left:0px solid #f0f0f0
     }
     .card-title{
         color:#32A4BE;
@@ -328,6 +385,9 @@
         text-align: center;
         margin-top: 1%;
         font-size: 22px;
+    }
+    .verify_text{
+        text-align: center;
     }
 }
 @media screen and (min-width:769px){
@@ -352,7 +412,7 @@
         color: white;
         font-size: 30px;
     }
-    .text_wrap{
+    .text_wrap_verify{
         padding:20px;border-left:1px solid #f0f0f0
     }
     .card-title{

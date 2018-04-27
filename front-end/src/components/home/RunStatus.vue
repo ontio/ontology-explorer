@@ -415,14 +415,20 @@
   label{
     font-size: 16px;
   }
+@media screen and (min-width:768px) {
   .mycanvas{
-    /* max-height:100px; */
     padding:0;
     position: relative;
-    /* left: -6px; */
-/*     top: 18px; */
     width: 900px !important
   }
+}
+@media screen and (max-width:768px) {
+  .mycanvas{
+    padding:0;
+    position: relative;
+    width: 100% !important
+  }
+}
   canvas{
     height: 100px;
   }
