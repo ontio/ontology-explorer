@@ -40,6 +40,12 @@ public class ConstantParam {
     public static final String ONTID_OPE_PREFIX = "ontId-";
 
     /**
+     * record transaction smart contract event description
+     *
+     */
+    public static final String RECORD_OPE = "record";
+
+    /**
      * claim
      */
     public static final String CLAIM = "claim";

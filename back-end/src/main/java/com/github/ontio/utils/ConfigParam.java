@@ -38,12 +38,23 @@ public class ConfigParam {
     @Value("${node.restful.url}")
     public String NODE_RESTFUL_URL;
 
-
     /**
      * ontology blockchain ontId smartcontract codehash
      */
     @Value("${ontId.codeHash}")
     public String ONTID_CODEHASH;
+
+    /**
+     * ontology blockchain ontId smartcontract codehash
+     */
+    @Value("${ontId.codeHash2}")
+    public String ONTID_CODEHASH2;
+
+    /**
+     * ontology blockchain record smartcontract codehash
+     */
+    @Value("${record.codeHash}")
+    public String RECORD_CODEHASH;
 
     /**
      * ontology blockchain ONT asset smartcontract codehash

@@ -18,20 +18,20 @@
 
 
 
-package com.github.ontio.task;
+package com.github.ontio.thread;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.utils.OntIdEventDesType;
 import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
 import com.github.ontio.model.OntId;
 import com.github.ontio.model.TransactionDetail;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
+import com.github.ontio.utils.OntIdEventDesType;
+import com.github.ontio.utils.TransactionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,28 +66,28 @@ public class TxnHandlerThread {
     private ConfigParam configParam;
 
     @Async
-    public Future<String> asyncHandleTxn(OntSdk sdk, Transaction txn, int blockHeight, int blockTime, int indexInBlock) throws Exception {
+    public Future<String> asyncHandleTxn(OntSdk sdkService, Transaction txn, int blockHeight, int blockTime, int indexInBlock) throws Exception {
 
         logger.info("{} run--------blockHeight:{}", Thread.currentThread().getName(), blockHeight);
 
-        handleOneTxn(sdk, txn, blockHeight, blockTime, indexInBlock);
+        handleOneTxn(sdkService, txn, blockHeight, blockTime, indexInBlock);
 
         logger.info("{} end-------blockHeight:{}", Thread.currentThread().getName(), blockHeight);
         return new AsyncResult<String>("success");
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void handleOneTxn(OntSdk sdk, Transaction txn, int blockHeight, int blockTime, int indexInBlock) throws Exception {
+    public void handleOneTxn(OntSdk sdkService, Transaction txn, int blockHeight, int blockTime, int indexInBlock) throws Exception {
 
         int txnType = (txn.txType.value() & 0xFF);
         String txnHash = txn.hash().toString();
         logger.info("####txnType:{}, txnHash:{}####", txnType, txnHash);
 
         //get rid of BookKeeperTransaction(txnType=0)
-        if (txnType != 0) {
+        if (txnType != TransactionType.BOOKKEEPER.type()) {
             try {
                 int indexInTxn = 1;
-                List eventObjList = (List) sdk.getConnectMgr().getSmartCodeEvent(txnHash);
+                List eventObjList = (List) sdkService.getConnectMgr().getSmartCodeEvent(txnHash);
 
                 if (eventObjList != null) {
 
@@ -95,23 +95,31 @@ public class TxnHandlerThread {
                             eventObjList) {
                         JSONObject eventObj = (JSONObject) temp;
 
-                        String codeHash = Helper.toHexString(format((List) eventObj.get("CodeAddress")));
-                        logger.info("####codeHash:{}####", codeHash);
+                        logger.info("eventObj:{}", eventObj.toString());
+
+                        String contractAddress = (String) eventObj.get("ContractAddress");
+                        logger.info("####ContractAddress:{}####", contractAddress);
                         //transfer transaction
-                        if (configParam.ASSET_ONG_CODEHASH.equals(codeHash) || configParam.ASSET_ONT_CODEHASH.equals(codeHash)) {
-                            handleTransferTxn(eventObj, txn, blockHeight, blockTime, indexInBlock, indexInTxn, codeHash);
-                        } else if (configParam.ONTID_CODEHASH.equals(codeHash)) {
+                        if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) || configParam.ASSET_ONT_CODEHASH.equals(contractAddress)) {
+                            handleTransferTxn(eventObj, txn, blockHeight, blockTime, indexInBlock, indexInTxn, contractAddress);
+                        } else if (configParam.ONTID_CODEHASH.equals(contractAddress) || configParam.ONTID_CODEHASH2.equals(contractAddress)) {
+                            //目前测试环境有两个ontid codehash，兼容同步
                             //ontId operation transaction
                             handleOntIdTxn(eventObj, txn, blockHeight, blockTime, indexInBlock, indexInTxn);
+                        } else if (configParam.RECORD_CODEHASH.equals(contractAddress)){
+                            //record transaction
+                            insertTxnBasicInfo(txn, blockHeight, blockTime, indexInTxn, indexInBlock, 1, ConstantParam.RECORD_OPE);
                         } else {
                             insertTxnBasicInfo(txn, blockHeight, blockTime, indexInTxn, indexInBlock, 1, "");
                         }
 
                         indexInTxn++;
                     }
-                } else if (txnType == 208) {
+                } else if (txnType == TransactionType.DEPLOYCODE.type()) {
+                    //deploy smart contract transaction
                     insertTxnBasicInfo(txn, blockHeight, blockTime, indexInTxn, indexInBlock, 1, "");
                 } else {
+                    //invoke smart contract transaction
                     insertTxnBasicInfo(txn, blockHeight, blockTime, indexInTxn, indexInBlock, 2, "");
                 }
             } catch (Exception e) {
@@ -134,13 +142,13 @@ public class TxnHandlerThread {
      * @param byteList
      * @return
      */
-    private byte[] format(List byteList) {
+/*    private byte[] format(List byteList) {
         byte[] bys = new byte[byteList.toArray().length];
         for (int i = 0; i < bys.length; i++) {
             bys[i] = (byte) ((int) byteList.get(i) & 0xff);
         }
         return bys;
-    }
+    }*/
 
     /**
      * insert transfer transaction
@@ -164,14 +172,18 @@ public class TxnHandlerThread {
             assetName = "ong";
         }
 
-        List statesList = (List) eventObj.getJSONArray("States");
-        String fromAddress = Address.parse(Helper.toHexString(format((List) statesList.get(1)))).toBase58();
+        List stateList = (List) eventObj.getJSONArray("States");
+//        String fromAddress = Address.parse(Helper.toHexString(format((List) statesList.get(1)))).toBase58();
+        String action = (String) stateList.get(0);
+        logger.info("####action:{}####", action);
+
+        String fromAddress = (String) stateList.get(1);
         logger.info("####fromAddress:{}####", fromAddress);
 
-        String toAddress = Address.parse(Helper.toHexString(format((List) statesList.get(2)))).toBase58();
+        String toAddress = (String) stateList.get(2);
         logger.info("####toAddress:{}####", toAddress);
 
-        Long amountLong = ((Integer) statesList.get(3)).longValue();
+        Long amountLong = ((Integer) stateList.get(3)).longValue();
         BigDecimal amount = new BigDecimal(amountLong);
         logger.info("####amount:{}####", String.valueOf(amountLong));
 
@@ -179,7 +191,7 @@ public class TxnHandlerThread {
         transactionDetailDO.setFromaddress(fromAddress);
         transactionDetailDO.setToaddress(toAddress);
         transactionDetailDO.setAssetname(assetName);
-        transactionDetailDO.setDescription((String) statesList.get(0));
+        transactionDetailDO.setDescription(action);
         transactionDetailDO.setFee(0L);
         transactionDetailDO.setHeight(blockHeight);
         transactionDetailDO.setBlockindex(indexInBlock);
@@ -209,14 +221,14 @@ public class TxnHandlerThread {
 
         StringBuilder descriptionSb = new StringBuilder();
 
-        List statesList = (List) eventObj.getJSONArray("States");
-        List list = (List) statesList.get(0);
-        String action = new String(Helper.hexToBytes((String) list.get(0)));
+        List stateList = (List) eventObj.getJSONArray("States");
+
+        String action = new String(Helper.hexToBytes((String) stateList.get(0)));
         logger.info("####action:{}####", action);
-        String ontId = new String(Helper.hexToBytes((String) list.get(2)));
+        String ontId = new String(Helper.hexToBytes((String) stateList.get(2)));
         logger.info("####ontId:{}####", ontId);
 
-        descriptionSb = formatOntIdOperation(action, descriptionSb, list);
+        descriptionSb = formatOntIdOperation(action, descriptionSb, stateList);
 
         OntId ontIdDO = new OntId();
         ontIdDO.setHeight(blockHeight);
@@ -239,14 +251,14 @@ public class TxnHandlerThread {
      * @param blockTime
      * @param txnIndex
      * @param indexInBlock
-     * @param confirmFlag  1:success 2:failed
+     * @param confirmFlag  1:success 2:fail
      * @param action
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
     public void insertTxnBasicInfo(Transaction txn, int blockHeight, int blockTime, int txnIndex, int indexInBlock, int confirmFlag, String action) throws Exception {
 
-        logger.info("insertTxnBasicInfo....");
+        logger.info("{} run....", com.github.ontio.utils.Helper.currentMethod());
 
         TransactionDetail transactionDetailDO = new TransactionDetail();
         transactionDetailDO.setFromaddress("");
@@ -262,6 +274,7 @@ public class TxnHandlerThread {
         transactionDetailDO.setAmount(new BigDecimal("0"));
         transactionDetailDO.setTxnindex(txnIndex);
         transactionDetailDO.setConfirmflag(confirmFlag);
+
         transactionDetailMapper.insertSelective(transactionDetailDO);
     }
 
@@ -270,19 +283,19 @@ public class TxnHandlerThread {
      *
      * @param action
      * @param descriptionSb
-     * @param list
+     * @param stateList
      * @return
      */
-    private StringBuilder formatOntIdOperation(String action, StringBuilder descriptionSb, List list) throws Exception {
+    private StringBuilder formatOntIdOperation(String action, StringBuilder descriptionSb, List stateList) throws Exception {
 
         descriptionSb.append(action);
         descriptionSb.append(SEPARATOR);
 
         if (OntIdEventDesType.REGISTERONTID.value().equals(action)) {
 
-            String op = new String(Helper.hexToBytes((String) list.get(1)));
+            String op = new String(Helper.hexToBytes((String) stateList.get(1)));
             logger.info("####op:{}####", op);
-            String ontId = new String(Helper.hexToBytes((String) list.get(2)));
+            String ontId = new String(Helper.hexToBytes((String) stateList.get(2)));
             logger.info("####ontId:{}####", ontId);
 
             descriptionSb.append(op);
@@ -291,11 +304,11 @@ public class TxnHandlerThread {
 
         } else if (OntIdEventDesType.PUBLICKEYOPE.value().equals(action)) {
 
-            String op = new String(Helper.hexToBytes((String) list.get(1)));
+            String op = new String(Helper.hexToBytes((String) stateList.get(1)));
             logger.info("####op:{}####", op);
-            String ontId = new String(Helper.hexToBytes((String) list.get(2)));
+            String ontId = new String(Helper.hexToBytes((String) stateList.get(2)));
             logger.info("####ontId:{}####", ontId);
-            String publicKey = Helper.toHexString(((String) list.get(3)).getBytes());
+            String publicKey = Helper.toHexString(((String) stateList.get(3)).getBytes());
             logger.info("####publicKey:{}####", publicKey);
 
             descriptionSb.append(op);
@@ -306,11 +319,11 @@ public class TxnHandlerThread {
 
         } else if (OntIdEventDesType.ATTRIBUTEOPE.value().equals(action)) {
 
-            String op = new String(Helper.hexToBytes((String) list.get(1)));
+            String op = new String(Helper.hexToBytes((String) stateList.get(1)));
             logger.info("####op:{}####", op);
-            String ontId = new String(Helper.hexToBytes((String) list.get(2)));
+            String ontId = new String(Helper.hexToBytes((String) stateList.get(2)));
             logger.info("####ontId:{}####", ontId);
-            String attrName = new String(Helper.hexToBytes((String) list.get(3)));
+            String attrName = new String(Helper.hexToBytes((String) stateList.get(3)));
             logger.info("####attrName:{}####", attrName);
 
             descriptionSb.append(op);

@@ -19,7 +19,7 @@
 
 package com.github.ontio;
 
-import com.github.ontio.task.BlockHandleTask;
+import com.github.ontio.thread.BlockHandlerThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,8 +39,8 @@ public class TaskWare {
     @PostConstruct
     public void init() {
 
-        BlockHandleTask blockHandleTask = applicationContextProvider.getBean("BlockHandleTask", BlockHandleTask.class);
-        blockHandleTask.start();
+        BlockHandlerThread blockHandlerThread = applicationContextProvider.getBean("BlockHandlerThread", BlockHandlerThread.class);
+        blockHandlerThread.start();
 
     }
 

@@ -25,7 +25,7 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.model.Current;
-import com.github.ontio.task.TxnHandlerThread;
+import com.github.ontio.thread.*;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ import java.util.concurrent.Future;
  * @date 2018/3/14
  */
 @Service
-public class BlockManagementService {
+public class BlockHandleService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -59,25 +59,25 @@ public class BlockManagementService {
     /**
      * handle the block and the transactions in this block
      *
-     * @param sdk
+     * @param sdkService
      * @param block
      * @param blockBookKeeper
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleOneBlock(OntSdk sdk, Block block, String blockBookKeeper) throws Exception {
+    public void handleOneBlock(OntSdk sdkService, Block block, String blockBookKeeper) throws Exception {
 
         int blockHeight = block.height;
         int blockTime = block.timestamp;
         int txnNum = block.transactions.length;
-        logger.info("{} run-------blockHeight:{},txnSum:{}", CLASS_NAME, blockHeight, txnNum);
+        logger.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
 
         ConstantParam.INIT_AMOUNT = 0;
 
         //asynchronize handle transaction
         for (int i = 0; i < txnNum; i++) {
             Transaction txn = block.transactions[i];
-            Future future = txnHandlerThread.asyncHandleTxn(sdk, txn, blockHeight, blockTime, i);
+            Future future = txnHandlerThread.asyncHandleTxn(sdkService, txn, blockHeight, blockTime, i);
             future.get();
         }
 
@@ -98,7 +98,7 @@ public class BlockManagementService {
         //get rid of BookKeeperTransaction
         updateCurrent(blockHeight, txnCount + txnNum - 1);
 
-        logger.info("{} end-------height:{},txnSum:{}", CLASS_NAME, blockHeight, txnNum);
+        logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }
 
 

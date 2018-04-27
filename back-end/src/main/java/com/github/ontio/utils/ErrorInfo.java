@@ -68,6 +68,19 @@ public enum ErrorInfo {
     EXPIRES(61007L, "FAIL, expires."),
 
     /**
+     * revoked
+     */
+    REVOKED(61008L,"FAIL, revoked."),
+
+    /**
+     * serialized error
+     */
+    SERIALIZE_ERROR(61009L,"FAIL, serialized error."),
+
+
+
+
+    /**
      * verify failed
      */
     VERIFY_FAILED(62001L, "FAIL, verify fail."),
@@ -91,6 +104,9 @@ public enum ErrorInfo {
      * error occur when operate db
      */
     DB_ERROR(62005L, "FAIL, db operate fail."),
+
+
+
 
     /**
      * inner error

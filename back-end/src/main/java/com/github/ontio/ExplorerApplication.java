@@ -53,14 +53,14 @@ public class ExplorerApplication {
 		executor.setMaxPoolSize(30);
 		executor.setCorePoolSize(10);
 		executor.setQueueCapacity(8);
-		executor.setThreadNamePrefix("txnTask--");
+		executor.setThreadNamePrefix("TxnHandlerThread--");
 		executor.setKeepAliveSeconds(60);
 
 		// Rejection policies
 		executor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
 			@Override
 			public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-				logger.error("###########reject task....");
+				logger.error("###########reject thread....");
 				// .....
 			}
 		});
