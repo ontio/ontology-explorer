@@ -41,6 +41,9 @@ body{
 .font-size24{
   font-size: 24px;
 }
+.font-size28{
+  font-size: 28px;
+}
 .normal_color{
   color: #595757;
 }
@@ -535,4 +538,20 @@ body{
   background: #32A4BE;
   color:#FFFFFF;
   outline: 0px auto -webkit-focus-ring-color !important;
+}
+@media screen and (max-width:768px){
+  .mobile-display{
+      display: block !important
+  }
+  .pc-display{
+      display: none !important
+  }
+}
+@media screen and (min-width:768px){
+  .mobile-display{
+      display: none !important
+  }
+  .pc-display{
+      display: block !important
+  }
 }
