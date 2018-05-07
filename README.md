@@ -189,4 +189,8 @@ Input the ip and port into your browser according to your Nginx server configura
 
 
 
+### License
+
+The Ontology library (i.e. all code outside of the cmd directory) is licensed under the GNU Lesser General Public License v3.0, also included in our repository in the License file.
+
 
