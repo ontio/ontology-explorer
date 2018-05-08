@@ -100,9 +100,9 @@ spring.datasource.username = root
 spring.datasource.password = 1111
 
 ################blockchain param##########
-//the master node restful api url
+//the master ontology node restful api url
 node.restful.url = http://127.0.0.1:20555
-//the amount of bloickchain node
+//the amount of ontology blockchain nodes
 node.amount=4
 //the node restful api url
 node.restful.url_0=http://127.0.0.1:20555
@@ -116,12 +116,17 @@ interruptTime.max=2
 //the interval for block generate
 interval=6000
 
+//record smart contract codehash（hexadecimal format）
+record.codeHash = 80f6bff7645a84298a1a52aa3745f84dba6615cf
+
 //ontId smart contract codehash（hexadecimal format）
-ontId.codeHash = 10e732fc22c24c466f47c7688569cc6e6d6a6f1a
+ontId.codeHash2 = 8055b362904715fd84536e754868f4c8d27ca3f6
+ontId.codeHash = 80b0cc71bda8653599c5666cae084bff587e2de1
+
 //ONT asset smart contract codehash（hexadecimal format）
-asset.ont.codeHash = aa00000000000000000000000000000000000011
+asset.ont.codeHash = ff00000000000000000000000000000000000001
 //ONG asset smart contract codehash(hexadecimal format)
-asset.ong.codeHash = bb00000000000000000000000000000000000012
+asset.ong.codeHash = ff00000000000000000000000000000000000002
 
 ```
 
