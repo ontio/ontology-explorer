@@ -7,7 +7,7 @@
             <img  src="/static/img/ontlogo.png" class="index-logo">
         </div>
         <div class="index-net-warpper col-lg-2 testNet" >
-            <a class="" >TestNet</a>
+            <a class="" >Polaris</a>
         </div>
       </div>
         <search-input></search-input>

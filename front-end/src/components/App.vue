@@ -4,16 +4,19 @@
     <!-- <div class="container-div"></div> -->
 
     <router-view/>
+    <bottom></bottom>
   </div>
 </template>
 
 <script>
   import TopNav from './common/TopNav'
+  import bottom from './common/bottom'
 
   export default {
     name: 'App',
     components: {
-      TopNav
+      TopNav,
+      bottom
     }
   }
 </script>

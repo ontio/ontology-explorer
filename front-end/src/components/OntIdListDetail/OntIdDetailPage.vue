@@ -13,10 +13,10 @@
       </div>
       <div class="row">
         <div class="col-lg-12">
-          <p class="font-size24 font-blod important_color">{{ $t('ontIdDetail.name')}}<span class="font-blod font-size14 important_color "> {{Ddo.OntId}}</span></p>
+          <p class="font-size24 font-blod important_color">{{ $t('ontIdDetail.name')}}<span class="font-blod font-size14 important_color "> {{$route.params.ontid}}</span></p>
         </div>
       </div>
-      <table v-if="Ddo.Owners.length >0" class="table table-hover">
+      <table v-if="Ddo.Owners" class="table table-hover">
         <thead>
         <tr>
           <td class="td11 font-size24 font-blod normal_color">
@@ -28,12 +28,14 @@
         <tr v-for="owner in Ddo.Owners">
           <td class="td11">
             <p class="font-size14 font-Regular normal_color">Type: {{owner.Type}}</p>
+            <p class="font-size14 font-Regular normal_color">Curve: {{owner.Curve}}</p>
             <p class="font-size14 font-Regular normal_color">Value: {{owner.Value}}</p>
+            <p class="font-size14 font-Regular normal_color">PublicKeyId: {{owner.PublicKeyId}}</p>
           </td>
         </tr>
         </tbody>
       </table>
-      <table class="table table-hover">
+      <table v-if="Ddo.Attributes" class="table table-hover">
         <thead>
         <tr>
           <td class="td11 font-size24 font-blod normal_color">
@@ -43,16 +45,19 @@
         </thead>
         <tbody>
         <tr v-for="claim in Ddo.Attributes">
-          <td class="td11">
+          <td class="td11" v-if="claim.Claim">
             <p class="font-size14 font-Regular normal_color">Claim Hash: {{claim.Claim.ClaimId}}</p>
             <p class="font-size14 font-Regular normal_color">Claim Context: {{claim.Claim.ClaimContext}}</p>
             <p class="font-size14 font-Regular normal_color">Context Desc: {{claim.Claim.ContextDesc}}</p>
             <p class="font-size14 font-Regular normal_color " @click="toOntIdDetailPage(claim.Claim.IssuerOntId)">Issuer: <span class="important_color click_able">{{claim.Claim.IssuerOntId}}</span></p>
           </td>
+          <td class="td11" v-if="claim.SelfDefined">
+            <p class="font-size14 font-Regular normal_color">Claim SelfDefined: {{claim.SelfDefined}}</p>
+          </td>
         </tr>
         </tbody>
       </table>
-      <table v-if="OntIdDetail.info.TxnTotal != 0" class="table ">
+      <table v-if="TxnTotal" class="table ">
         <thead>
         <tr style="border-bottom:0px;">
           <td class="font-size24 font-blod normal_color">
@@ -77,7 +82,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="tx in OntIdDetail.info.TxnList">
+        <tr v-for="tx in TxnList">
           <td class="font-size14 font-Regular f_color pointer click_able" @click="toTransactionDetailPage(tx.TxnHash)">
             {{tx.TxnHash.substr(0,30)}}...
           </td>
@@ -108,7 +113,9 @@
     data() {
       return {
         Ddo:{},
-        claimflag:true
+        claimflag:true,
+        TxnList:{},
+        TxnTotal:''
 
       }
     },
@@ -119,11 +126,13 @@
       '$route': 'getOntIdDetailPage',
       'OntIdDetail.info':function(){
           this.Ddo = this.OntIdDetail.info.Ddo
-          if(this.Ddo.Attributes[0] == undefined){
+          this.TxnList = this.OntIdDetail.info.TxnList
+          this.TxnTotal = this.OntIdDetail.info.TxnTotal
+/*           if(this.Ddo.Attributes[0] == undefined){
             this.claimflag = false;
           }else{
             this.claimflag = true;
-          }
+          } */
       }
 
     },
