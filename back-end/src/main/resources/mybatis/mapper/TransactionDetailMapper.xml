@@ -204,21 +204,35 @@
   <select id="selectTxnHashByAddressInfo" resultType="java.lang.String" parameterType="java.util.Map">
     select distinct(txnhash) as TxnHash
     from tbl_ont_txn_detail
-    where toaddress = #{Address} or fromaddress = #{Address}
+    where (
+    toaddress = #{Address}
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    ) or (
+    fromaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    )
     order by height DESC
     limit #{Start}, #{PageSize}
   </select>
 
     <select id="selectTxnAmountByAddressInfo" resultType="java.lang.Integer" parameterType="java.util.Map">
-        select count(distinct(txnhash))
-        from tbl_ont_txn_detail
-        where toaddress = #{Address} or fromaddress = #{Address}
-        <if test="AssetName != '' and AssetName != null">
-            and assetname = #{AssetName}
-        </if>
+      select count(distinct(txnhash))
+      from tbl_ont_txn_detail
+      where (
+      toaddress = #{Address}
+      <if test="AssetName != '' and AssetName != null">
+        and assetname = #{AssetName}
+      </if>
+      ) or (
+      fromaddress = #{Address}
+      <if test="AssetName != '' and AssetName != null">
+        and assetname = #{AssetName}
+      </if>
+      )
     </select>
 
 
