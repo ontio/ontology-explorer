@@ -157,7 +157,7 @@
              switch ($event.substr(0,12)) {
               case "register Ont":
                 return "Register ONT ID"
-              case "add publicke":
+              case "add publicKe":
                 return "Add publickey"
               case "delete publi":
                 return "Delete publickey"
