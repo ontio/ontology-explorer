@@ -196,6 +196,8 @@ public class OntIdServiceImpl implements IOntIdService {
                     claimObj.put("ContextDesc", ClaimContextType.LINKEDIN_CLAIM.desc());
                 } else if (ClaimContextType.EMPLOYMENT_CLAIM.context().equals(claimContext)) {
                     claimObj.put("ContextDesc", ClaimContextType.EMPLOYMENT_CLAIM.desc());
+                } else if (ClaimContextType.CFCA_CLAIM.context().equals(claimContext)) {
+                    claimObj.put("ContextDesc", ClaimContextType.CFCA_CLAIM.desc());
                 }
                 Map<String, Object> formatedAttrMap = new HashMap<>();
                 formatedAttrMap.put("Claim", claimObj);

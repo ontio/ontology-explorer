@@ -36,7 +36,9 @@ public enum ClaimContextType {
 
     LINKEDIN_CLAIM("claim:linkedin_authentication", "linkedin authentication claim"),
 
-    EMPLOYMENT_CLAIM("claim:employment_authentication", "employment authentication claim");
+    EMPLOYMENT_CLAIM("claim:employment_authentication", "employment authentication claim"),
+
+    CFCA_CLAIM("claim:cfca_authentication", "cfca real-name authentication claim");
 
     private String desc;
 
