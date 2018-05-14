@@ -172,7 +172,7 @@ public class TxnHandlerThread {
             assetName = "ong";
         }
 
-        List stateList = (List) eventObj.getJSONArray("States");
+        List<Object> stateList = (List) eventObj.getJSONArray("States");
 //        String fromAddress = Address.parse(Helper.toHexString(format((List) statesList.get(1)))).toBase58();
         String action = (String) stateList.get(0);
         logger.info("####action:{}####", action);
@@ -183,9 +183,9 @@ public class TxnHandlerThread {
         String toAddress = (String) stateList.get(2);
         logger.info("####toAddress:{}####", toAddress);
 
-        Long amountLong = ((Integer) stateList.get(3)).longValue();
-        BigDecimal amount = new BigDecimal(amountLong);
-        logger.info("####amount:{}####", String.valueOf(amountLong));
+        String amountString = ((Object)stateList.get(3)).toString();
+        BigDecimal amount = new BigDecimal(amountString);
+        logger.info("####amount:{}####", amountString);
 
         TransactionDetail transactionDetailDO = new TransactionDetail();
         transactionDetailDO.setFromaddress(fromAddress);
