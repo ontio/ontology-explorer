@@ -120,8 +120,7 @@ interval=6000
 record.codeHash = 80f6bff7645a84298a1a52aa3745f84dba6615cf
 
 //ontId smart contract codehash（hexadecimal format）
-ontId.codeHash2 = 8055b362904715fd84536e754868f4c8d27ca3f6
-ontId.codeHash = 80b0cc71bda8653599c5666cae084bff587e2de1
+ontId.codeHash = ff00000000000000000000000000000000000003
 
 //ONT asset smart contract codehash（hexadecimal format）
 asset.ont.codeHash = ff00000000000000000000000000000000000001
