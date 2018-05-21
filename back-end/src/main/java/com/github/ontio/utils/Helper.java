@@ -115,6 +115,10 @@ public class Helper {
             }else {
                 descriptionSb.append(desArray[3]);
             }
+        }else if(OntIdEventDesType.RECOVERYOPE.value().equals(action)) {
+            descriptionSb.append(desArray[1]);
+            descriptionSb.append(" recovery:");
+            descriptionSb.append(desArray[3]);
         }
 
         return descriptionSb.toString();

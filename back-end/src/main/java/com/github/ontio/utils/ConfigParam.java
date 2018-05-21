@@ -44,11 +44,6 @@ public class ConfigParam {
     @Value("${ontId.codeHash}")
     public String ONTID_CODEHASH;
 
-    /**
-     * ontology blockchain ontId smartcontract codehash
-     */
-    @Value("${ontId.codeHash2}")
-    public String ONTID_CODEHASH2;
 
     /**
      * ontology blockchain record smartcontract codehash

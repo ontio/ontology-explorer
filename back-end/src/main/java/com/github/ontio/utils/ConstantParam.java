@@ -57,4 +57,7 @@ public class ConstantParam {
     public static int INIT_AMOUNT = 0;
 
 
+    public static final String ADD = "add";
+
+
 }

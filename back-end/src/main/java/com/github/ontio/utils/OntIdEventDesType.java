@@ -38,6 +38,11 @@ public enum OntIdEventDesType {
     PUBLICKEYOPE("PublicKey"),
 
     /**
+     * PublicKey operation
+     */
+    RECOVERYOPE("Recovery"),
+
+    /**
      * Attribute operation
      */
     ATTRIBUTEOPE("Attribute");

@@ -77,7 +77,7 @@ public class BlockHandleService {
         //asynchronize handle transaction
         for (int i = 0; i < txnNum; i++) {
             Transaction txn = block.transactions[i];
-            Future future = txnHandlerThread.asyncHandleTxn(sdkService, txn, blockHeight, blockTime, i);
+            Future future = txnHandlerThread.asyncHandleTxn(sdkService, txn, blockHeight, blockTime, i +1);
             future.get();
         }
 
@@ -95,8 +95,7 @@ public class BlockHandleService {
         }
         insertBlock(block, blockBookKeeper);
         int txnCount = currentMapper.selectTxnCount();
-        //get rid of BookKeeperTransaction
-        updateCurrent(blockHeight, txnCount + txnNum - 1);
+        updateCurrent(blockHeight, txnCount + txnNum);
 
         logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }

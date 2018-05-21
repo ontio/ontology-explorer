@@ -20,6 +20,7 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.paramBean.Result;
@@ -54,11 +55,11 @@ public class OntIdServiceImpl implements IOntIdService {
     @Autowired
     private ConfigParam configParam;
 
-    private OntologySDKService sdk;
+    private OntologySDKService sdkService;
 
     private synchronized void initSDK() {
-        if (sdk == null) {
-            sdk = OntologySDKService.getInstance(configParam);
+        if (sdkService == null) {
+            sdkService = OntologySDKService.getInstance(configParam);
         }
     }
 
@@ -118,28 +119,13 @@ public class OntIdServiceImpl implements IOntIdService {
         }
 
         initSDK();
-        String ddoStr = sdk.getDDO(ontId, configParam.ONTID_CODEHASH);
-        logger.info("{} query ddo info:{}", configParam.ONTID_CODEHASH, ddoStr);
+        String ddoStr = sdkService.getDDO(ontId);
+        logger.info("{} query ddo info:{}", ddoStr);
 
-        JSONObject ddoObj = new JSONObject();
-        //目前测试环境有两个ontid codehash，兼容两种ddo查询
-        if (Helper.isEmptyOrNull(ddoStr)) {
-            ddoStr = sdk.getDDO(ontId, configParam.ONTID_CODEHASH2);
-            logger.info("{} query ddo info:{}", configParam.ONTID_CODEHASH2, ddoStr);
-
-            if (!Helper.isEmptyOrNull(ddoStr)) {
-                ddoObj = JSON.parseObject(ddoStr);
-                if(ddoObj.containsKey("Attributes")) {
-                    List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
-                    ddoObj.replace("Attributes", formatedAttrList);
-                }
-            }
-        } else {
-            ddoObj = JSON.parseObject(ddoStr);
-            if(ddoObj.containsKey("Attributes")) {
-                List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
-                ddoObj.replace("Attributes", formatedAttrList);
-            }
+        JSONObject ddoObj = JSON.parseObject(ddoStr);
+        if (ddoObj.containsKey("Attributes")) {
+            List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
+            ddoObj.replace("Attributes", formatedAttrList);
         }
 
         Map<String, Object> rs = new HashMap<>();
@@ -160,32 +146,26 @@ public class OntIdServiceImpl implements IOntIdService {
 
         List<Object> formatedAttrList = new ArrayList<>();
 
-        Map<String, Object> attrMap = (Map<String, Object>) ddoObj.get("Attributes");
-        for (Map.Entry<String, Object> entry : attrMap.entrySet()) {
-            String key = entry.getKey();
-            logger.info("Attribute Key:{}", key);
-            JSONObject valueObj = (JSONObject) entry.getValue();
-            logger.info("Attribute Value:{}", valueObj.toString());
-            String type = valueObj.getString("Type");
+        JSONArray attrList = ddoObj.getJSONArray("Attributes");
+
+        for (Object obj:
+             attrList) {
+            JSONObject attrObj = (JSONObject)obj;
+            String attrKey = attrObj.getString("Key");
             //standard claim attribute
-            if (key.startsWith(ConstantParam.CLAIM)) {
-/*                "Attributes": {
-                    "claim014Gb2f56d106dac92e891b6f7fc4d9546fdf2eb94a364208fa65a9996b03ba0": {
-                        "Type": "JSON",
-                        "Value": "{\"Context\":\"claim:employment_authentication\",\"Issuer\":\"did:ont:TKhyXw8o6Em5GjmJwiPT1oNXsy4p6fYZPB\"}"
-                    }
-                }*/
+            if (attrKey.startsWith(ConstantParam.CLAIM)) {
+
                 logger.info("Attributes contains claim");
-                String realValue = valueObj.getString("Value");
-                logger.info("realValue:{}", realValue);
-                JSONObject realValueObj = JSON.parseObject(realValue);
-                String claimContext = realValueObj.getString("Context");
-                String issuer = realValueObj.getString("Issuer");
+                String attrValue = attrObj.getString("Value");
+                logger.info("attrValue:{}", attrValue);
+                JSONObject attrValueObj = JSON.parseObject(attrValue);
+                String claimContext = attrValueObj.getString("Context");
+                String issuer = attrValueObj.getString("Issuer");
 
                 JSONObject claimObj = new JSONObject();
                 claimObj.put("IssuerOntId", issuer);
                 claimObj.put("ClaimContext", claimContext);
-                claimObj.put("ClaimId", key.substring(ConstantParam.CLAIM.length(), key.length()));
+                claimObj.put("ClaimId", attrKey.substring(ConstantParam.CLAIM.length(), attrKey.length()));
                 if (ClaimContextType.GITHUB_CLAIM.context().equals(claimContext)) {
                     claimObj.put("ContextDesc", ClaimContextType.GITHUB_CLAIM.desc());
                 } else if (ClaimContextType.TWITTER_CLAIM.context().equals(claimContext)) {
@@ -202,14 +182,15 @@ public class OntIdServiceImpl implements IOntIdService {
                 Map<String, Object> formatedAttrMap = new HashMap<>();
                 formatedAttrMap.put("Claim", claimObj);
                 formatedAttrList.add(formatedAttrMap);
-            }else {
+            } else {
                 //self-defined attribute
                 Map<String, Object> unFormatedMap = new HashMap<>();
-                unFormatedMap.put(key, valueObj.getString("Value"));
+                unFormatedMap.put(attrKey, attrObj.getString("Value"));
                 Map<String, Object> selfDefined = new HashMap<>();
-                selfDefined.put("SelfDefined",unFormatedMap);
+                selfDefined.put("SelfDefined", unFormatedMap);
                 formatedAttrList.add(selfDefined);
             }
+
         }
 
         return formatedAttrList;

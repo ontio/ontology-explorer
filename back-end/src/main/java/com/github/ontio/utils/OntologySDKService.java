@@ -21,6 +21,7 @@ package com.github.ontio.utils;
 
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.sdk.exception.SDKException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +57,11 @@ public class OntologySDKService {
     }
 
 
-    public String getDDO(String ontId, String ontIdCodeHash) {
-        OntSdk ontSdk = getOntSdkByCodeHash(ontIdCodeHash);
+    public String getDDO(String ontId) {
+        OntSdk ontSdk = getOntSdk4OntId();
         String ddoStr = "";
         try {
-            ddoStr = ontSdk.getOntIdTx().sendGetDDO(ontId);
+            ddoStr = ontSdk.nativevm().ontId().sendGetDDO(ontId);
         } catch (Exception e) {
             logger.error("get ddo error...", e);
             e.printStackTrace();
@@ -113,16 +114,19 @@ public class OntologySDKService {
     private OntSdk getOntSdk() {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.NODE_RESTFUL_URL);
-       // wm.setCodeAddress(configParam.ONTID_CODEHASH);
-        //wm.getOntIdTx().setCodeAddress(configParam.ONTID_CODEHASH);
         return wm;
     }
 
 
-    private OntSdk getOntSdkByCodeHash(String ontIdCodeHash) {
+    private OntSdk getOntSdk4OntId() {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.NODE_RESTFUL_URL);
-        wm.getOntIdTx().setCodeAddress(ontIdCodeHash);
+        try {
+            wm.nativevm().ontId().setCodeAddress(configParam.ONTID_CODEHASH);
+            wm.DEFAULT_GAS_LIMIT = 30000;
+        } catch (SDKException e) {
+            e.printStackTrace();
+        }
         return wm;
     }
 
