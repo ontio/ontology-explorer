@@ -19,6 +19,7 @@
 
 package com.github.ontio.thread;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
@@ -28,6 +29,7 @@ import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
 import com.github.ontio.model.OntId;
 import com.github.ontio.model.TransactionDetail;
+import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.OntIdEventDesType;
@@ -131,6 +133,12 @@ public class TxnHandlerThread {
                 }
             }
 
+        } catch (RestfulException e) {
+            logger.error("RestfulException...",e);
+            JSONObject eObj = JSON.parseObject(e.getMessage());
+            if(43001 == eObj.getLong("Error")) {
+                insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 1, "", 0);
+            }
         } catch (Exception e) {
             logger.error("handleOneTxn error...", e);
             e.printStackTrace();
