@@ -17,12 +17,11 @@
  */
 
 
-
 package com.github.ontio.thread;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.core.block.Block;
 import com.github.ontio.asyncService.BlockHandleService;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.utils.ConfigParam;
 import org.slf4j.Logger;
@@ -72,13 +71,17 @@ public class BlockHandlerThread extends Thread {
     public void run() {
         logger.info("========{}.run=======", CLASS_NAME);
         try {
-            retryMaxTime = configParam.NODE_AMOUNT * configParam.INTERRUPTTIME_MAX;
-            masterNodeRestfulUrl = configParam.NODE_RESTFUL_URL;
+            retryMaxTime = configParam.NODE_AMOUNT * configParam.NODE_INTERRUPTTIME_MAX;
+            masterNodeRestfulUrl = configParam.MASTERNODE_RESTFUL_URL;
 
             initNodeRestfulList();
             sdkService = initSdkService();
 
+
+            int oneBlockTryTime = 1;
+
             while (true) {
+
                 int remoteBlockHieght = getRemoteBlockHeight();
                 logger.info("######remote blockheight:{}", remoteBlockHieght);
 
@@ -89,13 +92,20 @@ public class BlockHandlerThread extends Thread {
                 if (dbBlockHeight >= remoteBlockHieght) {
                     logger.info("+++++++++wait for block+++++++++");
                     try {
-                        Thread.sleep(configParam.INTERVAL);
+                        Thread.sleep(configParam.BLOCK_INTERVAL);
                     } catch (InterruptedException e) {
                         logger.error("error...", e);
                         e.printStackTrace();
                     }
+                    oneBlockTryTime++;
+                    if (oneBlockTryTime >= configParam.NODE_WAITFORBLOCKTIME_MAX) {
+                        switchNode();
+                        oneBlockTryTime = 1;
+                    }
                     continue;
                 }
+
+                oneBlockTryTime = 1;
 
                 //handle blocks and transactions
                 for (int tHeight = dbBlockHeight + 1; tHeight <= remoteBlockHieght; tHeight++) {
@@ -128,11 +138,11 @@ public class BlockHandlerThread extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                remoteHeight = sdkService.getConnectMgr().getBlockHeight();
+                remoteHeight = sdkService.getConnect().getBlockHeight();
                 break;
             } catch (Exception ex) {
                 logger.error("getBlockHeight error, try again...restful:{},error:", masterNodeRestfulUrl, ex);
-                if (tryTime < retryMaxTime && tryTime % configParam.INTERRUPTTIME_MAX == 0) {
+                if (tryTime < retryMaxTime && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
                     continue;
@@ -162,11 +172,11 @@ public class BlockHandlerThread extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                block = sdkService.getConnectMgr().getBlock(height);
+                block = sdkService.getConnect().getBlock(height);
                 break;
             } catch (Exception ex) {
                 logger.error("getBlockByHeight error, try again...restful:{},error:", masterNodeRestfulUrl, ex);
-                if (tryTime < retryMaxTime && tryTime % configParam.INTERRUPTTIME_MAX == 0) {
+                if (tryTime < retryMaxTime && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
                     continue;
@@ -196,11 +206,11 @@ public class BlockHandlerThread extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                nextBookKeeper = sdkService.getConnectMgr().getBlock(height).nextBookkeeper.toBase58();
+                nextBookKeeper = sdkService.getConnect().getBlock(height).nextBookkeeper.toBase58();
                 break;
             } catch (Exception ex) {
                 logger.error("getBlockBookKeeperByHeight error, try again...restsful:{},error:", masterNodeRestfulUrl, ex);
-                if (tryTime < retryMaxTime && tryTime % configParam.INTERRUPTTIME_MAX == 0) {
+                if (tryTime < retryMaxTime && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
                     continue;
@@ -218,11 +228,9 @@ public class BlockHandlerThread extends Thread {
     }
 
 
-
     /**
      * switch to another node and initialize sdkService object
      * when the master node have an exception
-     *
      */
     private void switchNode() {
         masterNodeIndex++;
@@ -238,7 +246,6 @@ public class BlockHandlerThread extends Thread {
 
     /**
      * initialize node list for synchronization thread
-     *
      */
     private void initNodeRestfulList() {
         for (int i = 0; i < configParam.NODE_AMOUNT; i++) {
