@@ -38,5 +38,5 @@ public interface TransactionMapper {
 
     List<Map> selectTxnByBlockHeight(int height);
 
-    Map<String,Object> selectTransferTxnByTxnHash(String txnHash);
+    Map<String,Object> selectTxnByTxnHash(String txnHash);
 }

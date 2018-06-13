@@ -38,7 +38,9 @@ public interface TransactionDetailMapper {
 
     int updateByPrimaryKey(TransactionDetail record);
 
-    List<Map> selectTxnDetailByHash(String txnHash);
+    List<Map> selectTransferTxnDetailByParam(Map<String,String> param);
+
+    List<Map> selectTransferTxnDetailByHash(String txnHash);
 
     List<Map> selectBalanceByAddress(String address);
 

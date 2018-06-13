@@ -76,9 +76,9 @@ public class BlockController {
     @RequestMapping(value = "/blocklist/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
     public Result queryBlockByPage(@PathVariable("pagenumber") Integer pageNumber,
-                                @PathVariable("pagesize") Integer pageSize) {
+                                   @PathVariable("pagesize") Integer pageSize) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
 
         Result rs = blockService.queryBlockList(pageSize, pageNumber);
@@ -95,16 +95,16 @@ public class BlockController {
     public Result queryBlock(@PathVariable("param") String param) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("param:{}",param);
+        logger.info("param:{}", param);
 
         Result rs = new Result();
-        if(param.length() == 64) {
+        if (param.length() == 64) {
             rs = blockService.queryBlockByHash(param);
-        }else {
+        } else {
             int blockHeight = 1;
             try {
                 blockHeight = Integer.valueOf(param);
-            }catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 return Helper.result("QueryBlock", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
             }
             rs = blockService.queryBlockByHeight(blockHeight);
@@ -124,7 +124,7 @@ public class BlockController {
     public Result queryBlockGenerateTime(@PathVariable("amount") int amount) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}",amount);
+        logger.info("amount:{}", amount);
 
         Result rs = blockService.queryBlockGenerateTime(amount);
         return rs;
