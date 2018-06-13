@@ -21,7 +21,6 @@ package com.github.ontio.utils;
 
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.sdk.exception.SDKException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class OntologySDKService {
 
 
     public String getDDO(String ontId) {
-        OntSdk ontSdk = getOntSdk4OntId();
+        OntSdk ontSdk = getOntSdk();
         String ddoStr = "";
         try {
             ddoStr = ontSdk.nativevm().ontId().sendGetDDO(ontId);
@@ -74,7 +73,7 @@ public class OntologySDKService {
         OntSdk ontSdk = getOntSdk();
         int nodeCount = 0;
         try {
-            nodeCount = ontSdk.getConnectMgr().getNodeCount();
+            nodeCount = ontSdk.getConnect().getNodeCount();
         } catch (Exception e) {
             logger.error("get nodecount error...", e);
             e.printStackTrace();
@@ -87,7 +86,7 @@ public class OntologySDKService {
         OntSdk ontSdk = getOntSdk();
         int generateBlockTime = 0;
         try {
-            generateBlockTime = ontSdk.getConnectMgr().getGenerateBlockTime();
+            generateBlockTime = ontSdk.getConnect().getGenerateBlockTime();
         } catch (Exception e) {
             logger.error("get generateblocktime error...", e);
             e.printStackTrace();
@@ -100,9 +99,8 @@ public class OntologySDKService {
 
         Map<String, Object> balanceMap = new HashMap<>();
         OntSdk ontSdk = getOntSdk();
-
         try {
-            balanceMap = (Map) ontSdk.getConnectMgr().getBalance(address);
+            balanceMap = (Map) ontSdk.getConnect().getBalance(address);
         } catch (Exception e) {
             logger.error("getAddressBalance error...", e);
             e.printStackTrace();
@@ -113,21 +111,9 @@ public class OntologySDKService {
 
     private OntSdk getOntSdk() {
         OntSdk wm = OntSdk.getInstance();
-        wm.setRestful(configParam.NODE_RESTFUL_URL);
+        wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
         return wm;
     }
 
-
-    private OntSdk getOntSdk4OntId() {
-        OntSdk wm = OntSdk.getInstance();
-        wm.setRestful(configParam.NODE_RESTFUL_URL);
-        try {
-            wm.nativevm().ontId().setCodeAddress(configParam.ONTID_CODEHASH);
-            wm.DEFAULT_GAS_LIMIT = 30000;
-        } catch (SDKException e) {
-            e.printStackTrace();
-        }
-        return wm;
-    }
 
 }
