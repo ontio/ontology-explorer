@@ -27,7 +27,7 @@ Download URL：
 Firstly, cd the Explorer back-end project **lib** directory, run the following command:
 
 ```
-mvn install:install-file -DgroupId=com.github.ontio -DartifactId=javasdk -Dversion=v1.0 -Dpackaging=jar -Dfile=ontology-sdk-java.jar
+mvn install:install-file -DgroupId=com.github.ontio -DartifactId=javasdk -Dversion=v0.9 -Dpackaging=jar -Dfile=ontology-sdk-java.jar
 ```
 
 Then, cd the Explorer back-end project root directory，run the following command:
@@ -111,21 +111,24 @@ node.restful.url_2=http://127.0.0.1:20557
 node.restful.url_3=http://127.0.0.1:20558
 
 //maximum fault tolerance times for each node
-interruptTime.max=2
+node.interruptTime.max = 30
+//maximum fault tolerance times for each node
+node.waitForBlockTime.max = 30
 
 //the interval for block generate
-interval=6000
+block.interval=6000
 
 //record smart contract codehash（hexadecimal format）
-record.codeHash = 80f6bff7645a84298a1a52aa3745f84dba6615cf
+claimRecord.codeHash = 80eb179e8ce06f61613a11ee108f068fdf158af4
 
 //ontId smart contract codehash（hexadecimal format）
 ontId.codeHash = ff00000000000000000000000000000000000003
 
 //ONT asset smart contract codehash（hexadecimal format）
-asset.ont.codeHash = ff00000000000000000000000000000000000001
+asset.ont.codeHash = 0000000000000000000000000000000000000001
 //ONG asset smart contract codehash(hexadecimal format)
-asset.ong.codeHash = ff00000000000000000000000000000000000002
+asset.ong.codeHash = 0000000000000000000000000000000000000002
+
 
 ```
 
