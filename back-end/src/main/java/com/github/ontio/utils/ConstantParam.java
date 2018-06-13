@@ -43,7 +43,7 @@ public class ConstantParam {
      * record transaction smart contract event description
      *
      */
-    public static final String RECORD_OPE = "record";
+    public static final String CLAIMRECORD_OPE = "claimRecord-";
 
     /**
      * claim
@@ -51,13 +51,28 @@ public class ConstantParam {
     public static final String CLAIM = "claim";
 
     /**
+     * add action
+     *
+     */
+    public static final String ADD = "add";
+
+    /**
+     * ONG asset
+     */
+    public static final String ONG = "ong";
+
+    /**
+     * ONT asset
+     */
+    public static final String ONT = "ont";
+
+    /**
      * the number of transactions of one block
      *
      */
-    public static int INIT_AMOUNT = 0;
+    public static int TXN_INIT_AMOUNT = 0;
 
 
-    public static final String ADD = "add";
 
 
 }

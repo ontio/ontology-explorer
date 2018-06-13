@@ -35,8 +35,32 @@ public class ConfigParam {
     /**
      * ontology blockchain restful url
      */
-    @Value("${node.restful.url}")
-    public String NODE_RESTFUL_URL;
+    @Value("${masternode.restful.url}")
+    public String MASTERNODE_RESTFUL_URL;
+
+    /**
+     * the amount of the ontology blockchain nodes in properties
+     */
+    @Value("${node.amount}")
+    public int NODE_AMOUNT;
+
+    /**
+     * the interval for waiting block generation
+     */
+    @Value("${block.interval}")
+    public int BLOCK_INTERVAL;
+
+    /**
+     * each node fault tolerance maximum time.
+     */
+    @Value("${node.interruptTime.max}")
+    public int NODE_INTERRUPTTIME_MAX;
+
+    /**
+     * the maximum time of each node for waiting for generating block
+     */
+    @Value("${node.waitForBlockTime.max}")
+    public int NODE_WAITFORBLOCKTIME_MAX;
 
     /**
      * ontology blockchain ontId smartcontract codehash
@@ -48,8 +72,8 @@ public class ConfigParam {
     /**
      * ontology blockchain record smartcontract codehash
      */
-    @Value("${record.codeHash}")
-    public String RECORD_CODEHASH;
+    @Value("${claimRecord.codeHash}")
+    public String CLAIMRECORD_CODEHASH;
 
     /**
      * ontology blockchain ONT asset smartcontract codehash
@@ -62,24 +86,6 @@ public class ConfigParam {
      */
     @Value("${asset.ong.codeHash}")
     public String ASSET_ONG_CODEHASH;
-
-    /**
-     * the amount of the ontology blockchain nodes in properties
-     */
-    @Value("${node.amount}")
-    public int NODE_AMOUNT;
-
-    /**
-     * the interval for waiting block generation
-     */
-    @Value("${interval}")
-    public int INTERVAL;
-
-    /**
-     * node fault tolerance maximum time.
-     */
-    @Value("${interruptTime.max}")
-    public int INTERRUPTTIME_MAX;
 
 
 }
