@@ -187,11 +187,34 @@
   </update>
 
 
-  <select id="selectTxnDetailByHash" parameterType="java.lang.String" resultType="java.util.Map">
-    select ToAddress, FromAddress, Amount, AssetName
+  <select id="selectTransferTxnDetailByParam" parameterType="java.util.Map" resultType="java.util.Map">
+    select ToAddress, FromAddress, Amount, AssetName, Description
+    from tbl_ont_txn_detail
+    where
+      (
+      txnhash = #{TxnHash}
+      and toaddress = #{Address}
+      <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+      </if>
+      and description in ('transfer','gasconsume')
+      ) or (
+      txnhash = #{TxnHash}
+      and fromaddress = #{Address}
+      <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+      </if>
+      and description in ('transfer','gasconsume')
+      )
+  </select>
+
+
+  <select id="selectTransferTxnDetailByHash" parameterType="java.lang.String" resultType="java.util.Map">
+    select ToAddress, FromAddress, Amount, AssetName, Description
     from tbl_ont_txn_detail
     where txnhash = #{txnHash}
   </select>
+
 
   <select id="selectBalanceByAddress" parameterType="java.lang.String" resultType="java.util.Map">
     select sum(amount) as Balance, assetname as AssetName

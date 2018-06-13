@@ -95,11 +95,10 @@
     where height = #{height}
   </select>
 
-  <select id="selectTransferTxnByTxnHash" parameterType="java.lang.String" resultType="java.util.Map">
+  <select id="selectTxnByTxnHash" parameterType="java.lang.String" resultType="java.util.Map">
     select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee
     from view_ont_transaction
-    where Description = "transfer"
-    and txnhash = #{txnHash}
+    where txnhash = #{txnHash}
   </select>
 
   <select id="selectNotOntIdTxnAmount" resultType="java.lang.Integer">
