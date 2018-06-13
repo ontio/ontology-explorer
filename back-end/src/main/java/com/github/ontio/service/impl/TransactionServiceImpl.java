@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,13 +107,21 @@ public class TransactionServiceImpl implements ITransactionService {
         logger.info("txn desc:{}", desc);
         if (ConstantParam.TRANSFER_OPE.equals(desc)) {
 
-            List<Map> txnDetailList = transactionDetailMapper.selectTxnDetailByHash(txnHash);
-            String assetName = (String) txnDetailList.get(0).get("AssetName");
+            List<Map> txnDetailList = transactionDetailMapper.selectTransferTxnDetailByHash(txnHash);
             for (int i = 0; i < txnDetailList.size(); i++) {
-                txnDetailList.get(i).remove("AssetName");
+                Map<String,Object> map = txnDetailList.get(i);
+                BigDecimal amount = (BigDecimal) map.get("Amount");
+                String assetName = (String) map.get("AssetName");
+                //转换string给前端显示
+                //ONG 精度格式化
+                if(ConstantParam.ONG.equals(assetName)) {
+                    BigDecimal val2 = amount.divide(new BigDecimal("1000000000"),9, RoundingMode.HALF_DOWN);
+                    map.put("Amount", val2.toString());
+                }else if(ConstantParam.ONT.equals(assetName)) {
+                    map.put("Amount", amount.toString());
+                }
             }
             Map<String, Object> detailMap = new HashMap<>();
-            detailMap.put("AssetName", assetName);
             detailMap.put("TransferList", txnDetailList);
             txnInfo.put("Detail", detailMap);
         } else if (desc.startsWith(ConstantParam.ONTID_OPE_PREFIX)) {
@@ -149,7 +159,7 @@ public class TransactionServiceImpl implements ITransactionService {
         List<String> txnHashList = transactionDetailMapper.selectTxnHashByAddressInfo(parmMap);
         for (String txnHash :
                 txnHashList) {
-            Map txnMap = getTransferTxnList(txnHash);
+            Map txnMap = getTransferTxnList(txnHash, address, "");
             txnList.add(txnMap);
         }
 
@@ -181,7 +191,7 @@ public class TransactionServiceImpl implements ITransactionService {
         List<String> txnHashList = transactionDetailMapper.selectTxnHashByAddressInfo(parmMap);
         for (String txnHash :
                 txnHashList) {
-            Map txnMap = getTransferTxnList(txnHash);
+            Map txnMap = getTransferTxnList(txnHash, address, assetName);
             txnList.add(txnMap);
         }
 
@@ -202,16 +212,31 @@ public class TransactionServiceImpl implements ITransactionService {
      * @param txnHash
      * @return
      */
-    private Map getTransferTxnList(String txnHash) {
+    private Map getTransferTxnList(String txnHash, String address, String assetName) {
 
-        Map<String, Object> txnMap = transactionMapper.selectTransferTxnByTxnHash(txnHash);
-        List<Map> txnDetailList = transactionDetailMapper.selectTxnDetailByHash(txnHash);
-        String assetName = (String) txnDetailList.get(0).get("AssetName");
-        for (int i = 0; i < txnDetailList.size(); i++) {
-            txnDetailList.get(i).remove("AssetName");
+        Map<String, Object> txnMap = transactionMapper.selectTxnByTxnHash(txnHash);
+        Map<String,String> param = new HashMap<>();
+        param.put("TxnHash", txnHash);
+        param.put("Address", address);
+        if(!Helper.isEmptyOrNull(assetName)) {
+            param.put("AssetName", assetName);
         }
 
-        txnMap.put("AssetName", assetName);
+        List<Map> txnDetailList = transactionDetailMapper.selectTransferTxnDetailByParam(param);
+
+        for (int i = 0; i < txnDetailList.size(); i++) {
+            Map<String,Object> map = txnDetailList.get(i);
+            String name = (String) map.get("AssetName");
+            BigDecimal amount = (BigDecimal) map.get("Amount");
+            //转换string给前端显示
+            //ONG 精度格式化
+            if(ConstantParam.ONG.equals(name)) {
+                BigDecimal aa = amount.divide(new BigDecimal("1000000000"),9, BigDecimal.ROUND_HALF_UP);
+                map.put("Amount", aa.toString());
+            }else if(ConstantParam.ONT.equals(assetName)) {
+                map.put("Amount", amount.toString());
+            }
+        }
         txnMap.put("TransferList", txnDetailList);
 
         return txnMap;

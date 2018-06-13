@@ -148,9 +148,9 @@ public class OntIdServiceImpl implements IOntIdService {
 
         JSONArray attrList = ddoObj.getJSONArray("Attributes");
 
-        for (Object obj:
-             attrList) {
-            JSONObject attrObj = (JSONObject)obj;
+        for (Object obj :
+                attrList) {
+            JSONObject attrObj = (JSONObject) obj;
             String attrKey = attrObj.getString("Key");
             //standard claim attribute
             if (attrKey.startsWith(ConstantParam.CLAIM)) {
@@ -167,16 +167,22 @@ public class OntIdServiceImpl implements IOntIdService {
                 claimObj.put("ClaimContext", claimContext);
                 claimObj.put("ClaimId", attrKey.substring(ConstantParam.CLAIM.length(), attrKey.length()));
                 if (ClaimContextType.GITHUB_CLAIM.context().equals(claimContext)) {
+
                     claimObj.put("ContextDesc", ClaimContextType.GITHUB_CLAIM.desc());
                 } else if (ClaimContextType.TWITTER_CLAIM.context().equals(claimContext)) {
+
                     claimObj.put("ContextDesc", ClaimContextType.TWITTER_CLAIM.desc());
                 } else if (ClaimContextType.FACEBOOK_CLAIM.context().equals(claimContext)) {
+
                     claimObj.put("ContextDesc", ClaimContextType.FACEBOOK_CLAIM.desc());
                 } else if (ClaimContextType.LINKEDIN_CLAIM.context().equals(claimContext)) {
+
                     claimObj.put("ContextDesc", ClaimContextType.LINKEDIN_CLAIM.desc());
                 } else if (ClaimContextType.EMPLOYMENT_CLAIM.context().equals(claimContext)) {
+
                     claimObj.put("ContextDesc", ClaimContextType.EMPLOYMENT_CLAIM.desc());
                 } else if (ClaimContextType.CFCA_CLAIM.context().equals(claimContext)) {
+
                     claimObj.put("ContextDesc", ClaimContextType.CFCA_CLAIM.desc());
                 }
                 Map<String, Object> formatedAttrMap = new HashMap<>();
