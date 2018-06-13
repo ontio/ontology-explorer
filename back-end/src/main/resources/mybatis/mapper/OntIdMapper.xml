@@ -123,7 +123,7 @@
   </select>
 
   <select id="selectOntIdCount" resultType="java.lang.Integer">
-    select count(1)
+    select count(distinct(ontid))
     from tbl_ont_ontid_detail
   </select>
 
