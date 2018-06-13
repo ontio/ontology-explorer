@@ -72,7 +72,7 @@ public class BlockHandleService {
         int txnNum = block.transactions.length;
         logger.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
 
-        ConstantParam.INIT_AMOUNT = 0;
+        ConstantParam.TXN_INIT_AMOUNT = 0;
 
         //asynchronize handle transaction
         for (int i = 0; i < txnNum; i++) {
@@ -81,7 +81,7 @@ public class BlockHandleService {
             future.get();
         }
 
-        while (ConstantParam.INIT_AMOUNT < txnNum) {
+        while (ConstantParam.TXN_INIT_AMOUNT < txnNum) {
             logger.info("wait for multi thread tasks ......");
             try {
                 Thread.sleep(50 * 1);
@@ -94,6 +94,7 @@ public class BlockHandleService {
             blockMapper.updateNextBlockHash(block.hash().toString(), blockHeight - 1);
         }
         insertBlock(block, blockBookKeeper);
+
         int txnCount = currentMapper.selectTxnCount();
         updateCurrent(blockHeight, txnCount + txnNum);
 
