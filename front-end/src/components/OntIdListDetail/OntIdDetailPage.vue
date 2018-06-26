@@ -170,14 +170,20 @@
                 return "Register ONT ID"
               case "add publicKe":
                 return "Add publickey"
-              case "delete publi":
-                return "Delete publickey"
+              case "remove publi":
+                return "Remove publickey"
               case "add attribut":
                 return "Add identity attribute"
               case "update attri":
                 return "Update identity attribute"
               case "delete attri":
                 return "Delete identity attribute"
+              case "change recov":
+                return "Change recovery"
+              case "add recovery":
+                return "Add recovery"
+              case "remove attri":
+                return "Remove attribute"
             }
       }
     }

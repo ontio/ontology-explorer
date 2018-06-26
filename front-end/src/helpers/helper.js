@@ -109,5 +109,10 @@ export default {
       }
     }
     return time;
+  },
+
+  getNormalgas(gas){
+    let showGas = gas*0.000000001
+    return showGas
   }
 }

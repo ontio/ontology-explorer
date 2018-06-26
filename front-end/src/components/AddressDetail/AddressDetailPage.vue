@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div id="addresstop" class="container container-margin-top">
     <div class="div-ont-id-detail-page form-group">
       <div class="row">
         <div class="col-lg-6">
@@ -30,7 +30,7 @@
         </tr>
         </tbody>
       </table>
-      <table v-if="addressDetail.info.TxnList.length != 0" class="table ">
+      <table v-if="addressDetail.info.TxnTotal != 0" class="table ">
         <thead>
         <tr style="border-bottom:0px;">
           <td class="table3_title font-size24 font-blod normal_color">
@@ -91,6 +91,10 @@
     },
     created() {
       this.getAddressDetailPage()
+/*       this.timeoutBlock = setTimeout(() => {
+        this.scrollTo('addresstop')
+        }
+      ,100) */
     },
     watch: {
       '$route': 'getaddressDetailPage',
@@ -106,6 +110,12 @@
       })
     },
     methods: {
+      scrollTo:function(id){
+        document.getElementById(id).scrollIntoView(true); 
+      },
+      getGas(fee){
+        return Helper.getNormalgas(fee)
+      },
       getAddressDetailPage() {
         this.$store.dispatch('getAddressDetailPage',this.$route.params).then(response => {
         }).catch(error => {
