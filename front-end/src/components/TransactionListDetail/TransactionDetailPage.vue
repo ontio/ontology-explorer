@@ -94,7 +94,7 @@
             <div class="row ">
               <div class="col-lg-4 padding0-right pointer " @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
               <div class="col-lg-1 ">sent</div>
-              <div class="col-lg-2 ">{{tx.Amount}} {{transactionDetail.info.Detail.AssetName}}</div>
+              <div class="col-lg-2 ">{{tx.AssetName=='ong'?tx.Amount:toMoney(tx.Amount)}} {{tx.AssetName}}</div>
               <div class="col-lg-1 ">to</div>
               <div class="col-lg-4 padding0-left pointer " @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
             </div>
@@ -181,7 +181,7 @@
             <div class="row ">
               <div class="col-lg-4 padding0-right pointer">{{tx.FromAddress}}</div>
               <div class="col-lg-1 ">sent</div>
-              <div class="col-lg-2 ">{{tx.Amount}} {{transactionDetail.info.Detail.AssetName}}</div>
+              <div class="col-lg-2 ">{{tx.AssetName=='ong'?tx.Amount:toMoney(tx.Amount)}} {{tx.AssetName}}</div>
               <div class="col-lg-1 ">to</div>
               <div class="col-lg-4 padding0-left pointer " >{{tx.ToAddress}}</div>
             </div>
@@ -235,6 +235,9 @@
       })
     },
     methods: {
+      toMoney:function (num){
+            return  num.split('').reverse().join("").substr(10,10).split('').reverse().join("");
+      },
       getTransactionDetailPage() {
         this.$store.dispatch('getTransactionDetailPage',this.$route.params).then(response => {
           /* console.log(response) */
