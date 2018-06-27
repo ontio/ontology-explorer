@@ -46,8 +46,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.concurrent.Future;
 
-import static com.github.ontio.utils.ConstantParam.ONTID_OPE_PREFIX;
 import static com.github.ontio.utils.ConstantParam.CLAIMRECORD_OPE;
+import static com.github.ontio.utils.ConstantParam.ONTID_OPE_PREFIX;
 
 /**
  * @author zhouq
@@ -62,6 +62,10 @@ public class TxnHandlerThread {
     private static final String SEPARATOR = "||";
 
     private static final String SEPARATOR2 = "&";
+
+    private static final BigDecimal ZERO = new BigDecimal("0");
+
+    private static final BigDecimal ONG_DECIMAL = new BigDecimal("1000000000");
 
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
@@ -92,7 +96,7 @@ public class TxnHandlerThread {
 
             if (txnType == TransactionType.DEPLOYCODE.type()) {
                 //deploy smart contract transaction
-                insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 1, "", 0, 1);
+                insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 1, "", ZERO, 1);
             } else if (txnType == TransactionType.INVOKECODE.type()) {
                 //invoke smart contract transaction
                 JSONObject eventObj = (JSONObject) sdkService.getConnect().getSmartCodeEvent(txnHash);
@@ -102,7 +106,8 @@ public class TxnHandlerThread {
                 //success transaction
                 if (state == 1) {
 
-                    long gasConsumed = eventObj.getLongValue("GasConsumed");
+                    BigDecimal gasConsumed = new BigDecimal(eventObj.getLongValue("GasConsumed"));
+                    gasConsumed = gasConsumed.divide(ONG_DECIMAL);
                     logger.info("gasConsumed:{}", gasConsumed);
 
                     JSONArray notifyList = eventObj.getJSONArray("Notify");
@@ -114,7 +119,6 @@ public class TxnHandlerThread {
                             logger.info("####ContractAddress:{}####", contractAddress);
 
                             JSONArray stateList = ((JSONObject) notifyList.get(i)).getJSONArray("States");
-
                             //transfer transaction
                             if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) || configParam.ASSET_ONT_CODEHASH.equals(contractAddress)) {
                                 handleTransferTxn(stateList, txn, blockHeight, blockTime, indexInBlock, contractAddress, gasConsumed, i + 1, notifyList.size());
@@ -123,7 +127,10 @@ public class TxnHandlerThread {
                                 handleOntIdTxn(stateList, txn, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1);
                             } else if (configParam.CLAIMRECORD_CODEHASH.equals(contractAddress)) {
                                 //claimrecord transaction
-                                handleClaimRecordTxn(stateList,txn, blockHeight, blockTime, indexInBlock, 1,i + 1);
+                                handleClaimRecordTxn(stateList,txn, blockHeight, blockTime, indexInBlock, gasConsumed,i + 1);
+                            } else if(configParam.AUTH_CODEHASH.equals(contractAddress)){
+                                //权限相关交易
+                                insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 1, ConstantParam.AUTH_OPE_PREFIX, gasConsumed, i + 1);
                             } else {
                                 insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 1, "", gasConsumed, i + 1);
                             }
@@ -134,7 +141,7 @@ public class TxnHandlerThread {
 
                 } else if (state == 0) {
                     //fail transaction
-                    insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 2, "", 0, 1);
+                    insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 2, "", ZERO, 1);
                 }
             }
 
@@ -144,7 +151,7 @@ public class TxnHandlerThread {
             //选举交易，没有event目前
             if (43001 == eObj.getLong("Error")) {
                 logger.info("######election transaction...");
-                insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 1, "", 0, 1);
+                insertTxnBasicInfo(txn, blockHeight, blockTime, indexInBlock, 1, "", ZERO, 1);
             }
         } catch (Exception e) {
             logger.error("handleOneTxn error...", e);
@@ -171,7 +178,7 @@ public class TxnHandlerThread {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleTransferTxn(JSONArray stateList, Transaction txn, int blockHeight, int blockTime, int indexInBlock, String codeHash, long gasConsumed, int indexInTxn, int notifyListSize) throws Exception {
+    public void handleTransferTxn(JSONArray stateList, Transaction txn, int blockHeight, int blockTime, int indexInBlock, String codeHash, BigDecimal gasConsumed, int indexInTxn, int notifyListSize) throws Exception {
 
         String assetName = "";
         if (configParam.ASSET_ONT_CODEHASH.equals(codeHash)) {
@@ -225,7 +232,7 @@ public class TxnHandlerThread {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleOntIdTxn(JSONArray stateList, Transaction txn, int blockHeight, int blockTime, int indexInBlock, long gasConsumed, int indexInTxn) throws Exception {
+    public void handleOntIdTxn(JSONArray stateList, Transaction txn, int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTxn) throws Exception {
 
         String action = stateList.getString(0);
         logger.info("####action:{}####", action);
@@ -263,7 +270,7 @@ public class TxnHandlerThread {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleClaimRecordTxn(JSONArray stateList, Transaction txn, int blockHeight, int blockTime, int indexInBlock, long gasConsumed, int indexInTxn) throws Exception {
+    public void handleClaimRecordTxn(JSONArray stateList, Transaction txn, int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTxn) throws Exception {
 
         String actionType = new String(Helper.hexToBytes(stateList.getString(0)));
         logger.info("####actionType:{}####", actionType);
@@ -298,7 +305,7 @@ public class TxnHandlerThread {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void insertTxnBasicInfo(Transaction txn, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, String action, long gasConsumed, int indexInTxn) throws Exception {
+    public void insertTxnBasicInfo(Transaction txn, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, String action, BigDecimal gasConsumed, int indexInTxn) throws Exception {
 
         logger.info("{} run....", com.github.ontio.utils.Helper.currentMethod());
 

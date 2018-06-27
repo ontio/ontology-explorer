@@ -17,11 +17,11 @@
  */
 
 
-
 package com.github.ontio.utils;
 
 import com.github.ontio.paramBean.Result;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -36,7 +36,6 @@ public class Helper {
 
 
     /**
-     *
      * @param action
      * @param error
      * @param desc
@@ -70,6 +69,24 @@ public class Helper {
             return false;
         }
         return true;
+    }
+
+
+    public static String handleAmount2String(BigDecimal amount) {
+        if (amount.compareTo(new BigDecimal("0")) == 0) {
+            return "0";
+        } else if (amount.compareTo(new BigDecimal("1000")) < 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("0.");
+            for (int i = 0; i < 9 - String.valueOf(amount.intValue()).length(); i++) {
+                sb.append("0");
+            }
+            sb.append(String.valueOf(amount.intValue()));
+            return sb.toString();
+        } else {
+            BigDecimal val2 = amount.divide(new BigDecimal("1000000000"), 9, BigDecimal.ROUND_HALF_UP);
+            return val2.toString();
+        }
     }
 
 
@@ -110,12 +127,12 @@ public class Helper {
             descriptionSb.append(desArray[1]);
             descriptionSb.append(" attribute:");
             String attrName = desArray[3];
-            if(attrName.startsWith(ConstantParam.CLAIM)) {
+            if (attrName.startsWith(ConstantParam.CLAIM)) {
                 descriptionSb.append("claim");
-            }else {
+            } else {
                 descriptionSb.append(desArray[3]);
             }
-        }else if(OntIdEventDesType.RECOVERYOPE.value().equals(action)) {
+        } else if (OntIdEventDesType.RECOVERYOPE.value().equals(action)) {
             descriptionSb.append(desArray[1]);
             descriptionSb.append(" recovery:");
             descriptionSb.append(desArray[3]);

@@ -87,5 +87,11 @@ public class ConfigParam {
     @Value("${asset.ong.codeHash}")
     public String ASSET_ONG_CODEHASH;
 
+    /**
+     * ontology blockchain ONG asset smartcontract codehash
+     */
+    @Value("${auth.codeHash}")
+    public String AUTH_CODEHASH;
+
 
 }
