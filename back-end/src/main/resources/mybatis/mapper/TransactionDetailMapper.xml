@@ -187,6 +187,7 @@
   </update>
 
 
+
   <select id="selectTransferTxnDetailByParam" parameterType="java.util.Map" resultType="java.util.Map">
     select ToAddress, FromAddress, Amount, AssetName, Description
     from tbl_ont_txn_detail
@@ -213,6 +214,7 @@
     select ToAddress, FromAddress, Amount, AssetName, Description
     from tbl_ont_txn_detail
     where txnhash = #{txnHash}
+    and description = 'transfer'
   </select>
 
 
@@ -224,7 +226,7 @@
     GROUP BY assetid
   </select>
 
-  <select id="selectTxnHashByAddressInfo" resultType="java.lang.String" parameterType="java.util.Map">
+  <select id="selectTxnHashByAddressInfo" parameterType="java.util.Map" resultType="java.lang.String">
     select distinct(txnhash) as TxnHash
     from tbl_ont_txn_detail
     where (
@@ -242,7 +244,7 @@
     limit #{Start}, #{PageSize}
   </select>
 
-    <select id="selectTxnAmountByAddressInfo" resultType="java.lang.Integer" parameterType="java.util.Map">
+    <select id="selectTxnAmountByAddressInfo" parameterType="java.util.Map" resultType="java.lang.Integer">
       select count(distinct(txnhash))
       from tbl_ont_txn_detail
       where (

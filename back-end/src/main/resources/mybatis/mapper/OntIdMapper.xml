@@ -115,6 +115,7 @@
     where txnhash = #{txnhash,jdbcType=VARCHAR}
   </update>
 
+
   <select id="selectOntIdByPage" parameterType="java.lang.Integer" resultType="java.util.Map">
     select TxnHash, TxnType, OntId, TxnTime, Height, Description, Fee
     from tbl_ont_ontid_detail
