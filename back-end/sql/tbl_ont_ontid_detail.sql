@@ -26,6 +26,7 @@ CREATE TABLE `tbl_ont_ontid_detail` (
   `txntime` int(11) NOT NULL,
   `height` int(12) NOT NULL,
   `description` varchar(255) NOT NULL DEFAULT '',
-  `fee` decimal(12,0) NOT NULL DEFAULT '0',
+  `fee` decimal(25,8) NOT NULL DEFAULT '0.00000000',
   PRIMARY KEY (`txnhash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

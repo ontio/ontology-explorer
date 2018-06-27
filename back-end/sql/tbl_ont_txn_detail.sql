@@ -24,8 +24,8 @@ CREATE TABLE `tbl_ont_txn_detail` (
   `txntype` int(4) NOT NULL,
   `txntime` int(11) NOT NULL,
   `height` int(12) NOT NULL,
-  `amount` decimal(25,8) DEFAULT NULL,
-  `fee` decimal(12,0) DEFAULT '0',
+  `amount` decimal(25,8) NOT NULL,
+  `fee` decimal(25,8) NOT NULL DEFAULT '0.00000000',
   `assetname` varchar(255) NOT NULL DEFAULT '',
   `fromaddress` varchar(255) NOT NULL DEFAULT '',
   `toaddress` varchar(255) NOT NULL DEFAULT '',
@@ -35,3 +35,4 @@ CREATE TABLE `tbl_ont_txn_detail` (
   `confirmflag` int(1) NOT NULL,
   PRIMARY KEY (`txnhash`,`txnindex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
