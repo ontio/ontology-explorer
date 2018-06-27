@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +73,11 @@ public class TransactionServiceImpl implements ITransactionService {
     public Result queryTxnList(int amount) {
 
         List<Map> txnList = transactionMapper.selectNotOntIdTxnByPage(0, amount);
+        for (Map map :
+                txnList) {
+            BigDecimal fee = (BigDecimal) map.get("Fee");
+            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
+        }
         Map<String, Object> rs = new HashMap();
         rs.put("TxnList", txnList);
 
@@ -86,6 +90,12 @@ public class TransactionServiceImpl implements ITransactionService {
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
         List<Map> txnList = transactionMapper.selectNotOntIdTxnByPage(start, pageSize);
+        for (Map map :
+                txnList) {
+            BigDecimal fee = (BigDecimal) map.get("Fee");
+            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
+        }
+
         int amount = transactionMapper.selectNotOntIdTxnAmount();
 
         Map<String, Object> rs = new HashMap();
@@ -103,21 +113,24 @@ public class TransactionServiceImpl implements ITransactionService {
         if (txnInfo == null) {
             return Helper.result("QueryTransaction", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
         }
+
+        BigDecimal fee = (BigDecimal) txnInfo.get("Fee");
+        txnInfo.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
+
         String desc = (String) txnInfo.get("Description");
         logger.info("txn desc:{}", desc);
         if (ConstantParam.TRANSFER_OPE.equals(desc)) {
 
             List<Map> txnDetailList = transactionDetailMapper.selectTransferTxnDetailByHash(txnHash);
             for (int i = 0; i < txnDetailList.size(); i++) {
-                Map<String,Object> map = txnDetailList.get(i);
+                Map<String, Object> map = txnDetailList.get(i);
                 BigDecimal amount = (BigDecimal) map.get("Amount");
                 String assetName = (String) map.get("AssetName");
                 //转换string给前端显示
                 //ONG 精度格式化
-                if(ConstantParam.ONG.equals(assetName)) {
-                    BigDecimal val2 = amount.divide(new BigDecimal("1000000000"),9, RoundingMode.HALF_DOWN);
-                    map.put("Amount", val2.toString());
-                }else if(ConstantParam.ONT.equals(assetName)) {
+                if (ConstantParam.ONG.equals(assetName)) {
+                    map.put("Amount", Helper.handleAmount2String(amount));
+                } else if (ConstantParam.ONT.equals(assetName)) {
                     map.put("Amount", amount.toString());
                 }
             }
@@ -215,25 +228,28 @@ public class TransactionServiceImpl implements ITransactionService {
     private Map getTransferTxnList(String txnHash, String address, String assetName) {
 
         Map<String, Object> txnMap = transactionMapper.selectTxnByTxnHash(txnHash);
-        Map<String,String> param = new HashMap<>();
+
+        BigDecimal fee = (BigDecimal) txnMap.get("Fee");
+        txnMap.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
+
+        Map<String, String> param = new HashMap<>();
         param.put("TxnHash", txnHash);
         param.put("Address", address);
-        if(!Helper.isEmptyOrNull(assetName)) {
+        if (!Helper.isEmptyOrNull(assetName)) {
             param.put("AssetName", assetName);
         }
 
         List<Map> txnDetailList = transactionDetailMapper.selectTransferTxnDetailByParam(param);
 
         for (int i = 0; i < txnDetailList.size(); i++) {
-            Map<String,Object> map = txnDetailList.get(i);
+            Map<String, Object> map = txnDetailList.get(i);
             String name = (String) map.get("AssetName");
             BigDecimal amount = (BigDecimal) map.get("Amount");
             //转换string给前端显示
             //ONG 精度格式化
-            if(ConstantParam.ONG.equals(name)) {
-                BigDecimal aa = amount.divide(new BigDecimal("1000000000"),9, BigDecimal.ROUND_HALF_UP);
-                map.put("Amount", aa.toString());
-            }else if(ConstantParam.ONT.equals(assetName)) {
+            if (ConstantParam.ONG.equals(name)) {
+                map.put("Amount", Helper.handleAmount2String(amount));
+            } else if (ConstantParam.ONT.equals(assetName)) {
                 map.put("Amount", amount.toString());
             }
         }
@@ -256,18 +272,30 @@ public class TransactionServiceImpl implements ITransactionService {
         initSDK();
         Map<String, Object> balanceMap = sdk.getAddressBalance(address);
         for (Map.Entry<String, Object> entry : balanceMap.entrySet()) {
+
             Map<String, Object> temp = new HashMap<>();
+
             if (Helper.isEmptyOrNull(assetName)) {
                 temp.put("AssetName", entry.getKey());
-                temp.put("Balance", entry.getValue());
+                if (ConstantParam.ONG.equals((String) entry.getKey())) {
+                    temp.put("Balance", Helper.handleAmount2String(new BigDecimal((String) entry.getValue())));
+                } else {
+                    temp.put("Balance", entry.getValue());
+                }
                 balanceList.add(temp);
             } else if (((String) entry.getKey()).equals(assetName)) {
                 temp.put("AssetName", entry.getKey());
-                temp.put("Balance", entry.getValue());
+                if (ConstantParam.ONG.equals(assetName)) {
+                    temp.put("Balance", Helper.handleAmount2String(new BigDecimal((String) entry.getValue())));
+                } else {
+                    temp.put("Balance", entry.getValue());
+                }
+
                 balanceList.add(temp);
             }
 
         }
+
         return balanceList;
     }
 

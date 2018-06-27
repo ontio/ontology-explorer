@@ -19,6 +19,8 @@
 
 package com.github.ontio.utils;
 
+import java.math.BigDecimal;
+
 /**
  * @author zhouq
  * @version 1.0
@@ -72,6 +74,13 @@ public class ConstantParam {
      */
     public static int TXN_INIT_AMOUNT = 0;
 
+    /**
+     * registerCandidate
+     */
+    public static final String AUTH_OPE_PREFIX = "auth";
+
+
+    public static final BigDecimal ZERO = new BigDecimal("0");
 
 
 

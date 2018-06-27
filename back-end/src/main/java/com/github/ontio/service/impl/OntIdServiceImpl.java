@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,8 @@ public class OntIdServiceImpl implements IOntIdService {
         for (Map map :
                 ontIdList) {
             map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
+            BigDecimal fee = (BigDecimal) map.get("Fee");
+            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
         }
 
         return Helper.result("QueryOntIdList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, ontIdList);
@@ -84,11 +87,11 @@ public class OntIdServiceImpl implements IOntIdService {
         int count = ontIdMapper.selectOntIdCount();
         List<Map> ontIdList = ontIdMapper.selectOntIdByPage(start, pageSize);
 
-        if (ontIdList.size() > 0) {
-            for (Map map :
-                    ontIdList) {
-                map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
-            }
+        for (Map map :
+                ontIdList) {
+            map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
+            BigDecimal fee = (BigDecimal) map.get("Fee");
+            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
         }
 
         Map<String, Object> rs = new HashMap<>();
@@ -116,6 +119,8 @@ public class OntIdServiceImpl implements IOntIdService {
         for (Map map :
                 ontIdList) {
             map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
+            BigDecimal fee = (BigDecimal) map.get("Fee");
+            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
         }
 
         initSDK();
