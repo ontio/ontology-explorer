@@ -17,7 +17,7 @@ FROM
 	`tbl_ont_txn_detail` `a`
 WHERE
 	(
-		`a`.`description` <> 'gasconsume'
+		`a`.`description` not in ('gasconsume','auth')
 	)
 	
 	
