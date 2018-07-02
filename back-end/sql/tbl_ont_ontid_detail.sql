@@ -30,3 +30,5 @@ CREATE TABLE `tbl_ont_ontid_detail` (
   PRIMARY KEY (`txnhash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+ALTER TABLE tbl_ont_ontid_detail ADD INDEX idx_ontid (ontid);

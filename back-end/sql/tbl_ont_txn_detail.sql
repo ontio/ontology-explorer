@@ -36,3 +36,6 @@ CREATE TABLE `tbl_ont_txn_detail` (
   PRIMARY KEY (`txnhash`,`txnindex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_fromaddr (fromaddress);
+ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_toaddr (toaddress);
