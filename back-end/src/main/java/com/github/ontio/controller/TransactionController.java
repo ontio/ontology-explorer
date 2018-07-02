@@ -138,4 +138,23 @@ public class TransactionController {
     }
 
 
+    /**
+     * query the specially asset balance and transactions
+     *
+     * @return
+     */
+    @RequestMapping(value = "/address/bytime/{address}/{assetname}/{pagesize}/{time}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryAddressInfoByTime(@PathVariable("address") String address,
+                                         @PathVariable("pagesize") int pageSize,
+                                         @PathVariable("assetname") String assetName,
+                                         @PathVariable("time") int time) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("address:{},assetname:{},pageSize:{},time:{}", address, assetName, pageSize, time);
+
+        Result rs = transactionService.queryAddressInfoByTime(address, assetName, pageSize, time);
+        return rs;
+    }
+
 }

@@ -69,5 +69,13 @@ public interface ITransactionService {
      */
     Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName);
 
+    /**
+     *  query the specially asset balance and transactions
+     *
+     * @param address
+     * @return
+     */
+    Result queryAddressInfoByTime(String address, String assetName, int pageSize, int time);
+
 
 }

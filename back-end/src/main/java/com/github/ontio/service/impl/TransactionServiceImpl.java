@@ -218,6 +218,39 @@ public class TransactionServiceImpl implements ITransactionService {
 
     }
 
+
+    @Override
+    public Result queryAddressInfoByTime(String address, String assetName, int pageSize, int time) {
+
+        Map<String, Object> rs = new HashMap<>();
+        List<Map> txnList = new ArrayList<>();
+
+        Map<String, Object> parmMap = new HashMap<>();
+        parmMap.put("Address", address);
+        parmMap.put("AssetName", assetName);
+        parmMap.put("Time", time);
+        parmMap.put("PageSize", pageSize);
+
+        int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(parmMap);
+
+        List<String> txnHashList = transactionDetailMapper.selectTxnHashByAddressInfoAndTime(parmMap);
+        for (String txnHash :
+                txnHashList) {
+            Map txnMap = getTransferTxnList(txnHash, address, assetName);
+            txnList.add(txnMap);
+        }
+
+        List<Object> balanceList = getAddressBalance(address, assetName);
+
+        rs.put("AssetBalance", balanceList);
+        rs.put("TxnList", txnList);
+        rs.put("TxnTotal", txnAmount);
+
+        return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+
+    }
+
+
     /**
      * query transfer information by txnHash
      * and format the information

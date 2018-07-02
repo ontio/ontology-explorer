@@ -29,4 +29,8 @@ public interface TransactionDetailMapper {
 
     int selectTxnAmountByAddressInfo(Map<String,Object> param);
 
+    List<String> selectTxnHashByAddressInfoAndTime(Map<String, Object> param);
+
+    void deleteByHeight(int height);
+
 }
