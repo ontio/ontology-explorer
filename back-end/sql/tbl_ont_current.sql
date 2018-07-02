@@ -24,4 +24,4 @@ CREATE TABLE `tbl_ont_current` (
   `txncount` int(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into tbl_ont_current(height,txncount) values(0,0);
+insert into tbl_ont_current(height,txncount) values(-1,0);
