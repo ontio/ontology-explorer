@@ -142,4 +142,9 @@
     where ontid = #{ontId}
   </select>
 
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_ont_ontid_detail
+    where height = #{param1}
+  </delete>
+
 </mapper>

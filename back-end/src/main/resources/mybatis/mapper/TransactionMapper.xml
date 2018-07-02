@@ -87,6 +87,7 @@
     select TxnHash, Height, TxnType, TxnTime, Description, ConfirmFlag, BlockIndex, Fee
     from view_ont_transaction
     where txnhash = #{txnHash}
+    limit 1
   </select>
 
   <select id="selectTxnByBlockHeight" parameterType="java.lang.Integer" resultType="java.util.Map">
@@ -99,6 +100,7 @@
     select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee
     from view_ont_transaction
     where txnhash = #{txnHash}
+    limit 1
   </select>
 
   <select id="selectNotOntIdTxnAmount" resultType="java.lang.Integer">

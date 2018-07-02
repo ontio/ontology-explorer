@@ -25,4 +25,7 @@ public interface OntIdMapper {
     List<Map> selectOntId(Map<String,Object> param);
 
     int selectCountByOntId(String ontId);
+
+    void deleteByHeight(int height);
+
 }
