@@ -189,25 +189,27 @@
 
 
   <select id="selectTransferTxnDetailByParam" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT * from(
     select ToAddress, FromAddress, Amount, AssetName, Description
     from tbl_ont_txn_detail
-    where
-      (
-      txnhash = #{TxnHash}
-      and toaddress = #{Address}
-      <if test="AssetName != '' and AssetName != null">
+    where txnhash = #{TxnHash}
+    and toaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
-      </if>
-      and description in ('transfer','gasconsume')
-      ) or (
-      txnhash = #{TxnHash}
-      and fromaddress = #{Address}
-      <if test="AssetName != '' and AssetName != null">
+    </if>
+    and description in ('transfer','gasconsume')
+    UNION ALL
+    select ToAddress, FromAddress, Amount, AssetName, Description
+    from tbl_ont_txn_detail
+    where txnhash = #{TxnHash}
+    and fromaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
-      </if>
-      and description in ('transfer','gasconsume')
-      )
+    </if>
+    and description in ('transfer','gasconsume')
+    ) as t2
   </select>
+
 
 
   <select id="selectTransferTxnDetailByHash" parameterType="java.lang.String" resultType="java.util.Map">
@@ -227,38 +229,68 @@
   </select>
 
   <select id="selectTxnHashByAddressInfo" parameterType="java.util.Map" resultType="java.lang.String">
-    select distinct(txnhash) as TxnHash
+    select distinct(t2.txnHash) from (
+    select txnHash, height
     from tbl_ont_txn_detail
-    where (
-    toaddress = #{Address}
+    where toaddress = #{Address}
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
-    ) or (
-    fromaddress = #{Address}
+    union all
+    select txnHash, height
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
-    )
-    order by height DESC
+    ) as t2
+    order by t2.height DESC
     limit #{Start}, #{PageSize}
   </select>
 
-    <select id="selectTxnAmountByAddressInfo" parameterType="java.util.Map" resultType="java.lang.Integer">
-      select count(distinct(txnhash))
-      from tbl_ont_txn_detail
-      where (
-      toaddress = #{Address}
-      <if test="AssetName != '' and AssetName != null">
-        and assetname = #{AssetName}
-      </if>
-      ) or (
-      fromaddress = #{Address}
-      <if test="AssetName != '' and AssetName != null">
-        and assetname = #{AssetName}
-      </if>
-      )
-    </select>
+  <select id="selectTxnHashByAddressInfoAndTime" parameterType="java.util.Map" resultType="java.lang.String">
+    select distinct(t2.txnHash) from (
+    select txnHash, txntime
+    from tbl_ont_txn_detail
+    where toaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    union all
+    select txnHash, txntime
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    ) as t2
+    where <![CDATA[ t2.txntime < #{Time} ]]>
+    order by t2.txntime desc
+    limit #{PageSize}
+  </select>
 
+  <select id="selectTxnAmountByAddressInfo" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(distinct(t2.txnhash)) from (
+    select txnhash
+    from tbl_ont_txn_detail
+    where toaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    union all
+    select txnhash
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    ) as t2
+  </select>
+
+
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_ont_txn_detail
+    where height = #{param1}
+  </delete>
 
 </mapper>
