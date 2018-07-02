@@ -19,13 +19,12 @@
 package com.github.ontio.asyncService;
 
 
-import com.github.ontio.OntSdk;
-import com.github.ontio.core.block.Block;
-import com.github.ontio.core.transaction.Transaction;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.model.Current;
-import com.github.ontio.thread.*;
+import com.github.ontio.thread.TxnHandlerThread;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
@@ -59,25 +58,25 @@ public class BlockHandleService {
     /**
      * handle the block and the transactions in this block
      *
-     * @param sdkService
-     * @param block
+     * @param blockJson
      * @param blockBookKeeper
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleOneBlock(OntSdk sdkService, Block block, String blockBookKeeper) throws Exception {
+    public void handleOneBlock(JSONObject blockJson, String blockBookKeeper) throws Exception {
 
-        int blockHeight = block.height;
-        int blockTime = block.timestamp;
-        int txnNum = block.transactions.length;
+        int blockHeight = blockJson.getJSONObject("Header").getInteger("Height");
+        int blockTime = blockJson.getJSONObject("Header").getInteger("Timestamp");
+        JSONArray txnArray = blockJson.getJSONArray("Transactions");
+        int txnNum = txnArray.size();
         logger.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
 
         ConstantParam.TXN_INIT_AMOUNT = 0;
 
         //asynchronize handle transaction
         for (int i = 0; i < txnNum; i++) {
-            Transaction txn = block.transactions[i];
-            Future future = txnHandlerThread.asyncHandleTxn(sdkService, txn, blockHeight, blockTime, i +1);
+            JSONObject txnJson = (JSONObject) txnArray.get(i);
+            Future future = txnHandlerThread.asyncHandleTxn(txnJson, blockHeight, blockTime, i +1);
             future.get();
         }
 
@@ -90,10 +89,10 @@ public class BlockHandleService {
             }
         }
 
-        if (blockHeight > 1) {
-            blockMapper.updateNextBlockHash(block.hash().toString(), blockHeight - 1);
+        if (blockHeight >= 1) {
+            blockMapper.updateNextBlockHash(blockJson.getString("Hash"), blockHeight - 1);
         }
-        insertBlock(block, blockBookKeeper);
+        insertBlock(blockJson, blockBookKeeper);
 
         int txnCount = currentMapper.selectTxnCount();
         updateCurrent(blockHeight, txnCount + txnNum);
@@ -103,17 +102,17 @@ public class BlockHandleService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void insertBlock(Block block, String blockBookKeeper) throws Exception{
+    public void insertBlock(JSONObject blockJson, String blockBookKeeper) throws Exception{
 
         com.github.ontio.model.Block blockDO = new com.github.ontio.model.Block();
-        blockDO.setBlocksize(block.toArray().length);
-        blockDO.setBlocktime(block.timestamp);
-        blockDO.setHash(block.hash().toString());
-        blockDO.setHeight(block.height);
-        blockDO.setTxnsroot(block.transactionsRoot.toString());
-        blockDO.setPrevblock(block.prevBlockHash.toString());
-        blockDO.setConsensusdata(Helper.asUnsignedDecimalString(block.consensusData));
-        blockDO.setTxnnum(block.transactions.length);
+        blockDO.setBlocksize(blockJson.getInteger("Size"));
+        blockDO.setBlocktime(blockJson.getJSONObject("Header").getInteger("Timestamp"));
+        blockDO.setHash(blockJson.getString("Hash"));
+        blockDO.setHeight(blockJson.getJSONObject("Header").getInteger("Height"));
+        blockDO.setTxnsroot(blockJson.getJSONObject("Header").getString("TransactionsRoot"));
+        blockDO.setPrevblock(blockJson.getJSONObject("Header").getString("PrevBlockHash"));
+        blockDO.setConsensusdata(blockJson.getJSONObject("Header").getString("ConsensusData"));
+        blockDO.setTxnnum(blockJson.getJSONArray("Transactions").size());
         blockDO.setBookkeeper(blockBookKeeper);
         blockDO.setNextblock("");
 

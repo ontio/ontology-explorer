@@ -19,7 +19,11 @@
 
 package com.github.ontio.utils;
 
+import com.github.ontio.OntSdk;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zhouq
@@ -27,6 +31,32 @@ import java.math.BigDecimal;
  * @date 2018/2/27
  */
 public class ConstantParam {
+
+
+    /**
+     * 节点restfulurl列表
+     */
+    public static List<String> NODE_RESTFULURLLIST = new ArrayList<>();
+
+    /**
+     * 主节点restfulurl
+     */
+    public static String MASTERNODE_RESTFULURL = "";
+
+    /**
+     * 主节点在列表中的序列号
+     */
+    public static int MASTERNODE_INDEX = 0;
+
+    /**
+     * 尝试连接的最大次数
+     */
+    public static int NODE_RETRYMAXTIME = 0;
+
+    /**
+     * Ontology SDK object
+     */
+    public static OntSdk ONT_SDKSERVICE = null;
 
 
     /**

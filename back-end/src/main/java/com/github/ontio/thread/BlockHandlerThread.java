@@ -19,20 +19,20 @@
 
 package com.github.ontio.thread;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.asyncService.BlockHandleService;
-import com.github.ontio.core.block.Block;
 import com.github.ontio.dao.CurrentMapper;
+import com.github.ontio.dao.OntIdMapper;
+import com.github.ontio.dao.TransactionDetailMapper;
 import com.github.ontio.utils.ConfigParam;
+import com.github.ontio.utils.ConstantParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author zhouq
@@ -47,22 +47,16 @@ public class BlockHandlerThread extends Thread {
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
-    private static List<String> nodeRestfulUrlList = new ArrayList<>();
-
-    private static String masterNodeRestfulUrl = "";
-
-    private static int masterNodeIndex = 0;
-
-    private static int retryMaxTime = 0;
-
-    private static OntSdk sdkService = null;
-
-    @Autowired
-    private CurrentMapper currentMapper;
     @Autowired
     private ConfigParam configParam;
     @Autowired
     private BlockHandleService blockManagementService;
+    @Autowired
+    private CurrentMapper currentMapper;
+    @Autowired
+    private OntIdMapper ontIdMapper;
+    @Autowired
+    private TransactionDetailMapper transactionDetailMapper;
     @Autowired
     private Environment env;
 
@@ -71,12 +65,13 @@ public class BlockHandlerThread extends Thread {
     public void run() {
         logger.info("========{}.run=======", CLASS_NAME);
         try {
-            retryMaxTime = configParam.NODE_AMOUNT * configParam.NODE_INTERRUPTTIME_MAX;
-            masterNodeRestfulUrl = configParam.MASTERNODE_RESTFUL_URL;
+            ConstantParam.NODE_RETRYMAXTIME = configParam.NODE_AMOUNT * configParam.NODE_INTERRUPTTIME_MAX;
+            ConstantParam.MASTERNODE_RESTFULURL = configParam.MASTERNODE_RESTFUL_URL;
 
+            //初始化node列表
             initNodeRestfulList();
-            sdkService = initSdkService();
-
+            //初始化sdk object
+            initSdkService();
 
             int oneBlockTryTime = 1;
 
@@ -107,14 +102,19 @@ public class BlockHandlerThread extends Thread {
 
                 oneBlockTryTime = 1;
 
+                //每次删除当前current表height+1的交易，防止上次程序异常退出因为事务性异常插入的交易导致本次再次插入主键重复
+                //即防止current表height高度未更新，但该区块高度的交易已经插入tbl_ont_ontid_detail或tbl_ont_txn_detail
+                ontIdMapper.deleteByHeight(dbBlockHeight + 1);
+                transactionDetailMapper.deleteByHeight(dbBlockHeight + 1);
+
                 //handle blocks and transactions
                 for (int tHeight = dbBlockHeight + 1; tHeight <= remoteBlockHieght; tHeight++) {
-                    Block block = getBlockByHeight(tHeight);
-                    String blockBookKeeper = "firstBookKeeper";
-                    if (tHeight > 1) {
+                    JSONObject blockJson = getBlockJsonByHeight(tHeight);
+                    String blockBookKeeper = "";
+                    if (tHeight >= 1) {
                         blockBookKeeper = getBlockBookKeeperByHeight(tHeight - 1);
                     }
-                    blockManagementService.handleOneBlock(sdkService, block, blockBookKeeper);
+                    blockManagementService.handleOneBlock(blockJson, blockBookKeeper);
                 }
 
             }
@@ -138,15 +138,15 @@ public class BlockHandlerThread extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                remoteHeight = sdkService.getConnect().getBlockHeight();
+                remoteHeight = ConstantParam.ONT_SDKSERVICE.getConnect().getBlockHeight();
                 break;
             } catch (Exception ex) {
-                logger.error("getBlockHeight error, try again...restful:{},error:", masterNodeRestfulUrl, ex);
-                if (tryTime < retryMaxTime && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
+                logger.error("getBlockHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                if (tryTime < ConstantParam.NODE_RETRYMAXTIME && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
                     continue;
-                } else if (tryTime < retryMaxTime) {
+                } else if (tryTime < ConstantParam.NODE_RETRYMAXTIME) {
                     tryTime++;
                     Thread.sleep(1000);
                     continue;
@@ -166,26 +166,26 @@ public class BlockHandlerThread extends Thread {
      * @return
      * @throws Exception
      */
-    private Block getBlockByHeight(int height) throws Exception {
+    private JSONObject getBlockJsonByHeight(int height) throws Exception {
 
-        Block block = new Block();
+        JSONObject block = new JSONObject();
         int tryTime = 1;
         while (true) {
             try {
-                block = sdkService.getConnect().getBlock(height);
+                block = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getBlockJson(height);
                 break;
             } catch (Exception ex) {
-                logger.error("getBlockByHeight error, try again...restful:{},error:", masterNodeRestfulUrl, ex);
-                if (tryTime < retryMaxTime && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
+                logger.error("getBlockJsonByHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                if (tryTime < ConstantParam.NODE_RETRYMAXTIME && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
                     continue;
-                } else if (tryTime < retryMaxTime) {
+                } else if (tryTime < ConstantParam.NODE_RETRYMAXTIME) {
                     tryTime++;
                     Thread.sleep(1000);
                     continue;
                 }
-                logger.error("getBlockByHeight thread can't work,error {} ", ex);
+                logger.error("getBlockJsonByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
             }
         }
@@ -206,15 +206,16 @@ public class BlockHandlerThread extends Thread {
         int tryTime = 1;
         while (true) {
             try {
-                nextBookKeeper = sdkService.getConnect().getBlock(height).nextBookkeeper.toBase58();
+                JSONObject blockJson = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getBlockJson(height);
+                nextBookKeeper = blockJson.getJSONObject("Header").getString("NextBookkeeper");
                 break;
             } catch (Exception ex) {
-                logger.error("getBlockBookKeeperByHeight error, try again...restsful:{},error:", masterNodeRestfulUrl, ex);
-                if (tryTime < retryMaxTime && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
+                logger.error("getBlockBookKeeperByHeight error, try again...restsful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                if (tryTime < ConstantParam.NODE_RETRYMAXTIME && tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
                     continue;
-                } else if (tryTime < retryMaxTime) {
+                } else if (tryTime < ConstantParam.NODE_RETRYMAXTIME) {
                     tryTime++;
                     Thread.sleep(1000);
                     continue;
@@ -229,19 +230,20 @@ public class BlockHandlerThread extends Thread {
 
 
     /**
-     * switch to another node and initialize sdkService object
+     * switch to another node and initialize ONT_SDKSERVICE object
      * when the master node have an exception
      */
     private void switchNode() {
-        masterNodeIndex++;
-        if (masterNodeIndex >= configParam.NODE_AMOUNT) {
-            masterNodeIndex = 0;
+        ConstantParam.MASTERNODE_INDEX++;
+        if (ConstantParam.MASTERNODE_INDEX >= configParam.NODE_AMOUNT) {
+            ConstantParam.MASTERNODE_INDEX = 0;
         }
-        masterNodeRestfulUrl = nodeRestfulUrlList.get(masterNodeIndex);
-        logger.warn("####switch node restfulurl to {}####", masterNodeRestfulUrl);
+        ConstantParam.MASTERNODE_RESTFULURL = ConstantParam.NODE_RESTFULURLLIST.get(ConstantParam.MASTERNODE_INDEX);
+        logger.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
+
         OntSdk wm = OntSdk.getInstance();
-        wm.setRestful(masterNodeRestfulUrl);
-        sdkService = wm;
+        wm.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
+        ConstantParam.ONT_SDKSERVICE = wm;
     }
 
     /**
@@ -249,19 +251,19 @@ public class BlockHandlerThread extends Thread {
      */
     private void initNodeRestfulList() {
         for (int i = 0; i < configParam.NODE_AMOUNT; i++) {
-            nodeRestfulUrlList.add(env.getProperty("node.restful.url_" + i));
+            ConstantParam.NODE_RESTFULURLLIST.add(env.getProperty("node.restful.url_" + i));
         }
     }
 
     /**
-     * initialize ontology sdkService object for synchronizing data
+     * initialize ontology ONT_SDKSERVICE object for synchronizing data
      *
      * @return
      */
-    private OntSdk initSdkService() {
+    private void initSdkService() {
         OntSdk sdkService = OntSdk.getInstance();
-        sdkService.setRestful(masterNodeRestfulUrl);
-        return sdkService;
+        sdkService.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
+        ConstantParam.ONT_SDKSERVICE = sdkService;
     }
 
 
