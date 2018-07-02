@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>com.github.ontio</groupId>
 			<artifactId>javasdk</artifactId>
-			<version>v0.9</version>
+			<version>v1.0</version>
 		</dependency>
 
 		<dependency>
