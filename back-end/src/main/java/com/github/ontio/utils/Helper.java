@@ -19,6 +19,7 @@
 
 package com.github.ontio.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.paramBean.Result;
 
 import java.math.BigDecimal;
@@ -141,6 +142,21 @@ public class Helper {
         return descriptionSb.toString();
     }
 
+
+    /**
+     * judge whether the string is in json format.
+     *
+     * @param str
+     * @return
+     */
+    public static Boolean isJSONStr(String str) {
+        try{
+            JSONObject obj = JSONObject.parseObject(str);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
+    }
 
     public static String currentMethod() {
         return new Exception("").getStackTrace()[1].getMethodName();
