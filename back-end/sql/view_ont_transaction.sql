@@ -15,9 +15,5 @@ CREATE VIEW view_ont_transaction AS SELECT DISTINCT
 	`a`.`fee` AS `fee`
 FROM
 	`tbl_ont_txn_detail` `a`
-WHERE
-	(
-		`a`.`description` not in ('gasconsume','auth')
-	)
-	
+WHERE `a`.`description` <> 'gasconsume'
 	
