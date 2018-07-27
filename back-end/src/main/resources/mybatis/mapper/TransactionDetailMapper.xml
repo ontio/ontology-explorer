@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.TransactionDetailMapper">
+
   <resultMap id="BaseResultMap" type="com.github.ontio.model.TransactionDetail">
     <id column="txnhash" jdbcType="VARCHAR" property="txnhash" />
     <id column="txnindex" jdbcType="INTEGER" property="txnindex" />
@@ -15,34 +16,35 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="blockindex" jdbcType="INTEGER" property="blockindex" />
     <result column="confirmflag" jdbcType="INTEGER" property="confirmflag" />
+    <result column="eventtype" jdbcType="INTEGER" property="eventtype" />
   </resultMap>
   <sql id="Base_Column_List">
-    txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
-    toaddress, description, blockindex, confirmflag
+    txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress,
+    toaddress, description, blockindex, confirmflag, eventtype
   </sql>
   <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_ont_txn_detail
     where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
+    and txnindex = #{txnindex,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey">
     delete from tbl_ont_txn_detail
     where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
+    and txnindex = #{txnindex,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
-    insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
-      txntime, height, amount, 
-      fee, assetname, fromaddress, 
-      toaddress, description, blockindex, 
-      confirmflag)
-    values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
-      #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
-      #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
-      #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
-      #{confirmflag,jdbcType=INTEGER})
+    insert into tbl_ont_txn_detail (txnhash, txnindex, txntype,
+    txntime, height, amount,
+    fee, assetname, fromaddress,
+    toaddress, description, blockindex,
+    confirmflag, eventtype)
+    values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER},
+    #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL},
+    #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR},
+    #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER},
+    #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail
@@ -86,6 +88,9 @@
       <if test="confirmflag != null">
         confirmflag,
       </if>
+      <if test="eventtype != null">
+        eventtype,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="txnhash != null">
@@ -127,6 +132,9 @@
       <if test="confirmflag != null">
         #{confirmflag,jdbcType=INTEGER},
       </if>
+      <if test="eventtype != null">
+        #{eventtype,jdbcType=INTEGER},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.TransactionDetail">
@@ -165,109 +173,135 @@
       <if test="confirmflag != null">
         confirmflag = #{confirmflag,jdbcType=INTEGER},
       </if>
+      <if test="eventtype != null">
+        eventtype = #{eventtype,jdbcType=INTEGER},
+      </if>
     </set>
     where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
+    and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail">
     update tbl_ont_txn_detail
     set txntype = #{txntype,jdbcType=INTEGER},
-      txntime = #{txntime,jdbcType=INTEGER},
-      height = #{height,jdbcType=INTEGER},
-      amount = #{amount,jdbcType=DECIMAL},
-      fee = #{fee,jdbcType=DECIMAL},
-      assetname = #{assetname,jdbcType=VARCHAR},
-      fromaddress = #{fromaddress,jdbcType=VARCHAR},
-      toaddress = #{toaddress,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      blockindex = #{blockindex,jdbcType=INTEGER},
-      confirmflag = #{confirmflag,jdbcType=INTEGER}
+    txntime = #{txntime,jdbcType=INTEGER},
+    height = #{height,jdbcType=INTEGER},
+    amount = #{amount,jdbcType=DECIMAL},
+    fee = #{fee,jdbcType=DECIMAL},
+    assetname = #{assetname,jdbcType=VARCHAR},
+    fromaddress = #{fromaddress,jdbcType=VARCHAR},
+    toaddress = #{toaddress,jdbcType=VARCHAR},
+    description = #{description,jdbcType=VARCHAR},
+    blockindex = #{blockindex,jdbcType=INTEGER},
+    confirmflag = #{confirmflag,jdbcType=INTEGER},
+    eventtype = #{eventtype,jdbcType=INTEGER}
     where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
+    and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
 
 
 
-  <select id="selectTransferTxnDetailByParam" parameterType="java.util.Map" resultType="java.util.Map">
-    SELECT * from(
-    select ToAddress, FromAddress, Amount, AssetName, Description
+  <select id="selectTxnWithoutOntId" parameterType="java.lang.Integer" resultType="java.util.Map">
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee
     from tbl_ont_txn_detail
-    where txnhash = #{TxnHash}
-    and toaddress = #{Address}
-    <if test="AssetName != '' and AssetName != null">
-      and assetname = #{AssetName}
-    </if>
-    and description in ('transfer','gasconsume')
-    UNION ALL
-    select ToAddress, FromAddress, Amount, AssetName, Description
-    from tbl_ont_txn_detail
-    where txnhash = #{TxnHash}
-    and fromaddress = #{Address}
-    <if test="AssetName != '' and AssetName != null">
-      and assetname = #{AssetName}
-    </if>
-    and description in ('transfer','gasconsume')
-    ) as t2
+    where eventtype not in(1, 4)
+    group by txnhash
+    order by height DESC
+    limit #{param1}, #{param2}
   </select>
 
+  <select id="selectTxnWithoutOntIdAmount" resultType="java.lang.Integer">
+    select count(DISTINCT(txnhash))
+    from tbl_ont_txn_detail
+    where eventtype not in(1, 4)
+  </select>
 
+  <select id="selectTxnByHash" parameterType="java.lang.String" resultType="java.util.Map">
+    select TxnHash, Height, TxnType, TxnTime, Description, ConfirmFlag, BlockIndex, Fee
+    from tbl_ont_txn_detail
+    where txnhash = #{txnHash}
+    order by txnindex
+    limit 1
+  </select>
 
   <select id="selectTransferTxnDetailByHash" parameterType="java.lang.String" resultType="java.util.Map">
     select ToAddress, FromAddress, Amount, AssetName, Description
     from tbl_ont_txn_detail
     where txnhash = #{txnHash}
-    and description = 'transfer'
+    and eventtype in (1,3)
   </select>
 
-
-  <select id="selectBalanceByAddress" parameterType="java.lang.String" resultType="java.util.Map">
-    select sum(amount) as Balance, assetname as AssetName
-    from tbl_ont_txn_detail
-    where toaddress = #{address}
-    and spendflag = 0
-    GROUP BY assetid
-  </select>
-
-  <select id="selectTxnHashByAddressInfo" parameterType="java.util.Map" resultType="java.lang.String">
-    select distinct(t2.txnHash) from (
-    select txnHash, height
+  <select id="selectTxnByAddressInfo" parameterType="java.util.Map" resultType="java.util.Map">
+    select t2.* from (
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
     where toaddress = #{Address}
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    and eventtype = 3
     union all
-    select txnHash, height
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
     where fromaddress = #{Address}
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    and eventtype = 3
     ) as t2
     order by t2.height DESC
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectTxnHashByAddressInfoAndTime" parameterType="java.util.Map" resultType="java.lang.String">
-    select distinct(t2.txnHash) from (
-    select txnHash, txntime
+
+  <select id="selectTxnByAddressInfoAndTimePage" parameterType="java.util.Map" resultType="java.util.Map">
+    select t2.* from (
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
     where toaddress = #{Address}
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    and  eventtype = 3
     union all
-    select txnHash, txntime
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
     where fromaddress = #{Address}
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    and  eventtype = 3
     ) as t2
-    where <![CDATA[ t2.txntime < #{Time} ]]>
-    order by t2.txntime desc
+    where <![CDATA[ t2.TxnTime < #{Time} ]]>
+    order by t2.TxnTime desc
     limit #{PageSize}
   </select>
+
+
+  <select id="selectTxnByAddressInfoAndTime" parameterType="java.util.Map" resultType="java.util.Map">
+    select t2.* from (
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
+    from tbl_ont_txn_detail
+    where toaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    and  eventtype = 3
+    union all
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    and  eventtype = 3
+    ) as t2
+    where t2.TxnTime &gt;= #{BeginTime}
+    <if test="EndTime != null and EndTime != ''">
+      and  <![CDATA[ t2.TxnTime <= #{EndTime} ]]>
+    </if>
+    order by t2.TxnTime desc
+  </select>
+
 
   <select id="selectTxnAmountByAddressInfo" parameterType="java.util.Map" resultType="java.lang.Integer">
     select count(distinct(t2.txnhash)) from (
@@ -277,6 +311,7 @@
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    and eventtype = 3
     union all
     select txnhash
     from tbl_ont_txn_detail
@@ -284,9 +319,26 @@
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    and eventtype = 3
     ) as t2
   </select>
 
+  <select id="selectTxnByBlockHeight" parameterType="java.lang.Integer" resultType="java.util.Map">
+    select TxnHash, Height, TxnTime, ConfirmFlag
+    from tbl_ont_txn_detail
+    where height = #{param1}
+    group by txnhash
+  </select>
+
+
+  <select id="selectLastONTTransferTxnTime" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select (case when count(1) = 0 then 0 else TxnTime end) as TxnTime
+    from tbl_ont_txn_detail
+    where fromaddress = #{param1}
+    and assetname = 'ont'
+    order by height DESC
+    limit 1
+  </select>
 
   <delete id="deleteByHeight" parameterType="java.lang.Integer">
     delete from tbl_ont_txn_detail

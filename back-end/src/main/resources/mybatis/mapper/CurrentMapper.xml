@@ -4,10 +4,14 @@
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Current">
     <result column="height" jdbcType="INTEGER" property="height" />
     <result column="txncount" jdbcType="INTEGER" property="txncount" />
+    <result column="ontidcount" jdbcType="INTEGER" property="ontidcount" />
   </resultMap>
+
   <insert id="insert" parameterType="com.github.ontio.model.Current">
-    insert into tbl_ont_current (height, txncount)
-    values (#{height,jdbcType=INTEGER}, #{txncount,jdbcType=INTEGER})
+    insert into tbl_ont_current (height, txncount, ontidcount
+    )
+    values (#{height,jdbcType=INTEGER}, #{txncount,jdbcType=INTEGER}, #{ontidcount,jdbcType=INTEGER}
+    )
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.Current">
     insert into tbl_ont_current
@@ -18,6 +22,9 @@
       <if test="txncount != null">
         txncount,
       </if>
+      <if test="ontidcount != null">
+        ontidcount,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="height != null">
@@ -26,22 +33,25 @@
       <if test="txncount != null">
         #{txncount,jdbcType=INTEGER},
       </if>
+      <if test="ontidcount != null">
+        #{ontidcount,jdbcType=INTEGER},
+      </if>
     </trim>
   </insert>
 
-
   <select id="selectSummaryInfo" resultType="java.util.Map">
-    select TxnCount, Height
+    select TxnCount, Height, OntIdCount
     from tbl_ont_current
   </select>
+
 
   <select id="selectDBHeight" resultType="java.lang.Integer">
     select Height
     from tbl_ont_current
   </select>
 
-  <select id="selectTxnCount" resultType="java.lang.Integer">
-    select TxnCount
+  <select id="selectTxnCount" resultType="java.util.Map">
+    select TxnCount, OntIdCount
     from tbl_ont_current
   </select>
 

@@ -46,4 +46,6 @@ public interface TransactionDetailMapper {
     List<Map> selectTxnByAddressInfoAndTime(Map<String, Object> param);
 
     int selectTxnAmountByAddressInfo(Map<String, Object> param);
+
+    void deleteByHeight(int height);
 }
