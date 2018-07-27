@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,6 +96,14 @@ public class OntologySDKService {
         return generateBlockTime;
     }
 
+
+
+    /**
+     * 获取账户余额，包括unboundong
+     *
+     * @param address
+     * @return
+     */
     public Map getAddressBalance(String address) {
 
         Map<String, Object> balanceMap = new HashMap<>();
@@ -104,10 +113,33 @@ public class OntologySDKService {
         } catch (Exception e) {
             logger.error("getAddressBalance error...", e);
             e.printStackTrace();
+            return null;
         }
 
         return balanceMap;
     }
+
+
+    /**
+     * 获取unboundong
+     *
+     * @param address
+     * @return
+     */
+    public String getUnBoundOng(String address) {
+
+        OntSdk ontSdk = getOntSdk();
+        try {
+            String unboundOng = ontSdk.nativevm().ong().unboundOng(address);
+            return new BigDecimal(unboundOng).divide(ConstantParam.ONT_TOTAL).toPlainString();
+        } catch (Exception e) {
+            logger.error("getAddressBalance error...", e);
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
 
     private OntSdk getOntSdk() {
         OntSdk wm = OntSdk.getInstance();
