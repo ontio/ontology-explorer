@@ -1,10 +1,14 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.OntId;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Mapper
+@Component(value = "OntIdMapper")
 public interface OntIdMapper {
     int deleteByPrimaryKey(String txnhash);
 
@@ -18,14 +22,12 @@ public interface OntIdMapper {
 
     int updateByPrimaryKey(OntId record);
 
+
     List<Map> selectOntIdByPage(int start, int pageSize);
 
-    int selectOntIdCount();
+    int selectOntIdTxnCount();
 
-    List<Map> selectOntId(Map<String,Object> param);
+    List<Map> selectOntId(Map<String, Object> param);
 
     int selectCountByOntId(String ontId);
-
-    void deleteByHeight(int height);
-
 }
