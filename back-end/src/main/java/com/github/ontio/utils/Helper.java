@@ -22,9 +22,6 @@ package com.github.ontio.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.paramBean.Result;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 /**
  * @author zhouq
  * @date 2018/2/27
@@ -33,7 +30,6 @@ public class Helper {
 
     private static final String SEPARATOR = "\\|\\|";
 
-    private static final BigInteger TWO_64 = BigInteger.ONE.shiftLeft(64);
 
 
     /**
@@ -73,22 +69,7 @@ public class Helper {
     }
 
 
-    public static String handleAmount2String(BigDecimal amount) {
-        if (amount.compareTo(new BigDecimal("0")) == 0) {
-            return "0";
-        } else if (amount.compareTo(new BigDecimal("1000")) < 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("0.");
-            for (int i = 0; i < 9 - String.valueOf(amount.intValue()).length(); i++) {
-                sb.append("0");
-            }
-            sb.append(String.valueOf(amount.intValue()));
-            return sb.toString();
-        } else {
-            BigDecimal val2 = amount.divide(new BigDecimal("1000000000"), 9, BigDecimal.ROUND_HALF_UP);
-            return val2.toString();
-        }
-    }
+
 
 
     /**
@@ -163,13 +144,7 @@ public class Helper {
     }
 
 
-    public static String asUnsignedDecimalString(long l) {
-        BigInteger b = BigInteger.valueOf(l);
-        if (b.signum() < 0) {
-            b = b.add(TWO_64);
-        }
-        return b.toString();
-    }
+
 
 
 }
