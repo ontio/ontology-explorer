@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -72,11 +73,12 @@ public class BlockHandleService {
         logger.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
 
         ConstantParam.TXN_INIT_AMOUNT = 0;
+        ConstantParam.ONTIDTXN_INIT_AMOUNT = 0;
 
         //asynchronize handle transaction
         for (int i = 0; i < txnNum; i++) {
             JSONObject txnJson = (JSONObject) txnArray.get(i);
-            Future future = txnHandlerThread.asyncHandleTxn(txnJson, blockHeight, blockTime, i +1);
+            Future future = txnHandlerThread.asyncHandleTxn(txnJson, blockHeight, blockTime, i + 1);
             future.get();
         }
 
@@ -94,15 +96,17 @@ public class BlockHandleService {
         }
         insertBlock(blockJson, blockBookKeeper);
 
-        int txnCount = currentMapper.selectTxnCount();
-        updateCurrent(blockHeight, txnCount + txnNum);
+        Map<String, Integer> txnMap = currentMapper.selectTxnCount();
+        int txnCount = txnMap.get("TxnCount");
+        int ontIdTxnCount = txnMap.get("OntIdCount");
+        updateCurrent(blockHeight, txnCount + txnNum, ontIdTxnCount + ConstantParam.ONTIDTXN_INIT_AMOUNT);
 
         logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void insertBlock(JSONObject blockJson, String blockBookKeeper) throws Exception{
+    public void insertBlock(JSONObject blockJson, String blockBookKeeper) throws Exception {
 
         com.github.ontio.model.Block blockDO = new com.github.ontio.model.Block();
         blockDO.setBlocksize(blockJson.getInteger("Size"));
@@ -120,11 +124,12 @@ public class BlockHandleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateCurrent(int height, int txnCount) throws Exception{
+    public void updateCurrent(int height, int txnCount, int ontIdTxnCount) throws Exception {
 
         Current currentDO = new Current();
         currentDO.setHeight(height);
         currentDO.setTxncount(txnCount);
+        currentDO.setOntidcount(ontIdTxnCount);
 
         currentMapper.update(currentDO);
     }
