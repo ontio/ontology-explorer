@@ -21,14 +21,13 @@
 package com.github.ontio.service.impl;
 
 
-import com.github.ontio.paramBean.Result;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
-import com.github.ontio.dao.TransactionMapper;
+import com.github.ontio.dao.TransactionDetailMapper;
+import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.IBlockService;
 import com.github.ontio.utils.ErrorInfo;
 import com.github.ontio.utils.Helper;
-import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ import java.util.Map;
 
 
 @Service("BlockService")
-@MapperScan("com.github.ontio.dao")
+//@MapperScan("com.github.ontio.dao")
 public class BlockServiceImpl implements IBlockService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -51,9 +50,10 @@ public class BlockServiceImpl implements IBlockService {
     @Autowired
     private BlockMapper blockMapper;
     @Autowired
-    private TransactionMapper transactionMapper;
+    private TransactionDetailMapper transactionDetailMapper;
     @Autowired
     private CurrentMapper currentMapper;
+
 
     @Override
     public Result queryBlockList(int amount) {
@@ -118,7 +118,7 @@ public class BlockServiceImpl implements IBlockService {
             return Helper.result("QueryBlock", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION,false);
         }
 
-        List<Map> txnList = transactionMapper.selectTxnByBlockHeight(height);
+        List<Map> txnList = transactionDetailMapper.selectTxnByBlockHeight(height);
         blockInfo.put("TxnList", txnList);
 
         return Helper.result("QueryBlock", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, blockInfo);
@@ -134,7 +134,7 @@ public class BlockServiceImpl implements IBlockService {
         }
 
         int blockHeight = (Integer) blockInfo.get("Height");
-        List<Map> txnList = transactionMapper.selectTxnByBlockHeight(blockHeight);
+        List<Map> txnList = transactionDetailMapper.selectTxnByBlockHeight(blockHeight);
         blockInfo.put("TxnList", txnList);
 
         return Helper.result("QueryBlock", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, blockInfo);

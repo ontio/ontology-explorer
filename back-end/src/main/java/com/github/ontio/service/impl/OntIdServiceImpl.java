@@ -84,7 +84,7 @@ public class OntIdServiceImpl implements IOntIdService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        int count = ontIdMapper.selectOntIdCount();
+        int count = ontIdMapper.selectOntIdTxnCount();
         List<Map> ontIdList = ontIdMapper.selectOntIdByPage(start, pageSize);
 
         for (Map map :
@@ -110,12 +110,14 @@ public class OntIdServiceImpl implements IOntIdService {
         param.put("PageSize", pageSize);
         param.put("Start", start);
         param.put("OntId", ontId);
-        List<Map> ontIdList = ontIdMapper.selectOntId(param);
-        int amount = ontIdMapper.selectCountByOntId(ontId);
 
+        List<Map> ontIdList = ontIdMapper.selectOntId(param);
         if (ontIdList.size() == 0) {
             return Helper.result("QueryOntId", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
         }
+
+        int amount = ontIdMapper.selectCountByOntId(ontId);
+
         for (Map map :
                 ontIdList) {
             map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));

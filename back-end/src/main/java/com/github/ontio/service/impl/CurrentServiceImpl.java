@@ -20,10 +20,8 @@
 
 package com.github.ontio.service.impl;
 
-import com.github.ontio.paramBean.Result;
-import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
-import com.github.ontio.dao.OntIdMapper;
+import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ICurrentService;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ErrorInfo;
@@ -54,10 +52,6 @@ public class CurrentServiceImpl implements ICurrentService {
     @Autowired
     private CurrentMapper currentMapper;
     @Autowired
-    private OntIdMapper ontIdMapper;
-    @Autowired
-    private BlockMapper blockMapper;
-    @Autowired
     private ConfigParam configParam;
 
     private OntologySDKService sdk;
@@ -72,23 +66,15 @@ public class CurrentServiceImpl implements ICurrentService {
     public Result querySummaryInfo() {
 
         Map summary = currentMapper.selectSummaryInfo();
-        Map blockInfo = blockMapper.selectBlockByHeight(1);
-        int ontIdCount = ontIdMapper.selectOntIdCount();
-
-        int blockTime = (Integer) blockInfo.get("BlockTime");
-        long runningTime = System.currentTimeMillis()/1000L - blockTime;
 
         initSDK();
         int nodeCount = sdk.getNodeCount();
-        int generateBlockTime = sdk.getGenerateBlockTime();
 
         Map<String, Object> rs = new HashMap();
-        rs.put("BlockInterval",generateBlockTime);
-        rs.put("NodeCount", nodeCount + 1);
+        rs.put("NodeCount", nodeCount);
         rs.put("CurrentHeight", summary.get("Height"));
         rs.put("TxnCount", summary.get("TxnCount"));
-        rs.put("RunningTime",runningTime);
-        rs.put("OntIdCount", ontIdCount);
+        rs.put("OntIdCount", summary.get("OntIdCount"));
 
         return Helper.result("QueryCurrentInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
