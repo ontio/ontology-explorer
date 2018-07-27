@@ -94,4 +94,8 @@ public class ConfigParam {
     public String AUTH_CODEHASH;
 
 
+    @Value("${genesisblock.time}")
+    public int GENESISBLOCKTIME;
+
+
 }
