@@ -2,10 +2,14 @@ package com.github.ontio.dao;
 
 import com.github.ontio.model.TransactionDetail;
 import com.github.ontio.model.TransactionDetailKey;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Mapper
+@Component(value = "TransactionDetailMapper")
 public interface TransactionDetailMapper {
     int deleteByPrimaryKey(TransactionDetailKey key);
 
@@ -19,18 +23,27 @@ public interface TransactionDetailMapper {
 
     int updateByPrimaryKey(TransactionDetail record);
 
-    List<Map> selectTransferTxnDetailByParam(Map<String,String> param);
+
+
+    List<Map> selectTxnWithoutOntId(int start , int size);
+
+    int selectTxnWithoutOntIdAmount();
+
+    Map<String,Object> selectTxnByHash(String txnHash);
+
+    List<Map> selectTxnByBlockHeight(int height);
+
+    int selectLastONTTransferTxnTime(String address);
+
+
 
     List<Map> selectTransferTxnDetailByHash(String txnHash);
 
-    List<Map> selectBalanceByAddress(String address);
+    List<Map> selectTxnByAddressInfo(Map<String, Object> param);
 
-    List<String> selectTxnHashByAddressInfo(Map<String,Object> param);
+    List<Map> selectTxnByAddressInfoAndTimePage(Map<String, Object> param);
 
-    int selectTxnAmountByAddressInfo(Map<String,Object> param);
+    List<Map> selectTxnByAddressInfoAndTime(Map<String, Object> param);
 
-    List<String> selectTxnHashByAddressInfoAndTime(Map<String, Object> param);
-
-    void deleteByHeight(int height);
-
+    int selectTxnAmountByAddressInfo(Map<String, Object> param);
 }
