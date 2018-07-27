@@ -19,6 +19,7 @@
 
 package com.github.ontio.thread;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
@@ -32,7 +33,6 @@ import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.OntIdEventDesType;
-import com.github.ontio.utils.TransactionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,64 +91,68 @@ public class TxnHandlerThread {
         logger.info("####txnType:{}, txnHash:{}####", txnType, txnHash);
 
         try {
+            JSONObject eventObj = getEventObjByTxnHash(txnHash);
+            logger.info("eventObj:{}", eventObj.toJSONString());
 
-            if (txnType == TransactionType.DEPLOYCODE.type()) {
-                //deploy smart contract transaction
-                insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, "", ZERO, 1);
+            int state = eventObj.getInteger("State");
+            BigDecimal gasConsumed = new BigDecimal(eventObj.getLongValue("GasConsumed"));
+            gasConsumed = gasConsumed.divide(ONG_DECIMAL);
+            logger.info("gasConsumed:{}", gasConsumed);
 
-            } else if (txnType == TransactionType.INVOKECODE.type()) {
-                //invoke smart contract transaction
-                JSONObject eventObj = getEventObjByTxnHash(txnHash);
+            //success transaction
+            if (state == 1) {
 
-                logger.info("eventObj:{}", eventObj.toJSONString());
-                int state = eventObj.getInteger("State");
-
-                //success transaction
-                if (state == 1) {
-
-                    BigDecimal gasConsumed = new BigDecimal(eventObj.getLongValue("GasConsumed"));
-                    gasConsumed = gasConsumed.divide(ONG_DECIMAL);
-                    logger.info("gasConsumed:{}", gasConsumed);
-
-                    JSONArray notifyList = eventObj.getJSONArray("Notify");
-                    if (notifyList.size() > 0) {
-
-                        for (int i = 0; i < notifyList.size(); i++) {
-
-                            String contractAddress = Helper.reverse(((JSONObject) notifyList.get(i)).getString("ContractAddress"));
-                            logger.info("####ContractAddress:{}####", contractAddress);
-
-                            JSONArray stateList = ((JSONObject) notifyList.get(i)).getJSONArray("States");
-                            //transfer transaction
-                            if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) || configParam.ASSET_ONT_CODEHASH.equals(contractAddress)) {
-                                handleTransferTxn(stateList, txnJson, blockHeight, blockTime, indexInBlock, contractAddress, gasConsumed, i + 1, notifyList.size());
-                            } else if (configParam.ONTID_CODEHASH.equals(contractAddress)) {
-                                //ontId operation transaction
-                                handleOntIdTxn(stateList, txnJson, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1);
-                            } else if (configParam.CLAIMRECORD_CODEHASH.equals(contractAddress)) {
-                                //claimrecord transaction
-                                handleClaimRecordTxn(stateList,txnJson, blockHeight, blockTime, indexInBlock, gasConsumed,i + 1);
-                            } else if(configParam.AUTH_CODEHASH.equals(contractAddress)){
-                                //权限相关交易
-                                insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, ConstantParam.AUTH_OPE_PREFIX, gasConsumed, i + 1);
-                            } else {
-                                insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, "", gasConsumed, i + 1);
-                            }
-                        }
-                    } else {
-                        insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, "", gasConsumed, 1);
-                    }
-
-                } else if (state == 0) {
-                    //fail transaction
-                    insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 2, "", ZERO, 1);
+                if (208 == txnJson.getInteger("TxType")) {
+                    //deploy smart contract transaction
+                    insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, "", gasConsumed, 0, 2);
                 }
+
+                JSONArray notifyList = eventObj.getJSONArray("Notify");
+                if (notifyList.size() > 0) {
+
+                    for (int i = 0; i < notifyList.size(); i++) {
+
+                        String contractAddress = Helper.reverse(((JSONObject) notifyList.get(i)).getString("ContractAddress"));
+                        logger.info("####ContractAddress:{}####", contractAddress);
+
+                        JSONArray stateList = ((JSONObject) notifyList.get(i)).getJSONArray("States");
+                        //transfer transaction
+                        if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) || configParam.ASSET_ONT_CODEHASH.equals(contractAddress)) {
+
+                            handleTransferTxn(stateList, txnJson, blockHeight, blockTime, indexInBlock, contractAddress, gasConsumed, i + 1, notifyList.size());
+                        } else if (configParam.ONTID_CODEHASH.equals(contractAddress)) {
+                            //ontId operation transaction
+                            handleOntIdTxn(stateList, txnJson, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1);
+                        } else if (configParam.CLAIMRECORD_CODEHASH.equals(contractAddress)) {
+                            //claimrecord transaction
+                            handleClaimRecordTxn(stateList, txnJson, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1);
+                        } else if (configParam.AUTH_CODEHASH.equals(contractAddress)) {
+                            //权限相关交易
+                            insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, ConstantParam.AUTH_OPE_PREFIX, gasConsumed, i + 1, 6);
+                        } else {
+                            insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, "", gasConsumed, i + 1, 0);
+                        }
+                    }
+                } else {
+                    insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, "", gasConsumed, 1, 0);
+                }
+
+            } else if (state == 0) {
+                //fail transaction
+                insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 2, "", gasConsumed, 1, 0);
             }
+
 
         } catch (RestfulException e) {
             logger.error("RestfulException...{}", e);
-            e.printStackTrace();
-            throw e;
+
+            if (com.github.ontio.utils.Helper.isJSONStr(e.getMessage())) {
+                JSONObject eObj = JSON.parseObject(e.getMessage());
+                if (43001 == eObj.getLong("Error") || 42002 == eObj.getLong("Error")) {
+                    logger.info("######this transaction no event ...");
+                    insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 2, "", ZERO, 1, 0);
+                }
+            }
 
         } catch (Exception e) {
             logger.error("handleOneTxn error...", e);
@@ -156,11 +160,16 @@ public class TxnHandlerThread {
             throw e;
         }
 
-        addcount();
+        addTxnCount();
     }
 
-    public synchronized void addcount() {
+    public synchronized void addTxnCount() {
         ConstantParam.TXN_INIT_AMOUNT++;
+    }
+
+
+    public synchronized void addOntIdTxncount() {
+        ConstantParam.ONTIDTXN_INIT_AMOUNT++;
     }
 
 
@@ -177,6 +186,7 @@ public class TxnHandlerThread {
     @Transactional(rollbackFor = Exception.class)
     public void handleTransferTxn(JSONArray stateList, JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock, String codeHash, BigDecimal gasConsumed, int indexInTxn, int notifyListSize) throws Exception {
 
+        int eventType = 3;
         String assetName = "";
         if (configParam.ASSET_ONT_CODEHASH.equals(codeHash)) {
             assetName = "ont";
@@ -186,8 +196,9 @@ public class TxnHandlerThread {
 
         String action = (String) stateList.get(0);
         //notifylist的最后一个一定是收取手续费event
-        if ((indexInTxn == notifyListSize) && configParam.ASSET_ONG_CODEHASH.equals(codeHash) && notifyListSize >=2) {
+        if ((indexInTxn == notifyListSize) && configParam.ASSET_ONG_CODEHASH.equals(codeHash)) {
             action = "gasconsume";
+            eventType = 1;
         }
         logger.info("####action:{}####", action);
 
@@ -215,6 +226,7 @@ public class TxnHandlerThread {
         transactionDetailDO.setAmount(amount);
         transactionDetailDO.setTxnindex(indexInTxn);
         transactionDetailDO.setConfirmflag(1);
+        transactionDetailDO.setEventtype(eventType);
         transactionDetailMapper.insertSelective(transactionDetailDO);
 
     }
@@ -253,7 +265,13 @@ public class TxnHandlerThread {
         ontIdDO.setFee(gasConsumed);
         ontIdMapper.insertSelective(ontIdDO);
 
-        insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, ONTID_OPE_PREFIX + action, gasConsumed, indexInTxn);
+        insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, ONTID_OPE_PREFIX + action, gasConsumed, indexInTxn, 4);
+
+        if (ConstantParam.REGISTER.equals(action)) {
+            //ontid交易数加1
+            addOntIdTxncount();
+        }
+
     }
 
 
@@ -274,19 +292,19 @@ public class TxnHandlerThread {
         StringBuilder sb = new StringBuilder();
         sb.append(CLAIMRECORD_OPE);
 
-        if(!"Push".equals(actionType)) {
-            if(stateList.size()>=4) {
+        if (ConstantParam.CLAIMRECORD_OPE_PREFIX.equals(actionType)) {
+            if (stateList.size() >= 4) {
                 String issuerOntId = new String(Helper.hexToBytes(stateList.getString(1)));
                 String action = new String(Helper.hexToBytes(stateList.getString(2)));
                 String claimId = new String(Helper.hexToBytes(stateList.getString(3)));
-                logger.info("####action:{}, issuerOntId:{}, claimid:{}#####",action, issuerOntId, claimId);
+                logger.info("####action:{}, issuerOntId:{}, claimid:{}#####", action, issuerOntId, claimId);
                 sb.append(issuerOntId);
                 sb.append(action);
                 sb.append(claimId);
             }
         }
 
-        insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, sb.toString(), gasConsumed, indexInTxn);
+        insertTxnBasicInfo(txnJson, blockHeight, blockTime, indexInBlock, 1, sb.toString(), gasConsumed, indexInTxn, 5);
     }
 
     /**
@@ -301,7 +319,8 @@ public class TxnHandlerThread {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void insertTxnBasicInfo(JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, String action, BigDecimal gasConsumed, int indexInTxn) throws Exception {
+    public void insertTxnBasicInfo(JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock,
+                                   int confirmFlag, String action, BigDecimal gasConsumed, int indexInTxn, int eventType) throws Exception {
 
         logger.info("{} run....", com.github.ontio.utils.Helper.currentMethod());
 
@@ -319,6 +338,7 @@ public class TxnHandlerThread {
         transactionDetailDO.setAmount(new BigDecimal("0"));
         transactionDetailDO.setTxnindex(indexInTxn);
         transactionDetailDO.setConfirmflag(confirmFlag);
+        transactionDetailDO.setEventtype(eventType);
 
         transactionDetailMapper.insertSelective(transactionDetailDO);
     }
@@ -415,7 +435,6 @@ public class TxnHandlerThread {
     }
 
 
-
     /**
      * get the bookkeeper of the block by height
      *
@@ -431,6 +450,14 @@ public class TxnHandlerThread {
                 eventObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getSmartCodeEvent(txnHash);
                 break;
             } catch (Exception ex) {
+
+                if (com.github.ontio.utils.Helper.isJSONStr(ex.getMessage())) {
+                    JSONObject eObj = JSON.parseObject(ex.getMessage());
+                    if (43001 == eObj.getLong("Error") || 42002 == eObj.getLong("Error")) {
+                        logger.info("######this transaction no event...");
+                        throw new RestfulException(ex.getMessage());
+                    }
+                }
 
                 logger.error("getEventObjByTxnHash error, try again...restsful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
 

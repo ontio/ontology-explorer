@@ -102,8 +102,8 @@ public class BlockHandlerThread extends Thread {
 
                 oneBlockTryTime = 1;
 
-                //每次删除当前current表height+1的交易，防止上次程序异常退出因为事务性异常插入的交易导致本次再次插入主键重复
-                //即防止current表height高度未更新，但该区块高度的交易已经插入tbl_ont_ontid_detail或tbl_ont_txn_detail
+                //每次删除当前current表height+1的交易，防止上次程序异常退出时，因为多线程事务插入了height+1的交易而current表height未更新
+                //本次同步再次插入会报主键重复异常
                 ontIdMapper.deleteByHeight(dbBlockHeight + 1);
                 transactionDetailMapper.deleteByHeight(dbBlockHeight + 1);
 
