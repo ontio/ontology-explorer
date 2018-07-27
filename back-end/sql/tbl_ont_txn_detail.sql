@@ -24,8 +24,8 @@ CREATE TABLE `tbl_ont_txn_detail` (
   `txntype` int(4) NOT NULL,
   `txntime` int(11) NOT NULL,
   `height` int(12) NOT NULL,
-  `amount` decimal(25,8) NOT NULL,
-  `fee` decimal(25,8) NOT NULL DEFAULT '0.00000000',
+  `amount` decimal(40,9) NOT NULL,
+  `fee` decimal(25,9) NOT NULL DEFAULT '0.000000000',
   `assetname` varchar(255) NOT NULL DEFAULT '',
   `fromaddress` varchar(255) NOT NULL DEFAULT '',
   `toaddress` varchar(255) NOT NULL DEFAULT '',
@@ -33,9 +33,9 @@ CREATE TABLE `tbl_ont_txn_detail` (
   `blockindex` int(10) NOT NULL,
   `txnindex` int(10) NOT NULL,
   `confirmflag` int(1) NOT NULL,
+  `eventtype` int(2) NOT NULL COMMENT '0:其他 1:手续费 2:部署合约 3:转账 4:ontid 5:存证 6:权限',
   PRIMARY KEY (`txnhash`,`txnindex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_fromaddr (fromaddress);
 ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_toaddr (toaddress);
