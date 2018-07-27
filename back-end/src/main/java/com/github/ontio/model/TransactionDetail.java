@@ -25,6 +25,8 @@ public class TransactionDetail extends TransactionDetailKey {
 
     private Integer confirmflag;
 
+    private Integer eventtype;
+
     public Integer getTxntype() {
         return txntype;
     }
@@ -111,5 +113,13 @@ public class TransactionDetail extends TransactionDetailKey {
 
     public void setConfirmflag(Integer confirmflag) {
         this.confirmflag = confirmflag;
+    }
+
+    public Integer getEventtype() {
+        return eventtype;
+    }
+
+    public void setEventtype(Integer eventtype) {
+        this.eventtype = eventtype;
     }
 }

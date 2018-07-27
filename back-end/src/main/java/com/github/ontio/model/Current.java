@@ -25,6 +25,8 @@ public class Current {
 
     private Integer txncount;
 
+    private Integer ontidcount;
+
     public Integer getHeight() {
         return height;
     }
@@ -39,5 +41,13 @@ public class Current {
 
     public void setTxncount(Integer txncount) {
         this.txncount = txncount;
+    }
+
+    public Integer getOntidcount() {
+        return ontidcount;
+    }
+
+    public void setOntidcount(Integer ontidcount) {
+        this.ontidcount = ontidcount;
     }
 }
