@@ -63,6 +63,13 @@ public class ConstantParam {
      * transfer transaction smart contract event description
      *
      */
+    public static final String AUTH_OPE = "auth";
+
+
+    /**
+     * transfer transaction smart contract event description
+     *
+     */
     public static final String TRANSFER_OPE = "transfer";
 
     /**
@@ -111,6 +118,12 @@ public class ConstantParam {
 
 
     public static final BigDecimal ZERO = new BigDecimal("0");
+
+
+    public static final BigDecimal ONG_SECONDMAKE = new BigDecimal("5");
+
+
+    public static final BigDecimal ONT_TOTAL = new BigDecimal("1000000000");
 
 
 
