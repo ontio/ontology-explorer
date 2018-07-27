@@ -54,6 +54,19 @@ public class ConstantParam {
     public static int NODE_RETRYMAXTIME = 0;
 
     /**
+     * the number of transactions of one block
+     *
+     */
+    public static int TXN_INIT_AMOUNT = 0;
+
+
+    /**
+     * the number of ontid transactions of one block
+     *
+     */
+    public static int ONTIDTXN_INIT_AMOUNT = 0;
+
+    /**
      * Ontology SDK object
      */
     public static OntSdk ONT_SDKSERVICE = null;
@@ -85,6 +98,16 @@ public class ConstantParam {
     public static final String CLAIMRECORD_OPE = "claimRecord-";
 
     /**
+     * registerCandidate
+     */
+    public static final String AUTH_OPE_PREFIX = "auth";
+
+
+    public static final String CLAIMRECORD_OPE_PREFIX = "Push";
+
+    public static final String REGISTER = "Register";
+
+    /**
      * claim
      */
     public static final String CLAIM = "claim";
@@ -105,16 +128,8 @@ public class ConstantParam {
      */
     public static final String ONT = "ont";
 
-    /**
-     * the number of transactions of one block
-     *
-     */
-    public static int TXN_INIT_AMOUNT = 0;
 
-    /**
-     * registerCandidate
-     */
-    public static final String AUTH_OPE_PREFIX = "auth";
+
 
 
     public static final BigDecimal ZERO = new BigDecimal("0");
