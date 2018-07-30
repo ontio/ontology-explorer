@@ -36,7 +36,7 @@ export default {
     var utctime = date.getUTCHours()
     /* console.log("utctime1",date.getUTCHours()+":"+date.getUTCMinutes()+":"+date.getUTCSeconds()) */
     let Y = date.getUTCFullYear() ;
-    let M = (date.getUTCMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1);
+    let M = (date.getUTCMonth() + 1 < 10 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1);
     var mouth = ''
     switch(M){
       case "01":

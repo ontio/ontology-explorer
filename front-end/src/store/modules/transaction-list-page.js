@@ -13,7 +13,13 @@ export default {
   },
   actions: {
     getTransactionListPage({dispatch, commit},$param) {
-      return axios.get(process.env.API_URL + '/transactionlist/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
+      let used_url 
+      if($param.net=="testnet"){
+        used_url = process.env.TEST_API_URL
+      }else{
+        used_url = process.env.API_URL
+      }
+      return axios.get(used_url + '/transactionlist/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
         let msg = response.data
         let allPageNum = msg.Result.Total
         let finalPageNum = parseInt(allPageNum/10)+1
@@ -23,7 +29,7 @@ export default {
         }
         let nextPageNum = finalPageNum
         if ($param.pageNumber<finalPageNum){
-          nextPageNum = $param.pageNumber+1
+          nextPageNum = $param.pageNumber-1+2
         }
 
         let info={

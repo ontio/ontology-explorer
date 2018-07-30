@@ -6,7 +6,7 @@
                 <div class="row copyright" style="color:grey">
                     <div class="col-sm-12 footer-mail-margin" style="padding:0px"> 
                         <!-- <img @click="toHome()" style="width:219px;" src="../assets/images/footerlogo.png" /> -->
-                        <p class="margin4-top font-size14 f_color font-Regular bottom_p " >Copyright © 2017 ONT Team</p>
+                        <p class="margin4-top font-size14 f_color font-Regular bottom_p " >Copyright © 2018 The Ontology Team</p>
                     </div>
                 </div>
             </div>

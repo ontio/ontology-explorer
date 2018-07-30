@@ -143,7 +143,7 @@
     created() {
       this.getClaimDetailPage()
       this.setTimeoutstep2 = setTimeout(() => {
-          debugger
+          
         $('#step1time').css("display","none")
         $('#step1result').css("display","block")
         $('#step2').css("display","block")

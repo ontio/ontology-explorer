@@ -89,13 +89,25 @@
         })
       },
       toReturn(){
-        this.$router.push({ name:'Home'})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'Home'})
+        }else{
+          this.$router.push({ name:'HomeTest', params:{net:'testnet'}})
+        }
       },
       goToPage($Page){
-        this.$router.push({ name:'TransactionListDetail', params:$Page})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionListDetail', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber}})
+        }else{
+          this.$router.push({ name:'TransactionListDetailTest', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber,net:'testnet'}})
+        }
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:'testnet'}})
+        }
       },
       getTransactionType($case){
         return GetTransactionType.getTransactionType($case)

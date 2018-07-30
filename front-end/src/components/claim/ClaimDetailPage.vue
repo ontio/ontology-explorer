@@ -148,10 +148,18 @@
         return Helper.getDate($time)
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:'testnet'}})
+        }
       },
       togetClaimPage($OntId){
-        this.$router.push({ name:'getClaim', params:{ontid:$OntId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'getClaim', params:{ontid:$OntId}})
+        }else{
+          this.$router.push({ name:'getClaimTest', params:{ontid:$OntId,net:'testnet'}})
+        }
       },
       getOntIDEvent:function($event){
              switch ($event.substr(0,12)) {

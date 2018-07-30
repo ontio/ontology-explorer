@@ -84,10 +84,18 @@
         })
       },
       toReturn(){
-        this.$router.push({ name:'Home'})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'Home'})
+        }else{
+          this.$router.push({ name:'HomeTest', params:{net:'testnet'}})
+        }
       },
       goToPage($Page){
-        this.$router.push({ name:'OntIdListDetail', params:$Page})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'OntIdListDetail', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber}})
+        }else{
+          this.$router.push({ name:'OntIdListDetailTest', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber,net:"testnet"}})
+        }
       },
       getTime($time){
         return Helper.getDateTime($time)
@@ -99,10 +107,18 @@
         return GetTransactionType.getTransactionType($case)
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:"testnet"}})
+        }
       },
       toOntIdDetailPage($OntId){
-        this.$router.push({ name:'OntIdDetail', params:{ontid:$OntId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'OntIdDetail', params:{ontid:$OntId}})
+        }else{
+          this.$router.push({ name:'OntIdDetailTest', params:{ontid:$OntId,net:"testnet"}})
+        }
       },
       getOntIDEvent:function($event){
              switch ($event.substr(0,12)) {

@@ -67,6 +67,35 @@
         </tr>
         </tbody>
       </table>
+      <table v-if="authflag" class="table table-hover">
+        <thead>
+        <tr>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="td11 td_height" style="padding: 34px 24px;">
+            <p class="font-size24  p_margin_bottom n_color font-Regular">Description: {{transactionDetail.info.Description}}</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <table v-if="recordflag" class="table table-hover">
+        <thead>
+        <tr>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="td11 td_height" style="padding: 34px 24px;">
+            <p class="font-size24  p_margin_bottom f_color font-Regular">Issuer OntId:</p>
+            <p class="font-size14 f_color p_margin_bottom font-Regular ">{{transactionDetail.info.Description.substr(12,42)}}</p>
+            <p class="font-size24  p_margin_bottom f_color font-Regular">Description:</p>
+            <p class="font-size14 f_color p_margin_bottom font-Regular">{{transactionDetail.info.Description}}</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
       <table v-if="idflag" class="table table-hover">
         <thead>
         <tr>
@@ -154,6 +183,36 @@
         </tr>
         </tbody>
       </table>
+      <table v-if="recordflag" class="table table-hover">
+        <thead>
+        <tr>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="td11 td_height" style="padding: 34px 24px;">
+            <p class="font-size24  p_margin_bottom f_color font-Regular">OntId:</p>
+            <p class="font-size14 f_color p_margin_bottom font-Regular " >{{transactionDetail.info.Description.substr(12,42)}}</p>
+            <p class="font-size24  p_margin_bottom n_color font-Regular">Description:</p>
+            <p class="font-size14 f_color p_margin_bottom font-Regular">{{transactionDetail.info.Description}}</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <table v-if="authflag" class="table table-hover">
+        <thead>
+        <tr>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="td11 td_height" style="padding: 34px 24px;">
+            <p class="font-size24  p_margin_bottom n_color font-Regular">Description:</p>
+            <p class="font-size14 f_color p_margin_bottom font-Regular">{{transactionDetail.info.Description}}</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
       <table v-if="idflag" class="table table-hover">
         <thead>
         <tr>
@@ -205,7 +264,9 @@
       return {
         Detail:'',
         txflag:false,
-        idflag:false
+        idflag:false,
+        recordflag:false,
+        authflag:false,
       }
     },
     created() {
@@ -215,13 +276,22 @@
       '$route': 'getTransactionDetailPage',
       'transactionDetail.info':function(){
         if(this.transactionDetail.info.ConfirmFlag ==1){
-           this.Detail = this.transactionDetail.info.Detail
-           if(this.Detail.OntId != undefined){
-             this.idflag = true;
-             this.txflag = false;
+           if(this.transactionDetail.info.Detail == undefined){
+             debugger
+             this.recordflag = true;
            }else{
-             this.txflag = true;
-             this.idflag = false;
+              this.Detail = this.transactionDetail.info.Detail
+              if(this.Detail.OntId != undefined){
+                this.idflag = true;
+                this.txflag = false;
+              }else{
+                this.txflag = true;
+                this.idflag = false;
+              }
+           }
+           debugger
+           if(this.transactionDetail.info.Description == "auth"){
+             this.authflag = true
            }
         }else{
              this.txflag = false;
@@ -258,13 +328,25 @@
         return Helper.getDate($time)
       },
       toBlockDetailPage($blockHeight){
-        this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        }else{
+          this.$router.push({ name:'blockDetailTest', params:{param:$blockHeight,net:"testnet"}})
+        }
       },
       toAddressDetailPage($address){
-        this.$router.push({ name:'AddressDetail', params:{address:$address,pageSize:100,pageNumber:1}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'AddressDetail', params:{address:$address,pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'AddressDetailTest', params:{address:$address,pageSize:10,pageNumber:1,net:"testnet"}})
+        }
       },
       toOntIdDetailPage($ontid){
-        this.$router.push({ name:'OntIdDetail', params:{ontid:$ontid,pageSize:100,pageNumber:1}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'OntIdDetail', params:{ontid:$ontid,pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'OntIdDetailTest', params:{ontid:$ontid,pageSize:10,pageNumber:1,net:"testnet"}})
+        }
       },
     }
   }

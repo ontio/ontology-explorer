@@ -13,9 +13,14 @@ export default {
     }
   },
   actions: {
-    getBlockList({dispatch, commit}) {
-      
-      return axios.get(process.env.API_URL + '/blocklist/5').then(response => {
+    getBlockList({dispatch, commit},$param) {
+      let used_url 
+      if($param.net=="testnet"){
+        used_url = process.env.TEST_API_URL
+      }else{
+        used_url = process.env.API_URL
+      }
+      return axios.get(used_url + '/blocklist/5').then(response => {
         var msg = JSON.parse(response.request.response)
         commit({
           type: types.SET_BLOCK_LIST,

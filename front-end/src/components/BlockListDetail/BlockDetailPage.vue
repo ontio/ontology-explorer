@@ -95,7 +95,7 @@
         </tr>
         </tbody>
       </table>
-      <table v-if="blockDetailPage.info.TxnNum != 1" class="table ">
+      <table v-if="blockDetailPage.info.TxnNum != 0" class="table ">
         <thead>
         <tr style="border-bottom:0px;">
           <td class="font-size24 normal_color font-Blod td_height2">
@@ -134,6 +134,16 @@
         </tbody>
       </table>
     </div>
+    <div class="row justify-content-center">
+      <div id="page" v-show="blockDetailPage.info.TxnTotal > 10">
+        <ul class="pagination"  >
+          <li class="transaction-list-page-check-hand padding0" @click="goToPage(blockListDetail.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
+          <li class="transaction-list-page-check-hand padding0" @click="goToPage(blockListDetail.lastPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.PreviousPage')}}</a></button></li>
+          <li class="transaction-list-page-check-hand padding0" @click="goToPage(blockListDetail.nextPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>
+          <li class="transaction-list-page-check-hand  padding0" @click="goToPage(blockListDetail.finalPage)" ><button style="border-left:0px" class="goto_btn"><a>{{$t('page.Last')}}</a></button> </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -171,7 +181,12 @@
         this.$router.go(-1)
       },
       toBlockDetailPage($blockHeight){
-        this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        }else{
+          this.$router.push({ name:'blockDetailTest', params:{param:$blockHeight,net:'testnet'}})
+        }
+
       },
       getTime($time){
         return Helper.getDateTime($time)
@@ -180,7 +195,11 @@
         return Helper.getDate($time)
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:'testnet'}})
+        }
       },
     }
   }

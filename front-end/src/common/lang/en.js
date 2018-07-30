@@ -12,7 +12,7 @@ module.exports = {
   },
   searchInput: {
     search: 'SEARCH',
-    placeholder: 'Enter Ont ID, Block Height, Transaction Hash, Asset Address Query'
+    placeholder: 'Enter ONT ID, block height, transaction hash, or asset address query'
   },
   runStatus: {
     name: 'The whole network operation status',

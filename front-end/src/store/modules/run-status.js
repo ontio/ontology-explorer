@@ -19,8 +19,14 @@ export default {
     }
   },
   actions: {
-    getRunStatus({dispatch, commit}) {
-      return axios.get(process.env.API_URL + '/summary').then(response => {
+    getRunStatus({dispatch, commit},$param) {
+      let used_url 
+      if($param.net=="testnet"){
+        used_url = process.env.TEST_API_URL
+      }else{
+        used_url = process.env.API_URL
+      }
+      return axios.get(used_url + '/summary').then(response => {
         var msg = JSON.parse(response.request.response)
 
         commit({
@@ -32,8 +38,13 @@ export default {
       })
     },
     generateTime({dispatch, commit},$param){
-      
-      return axios.get(process.env.API_URL + '/block/generatetime/'+$param.amount).then(response => {
+      let used_url 
+      if($param.net=="testnet"){
+        used_url = process.env.TEST_API_URL
+      }else{
+        used_url = process.env.API_URL
+      }      
+      return axios.get(used_url + '/block/generatetime/'+$param.amount).then(response => {
         var msg = JSON.parse(response.request.response)
         /* console.log("time",msg) */
         commit({

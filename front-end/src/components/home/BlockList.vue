@@ -70,7 +70,7 @@
       getBlockList() {
         // do something
         
-        this.$store.dispatch('getBlockList').then(response => {
+        this.$store.dispatch('getBlockList',this.$route.params).then(response => {
           /* console.log("no1",response) */
          /*  this.getNewTime() */
         }).catch(error => {
@@ -78,10 +78,18 @@
         })
       },
       toBlockListPage(){
-        this.$router.push({ name:'blockListDetail', params:{pageSize:10,pageNumber:1}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'blockListDetail', params:{pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'blockListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+        }
       },
       toBlockDetailPage($blockHeight){
-        this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        }else{
+          this.$router.push({ name:'blockDetailTest', params:{param:$blockHeight,net:"testnet"}})
+        }
       },
       getTime($time){
         return Helper.getDateTime($time)
