@@ -45,6 +45,11 @@ let routes = [
     component: AddressDetailPage
   },
   {
+    path: '/address/:address',
+    name: 'AddressDetail',
+    component: AddressDetailPage
+  },
+  {
     path: '/transactionlist/:pageSize/:pageNumber',
     name: 'TransactionListDetail',
     component: TransactionPage
@@ -62,6 +67,61 @@ let routes = [
   {
     path: '/claimverifyresult',
     name: 'ClaimVerify',
+    component: ClaimVerifyPage
+  },
+  {
+    path: '/:net',
+    name: 'HomeTest',
+    component: Home
+  },
+  {
+    path: '/BlockListDetail/:pageSize/:pageNumber/:net',
+    name: 'blockListDetailTest',
+    component: BlockListPage
+  },
+  {
+    path: '/block/:param/:net',
+    name: 'blockDetailTest',
+    component: BlockDetailPage
+  },
+  {
+    path: '/ontidlist/:pageSize/:pageNumber/:net',
+    name: 'OntIdListDetailTest',
+    component: OntIdListPage
+  },
+  {
+    path: '/ontid/:ontid/:net',
+    name: 'OntIdDetailTest',
+    component: OntIdDetailPage
+  },
+  {
+    path: '/address/:address/:pageSize/:pageNumber/:net',
+    name: 'AddressDetailTest',
+    component: AddressDetailPage
+  },
+  {
+    path: '/address/:address/:net',
+    name: 'AddressDetailTest',
+    component: AddressDetailPage
+  },
+  {
+    path: '/transactionlist/:pageSize/:pageNumber/:net',
+    name: 'TransactionListDetailTest',
+    component: TransactionPage
+  },
+  {
+    path: '/transaction/:txnHash/:net',
+    name: 'TransactionDetailTest',
+    component: TransactionDetailPage
+  },
+  {
+    path: '/claimverify/:cardId/:ownerOntId/:net',
+    name: 'ClaimDetaiTest',
+    component: ClaimDetailPage
+  },
+  {
+    path: '/claimverifyresult/:net',
+    name: 'ClaimVerifyTest',
     component: ClaimVerifyPage
   },
 ]

@@ -30,7 +30,7 @@
             <p class="font-size14 font-Regular normal_color">Type: {{owner.Type}}</p>
             <p class="font-size14 font-Regular normal_color">Curve: {{owner.Curve}}</p>
             <p class="font-size14 font-Regular normal_color">Value: {{owner.Value}}</p>
-            <p class="font-size14 font-Regular normal_color">PublicKeyId: {{owner.PublicKeyId}}</p>
+            <p class="font-size14 font-Regular normal_color">PublicKeyId: {{owner.PubKeyId}}</p>
           </td>
         </tr>
         </tbody>
@@ -159,10 +159,18 @@
         return Helper.getDate($time)
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:"testnet"}})
+        }
       },
       toOntIdDetailPage($OntId){
-        this.$router.push({ name:'OntIdDetail', params:{ontid:$OntId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'OntIdDetail', params:{ontid:$OntId}})
+        }else{
+          this.$router.push({ name:'OntIdDetailTest', params:{ontid:$OntId,net:"testnet"}})
+        }
       },
       getOntIDEvent:function($event){
              switch ($event.substr(0,12)) {

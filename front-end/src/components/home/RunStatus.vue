@@ -179,7 +179,7 @@
     methods: {
       getRunStatus() {
         // do something
-        this.$store.dispatch('getRunStatus').then(response => {
+        this.$store.dispatch('getRunStatus',this.$route.params).then(response => {
           /* console.log(response) */
         }).catch(error => {
           console.log(error)

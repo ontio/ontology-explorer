@@ -1,12 +1,15 @@
 <template  >
   <nav v-if="routeDisplay" style="height: 50px;" class="padding0 navbar nav-background navbar-expand-lg navbar-expand-md navbar-expand-sm navbar-expand-xs fixed-top navbar-light bg-light navbar-elevation">
     <div class="container">
-    <router-link style="padding-top:4px;" class="navbar-brand" :to="{path: '/'}"><img class="navbar-logo" src="./../../assets/logo.png" alt=""></router-link>
+    <router-link style="padding-top:4px;" class="navbar-brand" :to="{path: $route.params.net == 'testnet'?'/testnet':'/'}"><img class="navbar-logo" src="./../../assets/logo.png" alt=""></router-link>
 
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto"></ul>
 
       <ul class="navbar-nav">
+        <li class="nav-item" style="    margin-top: 3px;">
+        {{net}}
+        </li>
         <li class="nav-item">
           <div class="input-group-top">
             <input type="text" class="form-control-top search-input-txt search-input"  v-model="searchContent" >
@@ -36,22 +39,24 @@
     },
     created() {
       this.getRunStatus()
-        if(this.$route.path=='/'){
+        if(this.$route.path=='/' || this.$route.path=='/testnet'){
           this.routeDisplay = false
         }else{
           this.routeDisplay = true
         }
       /* console.log("route",this.$route) */
+      this.net = this.$route.params.net == 'testnet'?'Polaris 1.0.0':'MainNet'
     },
     watch: {
       /* '$route': 'getRunStatus' */
       '$route': function(){
-        if(this.$route.path=='/'){
+        if(this.$route.path=='/' || this.$route.path=='/testnet'){
           this.routeDisplay = false
         }else{
           this.routeDisplay = true
         }
         /* console.log("new route",this.$route) */
+        this.getRunStatus()
       }
     },
     computed: {
@@ -60,6 +65,13 @@
       })
     },
     methods: {
+      toReturn(){
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'Home'})
+        }else{
+          this.$router.push({ name:'HomeTest', params:{net:'testnet'}})
+        }
+      },
       changeLocale() {
         let locale = this.$i18n.locale
         locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
@@ -67,7 +79,7 @@
       },
       getRunStatus() {
         // do something
-        this.$store.dispatch('getRunStatus').then(response => {
+        this.$store.dispatch('getRunStatus',this.$route.params).then(response => {
           //console.log(response)
         }).catch(error => {
           console.log(error)
@@ -80,47 +92,99 @@
           switch(this.searchContent.length){
             /* txhash */
             case 64:
-              this.$router.push({ name:'TransactionDetail', params:{txnHash:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'TransactionDetail', params:{txnHash:this.searchContent}})
+              }else{
+                this.$router.push({ name:'TransactionDetailTest', params:{txnHash:this.searchContent,net:'testnet'}})
+              }
             break;
             /* address */
             case 34:
-              this.$router.push({ name:'AddressDetail', params:{address:this.searchContent,pageSize:10,pageNumber:1}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'AddressDetail', params:{address:this.searchContent,pageSize:10,pageNumber:1}})
+              }else{
+                this.$router.push({ name:'AddressDetailTest', params:{address:this.searchContent,pageSize:10,pageNumber:1,net:'testnet'}})
+              }
             break;
             /* ontid */
             case 42:
-              this.$router.push({ name:'OntIdDetail', params:{ontid:this.searchContent,pageSize:100,pageNumber:1}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'OntIdDetail', params:{ontid:this.searchContent,pageSize:10,pageNumber:1}})
+              }else{
+                this.$router.push({ name:'OntIdDetailTest', params:{ontid:this.searchContent,pageSize:10,pageNumber:1,net:'testnet'}})
+              }
             break;
             /* block height */
             /* block height */
             case 1:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 2:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 3:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 4:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 5:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 6:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 7:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 8:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 9:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
             case 10:
-              this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              if(this.$route.params.net == undefined){
+                this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
+              }else{
+                this.$router.push({ name:'blockDetailTest', params:{param:this.searchContent,net:'testnet'}})
+              }
             break;
           }
 /*           if(this.searchContent.length==64){//hash

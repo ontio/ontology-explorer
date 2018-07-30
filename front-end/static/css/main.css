@@ -153,7 +153,7 @@ th{
     width: 22px;
     height: 4px;
     position: absolute;
-    left: 46px;
+    left: 100px;
     top: 50%;
     transform: translateY(-50%);
     background: #A6FF1A;
@@ -300,6 +300,14 @@ th{
   .index-net-warpper{
     width:100%;
     text-align:right;
+    margin-top:10px;
+    font-size:16px;
+    line-height: 2;
+    color:white;
+  }
+  .index-net-warpper-change{
+    width:100%;
+    text-align:center;
     margin-top:10px;
     font-size:16px;
     line-height: 2;

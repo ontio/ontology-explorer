@@ -13,8 +13,14 @@ export default {
     }
   },
   actions: {
-    getOntIdList({dispatch, commit}) {
-      return axios.get(process.env.API_URL + '/ontidlist/5').then(response => {
+    getOntIdList({dispatch, commit},$param) {
+      let used_url 
+      if($param.net=="testnet"){
+        used_url = process.env.TEST_API_URL
+      }else{
+        used_url = process.env.API_URL
+      }
+      return axios.get(used_url + '/ontidlist/5').then(response => {
         let msg = response.data
         /* console.log(msg.Result) */
 

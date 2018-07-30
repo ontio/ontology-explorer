@@ -56,7 +56,7 @@
     watch: {
       '$route': 'getOntIdList',
       'latestOntIdList.info':function(){
-        for(var i =0;i<5;i++){
+        for(var i =0;i<this.latestOntIdList.info.length;i++){
           this.showtime[i] = this.getTime(this.latestOntIdList.info[i].TxnTime)
         }
       }
@@ -69,14 +69,18 @@
     methods: {
       getOntIdList() {
         // do something
-        this.$store.dispatch('getOntIdList').then(response => {
+        this.$store.dispatch('getOntIdList',this.$route.params).then(response => {
           //console.log(response)
         }).catch(error => {
           console.log(error)
         })
       },
       toOntIdListPage(){
-        this.$router.push({ name:'OntIdListDetail', params:{pageSize:10,pageNumber:1}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'OntIdListDetail', params:{pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'OntIdListDetailTest', params:{pageSize:10,pageNumber:1,net:'testnet'}})
+        }
       },
       getTime($time){
         return Helper.getDateTime($time)
@@ -92,10 +96,18 @@
         return GetTransactionType.getTransactionType($case)
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:'testnet'}})
+        }
       },
       toOntIdDetailPage($OntId){
-        this.$router.push({ name:'OntIdDetail', params:{ontid:$OntId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'OntIdDetail', params:{ontid:$OntId}})
+        }else{
+          this.$router.push({ name:'OntIdDetailTest', params:{ontid:$OntId,net:'testnet'}})
+        }
       },
       countDownTime:function(){
           for(var i=0;i<this.info.length;i++){

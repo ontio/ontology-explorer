@@ -80,13 +80,26 @@
         })
       },
       toReturn(){
-        this.$router.push({ name:'Home'})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'Home'})
+        }else{
+          this.$router.push({ name:'HomeTest', params:{net:'testnet'}})
+        }
       },
       goToPage($Page){
-        this.$router.push({ name:'blockListDetail', params:$Page})
+        
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'blockListDetail', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber}})
+        }else{
+          this.$router.push({ name:'blockListDetailTest', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber,net:'testnet'}})
+        }
       },
       toBlockDetailPage($blockHeight){
-        this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
+        }else{
+          this.$router.push({ name:'blockDetailTest', params:{param:$blockHeight,net:'testnet'}})
+        }
       },
       getTime($time){
         return Helper.getDateTime($time)

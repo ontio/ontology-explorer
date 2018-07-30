@@ -25,12 +25,15 @@
         <tr >
           <td class="td11">
             <p class="table1_item_title font-size24 font-blod normal_color" >Asset Balance</p>
-            <p class="table1_item_title font-size24 font-Regular normal_color" v-for="asset in addressDetail.info.AssetBalance">{{asset.AssetName=='ont'?"ONT":asset.AssetName=='ong'?"ONG":"ONG_APPROVE"}}: <span class="important_color">{{asset.Balance}}</span></p>
+            <p class="table1_item_title font-size24 font-Regular normal_color" v-for="asset in AssetBalance" v-if="asset.AssetName == 'ont'">{{asset.AssetName=='ont'?"ONT":asset.AssetName=='ong'?"ONG":"ONG_APPROVE"}}: <span class="important_color">{{asset.Balance}}</span></p>
+            <p class="table1_item_title font-size24 font-Regular normal_color" v-for="asset in AssetBalance" v-if="asset.AssetName == 'ong'">{{asset.AssetName=='ont'?"ONT":asset.AssetName=='ong'?"ONG":"ONG_APPROVE"}}: <span class="important_color">{{asset.Balance}}</span></p>
+            <p class="table1_item_title font-size24 font-Regular f_color" v-for="asset in AssetBalance" v-if="asset.AssetName == 'unboundong'">Claimable ONG: <span class="f_color">{{asset.Balance}}</span></p>
+            <p class="table1_item_title font-size24 font-Regular f_color" v-for="asset in AssetBalance" v-if="asset.AssetName == 'waitboundong'">Unbound ONG: <span class="f_color">{{asset.Balance}}</span></p>
           </td>
         </tr>
         </tbody>
       </table>
-      <table v-if="addressDetail.info.TxnTotal != 0" class="table ">
+      <table v-if="info.TxnTotal != 0" class="table ">
         <thead>
         <tr style="border-bottom:0px;">
           <td class="table3_title font-size24 font-blod normal_color">
@@ -70,6 +73,16 @@
       </table>
 
     </div>
+    <div class="row justify-content-center">
+      <div id="page" v-show="addressDetail.info.allPage >10">
+        <ul class="pagination"  >
+          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
+          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.lastPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.PreviousPage')}}</a></button></li>
+          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.nextPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>
+          <li class="transaction-list-page-check-hand  padding0" @click="goToPage(addressDetail.info.finalPage)" ><button style="border-left:0px" class="goto_btn"><a>{{$t('page.Last')}}</a></button> </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -85,22 +98,33 @@
         Ddo:{},
         claimflag:true,
         AssetBalance:[],
-        TxnList:[]
+        TxnList:[],
+        info:[]
 
       }
     },
     created() {
-      this.getAddressDetailPage()
+      debugger
+      if(this.$route.params.pageSize == undefined || this.$route.params.pageNumber == undefined){
+        this.toAddressDetailPage(this.$route.params.address)
+      }else{
+        this.getAddressDetailPage()
+      }
 /*       this.timeoutBlock = setTimeout(() => {
         this.scrollTo('addresstop')
         }
       ,100) */
     },
     watch: {
-      '$route': 'getaddressDetailPage',
-      'addressDetail.info':function(){
-         this.AssetBalance = this.addressDetail.info.AssetBalance
-         this.TxnList = this.addressDetail.info.TxnList
+      '$route': 'getAddressDetailPage',
+      'addressDetail.info.info':function(){
+        debugger
+         this.info = this.addressDetail.info.info
+         /* this.info.reverse().reverse( */
+         this.AssetBalance = this.info.AssetBalance
+         /* this.AssetBalance.reverse().reverse() */
+         this.TxnList = this.info.TxnList
+         /* this.TxnList.reverse().reverse() */
       }
 
     },
@@ -132,7 +156,28 @@
         return Helper.getDate($time)
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:"testnet"}})
+        }
+      },
+      toAddressDetailPage($address){
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'AddressDetail', params:{address:$address,pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'AddressDetailTest', params:{address:$address,pageSize:10,pageNumber:1,net:"testnet"}})
+        }
+      },
+      goToPage($Page){
+        
+        var address = this.$route.params.address
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'AddressDetail', params:{address:address,pageSize:$Page.pageSize,pageNumber:$Page.pageNumber}})
+        }else{
+          this.$router.push({ name:'AddressDetailTest', params:{address:address,pageSize:$Page.pageSize,pageNumber:$Page.pageNumber,net:'testnet'}})
+        }
+        this.getAddressDetailPage()
       },
     }
   }

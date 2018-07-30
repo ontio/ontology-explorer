@@ -67,17 +67,26 @@
     methods: {
       getTransactionList() {
         // do something
-        this.$store.dispatch('getTransactionList').then(response => {
+        this.$store.dispatch('getTransactionList',this.$route.params).then(response => {
           //console.log(response)
         }).catch(error => {
           console.log(error)
         })
       },
       toTransactionListPage(){
-        this.$router.push({ name:'TransactionListDetail', params:{pageSize:10,pageNumber:1}})
+        
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionListDetail', params:{pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'TransactionListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+        }
       },
       toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
+        }else{
+          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:"testnet"}})
+        }
       },
       getTransactionType($case){
         return GetTransactionType.getTransactionType($case)
