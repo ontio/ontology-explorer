@@ -8,6 +8,8 @@ import Axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueI18n from 'vue-i18n'
 import LangStorage from './helpers/lang'
+import $ from 'jquery'
+import 'font-awesome/css/font-awesome.css'
 
 import zh_CN from 'vee-validate/dist/locale/zh_CN'
 import VeeValidate, { Validator } from 'vee-validate'
