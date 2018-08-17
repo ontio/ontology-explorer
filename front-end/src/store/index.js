@@ -13,6 +13,7 @@ import TransactionList from './modules/transaction-list'
 import TransactionListPage from './modules/transaction-list-page'
 import TransactionDetailPage from './modules/transaction-detail-page'
 import AddressDetailPage from './modules/address-detail-page'
+import AddressListPage from './modules/address-list-page'
 import ClaimDetailPage from './modules/claim-verify-page'
 
 Vue.use(Vuex)
@@ -31,6 +32,7 @@ export default new Vuex.Store({
     TransactionListPage,
     TransactionDetailPage,
     AddressDetailPage,
+    AddressListPage,
     ClaimDetailPage
   }
 })

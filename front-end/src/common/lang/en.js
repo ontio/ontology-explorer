@@ -21,6 +21,7 @@ module.exports = {
     BlockInterval: 'Average Block Time',
     TxnCount: 'Transaction Number',
     NodeCount: 'Whole Network Node',
+    addressCount: 'Address Number',
     second:'s',
     address:"Addresses",
     ontid:"ONT ID"
@@ -50,6 +51,11 @@ module.exports = {
     TxnNum: 'DEAL NUMBER',
     BlockSize: 'BLOCK SIZE',
     BlockTime: 'TIME'
+  },
+  addressList: {
+    name: 'ADDRESS',
+    balance: 'BALANCE',
+    percent: 'PERCENT'
   },
   blockDetail: {
     name:'Block Height:',

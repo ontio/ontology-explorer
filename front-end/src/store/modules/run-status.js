@@ -29,9 +29,14 @@ export default {
       return axios.get(used_url + '/summary').then(response => {
         var msg = JSON.parse(response.request.response)
 
-        commit({
-          type: types.SET_RUN_STATUS,
-          info: msg.Result
+        return axios.get(process.env.EXPLORE_URL + 'getAssetHolderCount?qid=1&contract=0100000000000000000000000000000000000000').then(res => {
+          // 增加持仓地址数量查询，lyx
+          msg.Result['AddressCount'] = res.data.result
+
+          commit({
+            type: types.SET_RUN_STATUS,
+            info: msg.Result
+          })
         })
       }).catch(error => {
         console.log(error)
