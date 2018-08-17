@@ -21,6 +21,7 @@ module.exports = {
     BlockInterval: '平均出块时间',
     TxnCount: '当前交易笔数',
     NodeCount: '全网节点',
+    addressCount: '地址数量',
     second:'秒',
     address:"地址数",
     ontid:"ONT ID"
@@ -49,6 +50,11 @@ module.exports = {
     TxnNum: '交易数量',
     BlockSize: '区块大小',
     BlockTime: '时间'
+  },
+  addressList: {
+    name: '地址',
+    balance: '余额',
+    percent: '占比'
   },
   blockDetail: {
     name:'区块',

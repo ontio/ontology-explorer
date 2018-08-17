@@ -1,19 +1,19 @@
 <template>
   <div class="container div-run-status">
     <div class="row">
-      <div class="col">
+      <div class="col col-click" @click="toBlockListPage">
         <label class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</label>
         <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.CurrentHeight}}</p>
       </div>
-      <div class="col">
+      <div class="col col-click" @click="toTransactionListPage">
         <label class="run-status-label">{{ $t('runStatus.TxnCount') }}</label>
         <p class=" run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</p>
       </div>
-      <div class="col">
-        <label class="run-status-label">{{ $t('runStatus.NodeCount') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</p>
+      <div class="col col-click" @click="toAddressListPage">
+        <label class="run-status-label">{{ $t('runStatus.addressCount') }}</label>
+        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</p>
       </div>
-      <div class="col">
+      <div class="col col-click" @click="toOntIdListPage">
         <label class="run-status-label">{{ $t('runStatus.ontid') }}</label>
         <p class=" run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</p>
       </div>
@@ -175,6 +175,34 @@
       })
     },
     methods: {
+      toBlockListPage(){
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'blockListDetail', params:{pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'blockListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+        }
+      },
+      toTransactionListPage(){
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'TransactionListDetail', params:{pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'TransactionListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+        }
+      },
+      toAddressListPage(){
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'addressList', params:{pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'addressListTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+        }
+      },
+      toOntIdListPage(){
+        if(this.$route.params.net == undefined){
+          this.$router.push({ name:'OntIdListDetail', params:{pageSize:10,pageNumber:1}})
+        }else{
+          this.$router.push({ name:'OntIdListDetailTest', params:{pageSize:10,pageNumber:1,net:'testnet'}})
+        }
+      },
       getRunStatus() {
         this.$store.dispatch('getRunStatus', this.$route.params).then(response => {
           /* console.log(response) */
@@ -406,6 +434,11 @@
 
   label {
     font-size: 16px;
+  }
+
+  .col-click:hover {
+    cursor: pointer;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
   }
 
   .run-status-label {

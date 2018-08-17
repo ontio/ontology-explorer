@@ -7,6 +7,7 @@ import BlockDetailPage from '@/components/BlockListDetail/BlockDetailPage'
 import OntIdListPage from '@/components/OntIdListDetail/OntIdListPage'
 import OntIdDetailPage from '@/components/OntIdListDetail/OntIdDetailPage'
 import AddressDetailPage from '@/components/AddressDetail/AddressDetailPage'
+import AddressList from '@/components/AddressDetail/List'
 import TransactionPage from '@/components/TransactionListDetail/TransactionListPage'
 import TransactionDetailPage from '@/components/TransactionListDetail/TransactionDetailPage'
 import ClaimDetailPage from '@/components/claim/ClaimDetailPage'
@@ -48,6 +49,11 @@ let routes = [
     path: '/address/:address',
     name: 'AddressDetail',
     component: AddressDetailPage
+  },
+  {
+    path: '/address-list/:pageSize/:pageNumber',
+    name: 'addressList',
+    component: AddressList
   },
   {
     path: '/transactionlist/:pageSize/:pageNumber',
