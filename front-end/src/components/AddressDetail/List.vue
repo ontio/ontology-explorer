@@ -1,9 +1,9 @@
 <template>
   <div class="container container-margin-top">
-    <div class="div-block-list-page form-group">
+    <div class="">
       <div class="row">
         <div class="col-lg-6">
-          <p  class="title-more  float-left font-Regular normal_color font-size18 block-detail-page-check-hand" @click="toReturn"><< {{ $t('all.return') }}</p>
+          <p class="title-more float-left font-Regular normal_color font-size18 block-detail-page-check-hand" @click="toReturn"><< {{ $t('all.return') }}</p>
         </div>
       </div>
       <div class="row">
@@ -53,12 +53,7 @@
   import Helper from './../../helpers/helper.js'
 
   export default {
-      name: "address-list-page",
-
-    data() {
-      return {
-      }
-    },
+    name: "address-list-page",
     created() {
       this.getAddressListInfo()
     },
@@ -72,11 +67,7 @@
     },
     methods: {
       getAddressListInfo() {
-        this.$store.dispatch('getAddressListPage',this.$route.params).then(response => {
-          /* console.log(response) */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getAddressListPage', this.$route.params).then()
       },
       goToAddressDetail(address) {
         if (this.$route.params.net == undefined) {
@@ -91,24 +82,31 @@
           })
         }
       },
-      toReturn(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'Home'})
-        }else{
-          this.$router.push({ name:'HomeTest', params:{net:'testnet'}})
+      toReturn() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'Home'})
+        } else {
+          this.$router.push({name: 'HomeTest', params: {net: 'testnet'}})
         }
       },
-      goToPage($Page){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'addressList', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber}})
-        }else{
-          this.$router.push({ name:'addressListTest', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber,net:'testnet'}})
+      goToPage($Page) {
+        if($Page.pageNumber === 0) {
+          return false
+        } else {
+          if (this.$route.params.net == undefined) {
+            this.$router.push({name: 'addressList', params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber}})
+          } else {
+            this.$router.push({
+              name: 'addressListTest',
+              params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber, net: 'testnet'}
+            })
+          }
         }
       },
-      getTime($time){
+      getTime($time) {
         return Helper.getDateTime($time)
       },
-      getDate($time){
+      getDate($time) {
         return Helper.getDate($time)
       },
     }
@@ -116,22 +114,7 @@
 </script>
 
 <style scoped>
-  .div-block-list-page {
-    /* border: 1px solid rgba(0, 0, 0, 0.1); */
-    border-radius: 0.25rem;
-    padding: 15px;
-  }
-  .block-list-page-hr {
-    height: 1px;
-  }
   .blp-ab-border-top-none{
     border-top: none;
-  }
-  .block-list-page-underline{
-    cursor: pointer;
-    text-decoration:underline;
-  }
-  .block-list-page-check-hand{
-    cursor: pointer;
   }
 </style>

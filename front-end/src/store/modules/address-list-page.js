@@ -16,7 +16,7 @@ export default {
     getAddressListPage({dispatch, commit}, $param) {
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_EXPLORE_URL : process.env.EXPLORE_URL;
       let url = apiUrl + 'getAssetHolder?qid=1&contract=0100000000000000000000000000000000000000&'
-        + 'from=' + ($param.pageNumber - 1) + '&count=' + $param.pageSize
+        + 'from=' + (($param.pageNumber - 1) * $param.pageSize) + '&count=' + $param.pageSize
 
       return axios.get(url).then(response => {
         let info = {
@@ -28,7 +28,7 @@ export default {
           },
           lastPage: {
             pageSize: '10',
-            pageNumber: 10000
+            pageNumber: $param.pageNumber - 1
           },
           nextPage: {
             pageSize: '10',
