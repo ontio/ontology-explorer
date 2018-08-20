@@ -24,15 +24,9 @@ export default {
 
       return axios.get(apiUrl + '/summary').then(response => {
         let msg = JSON.parse(response.request.response);
-        msg.Result['AddressCount'] = 'Loading';
-
-        commit({
-          type: types.SET_RUN_STATUS,
-          info: msg.Result
-        })
 
         // 增加持仓地址数量查询，lyx
-        axios.get(process.env.EXPLORE_URL + 'getAssetHolderCount?qid=1&contract=0100000000000000000000000000000000000000').then(res => {
+        return axios.get(process.env.EXPLORE_URL + 'getAssetHolderCount?qid=1&contract=0100000000000000000000000000000000000000').then(res => {
           msg.Result['AddressCount'] = res.data.result;
           commit({
             type: types.SET_RUN_STATUS,
