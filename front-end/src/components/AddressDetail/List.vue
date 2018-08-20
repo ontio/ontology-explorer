@@ -17,13 +17,15 @@
           <table class="table table-hover">
             <thead>
             <tr>
-              <th class="blp-ab-border-top-none font-size18" style="padding-top:34px;" scope="col">{{ $t('addressList.name') }}</th>
+              <th class="blp-ab-border-top-none font-size18" scope="col" style="padding-top:34px;" >{{ $t('addressList.rank') }}</th>
+              <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.name') }}</th>
               <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.balance') }}</th>
               <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.percent') }}</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="address in addressList.info">
+            <tr v-for="(address,index) in addressList.info">
+              <td class="font-size14 font-Regular normal_color td_height3">{{Number(addressList.basicRank) + index}}</td>
               <td class="font-size14 font-Regular important_color td_height3 click_able" @click="goToAddressDetail(address.address)">{{address.address}}</td>
               <td class="font-size14 font-Regular normal_color td_height3">{{address.balance}}</td>
               <td class="font-size14 font-Regular normal_color td_height3">{{(address.percent * 100).toFixed(2)}}%</td>
@@ -35,9 +37,8 @@
     </div>
 
     <div class="row justify-content-center">
-      <!--<div id="page" v-show="addressList.allPage!=1">-->
       <div id="page">
-        <ul class="pagination"  >
+        <ul class="pagination">
           <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressList.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
           <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressList.lastPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.PreviousPage')}}</a></button></li>
           <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressList.nextPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>

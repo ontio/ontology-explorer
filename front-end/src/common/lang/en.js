@@ -53,9 +53,10 @@ module.exports = {
     BlockTime: 'TIME'
   },
   addressList: {
-    name: 'ADDRESS',
-    balance: 'ONT BALANCE',
-    percent: 'PERCENT'
+    rank: 'Rank',
+    name: 'Address',
+    balance: 'ONT Balance',
+    percent: 'Percent'
   },
   blockDetail: {
     name:'Block Height:',

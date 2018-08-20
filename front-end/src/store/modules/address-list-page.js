@@ -28,16 +28,17 @@ export default {
           },
           lastPage: {
             pageSize: '10',
-            pageNumber: $param.pageNumber - 1
+            pageNumber: Number($param.pageNumber) - 1
           },
           nextPage: {
             pageSize: '10',
-            pageNumber: $param.pageNumber + 1
+            pageNumber: Number($param.pageNumber) + 1
           },
           finalPage: {
             pageSize: '10',
-            pageNumber: 10000
-          }
+            pageNumber: 100
+          },
+          basicRank: (Number($param.pageNumber) - 1) * $param.pageSize + 1
         };
 
         commit({
