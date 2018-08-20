@@ -14,14 +14,9 @@ export default {
   },
   actions: {
     getBlockListPage({dispatch, commit},$param) {
-      
-      let used_url 
-      if($param.net=="testnet"){
-        used_url = process.env.TEST_API_URL
-      }else{
-        used_url = process.env.API_URL
-      }
-      return axios.get(used_url + '/blocklist/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
+      let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+
+      return axios.get(apiUrl + '/blocklist/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
         let msg = response.data
         let allPageNum = msg.Result.Total
         let finalPageNum = parseInt(allPageNum/10)+1

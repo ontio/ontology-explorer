@@ -51,8 +51,13 @@ let routes = [
     component: AddressDetailPage
   },
   {
-    path: '/address-list/:pageSize/:pageNumber',
+    path: '/addresses/:pageSize/:pageNumber',
     name: 'addressList',
+    component: AddressList
+  },
+  {
+    path: '/addresses/:pageSize/:pageNumber/:net',
+    name: 'addressListTest',
     component: AddressList
   },
   {
