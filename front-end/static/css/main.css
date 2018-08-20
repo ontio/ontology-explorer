@@ -46,10 +46,6 @@ table {
   font-size: 18px;
 }
 
-.font-size14 {
-  font-size: 14px;
-}
-
 .font-size48 {
   font-size: 48px !important;
 }
@@ -353,6 +349,10 @@ th {
 
 /* blocklist page & blockdetail */
 .container-margin-top {
+  margin-top: 60px;
+}
+
+.margin-top-60 {
   margin-top: 60px;
 }
 

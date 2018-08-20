@@ -54,7 +54,7 @@ module.exports = {
   },
   addressList: {
     name: 'ADDRESS',
-    balance: 'BALANCE',
+    balance: 'ONT BALANCE',
     percent: 'PERCENT'
   },
   blockDetail: {
