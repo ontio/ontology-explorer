@@ -1,38 +1,42 @@
 <template>
   <div class="container container-margin-top">
-    <div class="">
-      <div class="row">
-        <div class="col-lg-6">
-          <p class="title-more float-left font-Regular normal_color font-size18 block-detail-page-check-hand" @click="toReturn"><< {{ $t('all.return') }}</p>
-        </div>
+    <div class="row">
+      <div class="col">
+        <p class="title-more float-left font-Regular normal_color font-size18 block-detail-page-check-hand" @click="toReturn"><< {{ $t('all.return') }}</p>
       </div>
-      <div class="row">
-        <div class="col-lg-12">
-          <p  class="text-center font-size40 font-ExtraLight p_margin_bottom_L normal_color">ADDRESSES - Position Ranking</p>
-        </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <p  class="text-center font-size40 font-ExtraLight p_margin_bottom_L normal_color">ADDRESSES - Position Ranking</p>
       </div>
+    </div>
 
-      <div class="row justify-content-center">
-        <div class="col-lg-12">
-          <table class="table table-hover">
-            <thead>
-            <tr>
-              <th class="blp-ab-border-top-none font-size18" scope="col" style="padding-top:34px;" >{{ $t('addressList.rank') }}</th>
-              <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.name') }}</th>
-              <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.balance') }}</th>
-              <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.percent') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(address,index) in addressList.info">
-              <td class="font-size14 font-Regular normal_color td_height3">{{Number(addressList.basicRank) + index}}</td>
-              <td class="font-size14 font-Regular important_color td_height3 click_able" @click="goToAddressDetail(address.address)">{{address.address}}</td>
-              <td class="font-size14 font-Regular normal_color td_height3">{{address.balance}}</td>
-              <td class="font-size14 font-Regular normal_color td_height3">{{(address.percent * 100).toFixed(2)}}%</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="row justify-content-center table-margin-bottom">
+      <div class="col-12">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th class="blp-ab-border-top-none font-size18" scope="col" style="padding-top:34px;" >{{ $t('addressList.rank') }}</th>
+            <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.name') }}</th>
+            <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.balance') }}</th>
+            <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('addressList.percent') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(address,index) in addressList.info">
+            <td class="font-size14 font-Regular normal_color td_height3">{{Number(addressList.basicRank) + index}}</td>
+            <td class="font-size14 font-Regular important_color td_height3 click_able" @click="goToAddressDetail(address.address)">{{address.address}}</td>
+            <td class="font-size14 font-Regular normal_color td_height3">{{address.balance}}</td>
+            <td class="font-size14 font-Regular normal_color td_height3">
+              <div class="progress" style="position: relative">
+                <div class="progress-bar bg-info" :style="'width:'+ (address.percent * 100).toFixed(6) + '%'">
+                  <span class="black-color" style="position: absolute; right: 5px;">{{(address.percent * 100).toFixed(4)}} %</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -117,5 +121,9 @@
 <style scoped>
   .blp-ab-border-top-none{
     border-top: none;
+  }
+
+  .table-margin-bottom {
+    margin-bottom: 16px;
   }
 </style>
