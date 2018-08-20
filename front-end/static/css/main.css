@@ -38,12 +38,12 @@ table {
   font-weight: 700;
 }
 
-.font-size18 {
-  font-size: 18px;
-}
-
 .font-size14 {
   font-size: 14px;
+}
+
+.font-size18 {
+  font-size: 18px;
 }
 
 .font-size48 {
@@ -64,6 +64,10 @@ table {
 
 .normal_color {
   color: #595757;
+}
+
+.black-color {
+  color: black;
 }
 
 .important_color {
@@ -349,6 +353,10 @@ th {
 
 /* blocklist page & blockdetail */
 .container-margin-top {
+  margin-top: 60px;
+}
+
+.margin-top-60 {
   margin-top: 60px;
 }
 

@@ -104,7 +104,6 @@
       }
     },
     created() {
-      debugger
       if(this.$route.params.pageSize == undefined || this.$route.params.pageNumber == undefined){
         this.toAddressDetailPage(this.$route.params.address)
       }else{
@@ -118,7 +117,6 @@
     watch: {
       '$route': 'getAddressDetailPage',
       'addressDetail.info.info':function(){
-        debugger
          this.info = this.addressDetail.info.info
          /* this.info.reverse().reverse( */
          this.AssetBalance = this.info.AssetBalance

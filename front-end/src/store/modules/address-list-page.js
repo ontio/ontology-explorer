@@ -14,25 +14,11 @@ export default {
   },
   actions: {
     getAddressListPage({dispatch, commit}, $param) {
-      let used_url
-      if ($param.net == "testnet") {
-        used_url = process.env.EXPLORE_URL
-      } else {
-        used_url = process.env.EXPLORE_URL
-      }
-      return axios.get(used_url + 'getAssetHolder?qid=1&contract=0100000000000000000000000000000000000000&from=' + ($param.pageNumber - 1) + '&count=' + $param.pageSize).then(response => {
-        // let msg =
-        // let allPageNum = msg.Result.Total
-        // let finalPageNum = parseInt(allPageNum/10)+1
-        // let lastPageNum = 1
-        // if ($param.pageNumber>1){
-        //   lastPageNum = $param.pageNumber-1
-        // }
-        // let nextPageNum = finalPageNum
-        // if ($param.pageNumber<finalPageNum){
-        //   nextPageNum = $param.pageNumber-1+2
-        // }
+      let apiUrl = ($param.net === "testnet") ? process.env.TEST_EXPLORE_URL : process.env.EXPLORE_URL;
+      let url = apiUrl + 'getAssetHolder?qid=1&contract=0100000000000000000000000000000000000000&'
+        + 'from=' + (($param.pageNumber - 1) * $param.pageSize) + '&count=' + $param.pageSize
 
+      return axios.get(url).then(response => {
         let info = {
           info: response.data.result,
           allPage: 10,
@@ -42,17 +28,18 @@ export default {
           },
           lastPage: {
             pageSize: '10',
-            pageNumber: 10000
+            pageNumber: Number($param.pageNumber) - 1
           },
           nextPage: {
             pageSize: '10',
-            pageNumber: $param.pageNumber + 1
+            pageNumber: Number($param.pageNumber) + 1
           },
           finalPage: {
             pageSize: '10',
-            pageNumber: 10000
-          }
-        }
+            pageNumber: 100
+          },
+          basicRank: (Number($param.pageNumber) - 1) * $param.pageSize + 1
+        };
 
         commit({
           type: types.SET_ADDRESS_LIST_PAGE,

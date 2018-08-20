@@ -18,13 +18,9 @@ export default {
   },
   actions: {
     getBlockDetailPage({dispatch, commit},$param) {
-      let used_url 
-      if($param.net=="testnet"){
-        used_url = process.env.TEST_API_URL
-      }else{
-        used_url = process.env.API_URL
-      }
-      return axios.get(used_url + '/block/'+$param.param).then(response => {
+      let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+
+      return axios.get(apiUrl + '/block/'+$param.param).then(response => {
         let msg = response.data
         //console.log(msg.Result)
 

@@ -7,7 +7,7 @@
       </div>
       <div class="col col-click" @click="toTransactionListPage">
         <label class="run-status-label">{{ $t('runStatus.TxnCount') }}</label>
-        <p class=" run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</p>
+        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</p>
       </div>
       <div class="col col-click" @click="toAddressListPage">
         <label class="run-status-label">{{ $t('runStatus.addressCount') }}</label>
@@ -15,7 +15,7 @@
       </div>
       <div class="col col-click" @click="toOntIdListPage">
         <label class="run-status-label">{{ $t('runStatus.ontid') }}</label>
-        <p class=" run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</p>
+        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</p>
       </div>
     </div>
 
