@@ -11,31 +11,35 @@ import LangStorage from './helpers/lang'
 import $ from 'jquery'
 import 'font-awesome/css/font-awesome.css'
 
-import zh_CN from 'vee-validate/dist/locale/zh_CN'
-import VeeValidate, { Validator } from 'vee-validate'
+/**
+ * Fixed compatibility issues with low version IE. lyx.
+ */
+import promise from 'es6-promise'
+promise.polyfill();
+
 /**
  * Vee Validate
- * zh_CN
  * Front-end Input need the field：data-vv-as
  */
+import zh_CN from 'vee-validate/dist/locale/zh_CN'
+import VeeValidate, {Validator} from 'vee-validate'
 // Validator.localize('zh_CN', zh_CN);
 Vue.use(VeeValidate, {
   // locale: 'zh_CN'
-})
+});
 
-Vue.use(VueAxios, Axios)
+Vue.use(VueAxios, Axios);
 
-Vue.use(VueI18n)
+Vue.use(VueI18n);
 const i18n = new VueI18n({
   locale: LangStorage.getLang('en'),  // 语言标识
   messages: {
     'zh': require('./common/lang/zh'),
     'en': require('./common/lang/en')
   }
-})
+});
 
-
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({
@@ -43,6 +47,6 @@ new Vue({
   router,
   store,
   i18n,
-  components: { App },
+  components: {App},
   template: '<App/>'
-})
+});

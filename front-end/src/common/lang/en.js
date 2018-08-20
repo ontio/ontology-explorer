@@ -17,14 +17,14 @@ module.exports = {
   runStatus: {
     name: 'The whole network operation status',
     RunningTime: 'Whole Network Run Time:',
-    CurrentHeight: 'Last Block',
+    CurrentHeight: 'Block Height',
     BlockInterval: 'Average Block Time',
-    TxnCount: 'Transaction Number',
+    TxnCount: 'Total Transactions',
     NodeCount: 'Whole Network Node',
-    addressCount: 'Address Number',
+    addressCount: 'Total Addresses',
     second:'s',
     address:"Addresses",
-    ontid:"ONT ID"
+    ontid:"Total ONT ID"
   },
   ontIdList: {
     name: 'ONT ID EVENTS',

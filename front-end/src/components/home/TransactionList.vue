@@ -1,26 +1,23 @@
 <template>
-  <div class="container">
-    <div class="div-block-list form-group">
-      <div class="row block-title-content">
-        
-        <div class="col-lg-8 block-title-wrapper">
-          <p class="title font-blod">{{ $t('transactionList.name') }}</p>
-        </div>
-        <div class="col-lg-4 block-title-wrapper">
-          <p class="title-more float-right transaction-list-check-hand" @click="toTransactionListPage">{{ $t('all.more') }}</p>
-        </div>
+  <div class="div-block-list">
+    <div class="row block-title-content">
+      <div class="col-8 block-title-wrapper">
+        <p class="title font-blod">{{ $t('transactionList.name') }}</p>
       </div>
-      <div class="row">
-            <div v-for="(tx,index) in latestTransactionList.info" class="col-lg-12 block-item-wrapper2">
-              <div class="col-lg-12  block-item-sub-wrapper">
-                <div :class="( index <1) ?'block-item col-lg-8 text-left padding0 font-size14':' font-size14 block-item col-lg-8 text-left padding0 block-item-top'" @click="toTransactionDetailPage(tx.TxnHash)"><span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span></div>
-                  <span  v-if="getTime(tx.TxnTime) < 60" class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
-                  <span  v-else class="font-size14 block-item col-lg-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
-              </div>
-              <div class="col-lg-12  block-item-sub-wrapper">
-                <span :class="( index >4) ? ' block-item col-lg-12 text-left padding0  font-size14':'block-item col-lg-12 text-left padding0 block-item-bottom font-size14  '">{{getTxtype(tx.TxnType)}}</span>
-              </div>
-            </div>
+      <div class="col-4 block-title-wrapper">
+        <p class="title-more float-right transaction-list-check-hand" @click="toTransactionListPage">{{ $t('all.more') }}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div v-for="(tx,index) in latestTransactionList.info" class="col-12 block-item-wrapper2">
+        <div class="row  block-item-sub-wrapper">
+          <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':' font-size14 block-item col-8 text-left padding0 block-item-top'" @click="toTransactionDetailPage(tx.TxnHash)"><span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span></div>
+          <span  v-if="getTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
+          <span  v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
+        </div>
+        <div class="row  block-item-sub-wrapper">
+          <span :class="( index >4) ? ' block-item col-12 text-left padding0  font-size14':'block-item col-12 text-left padding0 block-item-bottom font-size14  '">{{getTxtype(tx.TxnType)}}</span>
+        </div>
       </div>
     </div>
   </div>
