@@ -24,7 +24,7 @@ module.exports = {
     addressCount: 'Total Addresses',
     second:'s',
     address:"Addresses",
-    ontid:"Total ONT ID Accounts"
+    ontid:"Total ONT ID"
   },
   ontIdList: {
     name: 'ONT ID EVENTS',
