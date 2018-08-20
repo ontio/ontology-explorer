@@ -21,12 +21,13 @@ export default {
   actions: {
     getRunStatus({dispatch, commit}, $param) {
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL
+      let apiUrlAddr = ($param.net === "testnet") ? process.env.TEST_EXPLORE_URL : process.env.EXPLORE_URL;
 
       return axios.get(apiUrl + '/summary').then(response => {
         let msg = JSON.parse(response.request.response);
 
         // 增加持仓地址数量查询，lyx
-        return axios.get(process.env.EXPLORE_URL + 'getAssetHolderCount?qid=1&contract=0100000000000000000000000000000000000000').then(res => {
+        return axios.get(apiUrlAddr + 'getAssetHolderCount?qid=1&contract=0100000000000000000000000000000000000000').then(res => {
           msg.Result['AddressCount'] = res.data.result;
           commit({
             type: types.SET_RUN_STATUS,
