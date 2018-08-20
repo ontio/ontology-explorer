@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container-top">
-      <div class="container container-0-padding">
+      <div class="container">
         <div class="row">
           <div class="index-logo-warpper col-8">
             <img src="/static/img/ontlogo.png" class="index-logo">
@@ -17,15 +17,15 @@
 
     <run-status></run-status>
 
-    <div class="container container-0-padding">
+    <div class="container">
       <div class="row">
-        <div class="col">
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
           <block-list></block-list>
         </div>
-        <div class="col">
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
           <transaction-list></transaction-list>
         </div>
-        <div class="col">
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
           <OntIdList></OntIdList>
         </div>
       </div>

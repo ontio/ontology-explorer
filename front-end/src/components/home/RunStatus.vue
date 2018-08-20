@@ -20,7 +20,7 @@
     </div>
 
     <div class="row">
-      <div class="col-4 text-left">
+      <div class="col text-left">
         <label class="run-status-chart-title">Time Since Last Block</label>
       </div>
     </div>
@@ -429,7 +429,7 @@
 <style scoped>
   .div-run-status {
     border-radius: 0.25rem;
-    padding: 15px 0;
+    padding: 15px;
   }
 
   label {
