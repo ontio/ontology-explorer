@@ -21,7 +21,7 @@ table {
   background-color: white !important;
 }
 
-.container-fluid {
+.container-0-padding {
   padding: 0 !important;
 }
 
@@ -115,30 +115,6 @@ th {
   font-size: 18px;
   margin-right: 0px;
   margin-bottom: 0;
-}
-
-/* top nav height */
-.container-div {
-  padding: 0px 0px 60px 0;
-  /* background-image:url(../img/header_bg.jpg); */
-  background-size: 100% 100%;
-  /* IE10+ */
-  background-image: -ms-linear-gradient(bottom, #2C92A5 0%, #37B6D3 100%);
-
-  /* Mozilla Firefox */
-  background-image: -moz-linear-gradient(bottom, #2C92A5 0%, #37B6D3 100%);
-
-  /* Opera */
-  background-image: -o-linear-gradient(bottom, #2C92A5 0%, #37B6D3 100%);
-
-  /* Webkit (Safari/Chrome 10) */
-  background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #2C92A5), color-stop(100, #37B6D3));
-
-  /* Webkit (Chrome 11+) */
-  background-image: -webkit-linear-gradient(bottom, #2C92A5 0%, #37B6D3 100%);
-
-  /* W3C Markup */
-  background-image: linear-gradient(to top, #2C92A5 0%, #37B6D3 100%);
 }
 
 .testNet1:before {
@@ -309,7 +285,7 @@ th {
   background-color: white;
   margin: 0;
   width: 279px;
-  padding: 14PX 0 10px;
+  padding: 14px 0 10px;
   border-top: 1px solid #e5e4e4;
 }
 
@@ -324,6 +300,7 @@ th {
 
 .block-title-wrapper {
   margin: 9px 0;
+  padding: 0 !important;
 }
 
 .block-item-sub-wrapper {

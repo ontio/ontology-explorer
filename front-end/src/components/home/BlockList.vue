@@ -1,27 +1,25 @@
 <template>
-  <div class="container">
-    <div class="div-block-list form-group">
-      <div class="row block-title-content">
-        <div class="col-lg-6 block-title-wrapper">
-          <p class="title font-blod">{{ $t('blockList.name') }}</p>
-        </div>
-        <div class="col-lg-6 block-title-wrapper">
-          <p class="title-more float-right block-list-check-hand"  @click="toBlockListPage">{{ $t('all.more') }}</p>
-        </div>
+  <div class="div-block-list">
+    <div class="row block-title-content">
+      <div class="col-lg-6 block-title-wrapper">
+        <p class="title font-blod">{{ $t('blockList.name') }}</p>
       </div>
-      <div class="row">
-            <div v-for="(block,index) in latestBlockList.info" class="col-lg-12 block-item-wrapper">
-              <div class="col-lg-12 block-item-sub-wrapper">
-                <div class=" block-item col-lg-6 text-left padding0 block-item-height font700 font-size18 click_able" @click="toBlockDetailPage(block.Height)" style="color:#32a4be">{{block.Height}}</div>
-                <div v-if="block.TxnNum ==1" class="block-item col-lg-6 text-right padding0 font-size14">{{block.TxnNum}} Transaction</div>
-                <div v-else class="block-item col-lg-6 text-right padding0 font-size14">{{block.TxnNum}}Transactions</div>
-              </div>
-              <div class="col-lg-12 block-item-sub-wrapper">
-                <span class="block-item col-lg-6 text-left padding0 font-size14">{{block.BlockSize}} byte</span>
-                <span v-if="getTime(block.BlockTime) < 60" class="block-item col-lg-6 text-right padding0 font-size14 ">{{showtime[index]}}s ago</span>
-                <span v-else class="block-item col-lg-6 text-right padding0 font-size14 ">{{getShowDate(block.BlockTime)}} ago</span>
-              </div>
-            </div>
+      <div class="col-lg-6 block-title-wrapper">
+        <p class="title-more float-right block-list-check-hand"  @click="toBlockListPage">{{ $t('all.more') }}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div v-for="(block,index) in latestBlockList.info" class="col-lg-12 block-item-wrapper2">
+        <div class="row block-item-sub-wrapper">
+          <div class=" block-item col-lg-6 text-left padding0 block-item-height font700 font-size18 click_able" @click="toBlockDetailPage(block.Height)" style="color:#32a4be">{{block.Height}}</div>
+          <div v-if="block.TxnNum ==1" class="block-item col-lg-6 text-right padding0 font-size14">{{block.TxnNum}} Transaction</div>
+          <div v-else class="block-item col-lg-6 text-right padding0 font-size14">{{block.TxnNum}}Transactions</div>
+        </div>
+        <div class="row block-item-sub-wrapper">
+          <span class="block-item col-lg-6 text-left padding0 font-size14">{{block.BlockSize}} byte</span>
+          <span v-if="getTime(block.BlockTime) < 60" class="block-item col-lg-6 text-right padding0 font-size14 ">{{showtime[index]}}s ago</span>
+          <span v-else class="block-item col-lg-6 text-right padding0 font-size14 ">{{getShowDate(block.BlockTime)}} ago</span>
+        </div>
       </div>
     </div>
   </div>
