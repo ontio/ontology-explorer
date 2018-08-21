@@ -7,7 +7,7 @@
             <img src="/static/img/ontlogo.png" class="index-logo">
           </div>
           <div class="index-net-warpper col-4 testNet">
-            <a class="net-ready" @click="changeNet()">{{readynet}}</a> / <a class="net-notready" @click="changeNet()">{{notreadynet}}</a>
+            <a class="net-ready" @click="changeNet()">{{readyNet}}</a> / <a class="net-notready" @click="changeNet()">{{notReadyNet}}</a>
           </div>
         </div>
       </div>
@@ -38,56 +38,41 @@
   import SearchInput from './../home/SearchInput'
   import OntIdList from "./OntIdList";
   import TransactionList from "./TransactionList";
-  import AddressMsg from "./AddressMsg";
   import BlockList from "./BlockList";
 
   export default {
     name: 'Home',
-    mounted: function () {
-    },
-    computed: {
-      height: function () {
-
+    data() {
+      return {
+        readyNet: "MainNet",
+        notReadyNet: "Polaris 1.0.0"
       }
     },
     created() {
-      if (this.$route.params.net == undefined) {
-        this.readynet = 'MainNet'
-        this.notreadynet = 'Polaris 1.0.0'
+      if (this.$route.params.net === 'testnet') {
+        this.readyNet = 'Polaris 1.0.0';
+        this.notReadyNet = 'MainNet'
       } else {
-        this.readynet = 'Polaris 1.0.0'
-        this.notreadynet = 'MainNet'
-      }
-    },
-    watch: {
-      'height': function () {
-        /* console.log(this.height) */
+        this.readyNet = 'MainNet';
+        this.notReadyNet = 'Polaris 1.0.0'
       }
     },
     methods: {
       changeNet() {
-
-        if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'HomeTest', params: {net: 'testnet'}})
-          this.readynet = 'MainNet'
-          this.notreadynet = 'Polaris 1.0.0'
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'Home'});
+          this.readyNet = 'Polaris 1.0.0';
+          this.notReadyNet = 'MainNet'
         } else {
-          this.$router.push({name: 'Home'})
-          this.readynet = 'Polaris 1.0.0'
-          this.notreadynet = 'MainNet'
+          this.$router.push({name: 'HomeTest', params: {net: 'testnet'}});
+          this.readyNet = 'MainNet';
+          this.notReadyNet = 'Polaris 1.0.0'
         }
         location.reload();
       }
     },
-    data() {
-      return {
-        readynet: "MainNet",
-        notreadynet: "Polaris 1.0.0"
-      }
-    },
     components: {
       BlockList,
-      AddressMsg,
       TransactionList,
       OntIdList,
       SearchInput,
