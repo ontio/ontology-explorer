@@ -21,9 +21,9 @@ module.exports = {
     BlockInterval: 'Average Block Time',
     TxnCount: 'Total Transactions',
     NodeCount: 'Online Nodes',
-    addressCount: 'Total Addresses',
+    addressCount: 'Total addresses',
     second:'s',
-    address:"Addresses",
+    address:"addresses",
     ontid:"Total ONT ID"
   },
   ontIdList: {
