@@ -13,7 +13,8 @@
         <label class="run-status-label">{{ $t('runStatus.NodeCount') }}</label>
         <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</p>
       </div>
-      <div class="col col-click" @click="toAddressListPage">
+      <!--<div class="col col-click" @click="toAddressListPage">-->
+      <div class="col">
         <label class="run-status-label">{{ $t('runStatus.addressCount') }}</label>
         <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</p>
       </div>

@@ -20,7 +20,7 @@ module.exports = {
     CurrentHeight: 'Block Height',
     BlockInterval: 'Average Block Time',
     TxnCount: 'Total Transactions',
-    NodeCount: 'Online Nodes',
+    NodeCount: 'Consensus Nodes',
     addressCount: 'Total addresses',
     second:'s',
     address:"addresses",
