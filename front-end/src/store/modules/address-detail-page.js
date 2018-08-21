@@ -1,6 +1,48 @@
 import axios from 'axios'
 import * as types from "../mutation-type"
 
+/**
+ * 计算总共多少ONT和ONG，lyx。
+ *
+ * @param myAddress
+ * @param trans
+ * @return {*}
+ */
+function getTransAmount(myAddress, trans) {
+  let txnLists = trans.TxnList
+
+  for(let val in txnLists) {
+    let txnList = txnLists[val].TransferList;
+    let ont = 0;
+    let ong = 0;
+
+    for(let tx in txnList) {
+      if(txnList[tx].FromAddress === myAddress) {
+        if(txnList[tx].AssetName === 'ont') {
+          ont -= Number(txnList[tx].Amount)
+        } else {
+          ong -= Number(txnList[tx].Amount)
+        }
+      } else {
+        if(txnList[tx].AssetName === 'ont') {
+          ont += Number(txnList[tx].Amount)
+        } else {
+          ong += Number(txnList[tx].Amount)
+        }
+      }
+    }
+
+    txnLists[val].amount = {
+      ont: ont,
+      ong: ong
+    }
+  }
+
+  trans.TxnList = txnLists;
+
+  return trans
+}
+
 export default {
   state: {
     AddressDetail: {
@@ -31,7 +73,7 @@ export default {
         }
 
         let info={
-          info: msg.Result,
+          info: getTransAmount($param.address, msg.Result),
           allPage: allPageNum,
           firstPage: {
             pageSize: '10',
@@ -57,6 +99,6 @@ export default {
       }).catch(error => {
         console.log(error)
       })
-    },
+    }
   }
 }

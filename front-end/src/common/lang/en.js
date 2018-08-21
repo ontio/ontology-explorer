@@ -20,10 +20,10 @@ module.exports = {
     CurrentHeight: 'Block Height',
     BlockInterval: 'Average Block Time',
     TxnCount: 'Total Transactions',
-    NodeCount: 'Whole Network Node',
-    addressCount: 'Total Addresses',
+    NodeCount: 'Consensus Nodes',
+    addressCount: 'Total addresses',
     second:'s',
-    address:"Addresses",
+    address:"addresses",
     ontid:"Total ONT ID"
   },
   ontIdList: {

@@ -61,50 +61,36 @@
         </tr>
         </tbody>
       </table>
-      <table v-if="recordflag" class="table table-hover">
-        <thead>
-        <tr>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="td11 td_height" style="padding: 34px 24px;">
-            <p class="font-size24  p_margin_bottom f_color font-Regular">Issuer OntId:</p>
-            <p class="font-size14 f_color p_margin_bottom font-Regular ">
-              {{transactionDetail.info.Description.substr(12,42)}}</p>
-            <p class="font-size24  p_margin_bottom f_color font-Regular">Description:</p>
-            <p class="font-size14 f_color p_margin_bottom font-Regular">{{transactionDetail.info.Description}}</p>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <table v-if="idflag" class="table table-hover">
-        <thead>
-        <tr>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="td11 td_height" style="padding: 34px 24px;">
-            <p class="font-size24  p_margin_bottom f_color font-Regular">OntId:</p>
-            <p class="font-size14 important_color p_margin_bottom font-Regular pointer click_able"
-               @click="toOntIdDetailPage(Detail.OntId)">{{Detail.OntId}}</p>
-            <p class="font-size24  p_margin_bottom f_color font-Regular">Description:</p>
-            <p class="font-size14 f_color p_margin_bottom font-Regular">{{Detail.Description}}</p>
-          </td>
-        </tr>
-        </tbody>
-      </table>
 
+      <!--展示Issuer OntId和Description的数据块-->
+      <div class="row detail-ont-id-desc-tit font-Regular" v-if="recordflag">
+        <div class="col">
+          <div class="row font-size24">Issuer OntId:</div>
+          <div class="row font-size14 detail-ont-id-desc-txt">{{transactionDetail.info.Description.substr(12,42)}}</div>
+          <div class="row font-size24 margin-top-15">Description:</div>
+          <div class="row font-size14 detail-ont-id-desc-txt">{{transactionDetail.info.Description}}</div>
+        </div>
+      </div>
+
+      <!--展示ONT ID和Description的数据块-->
+      <div class="row detail-ont-id-desc-tit font-Regular font-size14" v-if="idflag">
+        <div class="col">
+          <div class="row font-size24">OntId:</div>
+          <div class="row detail-ont-id-desc-txt pointer click_able" @click="toOntIdDetailPage(Detail.OntId)">{{Detail.OntId}}</div>
+          <div class="row font-size24 margin-top-15">Description:</div>
+          <div class="row detail-ont-id-desc-txt">{{Detail.Description}}</div>
+        </div>
+      </div>
+
+      <!--展示转账金额等详情的数据块-->
       <div class="row font-size14" v-if="txflag" v-for="tx in Detail.TransferList">
         <div class="col-4 trans-detail-tx-col pointer" @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
-        <div class="col-1 trans-detail-tx-col">Sent</div>
-        <div class="col-2 trans-detail-tx-col text-center font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{tx.AssetName}}</span></div>
-        <div class="col-1 trans-detail-tx-col">To</div>
+        <div class="col-1 trans-detail-tx-col">>></div>
+        <div class="col-2 trans-detail-tx-col text-center font-weight-bold font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{tx.AssetName}}</span></div>
+        <div class="col-1 trans-detail-tx-col">>></div>
         <div class="col-4 trans-detail-tx-col pointer" @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
       </div>
     </div>
-
 
     <!-- mobile -->
     <div class="mobile-display">
@@ -217,9 +203,9 @@
           <td class="td11 td_height" style="background-color:#32A4BE;color:white;padding: 34px 24px;">
             <div class="row ">
               <div class="col-lg-4 padding0-right pointer">{{tx.FromAddress}}</div>
-              <div class="col-lg-1 ">sent</div>
+              <div class="col-lg-1 ">>></div>
               <div class="col-lg-2 ">{{toMoney(tx)}} {{tx.AssetName}}</div>
-              <div class="col-lg-1 ">to</div>
+              <div class="col-lg-1 ">>></div>
               <div class="col-lg-4 padding0-left pointer ">{{tx.ToAddress}}</div>
             </div>
           </td>
@@ -337,6 +323,17 @@
 </script>
 
 <style scoped>
+  .detail-ont-id-desc-tit {
+    background: white;
+    margin-top: 4px;
+    padding: 2rem;
+    color: #AFACAC;
+  }
+
+  .detail-ont-id-desc-txt {
+    color: #32A4BE;
+  }
+
   .trans-detail-col,
   .trans-detail-tx-col {
     width: 100%;
