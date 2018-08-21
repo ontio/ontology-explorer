@@ -9,6 +9,10 @@
         <label class="run-status-label">{{ $t('runStatus.TxnCount') }}</label>
         <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</p>
       </div>
+      <div class="col col-click" @click="toOnlineNodes">
+        <label class="run-status-label">{{ $t('runStatus.NodeCount') }}</label>
+        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</p>
+      </div>
       <div class="col col-click" @click="toAddressListPage">
         <label class="run-status-label">{{ $t('runStatus.addressCount') }}</label>
         <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</p>
@@ -19,16 +23,10 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col text-left">
-        <label class="run-status-chart-title">Time Since Last Block</label>
-      </div>
-    </div>
-
-    <div class="row">
+    <div class="row chart-margin-top">
       <div class="col">
         <div id="chartwrapper" class="chart-container">
-          <canvas id="myChart" class="mycanvas" height="100"></canvas>
+          <canvas id="myChart" class="mycanvas" height="90"></canvas>
         </div>
       </div>
     </div>
@@ -203,20 +201,15 @@
           this.$router.push({ name:'OntIdListDetailTest', params:{pageSize:10,pageNumber:1,net:'testnet'}})
         }
       },
+      toOnlineNodes() {
+        window.location.href = 'https://monitor.ont.io/'
+      },
       getRunStatus() {
-        this.$store.dispatch('getRunStatus', this.$route.params).then(response => {
-          /* console.log(response) */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getRunStatus', this.$route.params).then()
       },
       generateTime(amount) {
-        this.$route.params.amount = amount
-        this.$store.dispatch('generateTime', this.$route.params).then(response => {
-          /* console.log("11111",response) */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$route.params.amount = amount;
+        this.$store.dispatch('generateTime', this.$route.params).then()
       },
       getDay($time) {
         return Helper.getDayfunction($time)
@@ -453,10 +446,8 @@
     color: #595757;
   }
 
-  .run-status-chart-title {
-    color: #AFACAC;
-    margin-top: 13px;
-    margin-bottom: 0px;
+  .chart-margin-top {
+    margin-top: 30px;
   }
 
   .div-run-status {

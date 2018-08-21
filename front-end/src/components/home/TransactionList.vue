@@ -1,6 +1,6 @@
 <template>
   <div class="div-block-list">
-    <div class="row block-title-content">
+    <div class="row">
       <div class="col-8 block-title-wrapper">
         <p class="title font-blod">{{ $t('transactionList.name') }}</p>
       </div>
@@ -8,15 +8,17 @@
         <p class="title-more float-right transaction-list-check-hand" @click="toTransactionListPage">{{ $t('all.more') }}</p>
       </div>
     </div>
+
     <div class="row">
       <div v-for="(tx,index) in latestTransactionList.info" class="col-12 block-item-wrapper2">
+        <div class="divider-line"></div>
         <div class="row  block-item-sub-wrapper">
           <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':' font-size14 block-item col-8 text-left padding0 block-item-top'" @click="toTransactionDetailPage(tx.TxnHash)"><span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span></div>
           <span  v-if="getTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
           <span  v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
         </div>
         <div class="row  block-item-sub-wrapper">
-          <span :class="( index >4) ? ' block-item col-12 text-left padding0  font-size14':'block-item col-12 text-left padding0 block-item-bottom font-size14  '">{{getTxtype(tx.TxnType)}}</span>
+          <span :class="( index >4) ? ' block-item col-12 text-left padding0 font-size14':'block-item col-12 text-left padding0 block-item-bottom font-size14'">{{getTxtype(tx.TxnType)}}</span>
         </div>
       </div>
     </div>
@@ -120,24 +122,10 @@
 </script>
 
 <style scoped>
-  .div-transaction-list {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 0.25rem;
-    padding: 15px;
-  }
-  .transaction-list-hr {
-    height: 1px;
-  }
-  .tl-tab-border-top-none{
-    border-top: none;
-  }
-  .transaction-list-underline{
-    cursor: pointer;
-    text-decoration: underline;
-  }
   .transaction-list-check-hand{
     cursor: pointer;
   }
+
   .txhash-text{
     background-color: #32a4be;
     color:white;
