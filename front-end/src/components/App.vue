@@ -2,7 +2,7 @@
   <div id="app" class="container-bg-color">
     <top-nav></top-nav>
     <router-view/>
-    <bottom></bottom>
+    <the-footer></the-footer>
   </div>
 </template>
 
@@ -10,13 +10,13 @@
   import 'bootstrap/dist/css/bootstrap.min.css'
   import 'bootstrap/dist/js/bootstrap.min.js'
   import TopNav from './common/TopNav'
-  import bottom from './common/bottom'
+  import TheFooter from './common/TheFooter'
 
   export default {
     name: 'App',
     components: {
       TopNav,
-      bottom
+      TheFooter
     }
   }
 </script>
