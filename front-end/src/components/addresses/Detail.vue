@@ -15,27 +15,25 @@
 
       <!--实际地址显示-->
       <div class="row">
-        <div class="col">
-          <p class="font-size24 important_color">
-            <span class="font-blod">ADDRESS: </span>
-            <span class="font-size14 important_color">{{$route.params.address}}</span>
-          </p>
+        <div class="col font-size24 important_color">
+          <span class="font-blod">ADDRESS: </span>
+          <span class="font-size14 important_color">{{$route.params.address}}</span>
         </div>
       </div>
 
       <!--主要余额显示-->
       <div class="row">
         <div class="col address-detail-col margin-right-2px">
-          <p class="table1_item_title font-size24 font-Regular normal_color"
+          <span class="table1_item_title font-size24 font-Regular normal_color"
              v-for="asset in AssetBalance" v-if="asset.AssetName === 'ont'">
             ONT Balance: <span class="important_color">{{asset.Balance}}</span>
-          </p>
+          </span>
         </div>
         <div class="col address-detail-col margin-left-2px">
-          <p class="table1_item_title font-size24 font-Regular normal_color"
+          <span class="table1_item_title font-size24 font-Regular normal_color"
              v-for="asset in AssetBalance" v-if="asset.AssetName === 'ong'">
             ONG Balance: <span class="important_color">{{asset.Balance}}</span>
-          </p>
+          </span>
         </div>
       </div>
 
@@ -55,69 +53,62 @@
 
       <!--交易历史-->
       <div class="row margin-top-4px address-detail-table-col">
-        <table v-if="info.TxnTotal !== 0" class="table">
-          <thead>
-          <tr style="border-bottom:0px;">
-            <td class="table3_title font-size24 font-blod normal_color">
-              {{ addressDetail.info.allPage }} Transactions on this Address:
-            </td>
-          </tr>
-          </thead>
-          <thead>
-          <tr>
-            <td class="td-tx-head table3_head font-size18 font-blod normal_color">
-              HASH
-            </td>
-            <td class="td-tx-head table3_head font-size18 font-blod normal_color">
-              AMOUNT
-            </td>
-            <td class="td-tx-head table3_head font-size18 font-blod normal_color">
-              STATUS
-            </td>
-            <td class="td-tx-head table3_head font-size18 font-blod normal_color">
-              TIME
-            </td>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="tx in TxnList">
-            <td class="font-size14 font-Regular f_color click_able" style="cursor:pointer" @click="toTransactionDetailPage(tx.TxnHash)">
-              {{tx.TxnHash}}
-            </td>
-            <td class="font-size14 font-Regular">
-              <span v-if="tx.amount.ont > 0" style="color: #00AE1D">
-                {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
-              </span>
-              <span v-else style="color: #32A4BE">
-                {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
-              </span>
+        <div class="col">
+          <div class="row font-size24 font-blod normal_color">
+            {{ addressDetail.info.allPage }} Transactions on this Address:
+          </div>
+          <div class="row table-responsive">
+            <table v-if="info.TxnTotal !== 0" class="table">
+              <thead>
+              <tr>
+                <th class="td-tx-head table3_head font-size18 font-blod normal_color">
+                  HASH
+                </th>
+                <th class="td-tx-head table3_head font-size18 font-blod normal_color">
+                  AMOUNT
+                </th>
+                <th class="td-tx-head table3_head font-size18 font-blod normal_color">
+                  STATUS
+                </th>
+                <th class="td-tx-head table3_head font-size18 font-blod normal_color">
+                  TIME
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="tx in TxnList">
+                <td class="font-size14 font-Regular f_color click_able" @click="toTransactionDetailPage(tx.TxnHash)">
+                  {{tx.TxnHash.substr(0,16) + '...'}}
+                </td>
+                <td class="font-size14 font-Regular">
+                  <span v-if="tx.amount.ont > 0" style="color: #00AE1D">
+                    {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
+                  </span>
+                  <span v-else style="color: #32A4BE">
+                    {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
+                  </span>
 
-              <span v-if="tx.amount.ont > 0 | tx.amount.ong > 0" style="color: #00AE1D">
-                {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
-              </span>
-              <span v-else style="color: #32A4BE">
-                {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
-              </span>
+                  <span v-if="tx.amount.ont > 0 | tx.amount.ong > 0" style="color: #00AE1D">
+                    {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
+                  </span>
+                      <span v-else style="color: #32A4BE">
+                    {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
+                  </span>
 
-              <span v-if="tx.amount.ong > 0" style="color: #00AE1D">
-                {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
-              </span>
-              <span v-else style="color: #32A4BE">
-                {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
-              </span>
-            </td>
-            <td class="font-size14 font-Regular s_color" v-if="tx.ConfirmFlag == 1">
-              Confirmed
-            </td>
-            <td class="font-size14 font-Regular f_color" v-else>
-              Failed
-            </td>
-            <td class="font-size14 font-Regular normal_color">
-              {{getDate(tx.TxnTime)}}
-            </td>
-          </tr>
-          </tbody>
-        </table>
+                  <span v-if="tx.amount.ong > 0" style="color: #00AE1D">
+                    {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
+                  </span>
+                      <span v-else style="color: #32A4BE">
+                    {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
+                  </span>
+                </td>
+                <td class="font-size14 font-Regular s_color">{{ tx.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
+                <td class="font-size14 font-Regular normal_color">{{getDate(tx.TxnTime)}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -233,7 +224,7 @@
   .address-detail-col,
   .address-detail-col-2 {
     width: 100%;
-    height: 6rem;
+    /*height: 6rem;*/
     padding: 2rem;
     line-height: 2rem;
     background: white;

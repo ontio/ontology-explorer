@@ -27,7 +27,7 @@
             <tbody>
             <tr v-for="transaction in transactionListDetail.info">
               <!-- <td>{{getTransactionType(transaction.TxnType)}}</td> -->
-              <td class="font-size14 font-Regular important_color td_height3 click_able"@click="toTransactionDetailPage(transaction.TxnHash)">{{transaction.TxnHash.substr(0,30)}}...</td>
+              <td class="font-size14 font-Regular important_color td_height3 click_able"@click="toTransactionDetailPage(transaction.TxnHash)">{{transaction.TxnHash.substr(0,16)}}...</td>
               <td v-if="transaction.ConfirmFlag ==1" class="font-size14 font-Regular s_color td_height3">Confirmed</td>
               <td v-else class="font-size14 font-Regular f_color td_height3">Failed</td>
               <td class="font-size14 font-Regular normal_color td_height3">{{transaction.Height}}</td>
