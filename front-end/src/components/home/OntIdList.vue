@@ -14,7 +14,7 @@
         <div class="divider-line"></div>
         <div class="row padding0 block-item-sub-wrapper">
           <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':'block-item col-8 text-left padding0 block-item-top font-size14'" @click="toOntIdDetailPage(OntId.OntId)"><span class="ontID-text font700">{{OntId.OntId.substr(0,12)}}...{{OntId.OntId.substr(32,45)}}</span></div>
-          <span v-if="getTime(OntId.TxnTime) <60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
+          <span v-if="$HelperTools.getDateTime(OntId.TxnTime) <60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
           <span v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(OntId.TxnTime)}} ago</span>
         </div>
         <div class="row padding0 block-item-sub-wrapper">
@@ -27,15 +27,14 @@
 
 <script>
   import {mapState} from 'vuex'
-  import Helper from './../../helpers/helper.js'
   import GetTransactionType from './../../common/OntMsg/GetTransactionType.js'
 
   export default {
     name: "ont-id-list",
     data() {
       return {
-          info:[],
-          showtime:[0,0,0,0,0]
+        info: [],
+        showtime: [0, 0, 0, 0, 0]
       }
     },
     created() {
@@ -44,17 +43,17 @@
         this.getOntIdList()
       }, 6000)
       this.intervalBlockstandard = setInterval(() => {
-        for(var i =0;i<5;i++){
+        for (var i = 0; i < 5; i++) {
           var time = this.showtime[i] + 1
-          this.$set(this.showtime,i,time)
+          this.$set(this.showtime, i, time)
         }
       }, 1000)
     },
     watch: {
       '$route': 'getOntIdList',
-      'latestOntIdList.info':function(){
-        for(var i =0;i<this.latestOntIdList.info.length;i++){
-          this.showtime[i] = this.getTime(this.latestOntIdList.info[i].TxnTime)
+      'latestOntIdList.info': function () {
+        for (var i = 0; i < this.latestOntIdList.info.length; i++) {
+          this.showtime[i] = this.$HelperTools.getDateTime(this.latestOntIdList.info[i].TxnTime)
         }
       }
     },
@@ -65,79 +64,68 @@
     },
     methods: {
       getOntIdList() {
-        // do something
-        this.$store.dispatch('getOntIdList',this.$route.params).then(response => {
-          //console.log(response)
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getOntIdList', this.$route.params).then()
       },
-      toOntIdListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'OntIdListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'OntIdListDetailTest', params:{pageSize:10,pageNumber:1,net:'testnet'}})
+      toOntIdListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 10, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 10, pageNumber: 1, net: 'testnet'}})
         }
       },
-      getTime($time){
-        return Helper.getDateTime($time)
+      getShowDate($time) {
+        let time = this.$HelperTools.getDateTime($time)
+        return this.$HelperTools.getshowDate(time)
       },
-      getDate($time){
-        return Helper.getDate($time)
-      },
-      getShowDate($time){
-        var time = this.getTime($time)
-        return Helper.getshowDate(time)
-      },
-      getTransactionType($case){
+      getTransactionType($case) {
         return GetTransactionType.getTransactionType($case)
       },
-      toTransactionDetailPage($TxnId){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
-        }else{
-          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:'testnet'}})
+      toTransactionDetailPage($TxnId) {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'TransactionDetail', params: {txnHash: $TxnId}})
+        } else {
+          this.$router.push({name: 'TransactionDetailTest', params: {txnHash: $TxnId, net: 'testnet'}})
         }
       },
-      toOntIdDetailPage($OntId){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'OntIdDetail', params:{ontid:$OntId}})
-        }else{
-          this.$router.push({ name:'OntIdDetailTest', params:{ontid:$OntId,net:'testnet'}})
+      toOntIdDetailPage($OntId) {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'OntIdDetail', params: {ontid: $OntId}})
+        } else {
+          this.$router.push({name: 'OntIdDetailTest', params: {ontid: $OntId, net: 'testnet'}})
         }
       },
-      countDownTime:function(){
-          for(var i=0;i<this.info.length;i++){
-            this.info[i].showtime = this.info[i].showtime+1
-          }
+      countDownTime: function () {
+        for (var i = 0; i < this.info.length; i++) {
+          this.info[i].showtime = this.info[i].showtime + 1
+        }
       },
-      getOntIDEvent:function($event){
-             switch ($event.substr(0,12)) {
-              case "register Ont":
-                return "Register ONT ID"
-              case "add publicKe":
-                return "Add publickey"
-              case "remove publi":
-                return "Remove publickey"
-              case "add attribut":
-                return "Add identity attribute"
-              case "update attri":
-                return "Update identity attribute"
-              case "delete attri":
-                return "Delete identity attribute"
-              case "change recov":
-                return "Change recovery"
-              case "add recovery":
-                return "Add recovery"
-              case "remove attri":
-                return "Remove attribute"
-            }
+      getOntIDEvent: function ($event) {
+        switch ($event.substr(0, 12)) {
+          case "register Ont":
+            return "Register ONT ID"
+          case "add publicKe":
+            return "Add publickey"
+          case "remove publi":
+            return "Remove publickey"
+          case "add attribut":
+            return "Add identity attribute"
+          case "update attri":
+            return "Update identity attribute"
+          case "delete attri":
+            return "Delete identity attribute"
+          case "change recov":
+            return "Change recovery"
+          case "add recovery":
+            return "Add recovery"
+          case "remove attri":
+            return "Remove attribute"
+        }
       }
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.intervalBlock1)
       clearInterval(this.intervalBlockstandard)
-    },
+    }
   }
 </script>
 

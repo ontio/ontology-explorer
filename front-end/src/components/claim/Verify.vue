@@ -127,53 +127,49 @@
 
 <script>
   import {mapState} from 'vuex'
-  import Helper from './../../helpers/helper.js'
 
   export default {
-      name: "claim-verify-page",
+    name: "claim-verify-page",
 
     data() {
       return {
-        Ddo:{},
-        claimflag:true,
-        verifyresult:true
-
+        Ddo: {},
+        claimflag: true,
+        verifyresult: true
       }
     },
     created() {
       this.getClaimDetailPage()
       this.setTimeoutstep2 = setTimeout(() => {
-          
-        $('#step1time').css("display","none")
-        $('#step1result').css("display","block")
-        $('#step2').css("display","block")
+
+          $('#step1time').css("display", "none")
+          $('#step1result').css("display", "block")
+          $('#step2').css("display", "block")
         }
-      ,2000)
+        , 2000)
       this.setTimeoutstep3 = setTimeout(() => {
-        $('#step2time').css("display","none")
-        $('#step2result').css("display","block")
-        $('#step3').css("display","block")
+          $('#step2time').css("display", "none")
+          $('#step2result').css("display", "block")
+          $('#step3').css("display", "block")
         }
-      ,4000)
+        , 4000)
       this.setTimeoutstep4 = setTimeout(() => {
-        $('#step3time').css("display","none")
-        $('#step3result').css("display","block")
-        $('#step4').css("display","block")
+          $('#step3time').css("display", "none")
+          $('#step3result').css("display", "block")
+          $('#step4').css("display", "block")
         }
-      ,6000)
+        , 6000)
       this.setTimeoutstep4 = setTimeout(() => {
-        $('#step4time').css("display","none")
-        $('#step4result').css("display","block")
-        $('#return_key').css("display","block")
+          $('#step4time').css("display", "none")
+          $('#step4result').css("display", "block")
+          $('#return_key').css("display", "block")
         }
-      ,8000)
+        , 8000)
     },
     watch: {
       '$route': 'getgetClaimPage',
-      'getClaim.info':function(){
-        /* console.log(this.getClaim.info) */
+      'getClaim.info': function () {
       }
-
     },
     computed: {
       ...mapState({
@@ -181,55 +177,45 @@
       })
     },
     methods: {
-      verifyClaim(){
+      verifyClaim() {
         this.verifyresult = !this.verifyresult
       },
-      toMain(){
-        this.$router.push({ name:'Home'})
+      toMain() {
+        this.$router.push({name: 'Home'})
       },
       getClaimDetailPage() {
-        this.$store.dispatch('getClaim',this.$route.params).then(response => {
-          /* console.log(response) */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getClaim', this.$route.params).then()
       },
-      toReturn(){
+      toReturn() {
         this.$router.go(-1)
       },
-      getTime($time){
-        return Helper.getDateTime($time)
+      toTransactionDetailPage($TxnId) {
+        this.$router.push({name: 'TransactionDetail', params: {txnHash: $TxnId}})
       },
-      getDate($time){
-        return Helper.getDate($time)
+      togetClaimPage($OntId) {
+        this.$router.push({name: 'getClaim', params: {ontid: $OntId}})
       },
-      toTransactionDetailPage($TxnId){
-        this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
-      },
-      togetClaimPage($OntId){
-        this.$router.push({ name:'getClaim', params:{ontid:$OntId}})
-      },
-      getOntIDEvent:function($event){
-             switch ($event.substr(0,12)) {
-              case "register Ont":
-                return "Register ONT ID"
-              case "add publicKe":
-                return "Add publickey"
-              case "remove publi":
-                return "Remove publickey"
-              case "add attribut":
-                return "Add identity attribute"
-              case "update attri":
-                return "Update identity attribute"
-              case "delete attri":
-                return "Delete identity attribute"
-              case "change recov":
-                return "Change recovery"
-              case "add recovery":
-                return "Add recovery"
-              case "remove attri":
-                return "Remove attribute"
-            }
+      getOntIDEvent: function ($event) {
+        switch ($event.substr(0, 12)) {
+          case "register Ont":
+            return "Register ONT ID"
+          case "add publicKe":
+            return "Add publickey"
+          case "remove publi":
+            return "Remove publickey"
+          case "add attribut":
+            return "Add identity attribute"
+          case "update attri":
+            return "Update identity attribute"
+          case "delete attri":
+            return "Delete identity attribute"
+          case "change recov":
+            return "Change recovery"
+          case "add recovery":
+            return "Add recovery"
+          case "remove attri":
+            return "Remove attribute"
+        }
       }
     }
   }

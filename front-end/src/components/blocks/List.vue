@@ -1,65 +1,42 @@
 <template>
   <div class="container container-margin-top">
-    <div class="div-block-list-page form-group">
-      <div class="row">
-        <div class="col-lg-6">
-          <p  class="title-more  float-left font-Regular normal_color font-size18 block-detail-page-check-hand" @click="toReturn"><< {{ $t('all.return') }}</p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-12">
-          <p  class="text-center font-size40 font-ExtraLight p_margin_bottom_L normal_color" >BLOCKS</p>
-        </div>
-      </div>
-
-      <div class="row justify-content-center">
-        <div class="col-lg-12">
-          <table class="table table-hover">
-            <thead>
-            <tr>
-              <th class="blp-ab-border-top-none font-size18" style="padding-top:34px;" scope="col">{{ $t('blockList.Height') }}</th>
-              <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('blockList.TxnNum') }}</th>
-              <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('blockList.BlockSize') }}</th>
-              <th class="blp-ab-border-top-none font-size18" scope="col">{{ $t('blockList.BlockTime') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="block in blockListDetail.info">
-              <td class="font-size14 font-Regular important_color td_height3 click_able"  @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
-              <td class="font-size14 font-Regular normal_color td_height3">{{block.TxnNum}}</td>
-              <td class="font-size14 font-Regular normal_color td_height3">{{block.BlockSize}}</td>
-              <td class="font-size14 font-Regular normal_color td_height3">{{getDate(block.BlockTime)}}</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <return-home></return-home>
+    <list-title :name="$t('blockList.name')"></list-title>
 
     <div class="row justify-content-center">
-      <div id="page" v-show="blockListDetail.allPage!=1">
-        <ul class="pagination"  >
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(blockListDetail.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(blockListDetail.lastPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.PreviousPage')}}</a></button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(blockListDetail.nextPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>
-          <li class="transaction-list-page-check-hand  padding0" @click="goToPage(blockListDetail.finalPage)" ><button style="border-left:0px" class="goto_btn"><a>{{$t('page.Last')}}</a></button> </li>
-        </ul>
-      </div>
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th class="font-size18" scope="col">{{ $t('blockList.Height') }}</th>
+          <th class="font-size18" scope="col">{{ $t('blockList.TxnNum') }}</th>
+          <th class="font-size18" scope="col">{{ $t('blockList.BlockSize') }}</th>
+          <th class="font-size18" scope="col">{{ $t('blockList.BlockTime') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="block in blockListDetail.info">
+          <td class="font-size14 font-Regular important_color td_height3 click_able"  @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
+          <td class="font-size14 font-Regular normal_color td_height3">{{block.TxnNum}}</td>
+          <td class="font-size14 font-Regular normal_color td_height3">{{block.BlockSize}}</td>
+          <td class="font-size14 font-Regular normal_color td_height3">{{$HelperTools.getTransDate(block.BlockTime)}}</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
+
+    <turn-the-page :pagesInfo="blockListDetail" :pagesName="'blockListDetail'"></turn-the-page>
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
-  import Helper from './../../helpers/helper.js'
+  import ReturnHome from '../common/ReturnHome'
+  import ListTitle from '../common/ListTitle'
+  import TurnThePage from '../common/TurnThePage'
 
   export default {
-      name: "block-list-page",
-
-    data() {
-      return {
-      }
-    },
+    name: "block-list-page",
+    components: {ReturnHome, ListTitle, TurnThePage},
     created() {
       this.getBlockListPage()
     },
@@ -73,61 +50,18 @@
     },
     methods: {
       getBlockListPage() {
-        this.$store.dispatch('getBlockListPage',this.$route.params).then(response => {
-          /* console.log(response) */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getBlockListPage', this.$route.params).then()
       },
-      toReturn(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'Home'})
-        }else{
-          this.$router.push({ name:'HomeTest', params:{net:'testnet'}})
+      toBlockDetailPage($blockHeight) {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'blockDetail', params: {param: $blockHeight}})
+        } else {
+          this.$router.push({name: 'blockDetailTest', params: {param: $blockHeight, net: 'testnet'}})
         }
-      },
-      goToPage($Page){
-        
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'blockListDetail', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber}})
-        }else{
-          this.$router.push({ name:'blockListDetailTest', params:{pageSize:$Page.pageSize,pageNumber:$Page.pageNumber,net:'testnet'}})
-        }
-      },
-      toBlockDetailPage($blockHeight){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
-        }else{
-          this.$router.push({ name:'blockDetailTest', params:{param:$blockHeight,net:'testnet'}})
-        }
-      },
-      getTime($time){
-        return Helper.getDateTime($time)
-      },
-      getDate($time){
-        return Helper.getDate($time)
-      },
+      }
     }
   }
 </script>
 
 <style scoped>
-  .div-block-list-page {
-    /* border: 1px solid rgba(0, 0, 0, 0.1); */
-    border-radius: 0.25rem;
-    padding: 15px;
-  }
-  .block-list-page-hr {
-    height: 1px;
-  }
-  .blp-ab-border-top-none{
-    border-top: none;
-  }
-  .block-list-page-underline{
-    cursor: pointer;
-    text-decoration:underline;
-  }
-  .block-list-page-check-hand{
-    cursor: pointer;
-  }
 </style>

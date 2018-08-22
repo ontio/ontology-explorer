@@ -10,6 +10,8 @@ import VueI18n from 'vue-i18n'
 import LangStorage from './helpers/lang'
 import $ from 'jquery'
 import 'font-awesome/css/font-awesome.css'
+import Helper from './helpers/helper'
+Vue.use(Helper);
 
 /**
  * Fixed compatibility issues with low version IE. lyx.

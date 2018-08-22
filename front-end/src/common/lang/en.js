@@ -22,9 +22,9 @@ module.exports = {
     TxnCount: 'Total Transactions',
     NodeCount: 'Consensus Nodes',
     addressCount: 'Total addresses',
-    second:'s',
-    address:"addresses",
-    ontid:"Total ONT ID"
+    second: 's',
+    address: "addresses",
+    ontid: "Total ONT ID"
   },
   ontIdList: {
     name: 'ONT ID EVENTS',
@@ -33,17 +33,18 @@ module.exports = {
     TxnType: 'Event Type',
     TxnId: 'HASH',
     Fee: 'FEE ',
-    height:'HEIGHT',
+    height: 'HEIGHT',
     TxnTime: 'TIME'
   },
   ontIdDetail: {
+    nickname: 'ONT ID DETAILS',
     name: 'Ont ID:',
-    msgName:'Ont ID Event Log',
-    TxnId:'Transaction ID',
-    Height:'Block height',
-    TxnType:'Transaction Type',
-    TxnTime:'Block Time',
-    Description:'Description'
+    msgName: 'Ont ID Event Log',
+    TxnId: 'Transaction ID',
+    Height: 'Block height',
+    TxnType: 'Transaction Type',
+    TxnTime: 'Block Time',
+    Description: 'Description'
   },
   blockList: {
     name: 'BLOCKS',
@@ -55,11 +56,16 @@ module.exports = {
   addressList: {
     rank: 'Rank',
     name: 'Address',
+    nickname: 'ADDRESSES - Position Ranking',
     balance: 'ONT Balance',
     percent: 'Percent'
   },
+  addressDetail: {
+    name: 'ADDRESS DETAILS'
+  },
   blockDetail: {
-    name:'Block Height:',
+    nickname: 'BLOCK DETAILS',
+    name: 'Block Height:',
     BlockSize: 'Block Size:',
     BlockTime: 'Generate Time:',
     TxnNum: 'Number Of Transactions In The Block:',
@@ -70,24 +76,30 @@ module.exports = {
   },
   transactionList: {
     name: 'TRANSACTIONS',
-    TxnType:'Deal Type',
-    TxnId:'HASH',
-    Fee:'FEE',
-    Height:'Block height',
-    TxnTime:'TIME'
+    TxnType: 'Deal Type',
+    TxnId: 'HASH',
+    Fee: 'FEE',
+    Height: 'Block height',
+    TxnTime: 'TIME'
+  },
+  transactionDetail: {
+    name: 'TRANSACTION DETAILS'
+  },
+  claimDetail: {
+    name: 'CLAIM DETAILS'
   },
   addressMsg: {
     name: 'Address message',
-    address:'Address',
-    latestDealTime:'Latest Deal Time',
-    dealNumber:'Deal Number',
-    addressGenerationTime:'Address Generation Time',
-    balance:'Balance'
+    address: 'Address',
+    latestDealTime: 'Latest Deal Time',
+    dealNumber: 'Deal Number',
+    addressGenerationTime: 'Address Generation Time',
+    balance: 'Balance'
   },
-  page:{
-    First:"<<",
-    PreviousPage:" < ",
-    NextPage:" > ",
-    Last:">>"
+  page: {
+    First: "<<",
+    PreviousPage: " < ",
+    NextPage: " > ",
+    Last: ">>"
   }
 }

@@ -17,7 +17,6 @@ export default {
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
 
       return axios.get(apiUrl + '/transaction/' + $param.txnHash).then(res => {
-        console.log(res.data.Result)
         commit({
           type: types.SET_TRANSACTION_DETAIL_PAGE,
           info: res.data.Result,
