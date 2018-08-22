@@ -9,7 +9,7 @@
         <label class="run-status-label">{{ $t('runStatus.TxnCount') }}</label>
         <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</p>
       </div>
-      <div class="col col-click" @click="toOnlineNodes">
+      <div class="col col-click" @click="toOnlineNodes" v-if="$route.params.net !== 'testnet'">
         <label class="run-status-label">{{ $t('runStatus.NodeCount') }}</label>
         <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</p>
       </div>

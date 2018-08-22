@@ -1,28 +1,19 @@
 <template>
   <div class="container margin-top-60">
     <div class="pc-display">
-      <div class="row">
-        <div class="col">
-          <p class="font-Regular normal_color font-size18 title-more float-left block-detail-page-check-hand"
-             @click="toReturn"><< {{ $t('all.return') }}</p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <p class="text-center font-size40 font-ExtraLight p_margin_bottom_L normal_color">TRANSACTION DETAILS</p>
-        </div>
-      </div>
+      <return-home></return-home>
+      <list-title :name="$t('transactionDetail.name')"></list-title>
 
       <!-- Transaction Detail Basic Info: -->
       <div class="row">
         <div class="col">
           <p class="wordbreak font-size24 color32a4be font-blod important_color">Transaction Hash: <span
-            class="font-size14">{{  transactionDetail.info.TxnHash }}</span></p>
+            class="font-size14">{{ transactionDetail.info.TxnHash }}</span></p>
         </div>
       </div>
       <div class="row">
         <div class="col font-size24 normal_color trans-detail-col">
-          Transaction Time: {{getDate(transactionDetail.info.TxnTime)}}
+          Transaction Time: {{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
         </div>
       </div>
       <div class="row">
@@ -113,7 +104,7 @@
         <tbody>
         <tr>
           <td class="td11 table1_item_title td_height3 font-size16 normal_color">
-            Transaction Time: {{getDate(transactionDetail.info.TxnTime)}}
+            Transaction Time: {{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
           </td>
         </tr>
         <tr>
@@ -218,12 +209,13 @@
 
 <script>
   import {mapState} from 'vuex'
-  import Helper from './../../helpers/helper.js'
   import GetTransactionType from './../../common/OntMsg/GetTransactionType.js'
+  import ReturnHome from '../common/ReturnHome'
+  import ListTitle from '../common/ListTitle'
 
   export default {
     name: "transaction-detail-page",
-
+    components: {ReturnHome, ListTitle},
     data() {
       return {
         Detail: '',
@@ -268,7 +260,6 @@
     },
     methods: {
       toMoney(txTmp) {
-        console.log(txTmp)
         if (txTmp.AssetName === 'ong') {
           return Number(txTmp.Amount)
         } else {
@@ -279,17 +270,8 @@
       getTransactionData() {
         this.$store.dispatch('getTransactionDetailPage', this.$route.params).then()
       },
-      toReturn() {
-        this.$router.go(-1)
-      },
       getTransactionType($case) {
         return GetTransactionType.getTransactionType($case)
-      },
-      getTime($time) {
-        return Helper.getDateTime($time)
-      },
-      getDate($time) {
-        return Helper.getDate($time)
       },
       toBlockDetailPage($blockHeight) {
         if (this.$route.params.net == undefined) {
@@ -317,7 +299,7 @@
             params: {ontid: $ontid, pageSize: 10, pageNumber: 1, net: "testnet"}
           })
         }
-      },
+      }
     }
   }
 </script>

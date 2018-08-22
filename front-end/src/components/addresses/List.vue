@@ -1,15 +1,7 @@
 <template>
   <div class="container container-margin-top">
-    <div class="row">
-      <div class="col">
-        <p class="title-more float-left font-Regular normal_color font-size18 block-detail-page-check-hand" @click="toReturn"><< {{ $t('all.return') }}</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <p  class="text-center font-size40 font-ExtraLight p_margin_bottom_L normal_color">ADDRESSES - Position Ranking</p>
-      </div>
-    </div>
+    <return-home></return-home>
+    <list-title :name="$t('addressList.nickname')"></list-title>
 
     <div class="row justify-content-center table-margin-bottom">
       <div class="col-12">
@@ -40,25 +32,19 @@
       </div>
     </div>
 
-    <div class="row justify-content-center">
-      <div id="page">
-        <ul class="pagination">
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressList.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressList.lastPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.PreviousPage')}}</a></button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressList.nextPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressList.finalPage)" ><button style="border-left:0px" class="goto_btn"><a>{{$t('page.Last')}}</a></button> </li>
-        </ul>
-      </div>
-    </div>
+    <turn-the-page :pagesInfo="addressList" :pagesName="'AddressDetail'"></turn-the-page>
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
-  import Helper from './../../helpers/helper.js'
+  import ReturnHome from '../common/ReturnHome'
+  import ListTitle from '../common/ListTitle'
+  import TurnThePage from '../common/TurnThePage'
 
   export default {
     name: "address-list-page",
+    components: {ReturnHome, ListTitle, TurnThePage},
     created() {
       this.getAddressListInfo()
     },
@@ -86,34 +72,7 @@
             params: {address: address, pageSize: 10, pageNumber: 1, net: 'testnet'}
           })
         }
-      },
-      toReturn() {
-        if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'Home'})
-        } else {
-          this.$router.push({name: 'HomeTest', params: {net: 'testnet'}})
-        }
-      },
-      goToPage($Page) {
-        if($Page.pageNumber === 0) {
-          return false
-        } else {
-          if (this.$route.params.net == undefined) {
-            this.$router.push({name: 'addressList', params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber}})
-          } else {
-            this.$router.push({
-              name: 'addressListTest',
-              params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber, net: 'testnet'}
-            })
-          }
-        }
-      },
-      getTime($time) {
-        return Helper.getDateTime($time)
-      },
-      getDate($time) {
-        return Helper.getDate($time)
-      },
+      }
     }
   }
 </script>

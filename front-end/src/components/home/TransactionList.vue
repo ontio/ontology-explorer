@@ -14,7 +14,7 @@
         <div class="divider-line"></div>
         <div class="row  block-item-sub-wrapper">
           <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':' font-size14 block-item col-8 text-left padding0 block-item-top'" @click="toTransactionDetailPage(tx.TxnHash)"><span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span></div>
-          <span  v-if="getTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
+          <span  v-if="$HelperTools.getDateTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
           <span  v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
         </div>
         <div class="row  block-item-sub-wrapper">
@@ -27,15 +27,14 @@
 
 <script>
   import {mapState} from 'vuex'
-  import Helper from './../../helpers/helper.js'
   import GetTransactionType from './../../common/OntMsg/GetTransactionType.js'
 
   export default {
     name: "transaction-list",
     data() {
       return {
-          info:[],
-        showtime:[0,0,0,0,0]
+        info: [],
+        showtime: [0, 0, 0, 0, 0]
       }
     },
     created() {
@@ -44,17 +43,17 @@
         this.getTransactionList()
       }, 6000)
       this.intervalBlockstandard = setInterval(() => {
-        for(var i =0;i<5;i++){
+        for (var i = 0; i < 5; i++) {
           var time = this.showtime[i] + 1
-          this.$set(this.showtime,i,time)
+          this.$set(this.showtime, i, time)
         }
       }, 1000)
     },
     watch: {
       '$route': 'getTransactionList',
-      'latestTransactionList.info':function(){
-        for(var i =0;i<5;i++){
-          this.showtime[i] = this.getTime(this.latestTransactionList.info[i].TxnTime)
+      'latestTransactionList.info': function () {
+        for (var i = 0; i < 5; i++) {
+          this.showtime[i] = this.$HelperTools.getDateTime(this.latestTransactionList.info[i].TxnTime)
         }
       }
     },
@@ -66,59 +65,53 @@
     methods: {
       getTransactionList() {
         // do something
-        this.$store.dispatch('getTransactionList',this.$route.params).then(response => {
+        this.$store.dispatch('getTransactionList', this.$route.params).then(response => {
           //console.log(response)
         }).catch(error => {
           console.log(error)
         })
       },
-      toTransactionListPage(){
-        
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'TransactionListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'TransactionListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      toTransactionListPage() {
+
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 10, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 10, pageNumber: 1, net: "testnet"}})
         }
       },
-      toTransactionDetailPage($TxnId){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'TransactionDetail', params:{txnHash:$TxnId}})
-        }else{
-          this.$router.push({ name:'TransactionDetailTest', params:{txnHash:$TxnId,net:"testnet"}})
+      toTransactionDetailPage($TxnId) {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'TransactionDetail', params: {txnHash: $TxnId}})
+        } else {
+          this.$router.push({name: 'TransactionDetailTest', params: {txnHash: $TxnId, net: "testnet"}})
         }
       },
-      getTransactionType($case){
+      getTransactionType($case) {
         return GetTransactionType.getTransactionType($case)
       },
-      getTime($time){
-        return Helper.getDateTime($time)
+      getShowDate($time) {
+        var time = this.$HelperTools.getDateTime($time)
+        return this.$HelperTools.getshowDate(time)
       },
-      getDate($time){
-        return Helper.getDate($time)
+      countDownTime: function () {
+        for (var i = 0; i < this.info.length; i++) {
+          this.info[i].showtime = this.info[i].showtime + 1
+        }
       },
-      getShowDate($time){
-        var time = this.getTime($time)
-        return Helper.getshowDate(time)
-      },
-      countDownTime:function(){
-          for(var i=0;i<this.info.length;i++){
-            this.info[i].showtime = this.info[i].showtime+1
-          }
-      },
-      getTxtype:function($type){
-             switch ($type) {
-              case 208:
-                return "Deploy Smart Contract"
-              case 209:
-                return "Invoke Smart Contract"
-            }
+      getTxtype: function ($type) {
+        switch ($type) {
+          case 208:
+            return "Deploy Smart Contract"
+          case 209:
+            return "Invoke Smart Contract"
+        }
       }
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.intervalBlock2)
       clearInterval(this.intervalBlockstandard)
-    },
     }
+  }
 </script>
 
 <style scoped>

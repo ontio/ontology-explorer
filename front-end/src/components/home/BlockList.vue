@@ -19,7 +19,7 @@
         </div>
         <div class="row block-item-sub-wrapper">
           <span class="block-item col-6 text-left padding0 font-size14">{{block.BlockSize}} byte</span>
-          <span v-if="getTime(block.BlockTime) < 60" class="block-item col-6 text-right padding0 font-size14 ">{{showtime[index]}}s ago</span>
+          <span v-if="$HelperTools.getDateTime(block.BlockTime) < 60" class="block-item col-6 text-right padding0 font-size14 ">{{showtime[index]}}s ago</span>
           <span v-else class="block-item col-6 text-right padding0 font-size14 ">{{getShowDate(block.BlockTime)}} ago</span>
         </div>
       </div>
@@ -29,16 +29,15 @@
 
 <script>
   import {mapState} from 'vuex'
-  import Helper from './../../helpers/helper.js'
 
   export default {
-      name: "block-list",
+    name: "block-list",
     data() {
       return {
-        info:[],
-        blocktime:[0,0,0,0,0],
-        timestamp : (new Date()).valueOf(),
-        showtime:[0,0,0,0,0]
+        info: [],
+        blocktime: [0, 0, 0, 0, 0],
+        timestamp: (new Date()).valueOf(),
+        showtime: [0, 0, 0, 0, 0]
       }
     },
     created() {
@@ -47,17 +46,17 @@
         this.getBlockList()
       }, 6000)
       this.intervalBlockstandard = setInterval(() => {
-        for(var i =0;i<5;i++){
+        for (var i = 0; i < 5; i++) {
           var time = this.showtime[i] + 1
-          this.$set(this.showtime,i,time)
+          this.$set(this.showtime, i, time)
         }
       }, 1000)
     },
     watch: {
       '$route': 'getBlockList',
-      'latestBlockList.info':function(){
-        for(var i =0;i<5;i++){
-          this.showtime[i] = this.getTime(this.latestBlockList.info[i].BlockTime)
+      'latestBlockList.info': function () {
+        for (var i = 0; i < 5; i++) {
+          this.showtime[i] = this.$HelperTools.getDateTime(this.latestBlockList.info[i].BlockTime)
         }
       },
     },
@@ -68,59 +67,43 @@
     },
     methods: {
       getBlockList() {
-        // do something
-        
-        this.$store.dispatch('getBlockList',this.$route.params).then(response => {
-          /* console.log("no1",response) */
-         /*  this.getNewTime() */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getBlockList', this.$route.params).then()
       },
-      toBlockListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'blockListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'blockListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      toBlockListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'blockListDetail', params: {pageSize: 10, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 10, pageNumber: 1, net: "testnet"}})
         }
       },
-      toBlockDetailPage($blockHeight){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'blockDetail', params:{param:$blockHeight}})
-        }else{
-          this.$router.push({ name:'blockDetailTest', params:{param:$blockHeight,net:"testnet"}})
+      toBlockDetailPage($blockHeight) {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'blockDetail', params: {param: $blockHeight}})
+        } else {
+          this.$router.push({name: 'blockDetailTest', params: {param: $blockHeight, net: "testnet"}})
         }
       },
-      getTime($time){
-        return Helper.getDateTime($time)
+      getShowDate($time) {
+        var time = this.$HelperTools.getDateTime($time)
+        return this.$HelperTools.getshowDate(time)
       },
-      getDate($time){
-        return Helper.getDate($time)
+      countDownTime: function () {
+
+        for (var i = 0; i < this.info.length; i++) {
+          this.info[i].showtime = this.info[i].showtime + 1
+        }
       },
-      getShowDate($time){
-        var time = this.getTime($time)
-        return Helper.getshowDate(time)
-      },
-      countDownTime:function(){
-        
-          for(var i=0;i<this.info.length;i++){
-            this.info[i].showtime = this.info[i].showtime+1
-          }
-      },
-      getNewTime:function(){
-        
-          var i=0
-          var timestamp = (new Date()).valueOf();
-          for(i=0;i<this.latestBlockList.info.length;i++){
-            /* this.latestBlockList.info[i].showtime = (timestamp - this.latestBlockList.info[i].BlockTime*1000)/1000 */
-            this.latestBlockList.info[i].showtime = timestamp
-          }
+      getNewTime: function () {
+        let timestamp = (new Date()).valueOf();
+        for (let i = 0; i < this.latestBlockList.info.length; i++) {
+          this.latestBlockList.info[i].showtime = timestamp
+        }
       },
     },
-    beforeDestroy () {
+    beforeDestroy() {
       clearInterval(this.intervalBlock)
       clearInterval(this.intervalBlockstandard)
-    },
+    }
   }
 </script>
 

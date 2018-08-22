@@ -1,19 +1,17 @@
 <template>
-  <nav v-if="routeDisplay" class="padding0 navbar nav-background navbar-expand fixed-top navbar-light navbar-elevation">
+  <nav v-if="routeDisplay" class="navbar nav-background navbar-expand fixed-top navbar-light navbar-elevation">
     <div class="container">
-      <router-link class="navbar-brand router-switch-net" :to="{path: $route.params.net == 'testnet'?'/testnet':'/'}">
+      <router-link class="navbar-brand" :to="{path: $route.params.net == 'testnet'?'/testnet':'/'}">
         <img class="navbar-logo" src="./../../assets/logo.png" alt="">
       </router-link>
 
       <div class="collapse navbar-collapse">
-        <ul class="navbar-nav mr-auto"></ul>
-
-        <ul class="navbar-nav">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item" style="margin-top: 3px;">
             {{net}}
           </li>
           <li class="nav-item">
-            <div class="input-group-top">
+            <div class="input-group-top" style="margin-right: -8px">
               <input type="text" class="form-control-top search-input-txt search-input" v-model="searchContent">
               <div class="input-group-addon-top input-submit-search search-input-txt search-btn text-center font-blod"
                    @click="submitSearch">
@@ -218,13 +216,7 @@
 
 <style>
   .navbar-logo {
-    height: 35px;
-    margin-right: 5px;
-    padding: 6px 6px 6px 24px;
-  }
-
-  .router-switch-net {
-    padding-top:4px;
+    height: 22px;
   }
 
   .navbar-elevation {
@@ -232,16 +224,12 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
   }
 
-  .nav-item {
-    margin-left: 10px;
+  .container-padding-fix {
+    padding: 30px;
   }
 
   .navbar {
     font-size: 1.1em;
-  }
-
-  .change-locale:hover {
-    cursor: pointer;
   }
 
   .nav-item > input::-webkit-input-placeholder {
