@@ -3,14 +3,27 @@
     <div class="container-top">
       <div class="container">
         <div class="row">
-          <div class="col-7 index-logo-warpper">
+          <div class="col index-logo-warpper">
             <img src="/static/img/ontlogo.png" class="index-logo">
           </div>
-          <div class="col-4 index-net-warpper testNet">
+          <div class="col index-net-warpper">
+            <div class="testNet"></div>
             <a class="net-ready" @click="changeNet()">{{readyNet}}</a> / <a class="net-notready" @click="changeNet()">{{notReadyNet}}</a>
+            <span class="pointer span-lang" @click="chooseLanguage()">{{ $t('language.name') }}</span>
           </div>
-          <div class="col-1 index-lang-warpper">
-            <span class="pointer" @click="chooseLanguage()">{{ $t('language.name') }}</span>
+          <div class="d-block d-sm-none">
+            <nav class="navbar navbar-expand-sm">
+              <ul class="nav navbar-nav">
+                <li class="dropdown ul-li-a">
+                  <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-bars ul-li-a-i" aria-hidden="true"></i>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <a @click="chooseLanguage"><li>{{ $t('language.name') }}</li></a>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -116,12 +129,32 @@
     margin-top: 10px;
   }
 
-  .index-lang-warpper {
+  .span-lang {
+    margin-left: 30px;
+  }
+
+  .ul-li-a {
+    margin-top: 5px;
+  }
+
+  .ul-li-a > a {
+    color: transparent;
+  }
+
+  /* 固定在右上角 */
+  .ul-li-a-i {
     color: white;
-    font-size: 14px;
-    padding-top: 6px;
-    text-align: right;
-    margin: 10px 0 0;
+    font-size: 21px;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .dropdown-menu {
+    margin-top: 30px;
+    background: #f4f4f4;
+    border-radius: 0;
+    padding: 0.5rem 1rem;
   }
 
   .index-logo {
