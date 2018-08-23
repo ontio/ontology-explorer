@@ -6,29 +6,29 @@
 
       <!-- Transaction Detail Basic Info: -->
       <div class="row">
-        <p class="wordbreak font-size24 color32a4be font-blod important_color">Transaction Hash: <span
+        <p class="wordbreak font-size24 color32a4be font-blod important_color">{{ $t('transactionDetail.txHash') }} <span
           class="font-size14">{{ transactionDetail.info.TxnHash }}</span></p>
       </div>
       <div class="row">
         <div class="col detail-col">
-          Transaction Time: {{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
+          {{ $t('transactionDetail.time') }}{{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
         </div>
       </div>
       <div class="row">
         <div class="col detail-col">
-          <span v-if="transactionDetail.info.TxnType !== 209">Type: Deploy Smart Contract</span>
-          <span v-else>Type: Smart Contract</span>
+          <span v-if="transactionDetail.info.TxnType !== 209">{{ $t('transactionDetail.deploySC') }}</span>
+          <span v-else>{{ $t('transactionDetail.sc') }}</span>
         </div>
       </div>
       <div class="row">
         <div class="col detail-col" @click="toBlockDetailPage(transactionDetail.info.Height)">
-          Block Height: <span class="click_able important_color">{{transactionDetail.info.Height}}</span>
+          {{ $t('transactionDetail.height') }}<span class="click_able important_color">{{transactionDetail.info.Height}}</span>
         </div>
-        <div class="col detail-col detail-col-middle">Fee: {{Number(transactionDetail.info.Fee)}} ONG</div>
+        <div class="col detail-col detail-col-middle">{{ $t('transactionDetail.fee') }}{{Number(transactionDetail.info.Fee)}} ONG</div>
         <div class="col detail-col">
-          Status:
-          <span v-if="transactionDetail.info.ConfirmFlag === 1" style="color:#00AE1D">Confirmed</span>
-          <span v-else style="color:#AFACAC">Failed</span>
+          {{ $t('transactionDetail.status') }}
+          <span v-if="transactionDetail.info.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
+          <span v-else style="color:#AFACAC">{{ $t('all.failed') }}</span>
         </div>
       </div>
 
@@ -41,7 +41,7 @@
         <tbody>
         <tr>
           <td class="td11 td_height" style="padding: 34px 24px;">
-            <p class="font-size24  p_margin_bottom n_color font-Regular">Description:
+            <p class="font-size24  p_margin_bottom n_color font-Regular">{{ $t('all.description') }}:
               {{transactionDetail.info.Description}}</p>
           </td>
         </tr>
@@ -53,7 +53,7 @@
         <div class="col">
           <div class="row font-size24">Issuer OntId:</div>
           <div class="row font-size14 detail-ont-id-desc-txt">{{transactionDetail.info.Description.substr(12,42)}}</div>
-          <div class="row font-size24 margin-top-15">Description:</div>
+          <div class="row font-size24 margin-top-15">{{ $t('all.description') }}:</div>
           <div class="row font-size14 detail-ont-id-desc-txt">{{transactionDetail.info.Description}}</div>
         </div>
       </div>
@@ -61,9 +61,9 @@
       <!--展示ONT ID和Description的数据块-->
       <div class="row detail-ont-id-desc-tit font-Regular font-size14" v-if="idflag">
         <div class="col">
-          <div class="row font-size24">OntId:</div>
+          <div class="row font-size24">{{ $t('all.ontId') }}:</div>
           <div class="row detail-ont-id-desc-txt pointer click_able" @click="toOntIdDetailPage(Detail.OntId)">{{Detail.OntId}}</div>
-          <div class="row font-size24 margin-top-15">Description:</div>
+          <div class="row font-size24 margin-top-15">{{ $t('all.description') }}:</div>
           <div class="row detail-ont-id-desc-txt">{{Detail.Description}}</div>
         </div>
       </div>
@@ -303,7 +303,7 @@
   .detail-ont-id-desc-tit {
     background: white;
     margin-top: 4px;
-    padding: 2rem;
+    padding: 34px 24px !important;
     color: #AFACAC;
   }
 

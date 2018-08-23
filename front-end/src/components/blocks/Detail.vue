@@ -9,34 +9,35 @@
 
     <div class="row">
       <div class="col detail-col detail-col-left">
-        <span class="f_color">Block Size: </span>{{blockDetailPage.info.BlockSize}} byte
+        <span class="f_color">{{ $t('blockDetail.BlockSize') }} </span>
+        {{blockDetailPage.info.BlockSize}} {{ $t('all.byte') }}
       </div>
       <div class="col detail-col detail-col-right">
-        Time: {{$HelperTools.getTransDate(blockDetailPage.info.BlockTime)}}
+        {{ $t('blockDetail.BlockTime') }} {{$HelperTools.getTransDate(blockDetailPage.info.BlockTime)}}
       </div>
     </div>
 
     <div class="row">
       <div class="col detail-col">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">BookKeeper: </span>
+        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.keeper') }}</span>
         <p class="font-size14 normal_color font-Regular p_margin_bottom">{{blockDetailPage.info.BookKeeper}}</p>
       </div>
     </div>
 
     <div class="row">
       <div class="col detail-col">
-        <span class="font-size24 f_color font-Regular p_margin_bottom ">Hash:</span>
+        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.hash') }}</span>
         <p class="font-size14 normal_color font-Regular p_margin_bottom"> {{blockDetailPage.info.Hash}}</p>
       </div>
     </div>
 
     <div class="row">
       <div class="col detail-col detail-col-left">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">Previous Block:</span>
+        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.PrevBlock') }}</span>
         <p class="font-size14 important_color font-Regular p_margin_bottom pointer click_able" @click="toBlockDetailPage(blockDetailPage.info.Height-1)"  > {{blockDetailPage.info.PrevBlock.substr(0,16) + '...'}}</p>
       </div>
       <div class="col detail-col detail-col-right">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">Next Block:</span>
+        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.NextBlock') }}</span>
         <p v-if="blockDetailPage.info.NextBlock" class="font-size14 important_color font-Regular p_margin_bottom pointer click_able" @click="toBlockDetailPage(blockDetailPage.info.Height+1)"> {{blockDetailPage.info.NextBlock.substr(0,16) + '...'}}</p>
         <p v-else class="font-size14 normal_color font-Regular p_margin_bottom"> none</p>
       </div>
@@ -44,23 +45,23 @@
 
     <div class="row">
       <div class="col detail-col">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">Merkle Root:</span>
+        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.merkle') }}</span>
         <p class="font-size14 normal_color font-Regular p_margin_bottom"> {{blockDetailPage.info.TxnsRoot}}</p>
-        <span class="font-size24 f_color font-Regular p_margin_bottom">ConsensusData:</span>
+        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.Consensus') }}</span>
         <p class="font-size14 normal_color font-Regular p_margin_bottom"> {{blockDetailPage.info.ConsensusData}}</p>
       </div>
     </div>
 
     <div class="row" v-if="blockDetailPage.info.TxnNum !== 0">
       <div class="col detail-col">
-        {{ blockDetailPage.info.TxnNum }} Transactions on this block:
+        {{ blockDetailPage.info.TxnNum }} {{ $t('blockDetail.txOnBlock') }}
         <div class="table-responsive">
           <table class="table ">
             <thead>
             <tr>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">TxnHash</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">Status</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">TxnTime</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.hash') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.status') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.time') }}</th>
             </tr>
             </thead>
             <tbody>

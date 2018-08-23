@@ -11,7 +11,7 @@
 
     <div class="row" v-if="Ddo.Owners">
       <div class="col detail-col">
-        <p>Owner</p>
+        <p>{{ $t('ontIdDetail.owner') }}</p>
         <div class="row" v-for="owner in Ddo.Owners">
           <div class="col">
             <div class="font-size14 font-Regular normal_color"><p>Type: {{owner.Type}}</p></div>
@@ -44,15 +44,15 @@
 
     <div class="row" v-if="TxnTotal">
       <div class="col detail-col">
-        Events on this ONT ID:
+        {{ $t('ontIdDetail.events') }}
         <div class="table-responsive">
           <table class="table ">
             <thead>
             <tr>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">HASH</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">CONTENT</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">FEE</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">TIME</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.hash') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.content') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.fee') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.time') }}</th>
             </tr>
             </thead>
             <tbody>

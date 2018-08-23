@@ -7,10 +7,10 @@
       <table class="table table-hover">
         <thead>
         <tr>
-          <th class="font-size18" scope="col">{{ $t('blockList.Height') }}</th>
+          <th class="font-size18" scope="col">{{ $t('all.height') }}</th>
           <th class="font-size18" scope="col">{{ $t('blockList.TxnNum') }}</th>
-          <th class="font-size18" scope="col">{{ $t('blockList.BlockSize') }}</th>
-          <th class="font-size18" scope="col">{{ $t('blockList.BlockTime') }}</th>
+          <th class="font-size18" scope="col">{{ $t('blockList.BlockSize') }}( {{ $t('all.byte') }} )</th>
+          <th class="font-size18" scope="col">{{ $t('all.time') }}</th>
         </tr>
         </thead>
         <tbody>

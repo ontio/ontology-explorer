@@ -8,11 +8,11 @@
         <table class="table table-hover">
           <thead>
           <tr>
-            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('transactionList.TxnId') }}</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">STAUTS</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">HEIGHT</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('transactionList.Fee') }}</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('transactionList.TxnTime') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.hash') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.status') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.height') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.fee') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.time') }}</th>
           </tr>
           </thead>
           <tbody>

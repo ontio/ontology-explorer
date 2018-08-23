@@ -18,6 +18,6 @@
 
 <style>
   .container-bottom {
-    padding: 48px 0;
+    padding: 48px 0 10px;
   }
 </style>

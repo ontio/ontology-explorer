@@ -1,6 +1,6 @@
 module.exports = {
   language: {
-    name: '中文'
+    name: 'CN'
   },
   navbar: {
     blockHeight: 'block height',
@@ -8,11 +8,25 @@ module.exports = {
   },
   all: {
     more: '>>',
-    return: '  BACK'
+    return: '  Back',
+    hash: 'Hash',
+    status: 'Status',
+    time: 'Time',
+    height: 'Height',
+    byte: 'byte',
+    num: 'Number',
+    fee: 'Fee',
+    amount: 'Amount',
+    ontId: 'ONT ID',
+    content: 'Content',
+    confirmed: 'Confirmed',
+    failed: 'Failed',
+    description: 'Description'
   },
   searchInput: {
     search: 'SEARCH',
-    placeholder: 'Enter ONT ID, block height, transaction hash, or asset address query'
+    placeholder: 'Enter ONT ID, block height, transaction hash, or asset address query',
+    slogan: 'Blockchain Explorer & Trust Verifier'
   },
   runStatus: {
     name: 'The whole network operation status',
@@ -27,24 +41,19 @@ module.exports = {
     ontid: "Total ONT ID"
   },
   ontIdList: {
-    name: 'ONT ID EVENTS',
-    OntId: 'ONT ID',
-    Description: 'CONTENT',
-    TxnType: 'Event Type',
-    TxnId: 'HASH',
-    Fee: 'FEE ',
-    height: 'HEIGHT',
-    TxnTime: 'TIME'
+    name: 'ONT ID EVENTS'
   },
   ontIdDetail: {
     nickname: 'ONT ID DETAILS',
-    name: 'Ont ID:',
+    name: 'Ont ID: ',
     msgName: 'Ont ID Event Log',
     TxnId: 'Transaction ID',
     Height: 'Block height',
     TxnType: 'Transaction Type',
     TxnTime: 'Block Time',
-    Description: 'Description'
+    Description: 'Description',
+    events: 'Events on this ONT ID',
+    owner: 'Owner',
   },
   blockList: {
     name: 'BLOCKS',
@@ -61,29 +70,42 @@ module.exports = {
     percent: 'Percent'
   },
   addressDetail: {
-    name: 'ADDRESS DETAILS'
+    name: 'ADDRESS DETAILS',
+    address: 'Address: ',
+    ontBalance: 'ONT Balance: ',
+    ongBalance: 'ONG Balance: ',
+    claimable: 'Claimable ONG: ',
+    unbound: 'Unbound ONG: ',
+    txOnAddr: 'Transactions on this Address:'
   },
   blockDetail: {
     nickname: 'BLOCK DETAILS',
     name: 'Block Height:',
     BlockSize: 'Block Size:',
     BlockTime: 'Generate Time:',
+    keeper: 'BookKeeper:',
+    hash: 'Hash:',
     TxnNum: 'Number Of Transactions In The Block:',
     Hash: 'The Block Hash:',
-    PrevBlock: 'The Last Block Hash:',
-    LastBlock: 'Last Block',
-    NextBlock: 'Next Block'
+    PrevBlock: 'Previous Block:',
+    LastBlock: 'Last Block:',
+    NextBlock: 'Next Block:',
+    merkle: 'Merkle Root:',
+    Consensus: 'ConsensusData:',
+    txOnBlock: 'Transactions on this block'
   },
   transactionList: {
-    name: 'TRANSACTIONS',
-    TxnType: 'Deal Type',
-    TxnId: 'HASH',
-    Fee: 'FEE',
-    Height: 'Block height',
-    TxnTime: 'TIME'
+    name: 'TRANSACTIONS'
   },
   transactionDetail: {
-    name: 'TRANSACTION DETAILS'
+    name: 'TRANSACTION DETAILS',
+    txHash: 'Transaction Hash:',
+    time: 'Transaction Time: ',
+    deploySC: 'Type: Deploy Smart Contract',
+    sc: 'Type: Smart Contract',
+    height: 'Height: ',
+    status: 'Status: ',
+    fee: 'Fee: '
   },
   claimDetail: {
     name: 'CLAIM DETAILS'

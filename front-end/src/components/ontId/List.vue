@@ -7,12 +7,12 @@
       <table class="table table-hover">
         <thead>
         <tr>
-          <th class="font-size18" scope="col">{{ $t('ontIdList.TxnId') }}</th>
-          <th class="font-size18" scope="col">{{ $t('ontIdList.OntId') }}</th>
-          <th class="font-size18" scope="col">{{ $t('ontIdList.Description') }}</th>
-          <th class="font-size18" scope="col">{{ $t('ontIdList.height') }}</th>
-          <th class="font-size18" scope="col">{{ $t('ontIdList.Fee') }}</th>
-          <th class="font-size18" scope="col">{{ $t('ontIdList.TxnTime') }}</th>
+          <th class="font-size18" scope="col">{{ $t('all.hash') }}</th>
+          <th class="font-size18" scope="col">{{ $t('all.ontId') }}</th>
+          <th class="font-size18" scope="col">{{ $t('all.content') }}</th>
+          <th class="font-size18" scope="col">{{ $t('all.height') }}</th>
+          <th class="font-size18" scope="col">{{ $t('all.fee') }}</th>
+          <th class="font-size18" scope="col">{{ $t('all.time') }}</th>
         </tr>
         </thead>
         <tbody>

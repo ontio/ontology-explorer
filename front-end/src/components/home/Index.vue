@@ -3,11 +3,14 @@
     <div class="container-top">
       <div class="container">
         <div class="row">
-          <div class="index-logo-warpper col-8">
+          <div class="col-7 index-logo-warpper">
             <img src="/static/img/ontlogo.png" class="index-logo">
           </div>
-          <div class="index-net-warpper col-4 testNet">
+          <div class="col-4 index-net-warpper testNet">
             <a class="net-ready" @click="changeNet()">{{readyNet}}</a> / <a class="net-notready" @click="changeNet()">{{notReadyNet}}</a>
+          </div>
+          <div class="col-1 index-lang-warpper">
+            <span class="pointer" @click="chooseLanguage()">{{ $t('language.name') }}</span>
           </div>
         </div>
       </div>
@@ -35,6 +38,7 @@
 
 <script>
   import RunStatus from "./RunStatus";
+  import LangStorage from './../../helpers/lang'
   import SearchInput from './../home/SearchInput'
   import OntIdList from "./OntIdList";
   import TransactionList from "./TransactionList";
@@ -69,6 +73,12 @@
           this.notReadyNet = 'Polaris 1.0.0'
         }
         location.reload();
+      },
+      chooseLanguage() {
+        let locale = this.$i18n.locale
+        locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
+        locale === 'zh' ? this.$validator.localize('en') : this.$validator.localize('zh')
+        LangStorage.setLang(this.$i18n.locale)
       }
     },
     components: {
@@ -103,9 +113,15 @@
   }
 
   .index-logo-warpper {
-    width: 100%;
-    text-align: left;
     margin-top: 10px;
+  }
+
+  .index-lang-warpper {
+    color: white;
+    font-size: 14px;
+    padding-top: 6px;
+    text-align: right;
+    margin: 10px 0 0;
   }
 
   .index-logo {
