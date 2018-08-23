@@ -4,7 +4,11 @@ module.exports = {
   },
   navbar: {
     blockHeight: 'block height',
-    wallet: 'wallet'
+    wallet: 'wallet',
+    blocks: 'Blocks',
+    addrs: 'Addresses',
+    tarns: 'Transactions',
+    ontIds: 'ONT ID List'
   },
   all: {
     more: '>>',

@@ -67,12 +67,7 @@
     },
     methods: {
       getTransactionList() {
-        // do something
-        this.$store.dispatch('getTransactionList', this.$route.params).then(response => {
-          //console.log(response)
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getTransactionList', this.$route.params).then()
       },
       toTransactionListPage() {
 

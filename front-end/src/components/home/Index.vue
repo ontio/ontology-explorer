@@ -20,6 +20,10 @@
                   </a>
                   <ul class="dropdown-menu">
                     <a @click="chooseLanguage"><li>{{ $t('language.name') }}</li></a>
+                    <a @click="toBlockListPage"><li>{{ $t('navbar.blocks') }}</li></a>
+                    <!--<a @click="chooseLanguage"><li>{{ $t('navbar.addrs') }}</li></a>-->
+                    <a @click="toTransactionListPage"><li>{{ $t('navbar.tarns') }}</li></a>
+                    <a @click="toOntIdListPage"><li>{{ $t('navbar.ontIds') }}</li></a>
                   </ul>
                 </li>
               </ul>
@@ -92,6 +96,27 @@
         locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
         locale === 'zh' ? this.$validator.localize('en') : this.$validator.localize('zh')
         LangStorage.setLang(this.$i18n.locale)
+      },
+      toBlockListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+        } else {
+          this.$router.push({name: 'blockListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
+      },
+      toTransactionListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+        } else {
+          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
+      },
+      toOntIdListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
+        } else {
+          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
       }
     },
     components: {
@@ -152,9 +177,15 @@
 
   .dropdown-menu {
     margin-top: 30px;
+    color: #afacac;
     background: #f4f4f4;
+    font-weight: 200;
     border-radius: 0;
     padding: 0.5rem 1rem;
+  }
+
+  .dropdown-menu > a > li {
+    padding: 0.3rem;
   }
 
   .index-logo {
