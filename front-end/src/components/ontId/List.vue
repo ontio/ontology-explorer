@@ -4,28 +4,30 @@
     <list-title :name="$t('ontIdList.name')"></list-title>
 
     <div class="row justify-content-center">
-      <table class="table table-hover">
-        <thead>
-        <tr>
-          <th class="font-size18" scope="col">{{ $t('all.hash') }}</th>
-          <th class="font-size18" scope="col">{{ $t('all.ontId') }}</th>
-          <th class="font-size18" scope="col">{{ $t('all.content') }}</th>
-          <th class="font-size18" scope="col">{{ $t('all.height') }}</th>
-          <th class="font-size18" scope="col">{{ $t('all.fee') }}</th>
-          <th class="font-size18" scope="col">{{ $t('all.time') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="OntId in OntIdListDetail.info">
-          <td class="font-size14 font-Regular normal_color td_height3 click_able" @click="toTransactionDetailPage(OntId.TxnHash)">{{OntId.TxnHash.substr(0,15)}}...</td>
-          <td class="font-size14 font-Regular important_color td_height3 click_able" @click="toOntIdDetailPage(OntId.OntId)">{{OntId.OntId.substr(0,10)}}...{{OntId.OntId.substr(35,45)}}</td>
-          <td class="font-size14 font-Regular normal_color td_height3">{{getOntIDEvent(OntId.Description)}}</td>
-          <td class="font-size14 font-Regular normal_color td_height3">{{OntId.Height}}</td>
-          <td class="font-size14 font-Regular normal_color td_height3">{{OntId.Fee}}</td>
-          <td class="font-size14 font-Regular normal_color td_height3">{{$HelperTools.getTransDate(OntId.TxnTime)}}</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th class="font-size18" scope="col">{{ $t('all.hash') }}</th>
+            <th class="font-size18" scope="col">{{ $t('all.ontId') }}</th>
+            <th class="font-size18" scope="col">{{ $t('all.content') }}</th>
+            <th class="font-size18" scope="col">{{ $t('all.height') }}</th>
+            <th class="font-size18" scope="col">{{ $t('all.fee') }}</th>
+            <th class="font-size18" scope="col">{{ $t('all.time') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="OntId in OntIdListDetail.info">
+            <td class="font-size14 font-Regular normal_color click_able" @click="toTransactionDetailPage(OntId.TxnHash)">{{OntId.TxnHash.substr(0,15)}}...</td>
+            <td class="font-size14 font-Regular important_color click_able" @click="toOntIdDetailPage(OntId.OntId)">{{OntId.OntId.substr(0,10)}}...{{OntId.OntId.substr(35,45)}}</td>
+            <td class="font-size14 font-Regular normal_color">{{getOntIDEvent(OntId.Description)}}</td>
+            <td class="font-size14 font-Regular normal_color">{{OntId.Height}}</td>
+            <td class="font-size14 font-Regular normal_color">{{Number(OntId.Fee)}}</td>
+            <td class="font-size14 font-Regular normal_color">{{$HelperTools.getTransDate(OntId.TxnTime)}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <turn-the-page :pagesInfo="OntIdListDetail" :pagesName="'OntIdListDetail'"></turn-the-page>

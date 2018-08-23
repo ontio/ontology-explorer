@@ -465,20 +465,6 @@ body {
   }
 }
 
-/* table */
-.td_height {
-  height: 98px;
-}
-
-.td_height2 {
-  height: 81px;
-}
-
-.td_height3 {
-  height: 56px;
-  line-height: 31px;
-}
-
 .p_margin_bottom {
   margin-bottom: 5px;
 }

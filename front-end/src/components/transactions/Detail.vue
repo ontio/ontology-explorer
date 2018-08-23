@@ -40,7 +40,7 @@
         </thead>
         <tbody>
         <tr>
-          <td class="td11 td_height" style="padding: 34px 24px;">
+          <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom n_color font-Regular">{{ $t('all.description') }}:
               {{transactionDetail.info.Description}}</p>
           </td>
@@ -98,35 +98,35 @@
         </thead>
         <tbody>
         <tr>
-          <td class="td11 table1_item_title td_height3 font-size16 normal_color">
+          <td class="td11 table1_item_title font-size16 normal_color">
             Transaction Time: {{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
           </td>
         </tr>
         <tr>
-          <td class="td11 table1_item_title td_height3 font-size16 normal_color"
+          <td class="td11 table1_item_title font-size16 normal_color"
               v-if="transactionDetail.info.TxnType != 209">
             Type: Deploy Smart Contract
           </td>
-          <td class="td11 table1_item_title td_height3 font-size16 normal_color" v-else>
+          <td class="td11 table1_item_title font-size16 normal_color" v-else>
             Type: Smart Contract
           </td>
         </tr>
         <tr>
-          <td class="td11 table1_item_title td_height3 font-size16 normal_color">
+          <td class="td11 table1_item_title font-size16 normal_color">
             Block Height: <span class=" important_color">{{transactionDetail.info.Height}}</span>
           </td>
         </tr>
         <tr>
-          <td class="td11 table1_item_title td_height3 font-size16 normal_color">
+          <td class="td11 table1_item_title font-size16 normal_color">
             Fee: {{transactionDetail.info.Fee}}
           </td>
         </tr>
         <tr>
-          <td class="td11 table1_item_title td_height3 font-size16 normal_color"
+          <td class="td11 table1_item_title font-size16 normal_color"
               v-if="transactionDetail.info.ConfirmFlag == 1">
             Status: <span style="color:#00AE1D">Confirmed</span>
           </td>
-          <td class="td11 table1_item_title td_height3 font-size16 normal_color" v-else>
+          <td class="td11 table1_item_title font-size16 normal_color" v-else>
             Status: <span style="color:#AFACAC">Failed</span>
           </td>
         </tr>
@@ -139,7 +139,7 @@
         </thead>
         <tbody>
         <tr>
-          <td class="td11 td_height" style="padding: 34px 24px;">
+          <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom f_color font-Regular">OntId:</p>
             <p class="font-size14 f_color p_margin_bottom font-Regular ">
               {{transactionDetail.info.Description.substr(12,42)}}</p>
@@ -156,7 +156,7 @@
         </thead>
         <tbody>
         <tr>
-          <td class="td11 td_height" style="padding: 34px 24px;">
+          <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom n_color font-Regular">Description:</p>
             <p class="font-size14 f_color p_margin_bottom font-Regular">{{transactionDetail.info.Description}}</p>
           </td>
@@ -170,7 +170,7 @@
         </thead>
         <tbody>
         <tr>
-          <td class="td11 td_height" style="padding: 34px 24px;">
+          <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom f_color font-Regular">OntId:</p>
             <p class="font-size14 important_color p_margin_bottom font-Regular pointer click_able">{{Detail.OntId}}</p>
             <p class="font-size24  p_margin_bottom f_color font-Regular">Description:</p>
@@ -186,7 +186,7 @@
         </thead>
         <tbody>
         <tr v-for="tx in Detail.TransferList">
-          <td class="td11 td_height" style="background-color:#32A4BE;color:white;padding: 34px 24px;">
+          <td class="td11" style="background-color:#32A4BE;color:white;padding: 34px 24px;">
             <div class="row ">
               <div class="col-lg-4 padding0-right pointer">{{tx.FromAddress}}</div>
               <div class="col-lg-1 ">>></div>

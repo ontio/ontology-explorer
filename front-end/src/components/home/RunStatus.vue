@@ -174,32 +174,32 @@
       })
     },
     methods: {
-      toBlockListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'blockListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'blockListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      toBlockListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'blockListDetail', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
-      toTransactionListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'TransactionListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'TransactionListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      toTransactionListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
-      toAddressListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'addressList', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'addressListTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      toAddressListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'addressList', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'addressListTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
-      toOntIdListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'OntIdListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'OntIdListDetailTest', params:{pageSize:10,pageNumber:1,net:'testnet'}})
+      toOntIdListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
         }
       },
       toOnlineNodes() {

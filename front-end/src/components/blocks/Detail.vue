@@ -59,23 +59,23 @@
           <table class="table ">
             <thead>
             <tr>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.hash') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.status') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.time') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.hash') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.status') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.time') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="tx in blockDetailPage.info.TxnList">
-              <td class="font-size14 f_color font-Regular td_height3 click_able" @click="toTransactionDetailPage(tx.TxnHash)">
+              <td class="font-size14 f_color font-Regular click_able" @click="toTransactionDetailPage(tx.TxnHash)">
                 {{tx.TxnHash.substr(0,16) + '...'}}
               </td>
-              <td class="font-size14 s_color font-Regular td_height3" v-if="tx.ConfirmFlag === 1">
+              <td class="font-size14 s_color font-Regular" v-if="tx.ConfirmFlag === 1">
                 Confirmed
               </td>
-              <td class="font-size14 f_color font-Regular td_height3" v-else>
+              <td class="font-size14 f_color font-Regular" v-else>
                 Failed
               </td>
-              <td class="font-size14 normal_color font-Regular td_height3">
+              <td class="font-size14 normal_color font-Regular">
                 {{$HelperTools.getTransDate(tx.TxnTime)}}
               </td>
             </tr>

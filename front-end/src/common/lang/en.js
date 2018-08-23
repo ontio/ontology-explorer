@@ -56,11 +56,11 @@ module.exports = {
     owner: 'Owner',
   },
   blockList: {
-    name: 'BLOCKS',
-    Height: 'HEIGHT',
-    TxnNum: 'DEAL NUMBER',
-    BlockSize: 'BLOCK SIZE',
-    BlockTime: 'TIME'
+    name: 'Block',
+    Height: 'Height',
+    TxnNum: 'TxCount',
+    BlockSize: 'Size',
+    BlockTime: 'Time'
   },
   addressList: {
     rank: 'Rank',

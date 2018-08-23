@@ -23,20 +23,20 @@ export default {
           info: response.data.result,
           allPage: 10,
           firstPage: {
-            pageSize: '10',
+            pageSize: '100',
             pageNumber: 1
           },
           lastPage: {
-            pageSize: '10',
+            pageSize: '100',
             pageNumber: Number($param.pageNumber) - 1
           },
           nextPage: {
-            pageSize: '10',
+            pageSize: '100',
             pageNumber: Number($param.pageNumber) + 1
           },
           finalPage: {
-            pageSize: '10',
-            pageNumber: 100
+            pageSize: '100',
+            pageNumber: 10
           },
           basicRank: (Number($param.pageNumber) - 1) * $param.pageSize + 1
         };

@@ -4,24 +4,26 @@
     <list-title :name="$t('blockList.name')"></list-title>
 
     <div class="row justify-content-center">
-      <table class="table table-hover">
-        <thead>
-        <tr>
-          <th class="font-size18" scope="col">{{ $t('all.height') }}</th>
-          <th class="font-size18" scope="col">{{ $t('blockList.TxnNum') }}</th>
-          <th class="font-size18" scope="col">{{ $t('blockList.BlockSize') }}( {{ $t('all.byte') }} )</th>
-          <th class="font-size18" scope="col">{{ $t('all.time') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="block in blockListDetail.info">
-          <td class="font-size14 font-Regular important_color td_height3 click_able"  @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
-          <td class="font-size14 font-Regular normal_color td_height3">{{block.TxnNum}}</td>
-          <td class="font-size14 font-Regular normal_color td_height3">{{block.BlockSize}}</td>
-          <td class="font-size14 font-Regular normal_color td_height3">{{$HelperTools.getTransDate(block.BlockTime)}}</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th class="font-size18" scope="col">{{ $t('all.height') }}</th>
+            <th class="font-size18" scope="col">{{ $t('blockList.TxnNum') }}</th>
+            <th class="font-size18" scope="col">{{ $t('blockList.BlockSize') }}( {{ $t('all.byte') }} )</th>
+            <th class="font-size18" scope="col">{{ $t('all.time') }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="block in blockListDetail.info">
+            <td class="font-size14 font-Regular important_color click_able" @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
+            <td class="font-size14 font-Regular normal_color">{{block.TxnNum}}</td>
+            <td class="font-size14 font-Regular normal_color">{{block.BlockSize}}</td>
+            <td class="font-size14 font-Regular normal_color">{{$HelperTools.getTransDate(block.BlockTime)}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <turn-the-page :pagesInfo="blockListDetail" :pagesName="'blockListDetail'"></turn-the-page>

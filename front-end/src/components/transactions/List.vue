@@ -17,13 +17,13 @@
           </thead>
           <tbody>
           <tr v-for="transaction in transactionListDetail.info" class="font-size14 font-Regular">
-            <td class="important_color td_height3 click_able" @click="toTransactionDetailPage(transaction.TxnHash)">
+            <td class="important_color click_able" @click="toTransactionDetailPage(transaction.TxnHash)">
               {{transaction.TxnHash.substr(0,16)}}...
             </td>
-            <td class="s_color td_height3">{{ transaction.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
-            <td class="normal_color td_height3">{{transaction.Height}}</td>
-            <td class="normal_color td_height3">{{transaction.Fee}}</td>
-            <td class="normal_color td_height3">{{$HelperTools.getTransDate(transaction.TxnTime)}}</td>
+            <td class="s_color">{{ transaction.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
+            <td class="normal_color">{{transaction.Height}}</td>
+            <td class="normal_color">{{Number(transaction.Fee)}}</td>
+            <td class="normal_color">{{$HelperTools.getTransDate(transaction.TxnTime)}}</td>
           </tr>
           </tbody>
         </table>

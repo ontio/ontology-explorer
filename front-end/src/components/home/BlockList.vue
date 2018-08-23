@@ -71,9 +71,9 @@
       },
       toBlockListPage() {
         if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'blockListDetail', params: {pageSize: 10, pageNumber: 1}})
+          this.$router.push({name: 'blockListDetail', params: {pageSize: 20, pageNumber: 1}})
         } else {
-          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 10, pageNumber: 1, net: "testnet"}})
+          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
       toBlockDetailPage($blockHeight) {

@@ -49,15 +49,15 @@
           <table class="table ">
             <thead>
             <tr>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.hash') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.content') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.fee') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod td_height3">{{ $t('all.time') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.hash') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.content') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.fee') }}</th>
+              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.time') }}</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="tx in TxnList">
-              <td class="font-size14 s_color font-Regular td_height3 click_able" @click="toTransactionDetailPage(tx.TxnHash)">
+              <td class="font-size14 s_color font-Regular click_able" @click="toTransactionDetailPage(tx.TxnHash)">
                 {{tx.TxnHash.substr(0,16) + '...'}}
               </td>
               <td class="font-size14 font-Regular normal_color ">
