@@ -8,24 +8,22 @@
         <table class="table table-hover">
           <thead>
           <tr>
-            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('transactionList.TxnId') }}</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">STAUTS</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">HEIGHT</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('transactionList.Fee') }}</th>
-            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('transactionList.TxnTime') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.hash') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.status') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.height') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.fee') }}</th>
+            <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.time') }}</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="transaction in transactionListDetail.info" class="font-size14 font-Regular">
-            <td class="important_color td_height3 click_able" @click="toTransactionDetailPage(transaction.TxnHash)">
+            <td class="important_color click_able" @click="toTransactionDetailPage(transaction.TxnHash)">
               {{transaction.TxnHash.substr(0,16)}}...
             </td>
-            <td class="s_color td_height3">
-              {{ transaction.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}
-            </td>
-            <td class="normal_color td_height3">{{transaction.Height}}</td>
-            <td class="normal_color td_height3">{{transaction.Fee}}</td>
-            <td class="normal_color td_height3">{{$HelperTools.getTransDate(transaction.TxnTime)}}</td>
+            <td class="s_color">{{ transaction.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
+            <td class="normal_color">{{transaction.Height}}</td>
+            <td class="normal_color">{{Number(transaction.Fee)}}</td>
+            <td class="normal_color">{{$HelperTools.getTransDate(transaction.TxnTime)}}</td>
           </tr>
           </tbody>
         </table>

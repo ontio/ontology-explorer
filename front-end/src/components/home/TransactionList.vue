@@ -13,9 +13,12 @@
       <div v-for="(tx,index) in latestTransactionList.info" class="col-12 block-item-wrapper2">
         <div class="divider-line"></div>
         <div class="row  block-item-sub-wrapper">
-          <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':' font-size14 block-item col-8 text-left padding0 block-item-top'" @click="toTransactionDetailPage(tx.TxnHash)"><span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span></div>
-          <span  v-if="$HelperTools.getDateTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
-          <span  v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
+          <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':' font-size14 block-item col-8 text-left padding0 block-item-top'"
+               @click="toTransactionDetailPage(tx.TxnHash)">
+            <span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span>
+          </div>
+          <span v-if="$HelperTools.getDateTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
+          <span v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
         </div>
         <div class="row  block-item-sub-wrapper">
           <span :class="( index >4) ? ' block-item col-12 text-left padding0 font-size14':'block-item col-12 text-left padding0 block-item-bottom font-size14'">{{getTxtype(tx.TxnType)}}</span>
@@ -74,9 +77,9 @@
       toTransactionListPage() {
 
         if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 10, pageNumber: 1}})
+          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 20, pageNumber: 1}})
         } else {
-          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 10, pageNumber: 1, net: "testnet"}})
+          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
       toTransactionDetailPage($TxnId) {

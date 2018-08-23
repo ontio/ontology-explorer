@@ -19,7 +19,7 @@ export default {
       return axios.get(apiUrl + '/blocklist/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
         let msg = response.data
         let allPageNum = msg.Result.Total
-        let finalPageNum = parseInt(allPageNum/10)+1
+        let finalPageNum = parseInt(allPageNum/20)+1
         let lastPageNum = 1
         if ($param.pageNumber>1){
           lastPageNum = $param.pageNumber-1
@@ -33,19 +33,19 @@ export default {
           info: msg.Result.BlockList,
           allPage: allPageNum,
           firstPage: {
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: 1
           },
           lastPage:{
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: lastPageNum
           },
           nextPage:{
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: nextPageNum
           },
           finalPage: {
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: finalPageNum
           }
         }

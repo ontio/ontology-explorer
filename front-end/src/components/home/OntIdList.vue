@@ -68,9 +68,9 @@
       },
       toOntIdListPage() {
         if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 10, pageNumber: 1}})
+          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 20, pageNumber: 1}})
         } else {
-          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 10, pageNumber: 1, net: 'testnet'}})
+          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
         }
       },
       getShowDate($time) {

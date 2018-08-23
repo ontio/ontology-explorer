@@ -39,11 +39,11 @@ table {
 }
 
 .font-size14 {
-  font-size: 14px;
+  font-size: 14px !important;
 }
 
 .font-size18 {
-  font-size: 18px;
+  font-size: 18px !important;
 }
 
 .font-size48 {
@@ -55,7 +55,7 @@ table {
 }
 
 .font-size24 {
-  font-size: 24px;
+  font-size: 24px !important;
 }
 
 .font-size28 {
@@ -463,20 +463,6 @@ body {
   .index-net-warpper {
     display: none;
   }
-}
-
-/* table */
-.td_height {
-  height: 98px;
-}
-
-.td_height2 {
-  height: 81px;
-}
-
-.td_height3 {
-  height: 56px;
-  line-height: 31px;
 }
 
 .p_margin_bottom {

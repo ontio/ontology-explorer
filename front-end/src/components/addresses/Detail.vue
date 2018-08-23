@@ -6,7 +6,7 @@
     <!--实际地址显示-->
     <div class="row">
       <div class="col font-size24 important_color">
-        <span class="font-blod">ADDRESS: </span>
+        <span class="font-blod">{{ $t('addressDetail.address') }}</span>
         <span class="font-size14 important_color">{{$route.params.address}}</span>
       </div>
     </div>
@@ -16,13 +16,13 @@
       <div class="col address-detail-col margin-right-2px">
           <span class="table1_item_title font-size24 font-Regular normal_color"
                 v-for="asset in AssetBalance" v-if="asset.AssetName === 'ont'">
-            ONT Balance: <span class="important_color">{{asset.Balance}}</span>
+            {{ $t('addressDetail.ontBalance') }}<span class="important_color">{{asset.Balance}}</span>
           </span>
       </div>
       <div class="col address-detail-col margin-left-2px">
           <span class="table1_item_title font-size24 font-Regular normal_color"
                 v-for="asset in AssetBalance" v-if="asset.AssetName === 'ong'">
-            ONG Balance: <span class="important_color">{{asset.Balance}}</span>
+            {{ $t('addressDetail.ongBalance') }}<span class="important_color">{{asset.Balance}}</span>
           </span>
       </div>
     </div>
@@ -32,11 +32,11 @@
       <div class="col address-detail-col-2">
         <p class="table1_item_title font-size24 font-Regular f_color"
            v-for="asset in AssetBalance" v-if="asset.AssetName === 'unboundong'">
-          Claimable ONG: <span class="f_color">{{asset.Balance}}</span>
+          {{ $t('addressDetail.claimable') }}<span class="f_color">{{asset.Balance}}</span>
         </p>
         <p class="table1_item_title font-size24 font-Regular f_color no-margin-bottom"
            v-for="asset in AssetBalance" v-if="asset.AssetName === 'waitboundong'">
-          Unbound ONG: <span class="f_color">{{asset.Balance}}</span>
+          {{ $t('addressDetail.unbound') }}<span class="f_color">{{asset.Balance}}</span>
         </p>
       </div>
     </div>
@@ -45,24 +45,16 @@
     <div class="row margin-top-4px address-detail-table-col">
       <div class="col">
         <div class="row font-size24 font-blod normal_color">
-          {{ addressDetail.info.allPage }} Transactions on this Address:
+          {{ addressDetail.info.allPage }} {{ $t('addressDetail.txOnAddr') }}
         </div>
         <div class="row table-responsive">
           <table v-if="info.TxnTotal !== 0" class="table">
             <thead>
             <tr>
-              <th class="td-tx-head table3_head font-size18 font-blod normal_color">
-                HASH
-              </th>
-              <th class="td-tx-head table3_head font-size18 font-blod normal_color">
-                AMOUNT
-              </th>
-              <th class="td-tx-head table3_head font-size18 font-blod normal_color">
-                STATUS
-              </th>
-              <th class="td-tx-head table3_head font-size18 font-blod normal_color">
-                TIME
-              </th>
+              <th class="td-tx-head table3_head font-size18 font-blod normal_color">{{$t('all.hash')}}</th>
+              <th class="td-tx-head table3_head font-size18 font-blod normal_color">{{$t('all.amount')}}</th>
+              <th class="td-tx-head table3_head font-size18 font-blod normal_color">{{$t('all.status')}}</th>
+              <th class="td-tx-head table3_head font-size18 font-blod normal_color">{{$t('all.time')}}</th>
             </tr>
             </thead>
             <tbody>
@@ -101,7 +93,7 @@
       </div>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" style="margin-top: 30px;">
       <div id="page" v-show="addressDetail.info.allPage > 10">
         <ul class="pagination">
           <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
