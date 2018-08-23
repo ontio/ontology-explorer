@@ -4,7 +4,11 @@ module.exports = {
   },
   navbar: {
     blockHeight: '区块高度',
-    wallet: '钱包'
+    wallet: '钱包',
+    blocks: '区块列表',
+    addrs: '地址列表',
+    tarns: '交易列表',
+    ontIds: 'ONT ID列表'
   },
   all: {
     more: '>>',

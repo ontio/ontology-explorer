@@ -1,15 +1,14 @@
 <template>
-  <nav v-if="routeDisplay" class="navbar nav-background navbar-expand fixed-top navbar-light navbar-elevation">
+  <nav v-if="routeDisplay" class="navbar nav-background navbar-expand fixed-top">
     <div class="container">
       <router-link class="navbar-brand" :to="{path: $route.params.net == 'testnet'?'/testnet':'/'}">
         <img class="navbar-logo" src="./../../assets/logo.png" alt="">
       </router-link>
 
-      <div class="collapse navbar-collapse">
+      <!-- 只有sm屏幕隐藏的 -->
+      <div class="d-none d-sm-block">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item" style="margin-top: 3px;">
-            {{net}}
-          </li>
+          <li class="nav-item" style="margin-top: 3px;">{{net}}</li>
           <li class="nav-item">
             <div class="input-group-top" style="margin-right: -8px">
               <input type="text" class="form-control-top search-input-txt search-input" v-model="searchContent">
@@ -21,6 +20,26 @@
           </li>
         </ul>
       </div>
+    </div>
+
+    <!-- 只有sm屏幕展示的 -->
+    <div class="d-block d-sm-none">
+      <!--<nav class="navbar navbar-expand-sm">-->
+        <ul class="nav navbar-nav">
+          <li class="dropdown ul-li-a-2">
+            <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-bars ul-li-a-i-2" aria-hidden="true"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-2">
+              <a @click="chooseLanguage"><li>{{ $t('language.name') }}</li></a>
+              <a @click="toBlockListPage"><li>{{ $t('navbar.blocks') }}</li></a>
+              <!--<a @click="chooseLanguage"><li>{{ $t('navbar.addrs') }}</li></a>-->
+              <a @click="toTransactionListPage"><li>{{ $t('navbar.tarns') }}</li></a>
+              <a @click="toOntIdListPage"><li>{{ $t('navbar.ontIds') }}</li></a>
+            </ul>
+          </li>
+        </ul>
+      <!--</nav>-->
     </div>
   </nav>
 </template>
@@ -73,18 +92,35 @@
           this.$router.push({name: 'HomeTest', params: {net: 'testnet'}})
         }
       },
-      changeLocale() {
+      chooseLanguage() {
         let locale = this.$i18n.locale
         locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
+        locale === 'zh' ? this.$validator.localize('en') : this.$validator.localize('zh')
         LangStorage.setLang(this.$i18n.locale)
       },
+      toBlockListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+        } else {
+          this.$router.push({name: 'blockListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
+      },
+      toTransactionListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+        } else {
+          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
+      },
+      toOntIdListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
+        } else {
+          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
+      },
       getRunStatus() {
-        // do something
-        this.$store.dispatch('getRunStatus', this.$route.params).then(response => {
-          //console.log(response)
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getRunStatus', this.$route.params).then()
       },
       submitSearch() {
         if (this.searchContent !== '') {
@@ -219,13 +255,10 @@
     height: 22px;
   }
 
-  .navbar-elevation {
-    height: 50px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-  }
-
-  .container-padding-fix {
-    padding: 30px;
+  .nav-background {
+    background: #f4f4f4 !important;
+    border: 0 !important;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
   }
 
   .navbar {
@@ -248,5 +281,36 @@
   /* ie */
   .nav-item > input:-moz-placeholder {
     color: #cacaca;
+  }
+
+  .ul-li-a-2 {
+    margin-top: 5px;
+  }
+
+  .ul-li-a-2 > a {
+    color: transparent;
+  }
+
+  /* 固定在右上角 */
+  .ul-li-a-i-2 {
+    color: #36a3bc;
+    font-size: 21px;
+    position: absolute;
+    right: 0;
+    top: -12px;
+  }
+
+  .dropdown-menu-2 {
+    margin-top: 30px;
+    margin-left: -160px;
+    color: #afacac;
+    background: #f4f4f4;
+    font-weight: 200;
+    border-radius: 0;
+    padding: 0.5rem 1rem;
+  }
+
+  .dropdown-menu-2 > a > li {
+    padding: 0.3rem;
   }
 </style>

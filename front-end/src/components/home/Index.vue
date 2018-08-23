@@ -3,14 +3,31 @@
     <div class="container-top">
       <div class="container">
         <div class="row">
-          <div class="col-7 index-logo-warpper">
+          <div class="col index-logo-warpper">
             <img src="/static/img/ontlogo.png" class="index-logo">
           </div>
-          <div class="col-4 index-net-warpper testNet">
+          <div class="col index-net-warpper">
+            <div class="testNet"></div>
             <a class="net-ready" @click="changeNet()">{{readyNet}}</a> / <a class="net-notready" @click="changeNet()">{{notReadyNet}}</a>
+            <span class="pointer span-lang" @click="chooseLanguage()">{{ $t('language.name') }}</span>
           </div>
-          <div class="col-1 index-lang-warpper">
-            <span class="pointer" @click="chooseLanguage()">{{ $t('language.name') }}</span>
+          <div class="d-block d-sm-none">
+            <nav class="navbar navbar-expand-sm">
+              <ul class="nav navbar-nav">
+                <li class="dropdown ul-li-a">
+                  <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-bars ul-li-a-i" aria-hidden="true"></i>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <a @click="chooseLanguage"><li>{{ $t('language.name') }}</li></a>
+                    <a @click="toBlockListPage"><li>{{ $t('navbar.blocks') }}</li></a>
+                    <!--<a @click="chooseLanguage"><li>{{ $t('navbar.addrs') }}</li></a>-->
+                    <a @click="toTransactionListPage"><li>{{ $t('navbar.tarns') }}</li></a>
+                    <a @click="toOntIdListPage"><li>{{ $t('navbar.ontIds') }}</li></a>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -79,6 +96,27 @@
         locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
         locale === 'zh' ? this.$validator.localize('en') : this.$validator.localize('zh')
         LangStorage.setLang(this.$i18n.locale)
+      },
+      toBlockListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+        } else {
+          this.$router.push({name: 'blockListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
+      },
+      toTransactionListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+        } else {
+          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
+      },
+      toOntIdListPage() {
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
+        } else {
+          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 20, pageNumber: 1}})
+        }
       }
     },
     components: {
@@ -116,12 +154,38 @@
     margin-top: 10px;
   }
 
-  .index-lang-warpper {
+  .span-lang {
+    margin-left: 30px;
+  }
+
+  .ul-li-a {
+    margin-top: 5px;
+  }
+
+  .ul-li-a > a {
+    color: transparent;
+  }
+
+  /* 固定在右上角 */
+  .ul-li-a-i {
     color: white;
-    font-size: 14px;
-    padding-top: 6px;
-    text-align: right;
-    margin: 10px 0 0;
+    font-size: 21px;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .dropdown-menu {
+    margin-top: 30px;
+    color: #afacac;
+    background: #f4f4f4;
+    font-weight: 200;
+    border-radius: 0;
+    padding: 0.5rem 1rem;
+  }
+
+  .dropdown-menu > a > li {
+    padding: 0.3rem;
   }
 
   .index-logo {
