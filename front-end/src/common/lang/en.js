@@ -98,15 +98,16 @@ module.exports = {
     Consensus: 'ConsensusData:',
     txOnBlock: 'Transactions on this block'
   },
-  transactionList: {
+  transList: {
     name: 'TRANSACTIONS'
   },
-  transactionDetail: {
+  transDetail: {
     name: 'TRANSACTION DETAILS',
-    txHash: 'Transaction Hash:',
-    time: 'Transaction Time: ',
-    deploySC: 'Type: Deploy Smart Contract',
-    sc: 'Type: Smart Contract',
+    txHash: 'Hash:',
+    time: 'Time: ',
+    type: 'Type: ',
+    deploySC: 'Deploy Smart Contract',
+    sc: 'Smart Contract',
     height: 'Height: ',
     status: 'Status: ',
     fee: 'Fee: '

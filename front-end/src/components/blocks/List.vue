@@ -4,7 +4,7 @@
     <list-title :name="$t('blockList.name')"></list-title>
 
     <div class="row justify-content-center">
-      <div class="table-responsive">
+      <div class="col table-responsive">
         <table class="table table-hover">
           <thead>
           <tr>

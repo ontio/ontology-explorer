@@ -171,8 +171,8 @@
     color: white;
     font-size: 21px;
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 15px;
+    top: 8px;
   }
 
   .dropdown-menu {

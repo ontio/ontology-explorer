@@ -2,33 +2,49 @@
   <div class="container margin-top-60">
     <div class="pc-display">
       <return-home></return-home>
-      <list-title :name="$t('transactionDetail.name')"></list-title>
+      <list-title :name="$t('transDetail.name')"></list-title>
 
       <!-- Transaction Detail Basic Info: -->
       <div class="row">
-        <p class="wordbreak font-size24 color32a4be font-blod important_color">{{ $t('transactionDetail.txHash') }} <span
-          class="font-size14">{{ transactionDetail.info.TxnHash }}</span></p>
-      </div>
-      <div class="row">
-        <div class="col detail-col">
-          {{ $t('transactionDetail.time') }}{{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
+        <div class="col">
+          <p class="wordbreak font-size24 color32a4be font-blod important_color">{{ $t('transDetail.txHash') }} <span
+            class="font-size14">{{ transactionDetail.info.TxnHash }}</span></p>
         </div>
       </div>
       <div class="row">
-        <div class="col detail-col">
-          <span v-if="transactionDetail.info.TxnType !== 209">{{ $t('transactionDetail.deploySC') }}</span>
-          <span v-else>{{ $t('transactionDetail.sc') }}</span>
+        <div class="col">
+          <div class="detail-col">
+            <span class="f_color">{{ $t('transDetail.time') }} </span>
+            {{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
+          </div>
         </div>
       </div>
       <div class="row">
-        <div class="col detail-col" @click="toBlockDetailPage(transactionDetail.info.Height)">
-          {{ $t('transactionDetail.height') }}<span class="click_able important_color">{{transactionDetail.info.Height}}</span>
+        <div class="col">
+          <div class="detail-col">
+            <span class="f_color">{{ $t('transDetail.type') }} </span>
+            <span v-if="transactionDetail.info.TxnType !== 209">{{ $t('transDetail.deploySC') }}</span>
+            <span v-else>{{ $t('transDetail.sc') }}</span>
+          </div>
         </div>
-        <div class="col detail-col detail-col-middle">{{ $t('transactionDetail.fee') }}{{Number(transactionDetail.info.Fee)}} ONG</div>
-        <div class="col detail-col">
-          {{ $t('transactionDetail.status') }}
-          <span v-if="transactionDetail.info.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
-          <span v-else style="color:#AFACAC">{{ $t('all.failed') }}</span>
+      </div>
+      <div class="row">
+        <div class="col" @click="toBlockDetailPage(transactionDetail.info.Height)">
+          <div class="detail-col detail-col-left">
+            {{ $t('transDetail.height') }}<span class="click_able important_color">{{transactionDetail.info.Height}}</span>
+          </div>
+        </div>
+        <div class="col">
+          <div class="detail-col detail-col-middle">
+            {{ $t('transDetail.fee') }}{{Number(transactionDetail.info.Fee)}} ONG
+          </div>
+        </div>
+        <div class="col">
+          <div class="detail-col detail-col-right">
+            {{ $t('transDetail.status') }}
+            <span v-if="transactionDetail.info.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
+            <span v-else style="color:#AFACAC">{{ $t('all.failed') }}</span>
+          </div>
         </div>
       </div>
 
@@ -70,11 +86,17 @@
 
       <!--展示转账金额等详情的数据块-->
       <div class="row font-size14" v-if="txflag" v-for="tx in Detail.TransferList">
-        <div class="col-4 detail-col trans-tx-col pointer" @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
-        <div class="col-1 detail-col trans-tx-col">>></div>
-        <div class="col-2 detail-col trans-tx-col text-center font-weight-bold font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{tx.AssetName}}</span></div>
-        <div class="col-1 detail-col trans-tx-col">>></div>
-        <div class="col-4 detail-col trans-tx-col pointer" @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
+        <div class="col">
+          <div class="detail-col trans-tx-col">
+            <div class="row">
+              <div class="col-4 pointer" @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
+              <div class="col-1">>></div>
+              <div class="col-2 text-center font-weight-bold font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{tx.AssetName}}</span></div>
+              <div class="col-1 text-right">>></div>
+              <div class="col-4 text-right pointer" @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
