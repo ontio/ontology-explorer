@@ -25,33 +25,17 @@
     props: ['pagesInfo', 'pagesName', 'who', 'params'],
     methods: {
       goToPage($Page) {
-        // console.log(this.who)
-        //
-        // if(this.who === 'address') {
-        //   if (this.$route.params.net === 'testnet') {
-        //     this.$router.push({
-        //       name: this.pagesName + 'Test',
-        //       params: {address: this.params, pageSize: 10, pageNumber: 1, net: 'testnet'}
-        //     })
-        //   } else {
-        //     this.$router.push({
-        //       name: this.pagesName,
-        //       params: {address: this.params, pageSize: 10, pageNumber: 1}
-        //     })
-        //   }
-        // } else {
-          if (this.$route.params.net === 'testnet') {
-            this.$router.push({
-              name: this.pagesName + 'Test',
-              params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber, net: 'testnet'}
-            })
-          } else {
-            this.$router.push({
-              name: this.pagesName,
-              params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber}
-            })
-          }
-        // }
+        if (this.$route.params.net === 'testnet') {
+          this.$router.push({
+            name: this.pagesName + 'Test',
+            params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber, net: 'testnet'}
+          })
+        } else {
+          this.$router.push({
+            name: this.pagesName,
+            params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber}
+          })
+        }
       }
     }
   }

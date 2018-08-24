@@ -4,7 +4,7 @@
 
 /* 基础白色块属性 */
 .detail-col {
-  padding: 34px 24px !important;
+  padding: 24px !important;
   margin-top: 4px;
   color: #595757;
   background: white;
@@ -21,17 +21,17 @@
 
 /* 三块中间那块区域使用 */
 .detail-col-middle {
-  margin-left: 4px;
-  margin-right: 4px;
+  margin-left: -13px;
+  margin-right: -13px;
 }
 
 /* 两块左间那块区域使用 */
 .detail-col-left {
-  margin-right: 2px;
+  margin-right: -13px;
 }
 
 /* 两块右间那块区域使用 */
 .detail-col-right {
-  margin-left: 2px;
+  margin-left: -13px;
 }
 

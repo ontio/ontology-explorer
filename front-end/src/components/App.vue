@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="container-bg-color">
+  <div id="app" class="container-fluid container-bg-color">
     <top-nav></top-nav>
     <router-view/>
     <the-footer></the-footer>
@@ -26,5 +26,6 @@
 
   .container-bg-color {
     background-color: #f4f4f4;
+    padding: 0 !important;
   }
 </style>

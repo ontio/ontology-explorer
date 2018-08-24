@@ -1,30 +1,33 @@
 <template>
   <nav v-if="routeDisplay" class="navbar nav-background navbar-expand fixed-top">
-    <div class="container">
+    <div class="container fix-no-row-col">
       <router-link class="navbar-brand" :to="{path: $route.params.net == 'testnet'?'/testnet':'/'}">
         <img class="navbar-logo" src="./../../assets/logo.png" alt="">
       </router-link>
 
       <!-- 只有sm屏幕隐藏的 -->
       <div class="d-none d-sm-block">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item" style="margin-top: 3px;">{{net}}</li>
-          <li class="nav-item">
-            <div class="input-group-top" style="margin-right: -8px">
-              <input type="text" class="form-control-top search-input-txt search-input" v-model="searchContent">
+        <ul class="navbar-nav mr-auto mr-fix">
+          <li class="nav-item nav-net-fix">{{net}}</li>
+          <li class="nav-item nav-search-fix">
+            <div class="input-group-top">
+              <input type="text" class="form-control-top search-input-txt search-input"
+                     v-model="searchContent" @keyup.13="submitSearch">
               <div class="input-group-addon-top input-submit-search search-input-txt search-btn text-center font-blod"
                    @click="submitSearch">
                 <i class="searchfa fa fa-search" aria-hidden="true"></i>
               </div>
             </div>
           </li>
+          <li class="nav-item">
+            <span class="pointer nav-lang-fix" @click="chooseLanguage()">{{ $t('language.name') }}</span>
+          </li>
         </ul>
       </div>
-    </div>
 
-    <!-- 只有sm屏幕展示的 -->
-    <div class="d-block d-sm-none">
-      <!--<nav class="navbar navbar-expand-sm">-->
+      <!-- 只有sm屏幕展示的 -->
+      <div class="d-block d-sm-none">
+        <!--<nav class="navbar navbar-expand-sm">-->
         <ul class="nav navbar-nav">
           <li class="dropdown ul-li-a-2">
             <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -39,7 +42,8 @@
             </ul>
           </li>
         </ul>
-      <!--</nav>-->
+        <!--</nav>-->
+      </div>
     </div>
   </nav>
 </template>
@@ -124,8 +128,6 @@
       },
       submitSearch() {
         if (this.searchContent !== '') {
-          // debug
-          // do something
           switch (this.searchContent.length) {
             /* txhash */
             case 64:
@@ -239,20 +241,26 @@
               }
               break;
           }
-          /*           if(this.searchContent.length==64){//hash
-                      this.$router.push({ name:'TransactionDetail', params:{txnHash:this.searchContent}})
-                    }else{//blockHeight
-                      this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
-                    } */
+
+          this.searchContent = ''
         }
-      },
+      }
     }
   }
 </script>
 
 <style>
+  .navbar {
+    padding: 0 !important;
+    font-size: 1.1em;
+  }
+
   .navbar-logo {
     height: 22px;
+  }
+
+  .fix-no-row-col {
+    padding: 0 15px !important;
   }
 
   .nav-background {
@@ -261,8 +269,18 @@
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
   }
 
-  .navbar {
-    font-size: 1.1em;
+  .mr-fix {
+    margin-top: 10px;
+  }
+
+  .nav-net-fix{
+    line-height: 35px;
+    margin-right: 5px;
+  }
+
+  .nav-search-fix {
+    width: 100%;
+    margin-right: -15px;
   }
 
   .nav-item > input::-webkit-input-placeholder {
@@ -273,14 +291,17 @@
     color: #cacaca;
   }
 
-  /* firefox 19+ */
   .nav-item > input:-ms-input-placeholder {
     color: #cacaca;
   }
 
-  /* ie */
   .nav-item > input:-moz-placeholder {
     color: #cacaca;
+  }
+
+  .nav-lang-fix {
+    margin-left: 30px;
+    line-height: 35px;
   }
 
   .ul-li-a-2 {
@@ -301,7 +322,7 @@
   }
 
   .dropdown-menu-2 {
-    margin-top: 30px;
+    margin-top: 15px;
     margin-left: -160px;
     color: #afacac;
     background: #f4f4f4;

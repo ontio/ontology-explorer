@@ -78,7 +78,7 @@ table {
   color: #00AE1D;
 }
 
-.f_color {
+.f-color {
   color: #AFACAC;
 }
 
@@ -206,6 +206,10 @@ th {
   cursor: pointer;
 }
 
+.pointer:hover {
+   text-decoration:underline;
+}
+
 .div-block-list {
   margin-top: 30px;
   padding: 0 15px;
@@ -216,31 +220,12 @@ th {
   height: 1px;
 }
 
-.bl-tab-border-top-none {
-  border-top: none;
-}
-
-.block-list-underline {
-  cursor: pointer;
-  /* text-decoration:underline; */
-}
-
-.block-list-check-hand {
-  cursor: pointer;
-}
-
 .block-item {
   float: left;
   color: #AFACAC;
 }
 
 .block-item-wrapper {
-  background-color: white;
-  margin: 3px 0 10px;
-  padding: 14px 0 10px;
-}
-
-.block-item-wrapper2 {
   background-color: white;
   margin: 0;
   padding: 14px 15px 10px;
@@ -296,24 +281,6 @@ th {
   color: white;
 }
 
-/* run status */
-.margin2-top {
-  margin-top: 63px;
-}
-
-.onlypaddingleft {
-  /*padding-left: 0 !important;*/
-  /*padding-right: 30px !important;*/
-}
-
-.padding0 {
-  /*padding: 0 !important;*/
-}
-
-.block-item-pointer {
-  cursor: pointer;
-}
-
 /* blocklist page & blockdetail */
 .container-margin-top {
   margin-top: 60px;
@@ -343,10 +310,6 @@ th {
   margin-left: 15px;
   margin-bottom: 14px;
   line-height: 1.6;
-}
-
-.block-detail-page-check-hand {
-  cursor: pointer;
 }
 
 .td23 {
@@ -471,11 +434,11 @@ body {
   color: #32A4BE;
 }
 
-.s_color {
+.s-color {
   color: #00AE1D;
 }
 
-.f_color {
+.f-color {
   color: #AFACAC;
 }
 
@@ -484,26 +447,6 @@ body {
   background-color: #00000000;
   border: 1px solid #595757;
   color: #595757;
-}
-
-.click_able {
-  cursor: pointer;
-}
-
-.click_able:hover {
-  text-decoration: underline;
-  text-decoration-line: #32A4BE;
-  color: #32A4BE;
-}
-
-.click_able_s {
-  cursor: pointer;
-}
-
-.click_able_s:hover {
-  text-decoration: underline;
-  text-decoration-line: #32A4BE;
-  color: #32A4BE;
 }
 
 .veriy_btn1 {

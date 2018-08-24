@@ -69,8 +69,8 @@ module.exports = {
   addressList: {
     rank: '排名',
     name: '地址',
-    nickname: '地址列表 - 持仓排名',
-    balance: 'ONT余额',
+    nickname: '持仓排名',
+    balance: 'ONT',
     percent: '占比'
   },
   addressDetail: {
@@ -79,7 +79,7 @@ module.exports = {
     ontBalance: 'ONT： ',
     ongBalance: 'ONG： ',
     claimable: '可提取的ONG： ',
-    unbound: '未绑定的ONG： ',
+    unbound: '未解绑的ONG： ',
     txOnAddr: '笔交易在这个地址上：'
   },
   blockDetail: {
@@ -98,15 +98,16 @@ module.exports = {
     Consensus: '共识数据：',
     txOnBlock: '条交易记录在这个区块：'
   },
-  transactionList: {
+  transList: {
     name: '最新交易'
   },
-  transactionDetail: {
+  transDetail: {
     name: '交易详情',
-    txHash: '交易哈希：',
+    txHash: '哈希：',
     time: '时间：',
-    deploySC: '类型：Deploy Smart Contract',
-    sc: '类型：Smart Contract',
+    type: '类型： ',
+    deploySC: 'Deploy Smart Contract',
+    sc: 'Smart Contract',
     height: '高度： ',
     status: '状态： ',
     fee: '费用： '

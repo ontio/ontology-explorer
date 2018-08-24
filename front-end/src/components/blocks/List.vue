@@ -4,7 +4,7 @@
     <list-title :name="$t('blockList.name')"></list-title>
 
     <div class="row justify-content-center">
-      <div class="table-responsive">
+      <div class="col table-responsive">
         <table class="table table-hover">
           <thead>
           <tr>
@@ -16,7 +16,7 @@
           </thead>
           <tbody>
           <tr v-for="block in blockListDetail.info">
-            <td class="font-size14 font-Regular important_color click_able" @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
+            <td class="font-size14 font-Regular important_color pointer" @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
             <td class="font-size14 font-Regular normal_color">{{block.TxnNum}}</td>
             <td class="font-size14 font-Regular normal_color">{{block.BlockSize}}</td>
             <td class="font-size14 font-Regular normal_color">{{$HelperTools.getTransDate(block.BlockTime)}}</td>
@@ -32,13 +32,9 @@
 
 <script>
   import {mapState} from 'vuex'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
-  import TurnThePage from '../common/TurnThePage'
 
   export default {
     name: "block-list-page",
-    components: {ReturnHome, ListTitle, TurnThePage},
     created() {
       this.getBlockListPage()
     },

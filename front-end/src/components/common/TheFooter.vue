@@ -2,7 +2,7 @@
   <div class="container-bottom">
     <div class="container">
       <div class="row">
-        <div class="col text-center f_color font-size14">
+        <div class="col text-center f-color font-size14">
           <span>Copyright © 2018 The Ontology Team</span>
         </div>
       </div>

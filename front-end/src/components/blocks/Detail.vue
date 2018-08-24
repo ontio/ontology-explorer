@@ -2,85 +2,55 @@
   <div class="container container-margin-top">
     <return-home></return-home>
     <list-title :name="$t('blockDetail.nickname')"></list-title>
+    <detail-title :name="$t('blockDetail.name')" :val="blockData.Height"></detail-title>
 
-    <div class="row">
-      <p class="font-size24 important_color font-blod">{{ $t('blockDetail.name') + "  " + blockDetailPage.info.Height }}</p>
-    </div>
+    <detail-block-2 :name1="$t('blockDetail.BlockSize')" :val1="blockData.BlockSize + ' ' +$t('all.byte')"
+                    :name2="$t('blockDetail.BlockTime')" :val2="$HelperTools.getTransDate(blockData.BlockTime)">
+    </detail-block-2>
 
-    <div class="row">
-      <div class="col detail-col detail-col-left">
-        <span class="f_color">{{ $t('blockDetail.BlockSize') }} </span>
-        {{blockDetailPage.info.BlockSize}} {{ $t('all.byte') }}
-      </div>
-      <div class="col detail-col detail-col-right">
-        {{ $t('blockDetail.BlockTime') }} {{$HelperTools.getTransDate(blockDetailPage.info.BlockTime)}}
-      </div>
-    </div>
+    <detail-block :params="[{name:$t('blockDetail.keeper'), val:blockData.BookKeeper, rows:2}]"></detail-block>
+    <detail-block :params="[{name:$t('blockDetail.hash'), val:blockData.Hash, rows:2}]"></detail-block>
 
-    <div class="row">
-      <div class="col detail-col">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.keeper') }}</span>
-        <p class="font-size14 normal_color font-Regular p_margin_bottom">{{blockDetailPage.info.BookKeeper}}</p>
-      </div>
-    </div>
+    <detail-block-2 :name1="$t('blockDetail.PrevBlock')" :val1="blockData.PrevBlock.substr(0,16) + '...'" :rows1="'2'"
+                    :params1="['block', blockData.Height-1]"
+                    :name2="$t('blockDetail.NextBlock')" :val2="blockData.NextBlock.substr(0,16) + '...'" :rows2="'2'"
+                    :params2="['block', blockData.Height+1]">
+    </detail-block-2>
 
-    <div class="row">
-      <div class="col detail-col">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.hash') }}</span>
-        <p class="font-size14 normal_color font-Regular p_margin_bottom"> {{blockDetailPage.info.Hash}}</p>
-      </div>
-    </div>
+    <detail-block :params="[{name:$t('blockDetail.merkle'), val:blockData.TxnsRoot, rows:2},
+      {name:$t('blockDetail.Consensus'), val:blockData.ConsensusData, rows:2}]"></detail-block>
 
-    <div class="row">
-      <div class="col detail-col detail-col-left">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.PrevBlock') }}</span>
-        <p class="font-size14 important_color font-Regular p_margin_bottom pointer click_able" @click="toBlockDetailPage(blockDetailPage.info.Height-1)"  > {{blockDetailPage.info.PrevBlock.substr(0,16) + '...'}}</p>
-      </div>
-      <div class="col detail-col detail-col-right">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.NextBlock') }}</span>
-        <p v-if="blockDetailPage.info.NextBlock" class="font-size14 important_color font-Regular p_margin_bottom pointer click_able" @click="toBlockDetailPage(blockDetailPage.info.Height+1)"> {{blockDetailPage.info.NextBlock.substr(0,16) + '...'}}</p>
-        <p v-else class="font-size14 normal_color font-Regular p_margin_bottom"> none</p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col detail-col">
-        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.merkle') }}</span>
-        <p class="font-size14 normal_color font-Regular p_margin_bottom"> {{blockDetailPage.info.TxnsRoot}}</p>
-        <span class="font-size24 f_color font-Regular p_margin_bottom">{{ $t('blockDetail.Consensus') }}</span>
-        <p class="font-size14 normal_color font-Regular p_margin_bottom"> {{blockDetailPage.info.ConsensusData}}</p>
-      </div>
-    </div>
-
-    <div class="row" v-if="blockDetailPage.info.TxnNum !== 0">
-      <div class="col detail-col">
-        {{ blockDetailPage.info.TxnNum }} {{ $t('blockDetail.txOnBlock') }}
-        <div class="table-responsive">
-          <table class="table ">
-            <thead>
-            <tr>
-              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.hash') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.status') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.time') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="tx in blockDetailPage.info.TxnList">
-              <td class="font-size14 f_color font-Regular click_able" @click="toTransactionDetailPage(tx.TxnHash)">
-                {{tx.TxnHash.substr(0,16) + '...'}}
-              </td>
-              <td class="font-size14 s_color font-Regular" v-if="tx.ConfirmFlag === 1">
-                Confirmed
-              </td>
-              <td class="font-size14 f_color font-Regular" v-else>
-                Failed
-              </td>
-              <td class="font-size14 normal_color font-Regular">
-                {{$HelperTools.getTransDate(tx.TxnTime)}}
-              </td>
-            </tr>
-            </tbody>
-          </table>
+    <div class="row" v-if="blockData.TxnNum !== 0">
+      <div class="col">
+        <div class="detail-col">
+          {{ blockData.TxnNum }}<span class="f-color"> {{ $t('blockDetail.txOnBlock') }}</span>
+          <div class="table-responsive">
+            <table class="table ">
+              <thead>
+              <tr class="f-color">
+                <th class="td-tx-head font-size18 font-Blod">{{ $t('all.hash') }}</th>
+                <th class="td-tx-head font-size18 font-Blod">{{ $t('all.status') }}</th>
+                <th class="td-tx-head font-size18 font-Blod">{{ $t('all.time') }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="tx in blockData.TxnList">
+                <td class="font-size14 important_color font-Regular pointer" @click="toTransDetailPage(tx.TxnHash)">
+                  {{tx.TxnHash.substr(0,16) + '...'}}
+                </td>
+                <td class="font-size14 s-color font-Regular" v-if="tx.ConfirmFlag === 1">
+                  Confirmed
+                </td>
+                <td class="font-size14 f-color font-Regular" v-else>
+                  Failed
+                </td>
+                <td class="font-size14 normal_color font-Regular">
+                  {{$HelperTools.getTransDate(tx.TxnTime)}}
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -89,39 +59,36 @@
 
 <script>
   import {mapState} from 'vuex'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
 
   export default {
     name: "block-detail-page",
-    components: {ReturnHome, ListTitle},
     created() {
-      this.getBlockDetailPage()
+      this.getBlockData()
     },
     watch: {
-      '$route': 'getBlockDetailPage'
+      '$route': 'getBlockData'
     },
     computed: {
       ...mapState({
-        blockDetailPage: state => state.BlockDetailPage.BlockDetail,
+        blockData: state => state.BlockDetailPage.BlockDetail.info,
       })
     },
     methods: {
-      getBlockDetailPage() {
+      getBlockData() {
         this.$store.dispatch('getBlockDetailPage', this.$route.params).then()
       },
       toBlockDetailPage($blockHeight) {
-        if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'blockDetail', params: {param: $blockHeight}})
-        } else {
+        if (this.$route.params.net === 'testnet') {
           this.$router.push({name: 'blockDetailTest', params: {param: $blockHeight, net: 'testnet'}})
+        } else {
+          this.$router.push({name: 'blockDetail', params: {param: $blockHeight}})
         }
       },
-      toTransactionDetailPage($TxnId) {
-        if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'TransactionDetail', params: {txnHash: $TxnId}})
-        } else {
+      toTransDetailPage($TxnId) {
+        if (this.$route.params.net === 'testnet') {
           this.$router.push({name: 'TransactionDetailTest', params: {txnHash: $TxnId, net: 'testnet'}})
+        } else {
+          this.$router.push({name: 'TransactionDetail', params: {txnHash: $TxnId}})
         }
       }
     }

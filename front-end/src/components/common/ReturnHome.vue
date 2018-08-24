@@ -1,6 +1,8 @@
 <template>
   <div class="row">
-    <p class="float-left return-home-css" @click="$router.go(-1)"><< {{ $t('all.return') }}</p>
+    <div class="col">
+      <p class="float-left return-home-css" @click="$router.go(-1)"><< {{ $t('all.return') }}</p>
+    </div>
   </div>
 </template>
 

@@ -2,76 +2,79 @@
   <div class="container container-margin-top">
     <return-home></return-home>
     <list-title :name="$t('ontIdDetail.nickname')"></list-title>
+    <detail-title :name="$t('ontIdDetail.name')" :val="$route.params.ontid"></detail-title>
 
-    <div class="row">
-      <p class="font-size24 font-blod important_color">{{ $t('ontIdDetail.name')}}
-        <span class="font-blod font-size14 important_color "> {{$route.params.ontid}}</span>
-      </p>
-    </div>
-
+    <!-- Owners info -->
     <div class="row" v-if="Ddo.Owners">
-      <div class="col detail-col">
-        <p>{{ $t('ontIdDetail.owner') }}</p>
-        <div class="row" v-for="owner in Ddo.Owners">
-          <div class="col">
-            <div class="font-size14 font-Regular normal_color"><p>Type: {{owner.Type}}</p></div>
-            <div class="font-size14 font-Regular normal_color"><p>Curve: {{owner.Curve}}</p></div>
-            <div class="font-size14 font-Regular normal_color"><p>Value: {{owner.Value}}</p></div>
-            <div class="font-size14 font-Regular normal_color"><p>PublicKeyId: {{owner.PubKeyId}}</p></div>
+      <div class="col">
+        <div class="detail-col">
+          <p>{{ $t('ontIdDetail.owner') }}</p>
+          <div class="row" v-for="owner in Ddo.Owners">
+            <div class="col">
+              <div class="font-size14 font-Regular normal_color"><p>Type: {{owner.Type}}</p></div>
+              <div class="font-size14 font-Regular normal_color"><p>Curve: {{owner.Curve}}</p></div>
+              <div class="font-size14 font-Regular normal_color"><p>Value: {{owner.Value}}</p></div>
+              <div class="font-size14 font-Regular normal_color"><p>PublicKeyId: {{owner.PubKeyId}}</p></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="row" v-if="JSON.stringify(Ddo.Attributes) !== '[]'">
-      <div class="col detail-col">
-        <p>Claim Metadata</p>
-        <div class="row" v-for="claim in Ddo.Attributes">
-          <div class="col">
-            <div class="font-size14 font-Regular normal_color"><p>Claim Hash: {{claim.Claim.ClaimId}}</p></div>
-            <div class="font-size14 font-Regular normal_color"><p>Claim Context: {{claim.Claim.ClaimContext}}</p></div>
-            <div class="font-size14 font-Regular normal_color"><p>Context Desc: {{claim.Claim.ContextDesc}}</p></div>
-            <div class="font-size14 font-Regular normal_color" @click="toOntIdDetailPage(claim.Claim.IssuerOntId)">
-              <p>Issuer: <span class="important_color click_able">{{claim.Claim.IssuerOntId}}</span></p>
-            </div>
-            <div v-if="claim.SelfDefined">
-              <p class="font-size14 font-Regular normal_color">Claim SelfDefined: {{claim.SelfDefined}}</p>
+      <div class="col">
+        <div class="detail-col">
+          <p>Claim Metadata</p>
+          <div class="row" v-for="claim in Ddo.Attributes">
+            <div class="col">
+              <div class="font-size14 font-Regular normal_color"><p>Claim Hash: {{claim.Claim.ClaimId}}</p></div>
+              <div class="font-size14 font-Regular normal_color"><p>Claim Context: {{claim.Claim.ClaimContext}}</p></div>
+              <div class="font-size14 font-Regular normal_color"><p>Context Desc: {{claim.Claim.ContextDesc}}</p></div>
+              <div class="font-size14 font-Regular normal_color" @click="toOntIdDetailPage(claim.Claim.IssuerOntId)">
+                <p>Issuer: <span class="important_color pointer">{{claim.Claim.IssuerOntId}}</span></p>
+              </div>
+              <div v-if="claim.SelfDefined">
+                <p class="font-size14 font-Regular normal_color">Claim SelfDefined: {{claim.SelfDefined}}</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Events on this ONT ID -->
     <div class="row" v-if="TxnTotal">
-      <div class="col detail-col">
-        {{ $t('ontIdDetail.events') }}
-        <div class="table-responsive">
-          <table class="table ">
-            <thead>
-            <tr>
-              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.hash') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.content') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.fee') }}</th>
-              <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.time') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="tx in TxnList">
-              <td class="font-size14 s_color font-Regular click_able" @click="toTransactionDetailPage(tx.TxnHash)">
-                {{tx.TxnHash.substr(0,16) + '...'}}
-              </td>
-              <td class="font-size14 font-Regular normal_color ">
-                {{getOntIDEvent(tx.Description)}}
-              </td>
-              <td class="font-size14 font-Regular normal_color">
-                {{tx.Fee}}
-              </td>
-              <td class="font-size14 font-Regular normal_color">
-                {{$HelperTools.getTransDate(tx.TxnTime)}}
-              </td>
-            </tr>
-            </tbody>
-          </table>
+      <div class="col">
+        <div class="detail-col">
+          {{ $t('ontIdDetail.events') }}
+          <div class="table-responsive">
+            <table class="table ">
+              <thead>
+              <tr>
+                <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.hash') }}</th>
+                <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.content') }}</th>
+                <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.fee') }}</th>
+                <th class="td-tx-head font-size18 normal_color font-Blod">{{ $t('all.time') }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="tx in TxnList">
+                <td class="font-size14 important_color font-Regular pointer" @click="toTransactionDetailPage(tx.TxnHash)">
+                  {{tx.TxnHash.substr(0,16) + '...'}}
+                </td>
+                <td class="font-size14 font-Regular normal_color ">
+                  {{getOntIDEvent(tx.Description)}}
+                </td>
+                <td class="font-size14 font-Regular normal_color">
+                  {{tx.Fee}}
+                </td>
+                <td class="font-size14 font-Regular normal_color">
+                  {{$HelperTools.getTransDate(tx.TxnTime)}}
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -80,12 +83,9 @@
 
 <script>
   import {mapState} from 'vuex'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
 
   export default {
     name: "ont-id-detail-page",
-    components: {ReturnHome, ListTitle},
     data() {
       return {
         Ddo: {},

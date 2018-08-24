@@ -2,7 +2,7 @@
   <div class="div-block-list">
     <div class="row">
       <div class="col-8 block-title-wrapper">
-        <p class="title font-blod">{{ $t('transactionList.name') }}</p>
+        <p class="title font-blod">{{ $t('transList.name') }}</p>
       </div>
       <div class="col-4 block-title-wrapper">
         <p class="title-more float-right transaction-list-check-hand" @click="toTransactionListPage">{{ $t('all.more') }}</p>
@@ -10,12 +10,12 @@
     </div>
 
     <div class="row">
-      <div v-for="(tx,index) in latestTransactionList.info" class="col-12 block-item-wrapper2">
+      <div v-for="(tx,index) in latestTransactionList.info" class="col-12 block-item-wrapper">
         <div class="divider-line"></div>
         <div class="row  block-item-sub-wrapper">
           <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':' font-size14 block-item col-8 text-left padding0 block-item-top'"
                @click="toTransactionDetailPage(tx.TxnHash)">
-            <span class="txhash-text font700">{{tx.TxnHash.substr(0,12)}}...{{tx.TxnHash.substr(55,10)}}</span>
+            <span class="txhash-text font700">{{tx.TxnHash.substr(0,8)}}...{{tx.TxnHash.substr(56)}}</span>
           </div>
           <span v-if="$HelperTools.getDateTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
           <span v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>

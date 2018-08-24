@@ -84,10 +84,10 @@ module.exports = {
   },
   blockDetail: {
     nickname: 'BLOCK DETAILS',
-    name: 'Block Height:',
-    BlockSize: 'Block Size:',
-    BlockTime: 'Generate Time:',
-    keeper: 'BookKeeper:',
+    name: 'Height:',
+    BlockSize: 'Size:',
+    BlockTime: 'Time:',
+    keeper: 'Book Keeper:',
     hash: 'Hash:',
     TxnNum: 'Number Of Transactions In The Block:',
     Hash: 'The Block Hash:',
@@ -95,18 +95,19 @@ module.exports = {
     LastBlock: 'Last Block:',
     NextBlock: 'Next Block:',
     merkle: 'Merkle Root:',
-    Consensus: 'ConsensusData:',
+    Consensus: 'Consensus Data:',
     txOnBlock: 'Transactions on this block'
   },
-  transactionList: {
+  transList: {
     name: 'TRANSACTIONS'
   },
-  transactionDetail: {
+  transDetail: {
     name: 'TRANSACTION DETAILS',
-    txHash: 'Transaction Hash:',
-    time: 'Transaction Time: ',
-    deploySC: 'Type: Deploy Smart Contract',
-    sc: 'Type: Smart Contract',
+    txHash: 'Hash:',
+    time: 'Time: ',
+    type: 'Type: ',
+    deploySC: 'Deploy Smart Contract',
+    sc: 'Smart Contract',
     height: 'Height: ',
     status: 'Status: ',
     fee: 'Fee: '
