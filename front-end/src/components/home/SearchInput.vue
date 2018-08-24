@@ -2,11 +2,11 @@
   <div>
     <div class="container">
       <div class="row">
-        <div class="col-lg-12 form-group search-area text-center">
+        <div class="col form-group search-area text-center">
           <h2 class="font-ExtraLight font-size40" style="color:white;font-weight:100;">{{$t('searchInput.slogan')}}</h2>
           <div class="input-group">
             <input type="text" class="form-control input-search search-input-txt"
-                   v-model="searchContent" :placeholder="$t('searchInput.placeholder')">
+                   v-model="searchContent" @keyup.13="submitSearch" :placeholder="$t('searchInput.placeholder')">
             <div class="input-group-addon input-submit-search search-input-txt search-btn text-center font-weight-bold"
                  @click="submitSearch">
               {{$t('searchInput.search')}}

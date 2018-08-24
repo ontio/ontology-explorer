@@ -11,7 +11,8 @@
           <li class="nav-item nav-net-fix">{{net}}</li>
           <li class="nav-item nav-search-fix">
             <div class="input-group-top">
-              <input type="text" class="form-control-top search-input-txt search-input" v-model="searchContent">
+              <input type="text" class="form-control-top search-input-txt search-input"
+                     v-model="searchContent" @keyup.13="submitSearch">
               <div class="input-group-addon-top input-submit-search search-input-txt search-btn text-center font-blod"
                    @click="submitSearch">
                 <i class="searchfa fa fa-search" aria-hidden="true"></i>
@@ -127,8 +128,6 @@
       },
       submitSearch() {
         if (this.searchContent !== '') {
-          // debug
-          // do something
           switch (this.searchContent.length) {
             /* txhash */
             case 64:
@@ -242,13 +241,10 @@
               }
               break;
           }
-          /*           if(this.searchContent.length==64){//hash
-                      this.$router.push({ name:'TransactionDetail', params:{txnHash:this.searchContent}})
-                    }else{//blockHeight
-                      this.$router.push({ name:'blockDetail', params:{param:this.searchContent}})
-                    } */
+
+          this.searchContent = ''
         }
-      },
+      }
     }
   }
 </script>
