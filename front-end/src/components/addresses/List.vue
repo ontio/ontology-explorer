@@ -4,28 +4,30 @@
     <list-title :name="$t('addressList.nickname')"></list-title>
 
     <div class="row justify-content-center">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-          <tr>
-            <th class="font-size18" scope="col">{{ $t('addressList.rank') }}</th>
-            <th class="font-size18" scope="col">{{ $t('addressList.name') }}</th>
-            <th class="font-size18" scope="col">{{ $t('addressList.balance') }}</th>
-            <th class="font-size18" scope="col">{{ $t('addressList.percent') }}</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(address,index) in addressList.info">
-            <td class="font-size14 font-Regular normal_color">{{Number(addressList.basicRank) + index}}</td>
-            <td class="font-size14 font-Regular important_color click_able"
-                @click="goToAddressDetail(address.address)">
-              {{address.address.substr(0,6) + '...' + address.address.substr(28)}}
-            </td>
-            <td class="font-size14 font-Regular normal_color">{{address.balance}}</td>
-            <td class="font-size14 font-Regular normal_color">{{(address.percent * 100).toFixed(4)}}%</td>
-          </tr>
-          </tbody>
-        </table>
+      <div class="col">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th class="font-size18" scope="col">{{ $t('addressList.rank') }}</th>
+              <th class="font-size18" scope="col">{{ $t('addressList.name') }}</th>
+              <th class="font-size18" scope="col">{{ $t('addressList.balance') }}</th>
+              <th class="font-size18" scope="col">{{ $t('addressList.percent') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(address,index) in addressList.info">
+              <td class="font-size14 font-Regular normal_color">{{Number(addressList.basicRank) + index}}</td>
+              <td class="font-size14 font-Regular important_color pointer"
+                  @click="goToAddressDetail(address.address)">
+                {{address.address.substr(0,6) + '...' + address.address.substr(28)}}
+              </td>
+              <td class="font-size14 font-Regular normal_color">{{address.balance}}</td>
+              <td class="font-size14 font-Regular normal_color">{{(address.percent * 100).toFixed(4)}}%</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -35,13 +37,9 @@
 
 <script>
   import {mapState} from 'vuex'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
-  import TurnThePage from '../common/TurnThePage'
 
   export default {
     name: "address-list-page",
-    components: {ReturnHome, ListTitle, TurnThePage},
     created() {
       this.getAddressListInfo()
     },

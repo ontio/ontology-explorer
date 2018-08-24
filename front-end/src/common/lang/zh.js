@@ -69,8 +69,8 @@ module.exports = {
   addressList: {
     rank: '排名',
     name: '地址',
-    nickname: '地址列表 - 持仓排名',
-    balance: 'ONT余额',
+    nickname: '持仓排名',
+    balance: 'ONT',
     percent: '占比'
   },
   addressDetail: {

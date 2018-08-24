@@ -84,10 +84,10 @@ module.exports = {
   },
   blockDetail: {
     nickname: 'BLOCK DETAILS',
-    name: 'Block Height:',
-    BlockSize: 'Block Size:',
-    BlockTime: 'Generate Time:',
-    keeper: 'BookKeeper:',
+    name: 'Height:',
+    BlockSize: 'Size:',
+    BlockTime: 'Time:',
+    keeper: 'Book Keeper:',
     hash: 'Hash:',
     TxnNum: 'Number Of Transactions In The Block:',
     Hash: 'The Block Hash:',
@@ -95,7 +95,7 @@ module.exports = {
     LastBlock: 'Last Block:',
     NextBlock: 'Next Block:',
     merkle: 'Merkle Root:',
-    Consensus: 'ConsensusData:',
+    Consensus: 'Consensus Data:',
     txOnBlock: 'Transactions on this block'
   },
   transList: {

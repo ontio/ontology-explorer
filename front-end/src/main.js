@@ -11,12 +11,31 @@ import LangStorage from './helpers/lang'
 import $ from 'jquery'
 import 'font-awesome/css/font-awesome.css'
 import Helper from './helpers/helper'
+
 Vue.use(Helper);
+
+/**
+ * 全局组件注册
+ */
+import ListTitle from './components/common/ListTitle'
+import ReturnHome from './components/common/ReturnHome'
+import TurnThePage from './components/common/TurnThePage'
+import DetailTitle from './components/common/DetailTitle'
+import DetailBlock from './components/common/DetailBlock'
+import DetailBlock2 from './components/common/DetailBlock2'
+
+Vue.component('list-title', ListTitle);
+Vue.component('return-home', ReturnHome);
+Vue.component('turn-the-page', TurnThePage);
+Vue.component('detail-title', DetailTitle);
+Vue.component('detail-block', DetailBlock);
+Vue.component('detail-block-2', DetailBlock2);
 
 /**
  * Fixed compatibility issues with low version IE. lyx.
  */
 import promise from 'es6-promise'
+
 promise.polyfill();
 
 /**
@@ -49,6 +68,6 @@ new Vue({
   router,
   store,
   i18n,
-  components: {App},
+  components: {App, ListTitle},
   template: '<App/>'
 });

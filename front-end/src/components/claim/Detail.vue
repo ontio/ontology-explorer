@@ -85,12 +85,9 @@
 
 <script>
   import {mapState} from 'vuex'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
 
   export default {
     name: "claim-detail-page",
-    components: {ReturnHome, ListTitle},
     data() {
       return {
         Ddo: {},

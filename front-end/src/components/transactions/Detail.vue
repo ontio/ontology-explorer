@@ -3,46 +3,32 @@
     <div class="pc-display">
       <return-home></return-home>
       <list-title :name="$t('transDetail.name')"></list-title>
+      <detail-title :name="$t('transDetail.txHash')" :val="transData.TxnHash"></detail-title>
 
       <!-- Transaction Detail Basic Info: -->
+      <detail-block
+        :params="[{name:$t('transDetail.time'), val:$HelperTools.getTransDate(transData.TxnTime)}]"></detail-block>
+      <detail-block
+        :params="[{name:$t('transDetail.type'), val:transData.TxnType === 209 ? $t('transDetail.sc') : $t('transDetail.deploySC')}]"></detail-block>
+
       <div class="row">
-        <div class="col">
-          <p class="wordbreak font-size24 color32a4be font-blod important_color">{{ $t('transDetail.txHash') }} <span
-            class="font-size14">{{ transactionDetail.info.TxnHash }}</span></p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="detail-col">
-            <span class="f_color">{{ $t('transDetail.time') }} </span>
-            {{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="detail-col">
-            <span class="f_color">{{ $t('transDetail.type') }} </span>
-            <span v-if="transactionDetail.info.TxnType !== 209">{{ $t('transDetail.deploySC') }}</span>
-            <span v-else>{{ $t('transDetail.sc') }}</span>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col" @click="toBlockDetailPage(transactionDetail.info.Height)">
+        <div class="col" @click="toBlockDetailPage(transData.Height)">
           <div class="detail-col detail-col-left">
-            {{ $t('transDetail.height') }}<span class="click_able important_color">{{transactionDetail.info.Height}}</span>
+            <span class="f-color">{{ $t('transDetail.height') }}</span>
+            <span class="pointer important_color">{{transData.Height}}</span>
           </div>
         </div>
         <div class="col">
           <div class="detail-col detail-col-middle">
-            {{ $t('transDetail.fee') }}{{Number(transactionDetail.info.Fee)}} ONG
+            <span class="f-color">{{ $t('transDetail.fee') }}</span>
+            {{Number(transData.Fee)}}
+            <span class="important_color">ONG</span>
           </div>
         </div>
         <div class="col">
           <div class="detail-col detail-col-right">
-            {{ $t('transDetail.status') }}
-            <span v-if="transactionDetail.info.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
+            <span class="f-color">{{ $t('transDetail.status') }}</span>
+            <span v-if="transData.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
             <span v-else style="color:#AFACAC">{{ $t('all.failed') }}</span>
           </div>
         </div>
@@ -58,40 +44,48 @@
         <tr>
           <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom n_color font-Regular">{{ $t('all.description') }}:
-              {{transactionDetail.info.Description}}</p>
+              {{transData.Description}}</p>
           </td>
         </tr>
         </tbody>
       </table>
 
       <!--展示Issuer OntId和Description的数据块-->
-      <div class="row detail-ont-id-desc-tit font-Regular" v-if="recordflag">
+      <div v-if="recordflag" class="row detail-ont-id-desc-tit font-Regular">
         <div class="col">
           <div class="row font-size24">Issuer OntId:</div>
-          <div class="row font-size14 detail-ont-id-desc-txt">{{transactionDetail.info.Description.substr(12,42)}}</div>
+          <div class="row font-size14 detail-ont-id-desc-txt">{{transData.Description.substr(12,42)}}</div>
           <div class="row font-size24 margin-top-15">{{ $t('all.description') }}:</div>
-          <div class="row font-size14 detail-ont-id-desc-txt">{{transactionDetail.info.Description}}</div>
+          <div class="row font-size14 detail-ont-id-desc-txt">{{transData.Description}}</div>
         </div>
       </div>
 
       <!--展示ONT ID和Description的数据块-->
-      <div class="row detail-ont-id-desc-tit font-Regular font-size14" v-if="idflag">
+      <div v-if="idflag" class="row font-Regular font-size14">
         <div class="col">
-          <div class="row font-size24">{{ $t('all.ontId') }}:</div>
-          <div class="row detail-ont-id-desc-txt pointer click_able" @click="toOntIdDetailPage(Detail.OntId)">{{Detail.OntId}}</div>
-          <div class="row font-size24 margin-top-15">{{ $t('all.description') }}:</div>
-          <div class="row detail-ont-id-desc-txt">{{Detail.Description}}</div>
+          <div class="detail-col">
+            <span class="font-size24 f-color font-Regular p_margin_bottom">{{ $t('all.ontId') }}</span>
+            <p class="font-size14 important_color font-Regular p_margin_bottom pointer"
+               @click="toOntIdDetailPage(Detail.OntId)">
+              {{Detail.OntId}}
+            </p>
+            <span class="font-size24 f-color font-Regular p_margin_bottom">{{ $t('all.description') }}:</span>
+            <p class="font-size14 font-Regular p_margin_bottom">
+              {{Detail.Description}}
+            </p>
+          </div>
         </div>
       </div>
 
       <!--展示转账金额等详情的数据块-->
-      <div class="row font-size14" v-if="txflag" v-for="tx in Detail.TransferList">
+      <div v-if="txflag" class="row font-size14" v-for="tx in Detail.TransferList">
         <div class="col">
           <div class="detail-col trans-tx-col">
             <div class="row">
               <div class="col-4 pointer" @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
               <div class="col-1">>></div>
-              <div class="col-2 text-center font-weight-bold font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{tx.AssetName}}</span></div>
+              <div class="col-2 text-center font-weight-bold font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{tx.AssetName}}</span>
+              </div>
               <div class="col-1 text-right">>></div>
               <div class="col-4 text-right pointer" @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
             </div>
@@ -110,7 +104,7 @@
       <div class="row">
         <div class="col-lg-12">
           <p class="wordbreak font-size18 color32a4be font-blod important_color">Transaction Hash: <span
-            style="font-size:14px;">{{  transactionDetail.info.TxnHash }}</span></p>
+            style="font-size:14px;">{{  transData.TxnHash }}</span></p>
         </div>
       </div>
       <table class="table table-hover">
@@ -121,12 +115,12 @@
         <tbody>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color">
-            Transaction Time: {{$HelperTools.getTransDate(transactionDetail.info.TxnTime)}}
+            Transaction Time: {{$HelperTools.getTransDate(transData.TxnTime)}}
           </td>
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color"
-              v-if="transactionDetail.info.TxnType != 209">
+              v-if="transData.TxnType != 209">
             Type: Deploy Smart Contract
           </td>
           <td class="td11 table1_item_title font-size16 normal_color" v-else>
@@ -135,17 +129,17 @@
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color">
-            Block Height: <span class=" important_color">{{transactionDetail.info.Height}}</span>
+            Block Height: <span class=" important_color">{{transData.Height}}</span>
           </td>
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color">
-            Fee: {{transactionDetail.info.Fee}}
+            Fee: {{transData.Fee}}
           </td>
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color"
-              v-if="transactionDetail.info.ConfirmFlag == 1">
+              v-if="transData.ConfirmFlag == 1">
             Status: <span style="color:#00AE1D">Confirmed</span>
           </td>
           <td class="td11 table1_item_title font-size16 normal_color" v-else>
@@ -162,11 +156,11 @@
         <tbody>
         <tr>
           <td class="td11" style="padding: 34px 24px;">
-            <p class="font-size24  p_margin_bottom f_color font-Regular">OntId:</p>
-            <p class="font-size14 f_color p_margin_bottom font-Regular ">
-              {{transactionDetail.info.Description.substr(12,42)}}</p>
+            <p class="font-size24  p_margin_bottom f-color font-Regular">OntId:</p>
+            <p class="font-size14 f-color p_margin_bottom font-Regular ">
+              {{transData.Description.substr(12,42)}}</p>
             <p class="font-size24  p_margin_bottom n_color font-Regular">Description:</p>
-            <p class="font-size14 f_color p_margin_bottom font-Regular">{{transactionDetail.info.Description}}</p>
+            <p class="font-size14 f-color p_margin_bottom font-Regular">{{transData.Description}}</p>
           </td>
         </tr>
         </tbody>
@@ -180,7 +174,7 @@
         <tr>
           <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom n_color font-Regular">Description:</p>
-            <p class="font-size14 f_color p_margin_bottom font-Regular">{{transactionDetail.info.Description}}</p>
+            <p class="font-size14 f-color p_margin_bottom font-Regular">{{transData.Description}}</p>
           </td>
         </tr>
         </tbody>
@@ -193,10 +187,10 @@
         <tbody>
         <tr>
           <td class="td11" style="padding: 34px 24px;">
-            <p class="font-size24  p_margin_bottom f_color font-Regular">OntId:</p>
-            <p class="font-size14 important_color p_margin_bottom font-Regular pointer click_able">{{Detail.OntId}}</p>
-            <p class="font-size24  p_margin_bottom f_color font-Regular">Description:</p>
-            <p class="font-size14 f_color p_margin_bottom font-Regular">{{Detail.Description}}</p>
+            <p class="font-size24  p_margin_bottom f-color font-Regular">OntId:</p>
+            <p class="font-size14 important_color p_margin_bottom font-Regular pointer">{{Detail.OntId}}</p>
+            <p class="font-size24  p_margin_bottom f-color font-Regular">Description:</p>
+            <p class="font-size14 f-color p_margin_bottom font-Regular">{{Detail.Description}}</p>
           </td>
         </tr>
         </tbody>
@@ -227,12 +221,9 @@
 <script>
   import {mapState} from 'vuex'
   import GetTransactionType from './../../common/OntMsg/GetTransactionType.js'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
 
   export default {
     name: "transaction-detail-page",
-    components: {ReturnHome, ListTitle},
     data() {
       return {
         Detail: '',
@@ -247,12 +238,12 @@
     },
     watch: {
       '$route': 'getTransactionData',
-      'transactionDetail.info': function () {
-        if (this.transactionDetail.info.ConfirmFlag == 1) {
-          if (this.transactionDetail.info.Detail == undefined) {
+      'transData': function () {
+        if (this.transData.ConfirmFlag == 1) {
+          if (this.transData.Detail == undefined) {
             this.recordflag = true;
           } else {
-            this.Detail = this.transactionDetail.info.Detail
+            this.Detail = this.transData.Detail
             if (this.Detail.OntId != undefined) {
               this.idflag = true;
               this.txflag = false;
@@ -261,7 +252,7 @@
               this.idflag = false;
             }
           }
-          if (this.transactionDetail.info.Description == "auth") {
+          if (this.transData.Description == "auth") {
             this.authflag = true
           }
         } else {
@@ -272,7 +263,7 @@
     },
     computed: {
       ...mapState({
-        transactionDetail: state => state.TransactionDetailPage.TransactionDetail,
+        transData: state => state.TransactionDetailPage.TransactionDetail.info,
       })
     },
     methods: {
@@ -322,12 +313,12 @@
 </script>
 
 <style scoped>
-  .detail-ont-id-desc-tit {
-    background: white;
-    margin-top: 4px;
-    padding: 34px 24px !important;
-    color: #AFACAC;
-  }
+  /*.detail-ont-id-desc-tit {*/
+  /*background: white;*/
+  /*margin-top: 4px;*/
+  /*padding: 34px 24px !important;*/
+  /*color: #AFACAC;*/
+  /*}*/
 
   .detail-ont-id-desc-txt {
     color: #32A4BE;

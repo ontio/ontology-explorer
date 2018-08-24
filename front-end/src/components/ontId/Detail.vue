@@ -2,14 +2,7 @@
   <div class="container container-margin-top">
     <return-home></return-home>
     <list-title :name="$t('ontIdDetail.nickname')"></list-title>
-
-    <div class="row">
-      <div class="col">
-        <p class="font-size24 font-blod important_color">{{ $t('ontIdDetail.name')}}
-          <span class="font-blod font-size14 important_color"> {{$route.params.ontid}}</span>
-        </p>
-      </div>
-    </div>
+    <detail-title :name="$t('ontIdDetail.name')" :val="$route.params.ontid"></detail-title>
 
     <!-- Owners info -->
     <div class="row" v-if="Ddo.Owners">
@@ -38,7 +31,7 @@
               <div class="font-size14 font-Regular normal_color"><p>Claim Context: {{claim.Claim.ClaimContext}}</p></div>
               <div class="font-size14 font-Regular normal_color"><p>Context Desc: {{claim.Claim.ContextDesc}}</p></div>
               <div class="font-size14 font-Regular normal_color" @click="toOntIdDetailPage(claim.Claim.IssuerOntId)">
-                <p>Issuer: <span class="important_color click_able">{{claim.Claim.IssuerOntId}}</span></p>
+                <p>Issuer: <span class="important_color pointer">{{claim.Claim.IssuerOntId}}</span></p>
               </div>
               <div v-if="claim.SelfDefined">
                 <p class="font-size14 font-Regular normal_color">Claim SelfDefined: {{claim.SelfDefined}}</p>
@@ -66,7 +59,7 @@
               </thead>
               <tbody>
               <tr v-for="tx in TxnList">
-                <td class="font-size14 s_color font-Regular click_able" @click="toTransactionDetailPage(tx.TxnHash)">
+                <td class="font-size14 important_color font-Regular pointer" @click="toTransactionDetailPage(tx.TxnHash)">
                   {{tx.TxnHash.substr(0,16) + '...'}}
                 </td>
                 <td class="font-size14 font-Regular normal_color ">
@@ -90,12 +83,9 @@
 
 <script>
   import {mapState} from 'vuex'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
 
   export default {
     name: "ont-id-detail-page",
-    components: {ReturnHome, ListTitle},
     data() {
       return {
         Ddo: {},

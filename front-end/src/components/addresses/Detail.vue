@@ -2,14 +2,7 @@
   <div class="container container-margin-top">
     <return-home></return-home>
     <list-title :name="$t('addressDetail.name')"></list-title>
-
-    <!--实际地址显示-->
-    <div class="row">
-      <div class="col font-size24 important_color">
-        <span class="font-blod">{{ $t('addressDetail.address') }}</span>
-        <span class="font-size14 important_color">{{$route.params.address}}</span>
-      </div>
-    </div>
+    <detail-title :name="$t('addressDetail.address')" :val="$route.params.address"></detail-title>
 
     <!--主要余额显示-->
     <div class="row">
@@ -17,7 +10,7 @@
         <div class="detail-col detail-col-left">
           <span class="table1_item_title font-size24 font-Regular"
                 v-for="asset in AssetBalance" v-if="asset.AssetName === 'ont'">
-            <span class="f_color">{{ $t('addressDetail.ontBalance') }}</span>
+            <span class="f-color">{{ $t('addressDetail.ontBalance') }}</span>
             <span class="important_color">{{asset.Balance}}</span>
           </span>
         </div>
@@ -26,7 +19,7 @@
         <div class="detail-col detail-col-right">
           <span class="table1_item_title font-size24 font-Regular"
                 v-for="asset in AssetBalance" v-if="asset.AssetName === 'ong'">
-            <span class="f_color">{{ $t('addressDetail.ongBalance') }}</span>
+            <span class="f-color">{{ $t('addressDetail.ongBalance') }}</span>
             <span class="important_color">{{asset.Balance}}</span>
           </span>
         </div>
@@ -39,12 +32,12 @@
         <div class="detail-col">
           <p class="table1_item_title font-size24 font-Regular"
              v-for="asset in AssetBalance" v-if="asset.AssetName === 'unboundong'">
-            <span class="f_color">{{ $t('addressDetail.claimable') }}</span>
+            <span class="f-color">{{ $t('addressDetail.claimable') }}</span>
             <span class="normal_color">{{asset.Balance}}</span>
           </p>
           <p class="table1_item_title font-size24 font-Regular no-margin-bottom"
              v-for="asset in AssetBalance" v-if="asset.AssetName === 'waitboundong'">
-            <span class="f_color">{{ $t('addressDetail.unbound') }}</span>
+            <span class="f-color">{{ $t('addressDetail.unbound') }}</span>
             <span class="normal_color">{{asset.Balance}}</span>
           </p>
         </div>
@@ -73,7 +66,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="tx in TxnList">
-                  <td class="font-size14 font-Regular f_color click_able" @click="toTransactionDetailPage(tx.TxnHash)">
+                  <td class="font-size14 font-Regular f-color pointer" @click="toTransactionDetailPage(tx.TxnHash)">
                     {{tx.TxnHash.substr(0,16) + '...'}}
                   </td>
                   <td class="font-size14 font-Regular">
@@ -98,7 +91,7 @@
                     {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
                   </span>
                   </td>
-                  <td class="font-size14 font-Regular s_color">{{ tx.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
+                  <td class="font-size14 font-Regular s-color">{{ tx.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
                   <td class="font-size14 font-Regular normal_color">{{$HelperTools.getTransDate(tx.TxnTime)}}</td>
                 </tr>
                 </tbody>
@@ -124,13 +117,9 @@
 
 <script>
   import {mapState} from 'vuex'
-  import ReturnHome from '../common/ReturnHome'
-  import ListTitle from '../common/ListTitle'
-  import TurnThePage from '../common/TurnThePage'
 
   export default {
     name: "address-detail-page",
-    components: {ReturnHome, ListTitle, TurnThePage},
     data() {
       return {
         Ddo: {},
@@ -151,11 +140,8 @@
       '$route': 'getAddressDetailData',
       'addressDetail.info.info': function () {
         this.info = this.addressDetail.info.info
-        /* this.info.reverse().reverse( */
         this.AssetBalance = this.info.AssetBalance
-        /* this.AssetBalance.reverse().reverse() */
         this.TxnList = this.info.TxnList
-        /* this.TxnList.reverse().reverse() */
       }
     },
     computed: {
@@ -204,7 +190,7 @@
           })
         }
         this.getAddressDetailData()
-      },
+      }
     }
   }
 </script>
@@ -212,10 +198,5 @@
 <style scoped>
   .no-margin-bottom {
     margin-bottom: 0 !important;
-  }
-
-  .address-detail-table-col {
-    background: white;
-    padding: 1rem 2rem;
   }
 </style>

@@ -5,15 +5,15 @@
         <p class="title font-blod">{{ $t('blockList.name') }}</p>
       </div>
       <div class="col-4 block-title-wrapper">
-        <p class="title-more float-right block-list-check-hand"  @click="toBlockListPage">{{ $t('all.more') }}</p>
+        <p class="title-more float-right pointer"  @click="toBlockListPage">{{ $t('all.more') }}</p>
       </div>
     </div>
 
     <div class="row">
-      <div v-for="(block,index) in latestBlockList.info" class="col-12 block-item-wrapper2">
+      <div v-for="(block,index) in latestBlockList.info" class="col-12 block-item-wrapper">
         <div class="divider-line"></div>
         <div class="row block-item-sub-wrapper">
-          <div class=" block-item col-6 text-left padding0 block-item-height font700 font-size18 click_able" @click="toBlockDetailPage(block.Height)" style="color:#32a4be">{{block.Height}}</div>
+          <div class=" block-item col-6 text-left padding0 block-item-height font700 font-size18 pointer" @click="toBlockDetailPage(block.Height)" style="color:#32a4be">{{block.Height}}</div>
           <div v-if="block.TxnNum ==1" class="block-item col-6 text-right padding0 font-size14">{{block.TxnNum}} Transaction</div>
           <div v-else class="block-item col-6 text-right padding0 font-size14">{{block.TxnNum}}Transactions</div>
         </div>
