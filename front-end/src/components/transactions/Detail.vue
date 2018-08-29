@@ -53,7 +53,6 @@
       <!--展示Issuer OntId和Description的数据块-->
       <detail-block v-if="recordflag" :params="issuerData"></detail-block>
 
-
       <!--展示ONT ID和Description的数据块-->
       <div v-if="idflag" class="row font-Regular font-size14">
         <div class="col">
@@ -142,23 +141,10 @@
         </tr>
         </tbody>
       </table>
-      <table v-if="recordflag" class="table table-hover">
-        <thead>
-        <tr>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="td11" style="padding: 34px 24px;">
-            <p class="font-size24  p_margin_bottom f-color font-Regular">OntId:</p>
-            <p class="font-size14 f-color p_margin_bottom font-Regular ">
-              {{transData.Description.substr(12,42)}}</p>
-            <p class="font-size24  p_margin_bottom n_color font-Regular">Description:</p>
-            <p class="font-size14 f-color p_margin_bottom font-Regular">{{transData.Description}}</p>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+
+      <!--展示Issuer OntId和Description的数据块-->
+      <detail-block v-if="recordflag" :params="issuerData"></detail-block>
+
       <table v-if="authflag" class="table table-hover">
         <thead>
         <tr>

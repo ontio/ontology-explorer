@@ -1,11 +1,11 @@
 <template>
   <div class="div-block-list">
-    <div class="row">
+    <div class="row title-color title-hover" @click="toBlockListPage">
       <div class="col-8 block-title-wrapper">
         <p class="title font-blod">{{ $t('blockList.name') }}</p>
       </div>
       <div class="col-4 block-title-wrapper">
-        <p class="title-more float-right pointer"  @click="toBlockListPage">{{ $t('all.more') }}</p>
+        <p class="title-more float-right">{{ $t('all.more') }}</p>
       </div>
     </div>
 

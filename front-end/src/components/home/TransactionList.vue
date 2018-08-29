@@ -1,11 +1,11 @@
 <template>
   <div class="div-block-list">
-    <div class="row">
+    <div class="row title-color title-hover" @click="toTransactionListPage">
       <div class="col-8 block-title-wrapper">
         <p class="title font-blod">{{ $t('transList.name') }}</p>
       </div>
       <div class="col-4 block-title-wrapper">
-        <p class="title-more float-right transaction-list-check-hand" @click="toTransactionListPage">{{ $t('all.more') }}</p>
+        <p class="title-more float-right">{{ $t('all.more') }}</p>
       </div>
     </div>
 
@@ -113,10 +113,6 @@
 </script>
 
 <style scoped>
-  .transaction-list-check-hand{
-    cursor: pointer;
-  }
-
   .txhash-text{
     background-color: #32a4be;
     color:white;

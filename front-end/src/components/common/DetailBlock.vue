@@ -7,7 +7,7 @@
           <div class="row font-size14">
             <div class="col-2"><span class="normal_color">{{item.name}}</span></div>
             <div class="col-10">
-            <span class="f-color word-break" :class="(item.rows === 2) ? 'd-block font-size14' :''">
+            <span class="f-color word-break" :class="(item.rows === 2) ? 'd-block height-100 font-size14' :''">
               <div v-if="typeof(item.val) === 'object'" class="height-100" v-html="calcVal(item.val)"></div>
               <span v-else>{{item.val}}</span>
             </span>
@@ -20,7 +20,7 @@
         <div v-for="(item,index) in params">
           <p v-if="index > 0"></p>
           <span class="f-color">{{item.name}}</span>
-          <span class="normal_color word-break" :class="(item.rows === 2) ? 'd-block font-size14' :''">
+          <span class="normal_color word-break" :class="(item.rows === 2) ? 'd-block height-100 font-size14' :''">
             <div v-if="typeof(item.val) === 'object'" class="height-100" v-html="calcVal(item.val)"></div>
             <span v-else>{{item.val}}</span>
           </span>
