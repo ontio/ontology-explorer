@@ -7,21 +7,26 @@
     <!--test：-->
     <!--<detail-block :params="detailParams"></detail-block>-->
 
-    <detail-block :params="[{name:$t('blockDetail.BlockTime'), val:$HelperTools.getTransDate(blockData.BlockTime)}]"></detail-block>
-    <detail-block :params="[{name:$t('blockDetail.BlockSize'), val:blockData.BlockSize + ' bytes'}]"></detail-block>
+    <!--上一个区块及下一个区块-->
+    <detail-block-2 :name1="$t('blockDetail.BlockTime')" :val1="$HelperTools.getTransDate(blockData.BlockTime)"
+                    :name2="$t('blockDetail.BlockSize')" :val2="blockData.BlockSize + ' bytes'">
+    </detail-block-2>
 
-    <!--Bookkeeper取值有问题，暂时隐藏-->
     <!--<detail-block :params="[{name:$t('blockDetail.keeper'), val:blockData.BookKeeper, rows:2}]"></detail-block>-->
-    <detail-block :params="[{name:$t('blockDetail.hash'), val:blockData.Hash, rows:2}]"></detail-block>
+    <!--<detail-block :params="[{name:$t('blockDetail.hash'), val:blockData.Hash, rows:2}]"></detail-block>-->
 
+
+    <!--<detail-block :params="[{name:$t('blockDetail.merkle'), val:blockData.TxnsRoot, rows:2},-->
+      <!--{name:$t('blockDetail.Consensus'), val:blockData.ConsensusData, rows:2}]"></detail-block>-->
+
+    <detail-block :params="detailParams" :styleVal="'new'"></detail-block>
+
+    <!--上一个区块及下一个区块-->
     <detail-block-2 :name1="$t('blockDetail.PrevBlock')" :val1="prevBlockUrl" :rows1="'2'"
                     :params1="['block', blockData.Height-1]"
                     :name2="$t('blockDetail.NextBlock')" :val2="nextBlockUrl" :rows2="'2'"
                     :params2="nextBlockUrl !== 'Null' ? ['block', blockData.Height+1] : ''">
     </detail-block-2>
-
-    <detail-block :params="[{name:$t('blockDetail.merkle'), val:blockData.TxnsRoot, rows:2},
-      {name:$t('blockDetail.Consensus'), val:blockData.ConsensusData, rows:2}]"></detail-block>
 
     <div class="row" v-if="blockData.TxnNum !== 0">
       <div class="col">
@@ -75,24 +80,21 @@
       ...mapState({
         blockData: state => state.BlockDetailPage.BlockDetail.info,
       }),
-      // detailParams: function () {
-      //   return [
-      //     {name: this.$t('blockDetail.name'), val: this.blockData.Height},
-      //     {name: this.$t('blockDetail.BlockTime'), val: this.$HelperTools.getTransDate(this.blockData.BlockTime)},
-      //     {name: this.$t('blockDetail.BlockSize'), val: this.blockData.BlockSize + ' bytes'},
-      //     {name: this.$t('blockDetail.hash'), val: this.blockData.Hash},
-      //     {name: this.$t('blockDetail.PrevBlock'), val: this.blockData.PrevBlock},
-      //     {name: this.$t('blockDetail.merkle'), val: this.blockData.TxnsRoot},
-      //     {name: this.$t('blockDetail.Consensus'), val: this.blockData.ConsensusData},
-      //   ]
-      // }
+      detailParams: function () {
+        return [
+          {name: this.$t('blockDetail.hash'), val: this.blockData.Hash, rows: 2},
+          {name: this.$t('blockDetail.keeper'), val: this.blockData.BookKeeper, rows: 2},
+          {name: this.$t('blockDetail.merkle'), val: this.blockData.TxnsRoot, rows: 2},
+          {name: this.$t('blockDetail.Consensus'), val: this.blockData.ConsensusData, rows: 2},
+        ]
+      },
       prevBlockUrl: function () {
-        return typeof(this.blockData.PrevBlock) === 'undefined' ? 'Null' : this.blockData.PrevBlock.substr(0,16) + '...'
+        return typeof(this.blockData.PrevBlock) === 'undefined' ? 'Null' : this.blockData.PrevBlock.substr(0, 4) + '...' + this.blockData.PrevBlock.substr(60)
       },
       nextBlockUrl: function () {
-        if(typeof(this.blockData.NextBlock) !== 'undefined') {
-          if(this.blockData.NextBlock !== '') {
-            return this.blockData.NextBlock.substr(0,4) + '...' + this.blockData.NextBlock.substr(60)
+        if (typeof(this.blockData.NextBlock) !== 'undefined') {
+          if (this.blockData.NextBlock !== '') {
+            return this.blockData.NextBlock.substr(0, 4) + '...' + this.blockData.NextBlock.substr(60)
           }
         }
 

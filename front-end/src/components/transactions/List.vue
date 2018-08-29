@@ -19,7 +19,7 @@
             <tbody>
             <tr v-for="transaction in transactionListDetail.info" class="font-size14 font-Regular">
               <td class="important_color pointer" @click="toTransactionDetailPage(transaction.TxnHash)">
-                {{transaction.TxnHash.substr(0,16)}}...
+                {{transaction.TxnHash.substr(0,8) + '...' + transaction.TxnHash.substr(56)}}
               </td>
               <td class="s-color">{{ transaction.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
               <td class="normal_color">{{transaction.Height}}</td>

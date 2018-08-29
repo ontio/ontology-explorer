@@ -65,7 +65,8 @@ module.exports = {
     TxnNum: 'TxCount',
     bookkeeper: 'Bookkeeper',
     BlockSize: 'Size',
-    BlockTime: 'Time'
+    BlockTime: 'Time',
+    bookkeeperCount: 'Bookkeeper Count'
   },
   addressList: {
     rank: 'Rank',

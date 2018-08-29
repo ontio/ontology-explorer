@@ -60,7 +60,7 @@
               <tbody>
               <tr v-for="tx in TxnList">
                 <td class="font-size14 important_color font-Regular pointer" @click="toTransactionDetailPage(tx.TxnHash)">
-                  {{tx.TxnHash.substr(0,16) + '...'}}
+                  {{tx.TxnHash.substr(0,4) + '...' + tx.TxnHash.substr(60)}}
                 </td>
                 <td class="font-size14 font-Regular normal_color ">
                   {{getOntIDEvent(tx.Description)}}
