@@ -35,3 +35,7 @@
   margin-left: -13px;
 }
 
+/* 长英文字母串强制折行 */
+.word-break {
+  word-break: break-all;
+}

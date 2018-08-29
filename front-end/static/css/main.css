@@ -28,6 +28,7 @@ table {
 
 .font-Regular {
   font-family: "SourceSansPro-Regular", "Helvetica Neue", "Arial", sans-serif;
+  font-weight: 100;
 }
 
 .font-blod {
@@ -105,16 +106,24 @@ th {
 
 .title {
   font-size: 16px;
-  margin-left: 0px;
+  margin-left: 0;
   margin-bottom: 0;
-  color: #AFACAC;
   font-weight: 700;
+}
+
+.title-color {
+  color: #AFACAC;
 }
 
 .title-more {
   font-size: 18px;
-  margin-right: 0px;
+  margin-right: 0;
   margin-bottom: 0;
+}
+
+.title-hover:hover {
+  cursor: pointer;
+  color: #32A4BE;
 }
 
 .testNet:before {
@@ -129,7 +138,6 @@ th {
   background: #A6FF1A;
   border-radius: 2px;
   animation: testNet 3s ease infinite;
-
 }
 
 @keyframes testNet {

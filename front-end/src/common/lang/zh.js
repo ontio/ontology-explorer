@@ -63,8 +63,10 @@ module.exports = {
     name: '最新区块',
     Height: '区块高度',
     TxnNum: '交易数量',
+    bookkeeper: '记账人',
     BlockSize: '区块大小',
-    BlockTime: '出块时间'
+    BlockTime: '出块时间',
+    bookkeeperCount: '记账人数量'
   },
   addressList: {
     rank: '排名',
@@ -110,7 +112,8 @@ module.exports = {
     sc: 'Smart Contract',
     height: '高度： ',
     status: '状态： ',
-    fee: '费用： '
+    fee: '费用： ',
+    issuer: '发行人OntId'
   },
   claimDetail: {
     name: '认证详情'

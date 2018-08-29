@@ -1,11 +1,11 @@
 <template>
   <div class="div-block-list">
-    <div class="row">
+    <div class="row title-color title-hover" @click="toOntIdListPage">
       <div class="col-8 block-title-wrapper">
         <p class="title font-blod">{{ $t('ontIdList.name') }}</p>
       </div>
       <div class="col-4 block-title-wrapper">
-        <p class="float-right title-more ont-id-list-check-hand" @click="toOntIdListPage">{{ $t('all.more') }}</p>
+        <p class="title-more float-right">{{ $t('all.more') }}</p>
       </div>
     </div>
 
@@ -138,9 +138,6 @@
 </script>
 
 <style scoped>
-  .ont-id-list-check-hand{
-    cursor: pointer;
-  }
   .ontID-text{
     background-color: #32a4be;
     color:white;

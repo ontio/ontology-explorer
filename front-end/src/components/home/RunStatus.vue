@@ -2,25 +2,30 @@
   <div class="container div-run-status">
     <div class="row">
       <div class="col col-click" @click="toBlockListPage">
-        <label class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.CurrentHeight}}</p>
+        <span class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</span>
+        <span class="view-go-to" style="float: right">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.CurrentHeight}}</span>
       </div>
       <div class="col col-click" @click="toTransactionListPage">
-        <label class="run-status-label">{{ $t('runStatus.TxnCount') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</p>
+        <span class="run-status-label">{{ $t('runStatus.TxnCount') }}</span>
+        <span class="view-go-to" style="float: right">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</span>
       </div>
       <div class="col col-click" @click="toOnlineNodes" v-if="$route.params.net !== 'testnet'">
-        <label class="run-status-label">{{ $t('runStatus.NodeCount') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</p>
+        <span class="run-status-label">{{ $t('runStatus.NodeCount') }}</span>
+        <span class="view-go-to" style="float: right">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</span>
       </div>
       <!--<div class="col col-click" @click="toAddressListPage">-->
-      <div class="col">
-        <label class="run-status-label">{{ $t('runStatus.addressCount') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</p>
+      <div class="col col-no-click-fix">
+        <span class="run-status-label">{{ $t('runStatus.addressCount') }}</span>
+        <span class="view-go-to" style="float: right">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</span>
       </div>
       <div class="col col-click" @click="toOntIdListPage">
-        <label class="run-status-label">{{ $t('runStatus.ontid') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</p>
+        <span class="run-status-label">{{ $t('runStatus.ontid') }}</span>
+        <span class="view-go-to" style="float: right">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</span>
       </div>
     </div>
 
@@ -430,9 +435,34 @@
     font-size: 16px;
   }
 
+  .view-go-to {
+    color: transparent;
+  }
+
+  .col-click,
+  .col-no-click-fix{
+    padding-top: 15px;
+  }
+
   .col-click:hover {
     cursor: pointer;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
+    -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
+    color: #32A4BE;
+  }
+
+  .col-click:hover > .run-status-label {
+    color: #32A4BE;
+  }
+
+  .col-click:hover > .run-status-p {
+    color: #32A4BE;
+  }
+
+
+  .col-click:hover > .view-go-to {
+    color: #32A4BE;
   }
 
   .run-status-label {

@@ -1,18 +1,17 @@
 <template>
   <nav v-if="routeDisplay" class="navbar nav-background navbar-expand fixed-top">
     <div class="container fix-no-row-col">
-      <router-link class="navbar-brand" :to="{path: $route.params.net == 'testnet'?'/testnet':'/'}">
+      <router-link class="navbar-brand" :to="{path: $route.params.net === 'testnet'?'/testnet':'/'}">
         <img class="navbar-logo" src="./../../assets/logo.png" alt="">
       </router-link>
 
       <!-- 只有sm屏幕隐藏的 -->
       <div class="d-none d-sm-block">
         <ul class="navbar-nav mr-auto mr-fix">
-          <li class="nav-item nav-net-fix">{{net}}</li>
           <li class="nav-item nav-search-fix">
             <div class="input-group-top">
               <input type="text" class="form-control-top search-input-txt search-input"
-                     v-model="searchContent" @keyup.13="submitSearch">
+                     v-model="searchContent" @keyup.13="submitSearch" :placeholder="'On the ' + net">
               <div class="input-group-addon-top input-submit-search search-input-txt search-btn text-center font-blod"
                    @click="submitSearch">
                 <i class="searchfa fa fa-search" aria-hidden="true"></i>
@@ -63,23 +62,20 @@
     },
     created() {
       this.getRunStatus()
-      if (this.$route.path == '/' || this.$route.path == '/testnet') {
+      if (this.$route.path === '/' || this.$route.path === '/testnet') {
         this.routeDisplay = false
       } else {
         this.routeDisplay = true
       }
-      /* console.log("route",this.$route) */
-      this.net = this.$route.params.net == 'testnet' ? 'Polaris 1.0.0' : 'MainNet'
+      this.net = this.$route.params.net === 'testnet' ? 'Polaris 1.0.0' : 'MainNet'
     },
     watch: {
-      /* '$route': 'getRunStatus' */
       '$route': function () {
-        if (this.$route.path == '/' || this.$route.path == '/testnet') {
+        if (this.$route.path === '/' || this.$route.path === '/testnet') {
           this.routeDisplay = false
         } else {
           this.routeDisplay = true
         }
-        /* console.log("new route",this.$route) */
         this.getRunStatus()
       }
     },
@@ -90,10 +86,10 @@
     },
     methods: {
       toReturn() {
-        if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'Home'})
-        } else {
+        if (this.$route.params.net === 'testnet') {
           this.$router.push({name: 'HomeTest', params: {net: 'testnet'}})
+        } else {
+          this.$router.push({name: 'Home'})
         }
       },
       chooseLanguage() {
@@ -273,9 +269,20 @@
     margin-top: 10px;
   }
 
-  .nav-net-fix{
-    line-height: 35px;
-    margin-right: 5px;
+  .search-input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #cacaca;
+  }
+
+  .search-input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #cacaca;
+  }
+
+  .search-input::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #cacaca;
+  }
+
+  .search-input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #cacaca;
   }
 
   .nav-search-fix {

@@ -2,14 +2,14 @@
   <div class="row font-Regular">
     <div class="col">
       <div class="detail-col detail-col-left">
-        <span class="font-size24 f-color">{{name1}}</span>
-        <span class="normal_color" :class="classObject" @click="doAction(params1)">{{val1}}</span>
+        <span class="f-color">{{name1}}</span>
+        <span class="normal_color word-break" :class="classObject" @click="doAction(params1)">{{val1}}</span>
       </div>
     </div>
     <div class="col">
       <div class="detail-col detail-col-right">
-        <span class="font-size24 f-color">{{name2}}</span>
-        <span class="normal_color" :class="classObject" @click="doAction(params2)">{{val2}}</span>
+        <span class="f-color">{{name2}}</span>
+        <span class="normal_color word-break" :class="classObject" @click="doAction(params2)">{{val2}}</span>
       </div>
     </div>
   </div>
@@ -29,8 +29,7 @@
     props: ['name1', 'val1', 'rows1', 'params1', 'name2', 'val2', 'rows2', 'params2'],
     computed: {
       /**
-       * 通过该函数决定class样式输出。
-       * 包括：是否换行，字体大小，颜色，是否可以点击跳转。
+       * 是否换行，字体大小，颜色，是否可以点击跳转。
        */
       classObject: function () {
         return {

@@ -22,7 +22,7 @@
 </script>
 
 <style>
-  @import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700,900");
+  /*@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700,900");*/
 
   .container-bg-color {
     background-color: #f4f4f4;

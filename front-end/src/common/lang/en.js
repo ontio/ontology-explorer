@@ -63,8 +63,10 @@ module.exports = {
     name: 'Block',
     Height: 'Height',
     TxnNum: 'TxCount',
+    bookkeeper: 'Bookkeeper',
     BlockSize: 'Size',
-    BlockTime: 'Time'
+    BlockTime: 'Time',
+    bookkeeperCount: 'Bookkeeper Count'
   },
   addressList: {
     rank: 'Rank',
@@ -87,7 +89,7 @@ module.exports = {
     name: 'Height:',
     BlockSize: 'Size:',
     BlockTime: 'Time:',
-    keeper: 'Book Keeper:',
+    keeper: 'Bookkeeper:',
     hash: 'Hash:',
     TxnNum: 'Number Of Transactions In The Block:',
     Hash: 'The Block Hash:',
@@ -110,7 +112,8 @@ module.exports = {
     sc: 'Smart Contract',
     height: 'Height: ',
     status: 'Status: ',
-    fee: 'Fee: '
+    fee: 'Fee: ',
+    issuer: 'Issuer OntId'
   },
   claimDetail: {
     name: 'CLAIM DETAILS'

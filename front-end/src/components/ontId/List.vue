@@ -19,8 +19,8 @@
             </thead>
             <tbody>
             <tr v-for="OntId in OntIdListDetail.info">
-              <td class="font-size14 font-Regular normal_color pointer" @click="toTransactionDetailPage(OntId.TxnHash)">{{OntId.TxnHash.substr(0,15)}}...</td>
-              <td class="font-size14 font-Regular important_color pointer" @click="toOntIdDetailPage(OntId.OntId)">{{OntId.OntId.substr(0,10)}}...{{OntId.OntId.substr(35,45)}}</td>
+              <td class="font-size14 font-Regular important_color pointer" @click="toTransactionDetailPage(OntId.TxnHash)">{{OntId.TxnHash.substr(0,8) + '...' + OntId.TxnHash.substr(56)}}</td>
+              <td class="font-size14 font-Regular important_color pointer" @click="toOntIdDetailPage(OntId.OntId)">{{OntId.OntId.substr(0,10)}}...{{OntId.OntId.substr(35,46)}}</td>
               <td class="font-size14 font-Regular normal_color">{{getOntIDEvent(OntId.Description)}}</td>
               <td class="font-size14 font-Regular normal_color">{{OntId.Height}}</td>
               <td class="font-size14 font-Regular normal_color">{{Number(OntId.Fee)}}</td>

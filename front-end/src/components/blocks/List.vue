@@ -10,6 +10,7 @@
           <tr>
             <th class="font-size18" scope="col">{{ $t('all.height') }}</th>
             <th class="font-size18" scope="col">{{ $t('blockList.TxnNum') }}</th>
+            <th class="font-size18" scope="col">{{ $t('blockList.bookkeeperCount') }}</th>
             <th class="font-size18" scope="col">{{ $t('blockList.BlockSize') }}( {{ $t('all.byte') }} )</th>
             <th class="font-size18" scope="col">{{ $t('all.time') }}</th>
           </tr>
@@ -18,6 +19,7 @@
           <tr v-for="block in blockListDetail.info">
             <td class="font-size14 font-Regular important_color pointer" @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
             <td class="font-size14 font-Regular normal_color">{{block.TxnNum}}</td>
+            <td class="font-size14 font-Regular normal_color">{{block.BookKeeper.length}}</td>
             <td class="font-size14 font-Regular normal_color">{{block.BlockSize}}</td>
             <td class="font-size14 font-Regular normal_color">{{$HelperTools.getTransDate(block.BlockTime)}}</td>
           </tr>
