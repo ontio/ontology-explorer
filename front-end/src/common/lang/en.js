@@ -111,7 +111,8 @@ module.exports = {
     sc: 'Smart Contract',
     height: 'Height: ',
     status: 'Status: ',
-    fee: 'Fee: '
+    fee: 'Fee: ',
+    issuer: 'Issuer OntId'
   },
   claimDetail: {
     name: 'CLAIM DETAILS'

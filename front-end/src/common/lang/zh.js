@@ -111,7 +111,8 @@ module.exports = {
     sc: 'Smart Contract',
     height: '高度： ',
     status: '状态： ',
-    fee: '费用： '
+    fee: '费用： ',
+    issuer: '发行人OntId'
   },
   claimDetail: {
     name: '认证详情'

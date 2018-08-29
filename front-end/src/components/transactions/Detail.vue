@@ -51,14 +51,8 @@
       </table>
 
       <!--展示Issuer OntId和Description的数据块-->
-      <div v-if="recordflag" class="row detail-ont-id-desc-tit font-Regular">
-        <div class="col">
-          <div class="row font-size24">Issuer OntId:</div>
-          <div class="row font-size14 detail-ont-id-desc-txt">{{transData.Description.substr(12,42)}}</div>
-          <div class="row font-size24 margin-top-15">{{ $t('all.description') }}:</div>
-          <div class="row font-size14 detail-ont-id-desc-txt">{{transData.Description}}</div>
-        </div>
-      </div>
+      <detail-block v-if="recordflag" :params="issuerData"></detail-block>
+
 
       <!--展示ONT ID和Description的数据块-->
       <div v-if="idflag" class="row font-Regular font-size14">
@@ -264,7 +258,13 @@
     computed: {
       ...mapState({
         transData: state => state.TransactionDetailPage.TransactionDetail.info,
-      })
+      }),
+      issuerData: function () {
+        return [
+          {name: this.$t('transDetail.issuer'), val: this.transData.Description.substr(12, 42), rows: 2},
+          {name: this.$t('all.description'), val: this.transData.Description, rows: 2}
+        ]
+      }
     },
     methods: {
       toMoney(txTmp) {

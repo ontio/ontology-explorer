@@ -14,10 +14,10 @@
     <!--<detail-block :params="[{name:$t('blockDetail.keeper'), val:blockData.BookKeeper, rows:2}]"></detail-block>-->
     <detail-block :params="[{name:$t('blockDetail.hash'), val:blockData.Hash, rows:2}]"></detail-block>
 
-    <detail-block-2 :name1="$t('blockDetail.PrevBlock')" :val1="blockData.PrevBlock.substr(0,16) + '...'" :rows1="'2'"
+    <detail-block-2 :name1="$t('blockDetail.PrevBlock')" :val1="prevBlockUrl" :rows1="'2'"
                     :params1="['block', blockData.Height-1]"
-                    :name2="$t('blockDetail.NextBlock')" :val2="blockData.NextBlock.substr(0,16) + '...'" :rows2="'2'"
-                    :params2="['block', blockData.Height+1]">
+                    :name2="$t('blockDetail.NextBlock')" :val2="nextBlockUrl" :rows2="'2'"
+                    :params2="nextBlockUrl !== 'Null' ? ['block', blockData.Height+1] : ''">
     </detail-block-2>
 
     <detail-block :params="[{name:$t('blockDetail.merkle'), val:blockData.TxnsRoot, rows:2},
@@ -86,6 +86,18 @@
       //     {name: this.$t('blockDetail.Consensus'), val: this.blockData.ConsensusData},
       //   ]
       // }
+      prevBlockUrl: function () {
+        return typeof(this.blockData.PrevBlock) === 'undefined' ? 'Null' : this.blockData.PrevBlock.substr(0,16) + '...'
+      },
+      nextBlockUrl: function () {
+        if(typeof(this.blockData.NextBlock) !== 'undefined') {
+          if(this.blockData.NextBlock !== '') {
+            return this.blockData.NextBlock.substr(0,4) + '...' + this.blockData.NextBlock.substr(60)
+          }
+        }
+
+        return 'Null'
+      }
     },
     methods: {
       getBlockData() {
