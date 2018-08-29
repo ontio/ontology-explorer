@@ -63,6 +63,7 @@ module.exports = {
     name: '最新区块',
     Height: '区块高度',
     TxnNum: '交易数量',
+    bookkeeper: '记账人',
     BlockSize: '区块大小',
     BlockTime: '出块时间'
   },

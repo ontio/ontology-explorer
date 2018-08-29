@@ -432,7 +432,9 @@
 
   .col-click:hover {
     cursor: pointer;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
+    -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.08);
   }
 
   .run-status-label {

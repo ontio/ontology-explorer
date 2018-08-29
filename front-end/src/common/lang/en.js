@@ -63,6 +63,7 @@ module.exports = {
     name: 'Block',
     Height: 'Height',
     TxnNum: 'TxCount',
+    bookkeeper: 'Bookkeeper',
     BlockSize: 'Size',
     BlockTime: 'Time'
   },
@@ -87,7 +88,7 @@ module.exports = {
     name: 'Height:',
     BlockSize: 'Size:',
     BlockTime: 'Time:',
-    keeper: 'Book Keeper:',
+    keeper: 'Bookkeeper:',
     hash: 'Hash:',
     TxnNum: 'Number Of Transactions In The Block:',
     Hash: 'The Block Hash:',

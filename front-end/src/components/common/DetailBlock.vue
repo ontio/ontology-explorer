@@ -2,9 +2,18 @@
   <div class="row">
     <div class="col">
       <div class="detail-col font-Regular">
-        <div v-for="item in params">
-          <span class="font-size24 f-color">{{item.name}}</span>
-          <span class="normal_color" :class="(item.rows === 2) ? 'd-block font-size14' :''">{{item.val}}</span>
+        <div v-for="(item,index) in params">
+          <p v-if="index > 0"></p>
+          <!--<div class="row">-->
+            <!--<div class="col-3 text-right">-->
+              <!--<span class="f-color">{{item.name}}</span>-->
+            <!--</div>-->
+            <!--<div class="col-9">-->
+              <!--<span class="normal_color word-break font-size14" :class="(item.rows === 2) ? 'd-block font-size14' :''">{{item.val}}</span>-->
+            <!--</div>-->
+          <!--</div>-->
+          <span class="f-color">{{item.name}}</span>
+          <span class="normal_color word-break" :class="(item.rows === 2) ? 'd-block font-size14' :''">{{item.val}}</span>
         </div>
       </div>
     </div>
@@ -27,5 +36,4 @@
 </script>
 
 <style scoped>
-
 </style>

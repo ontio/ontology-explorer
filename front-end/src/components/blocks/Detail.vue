@@ -4,11 +4,14 @@
     <list-title :name="$t('blockDetail.nickname')"></list-title>
     <detail-title :name="$t('blockDetail.name')" :val="blockData.Height"></detail-title>
 
-    <detail-block-2 :name1="$t('blockDetail.BlockSize')" :val1="blockData.BlockSize + ' ' +$t('all.byte')"
-                    :name2="$t('blockDetail.BlockTime')" :val2="$HelperTools.getTransDate(blockData.BlockTime)">
-    </detail-block-2>
+    <!--test：-->
+    <!--<detail-block :params="detailParams"></detail-block>-->
 
-    <detail-block :params="[{name:$t('blockDetail.keeper'), val:blockData.BookKeeper, rows:2}]"></detail-block>
+    <detail-block :params="[{name:$t('blockDetail.BlockTime'), val:$HelperTools.getTransDate(blockData.BlockTime)}]"></detail-block>
+    <detail-block :params="[{name:$t('blockDetail.BlockSize'), val:blockData.BlockSize + ' bytes'}]"></detail-block>
+
+    <!--Bookkeeper取值有问题，暂时隐藏-->
+    <!--<detail-block :params="[{name:$t('blockDetail.keeper'), val:blockData.BookKeeper, rows:2}]"></detail-block>-->
     <detail-block :params="[{name:$t('blockDetail.hash'), val:blockData.Hash, rows:2}]"></detail-block>
 
     <detail-block-2 :name1="$t('blockDetail.PrevBlock')" :val1="blockData.PrevBlock.substr(0,16) + '...'" :rows1="'2'"
@@ -25,7 +28,7 @@
         <div class="detail-col">
           {{ blockData.TxnNum }}<span class="f-color"> {{ $t('blockDetail.txOnBlock') }}</span>
           <div class="table-responsive">
-            <table class="table ">
+            <table class="table">
               <thead>
               <tr class="f-color">
                 <th class="td-tx-head font-size18 font-Blod">{{ $t('all.hash') }}</th>
@@ -36,7 +39,7 @@
               <tbody>
               <tr v-for="tx in blockData.TxnList">
                 <td class="font-size14 important_color font-Regular pointer" @click="toTransDetailPage(tx.TxnHash)">
-                  {{tx.TxnHash.substr(0,16) + '...'}}
+                  {{tx.TxnHash.substr(0,4) + '...' + tx.TxnHash.substr(60)}}
                 </td>
                 <td class="font-size14 s-color font-Regular" v-if="tx.ConfirmFlag === 1">
                   Confirmed
@@ -71,7 +74,18 @@
     computed: {
       ...mapState({
         blockData: state => state.BlockDetailPage.BlockDetail.info,
-      })
+      }),
+      // detailParams: function () {
+      //   return [
+      //     {name: this.$t('blockDetail.name'), val: this.blockData.Height},
+      //     {name: this.$t('blockDetail.BlockTime'), val: this.$HelperTools.getTransDate(this.blockData.BlockTime)},
+      //     {name: this.$t('blockDetail.BlockSize'), val: this.blockData.BlockSize + ' bytes'},
+      //     {name: this.$t('blockDetail.hash'), val: this.blockData.Hash},
+      //     {name: this.$t('blockDetail.PrevBlock'), val: this.blockData.PrevBlock},
+      //     {name: this.$t('blockDetail.merkle'), val: this.blockData.TxnsRoot},
+      //     {name: this.$t('blockDetail.Consensus'), val: this.blockData.ConsensusData},
+      //   ]
+      // }
     },
     methods: {
       getBlockData() {
