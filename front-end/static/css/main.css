@@ -119,6 +119,8 @@ th {
   font-size: 18px;
   margin-right: 0;
   margin-bottom: 0;
+  font-family: "SourceSansPro-Bold", "Helvetica Neue", "Arial", sans-serif;
+  font-weight: 700;
 }
 
 .title-hover:hover {

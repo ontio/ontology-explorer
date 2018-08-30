@@ -8,7 +8,11 @@
           </div>
           <div class="col index-net-warpper">
             <div class="testNet"></div>
-            <a class="net-ready" @click="changeNet()">{{readyNet}}</a> / <a class="net-notready" @click="changeNet()">{{notReadyNet}}</a>
+
+            <a :class="readyNet==='MainNet' ? 'net-ready' : 'net-notready'" @click="changeNet()">MainNet</a>
+            <span @click="changeNet()"> / </span>
+            <a :class="readyNet!=='MainNet' ? 'net-ready' : 'net-notready'" @click="changeNet()">Polaris 1.0.0</a>
+
             <span class="pointer span-lang" @click="chooseLanguage()">{{ $t('language.name') }}</span>
           </div>
           <div class="d-block d-sm-none">
@@ -142,7 +146,7 @@
   }
 
   .net-notready {
-    color: #817f7c !important;
+    color: rgba(255,255,255,0.5) !important;
     cursor: pointer;
   }
 
