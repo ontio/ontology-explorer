@@ -4,7 +4,7 @@
       <div class="container">
         <div class="row">
           <div class="col index-logo-warpper">
-            <img src="/static/img/ontlogo.png" class="index-logo">
+            <img src="../../assets/logos/ontlogo.png" class="index-logo">
           </div>
           <div class="col index-net-warpper">
             <div class="testNet"></div>

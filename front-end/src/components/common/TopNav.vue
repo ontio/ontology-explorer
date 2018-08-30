@@ -2,7 +2,7 @@
   <nav v-if="routeDisplay" class="navbar nav-background navbar-expand fixed-top">
     <div class="container fix-no-row-col">
       <router-link class="navbar-brand" :to="{path: $route.params.net === 'testnet'?'/testnet':'/'}">
-        <img class="navbar-logo" src="./../../assets/logo.png" alt="">
+        <img class="navbar-logo" src="../../assets/logos/logo.png" alt="">
       </router-link>
 
       <!-- 只有sm屏幕隐藏的 -->

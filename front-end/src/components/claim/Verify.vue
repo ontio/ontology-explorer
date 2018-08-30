@@ -27,7 +27,7 @@
                 </div>
               </div>
               <div id="step1time" class="col-sm-3 col-xs-12 img_wrap">
-                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+                <img src="../../assets/gifs/timg.gif" class="card-cert-company-image" style="max-width:90px;">
               </div>
               <div id="step1result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
                 <div>
@@ -52,7 +52,7 @@
                 </div>
               </div>
               <div id="step2time" class="col-sm-3 col-xs-12 img_wrap">
-                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+                <img src="../../assets/gifs/timg.gif" class="card-cert-company-image" style="max-width:90px;">
               </div>
               <div id="step2result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
                 <div>
@@ -74,7 +74,7 @@
                 </div>
               </div>
               <div id="step3time" class="col-sm-3 col-xs-12 img_wrap">
-                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+                <img src="../../assets/gifs/timg.gif" class="card-cert-company-image" style="max-width:90px;">
               </div>
               <div id="step3result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
                 <div>
@@ -99,7 +99,7 @@
                 </div>
               </div>
               <div id="step4time" class="col-sm-3 col-xs-12 img_wrap">
-                <img src="../../assets/timg.gif" class="card-cert-company-image" style="max-width:90px;">
+                <img src="../../assets/gifs/timg.gif" class="card-cert-company-image" style="max-width:90px;">
               </div>
               <div id="step4result" class="col-sm-3 col-xs-12 img_wrap" style="display:none">
                 <div>

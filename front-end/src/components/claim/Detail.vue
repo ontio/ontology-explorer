@@ -8,7 +8,7 @@
         <div class="card-cert" v-if="claim.Context =='claim:employment_authentication'">
           <div class="row card-row">
             <div class="col-sm-2 col-xs-3 img_wrap">
-              <img src="../../assets/share_ec.png" class="">
+              <img src="../../assets/shares/share_ec.png" class="">
             </div>
             <div class=" col-sm-7 col-xs-9 text_wrap">
               <div class="card-title">
@@ -23,7 +23,7 @@
               </div>
             </div>
             <div class="col-sm-3 col-xs-12 img_wrap">
-              <img src="../../assets/share_onchain.png" class="card-cert-company-image" style="max-width:90px;">
+              <img src="../../assets/shares/share_onchain.png" class="card-cert-company-image" style="max-width:90px;">
               <p class="card-cert-company-text">onchain</p>
             </div>
           </div>
@@ -31,7 +31,7 @@
         <div class="card-github" v-if="claim.Context =='claim:github_authentication'">
           <div class="row  card-row">
             <div class="col-sm-2 col-xs-3 img_wrap">
-              <img src="../../assets/share_gc.png">
+              <img src="../../assets/shares/share_gc.png">
             </div>
             <div class=" col-sm-7 col-xs-9 text_wrap">
               <div class="card-title important_color">
@@ -45,7 +45,7 @@
               </div>
             </div>
             <div class="col-sm-3 col-xs-12 img_wrap">
-              <img src="../../assets/share_TrustAlliance.png" class="card-cert-company-image" style="max-width:90px;">
+              <img src="../../assets/shares/share_TrustAlliance.png" class="card-cert-company-image" style="max-width:90px;">
               <p class="card-cert-company-text">Trust Alliance</p>
             </div>
           </div>
@@ -53,7 +53,7 @@
         <div class="card-link" v-if="claim.Context =='claim:linkedin_authentication'">
           <div class="row  card-row">
             <div class="col-sm-2 col-xs-3 img_wrap">
-              <img src="../../assets/share_lc.png" class="">
+              <img src="../../assets/shares/share_lc.png" class="">
             </div>
             <div class=" col-sm-7 col-xs-9 text_wrap">
               <div class="card-title">
@@ -68,7 +68,7 @@
               </div>
             </div>
             <div class="col-sm-3 col-xs-12 img_wrap">
-              <img src="../../assets/share_TrustAlliance.png" class="card-cert-company-image" style="max-width:90px;">
+              <img src="../../assets/shares/share_TrustAlliance.png" class="card-cert-company-image" style="max-width:90px;">
               <p class="card-cert-company-text">Trust Alliance</p>
             </div>
           </div>
