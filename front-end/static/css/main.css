@@ -1,16 +1,16 @@
 @font-face {
   font-family: 'SourceSansPro-Bold';
-  src: url('../fonts/SourceSansPro-Bold.otf');
+  src: url('./../fonts/SourceSansPro-Bold.otf');
 }
 
 @font-face {
   font-family: 'SourceSansPro-ExtraLight';
-  src: url('../fonts/SourceSansPro-ExtraLight.otf');
+  src: url('./../fonts/SourceSansPro-ExtraLight.otf');
 }
 
 @font-face {
   font-family: 'SourceSansPro-Regular';
-  src: url('../fonts/SourceSansPro-Regular.otf');
+  src: url('./../fonts/SourceSansPro-Regular.otf');
 }
 
 body {
@@ -179,7 +179,6 @@ th {
   background-image: none;
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  /* border-radius: 0.25rem; */
   -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
   transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
@@ -477,7 +476,6 @@ body {
   border-radius: 0;
   background: #FFFFFF;
   color: #32A4BE;
-  /*  background-color: #AFACAC; */
   -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -492,7 +490,7 @@ body {
 .veriy_btn1:focus {
   background: #32A4BE;
   color: #FFFFFF;
-  outline: 0px auto -webkit-focus-ring-color !important;
+  outline: 0 auto -webkit-focus-ring-color !important;
 }
 
 @media screen and (max-width: 768px) {

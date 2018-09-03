@@ -10,7 +10,7 @@
             <div class="testNet"></div>
 
             <a :class="readyNet==='MainNet' ? 'net-ready' : 'net-notready'" @click="changeNet()">MainNet</a>
-            <span @click="changeNet()"> / </span>
+            <span class="pointer" @click="changeNet()"> / </span>
             <a :class="readyNet!=='MainNet' ? 'net-ready' : 'net-notready'" @click="changeNet()">Polaris 1.0.0</a>
 
             <span class="pointer span-lang" @click="chooseLanguage()">{{ $t('language.name') }}</span>

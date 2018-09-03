@@ -31,6 +31,16 @@ let routes = [
     component: BlockDetailPage
   },
   {
+    path: '/BlockListDetail/:pageSize/:pageNumber/:net',
+    name: 'blockListDetailTest',
+    component: BlockListPage
+  },
+  {
+    path: '/block/:param/:net',
+    name: 'blockDetailTest',
+    component: BlockDetailPage
+  },
+  {
     path: '/ontidlist/:pageSize/:pageNumber',
     name: 'OntIdListDetail',
     component: OntIdListPage
@@ -84,16 +94,6 @@ let routes = [
     path: '/:net',
     name: 'HomeTest',
     component: Home
-  },
-  {
-    path: '/BlockListDetail/:pageSize/:pageNumber/:net',
-    name: 'blockListDetailTest',
-    component: BlockListPage
-  },
-  {
-    path: '/block/:param/:net',
-    name: 'blockDetailTest',
-    component: BlockDetailPage
   },
   {
     path: '/ontidlist/:pageSize/:pageNumber/:net',

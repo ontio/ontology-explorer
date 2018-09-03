@@ -1,14 +1,21 @@
 <template>
   <div class="row">
     <div class="col">
-      <p class="float-left return-home-css" @click="$router.go(-1)"><< {{ $t('all.return') }}</p>
+      <p class="float-left return-home-css" @click="goBack"><< {{ $t('all.return') }}</p>
     </div>
   </div>
 </template>
 
 <script>
 	export default {
-    name: "ReturnHome"
+    name: "ReturnHome",
+    methods: {
+      goBack() {
+        window.history.length > 1
+          ? this.$router.go(-1)
+          : this.$router.push('/')
+      }
+    }
   }
 </script>
 
