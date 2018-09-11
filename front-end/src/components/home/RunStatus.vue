@@ -59,85 +59,7 @@
         lastheight: 0,
         chartData: [],
         chartLabels: [],
-        chartbackgroundColor: [
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(50, 164, 190, 1)',
-
-        ]
+        chartbackgroundColor: this.generateBgColor()
       }
     },
     created() {
@@ -151,7 +73,6 @@
     watch: {
       '$route': 'getRunStatus',
       'getTime.info': function () {
-
         if (this.getTime.info.length > 1) {
           for (var i = 0; i < this.getTime.info.length; i++) {
             this.chartData[75 - i] = this.getTime.info[i].GenerateTime
@@ -160,7 +81,7 @@
           }
           this.myChart.update();
         } else {
-          if (this.getTime.info[0].Height != this.lastheight) {
+          if (this.getTime.info[0].Height !== this.lastheight) {
             this.chartData.splice(0, 1)
             this.chartLabels.splice(0, 1)
             this.chartData.push(this.getTime.info[0].GenerateTime)
@@ -179,6 +100,15 @@
       })
     },
     methods: {
+      generateBgColor() {
+        let retData = []
+        for (let i = 0; i < 76; i++) {
+          retData[i] = 'rgba(228, 228, 228, 1)'
+        }
+        retData.splice(75, 0, 'rgba(50, 164, 190, 1)')
+
+        return retData
+      },
       toBlockListPage() {
         if (this.$route.params.net == undefined) {
           this.$router.push({name: 'blockListDetail', params: {pageSize: 20, pageNumber: 1}})
@@ -290,7 +220,6 @@
         });
         chart.update();
       },
-
       removeData: function (chart) {
         chart.data.datasets.forEach((dataset) => {
           dataset.data.pop();
@@ -305,10 +234,11 @@
           symbol: '',//默认的分割符号，千，万，千万
           dot: 0 //保留几位小数点
         }
+
         //如果setting为空，就取default的值
         var setting = $.extend(defaults, setting);
-        //如果对象有多个，提示出错
 
+        //如果对象有多个，提示出错
         if ($(className).length > 1) {
           alert("just only one obj!");
           return;
@@ -343,6 +273,7 @@
 
           return arrStr;
         }
+
         //设置DOM symbol:分割符号
         var setNumDom = function (arrStr) {
           var shtml = '<div class="mt-number-animate">';
@@ -356,6 +287,7 @@
           shtml += '</div>';
           return shtml;
         }
+
         //执行动画
         var runAnimate = function ($parent) {
           $parent.find(".mt-number-animate-dom").each(function () {
@@ -414,6 +346,7 @@
           }
           runAnimate($(className));
         }
+
         //init
         init($(className));
         return this;
