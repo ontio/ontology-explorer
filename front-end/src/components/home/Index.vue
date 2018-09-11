@@ -4,11 +4,15 @@
       <div class="container">
         <div class="row">
           <div class="col index-logo-warpper">
-            <img src="/static/img/ontlogo.png" class="index-logo">
+            <img src="../../assets/logos/ontlogo.png" class="index-logo">
           </div>
           <div class="col index-net-warpper">
             <div class="testNet"></div>
-            <a class="net-ready" @click="changeNet()">{{readyNet}}</a> / <a class="net-notready" @click="changeNet()">{{notReadyNet}}</a>
+
+            <a :class="readyNet==='MainNet' ? 'net-ready' : 'net-notready'" @click="changeNet()">MainNet</a>
+            <span class="pointer" @click="changeNet()"> / </span>
+            <a :class="readyNet!=='MainNet' ? 'net-ready' : 'net-notready'" @click="changeNet()">Polaris 1.0.0</a>
+
             <span class="pointer span-lang" @click="chooseLanguage()">{{ $t('language.name') }}</span>
           </div>
           <div class="d-block d-sm-none">
@@ -34,6 +38,13 @@
 
       <search-input></search-input>
     </div>
+
+    <!--Test for line-chart models-->
+    <!--<div class="container">-->
+      <!--<div class="row" style="height: 160px; padding: 0 15px">-->
+        <!--<line-chart data="" options="" style="width: 100%;"></line-chart>-->
+      <!--</div>-->
+    <!--</div>-->
 
     <run-status></run-status>
 
@@ -142,7 +153,7 @@
   }
 
   .net-notready {
-    color: #817f7c !important;
+    color: rgba(255,255,255,0.5) !important;
     cursor: pointer;
   }
 

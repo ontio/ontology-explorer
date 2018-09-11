@@ -1,6 +1,7 @@
 <template>
   <div class="row">
     <div class="col">
+      <!-- styleVal === new时为新样式 -->
       <div v-if="(typeof(styleVal) !== 'undefined')" class="detail-col font-Regular detail-col-fix">
         <div v-for="(item,index) in params">
           <div v-if="index > 0" class="b-detail-divider-line"></div>

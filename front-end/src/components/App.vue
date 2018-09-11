@@ -9,6 +9,7 @@
 <script>
   import 'bootstrap/dist/css/bootstrap.min.css'
   import 'bootstrap/dist/js/bootstrap.min.js'
+  import 'chart.js'
   import TopNav from './common/TopNav'
   import TheFooter from './common/TheFooter'
 
@@ -22,8 +23,6 @@
 </script>
 
 <style>
-  /*@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700,900");*/
-
   .container-bg-color {
     background-color: #f4f4f4;
     padding: 0 !important;

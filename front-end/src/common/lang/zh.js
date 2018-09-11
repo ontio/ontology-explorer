@@ -103,7 +103,7 @@ module.exports = {
   transList: {
     name: '最新交易'
   },
-  transDetail: {
+  txDetail: {
     name: '交易详情',
     txHash: '哈希：',
     time: '时间：',

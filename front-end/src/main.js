@@ -23,6 +23,7 @@ import TurnThePage from './components/common/TurnThePage'
 import DetailTitle from './components/common/DetailTitle'
 import DetailBlock from './components/common/DetailBlock'
 import DetailBlock2 from './components/common/DetailBlock2'
+import LineChart from './components/common/LineChart'
 
 Vue.component('list-title', ListTitle);
 Vue.component('return-home', ReturnHome);
@@ -30,6 +31,7 @@ Vue.component('turn-the-page', TurnThePage);
 Vue.component('detail-title', DetailTitle);
 Vue.component('detail-block', DetailBlock);
 Vue.component('detail-block-2', DetailBlock2);
+Vue.component('line-chart', LineChart);
 
 /**
  * Fixed compatibility issues with low version IE. lyx.
