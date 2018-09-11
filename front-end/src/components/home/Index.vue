@@ -39,6 +39,13 @@
       <search-input></search-input>
     </div>
 
+    <!--Test for line-chart models-->
+    <!--<div class="container">-->
+      <!--<div class="row" style="height: 160px; padding: 0 15px">-->
+        <!--<line-chart data="" options="" style="width: 100%;"></line-chart>-->
+      <!--</div>-->
+    <!--</div>-->
+
     <run-status></run-status>
 
     <div class="container">

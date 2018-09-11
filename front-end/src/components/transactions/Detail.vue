@@ -2,33 +2,33 @@
   <div class="container margin-top-60">
     <div class="pc-display">
       <return-home></return-home>
-      <list-title :name="$t('transDetail.name')"></list-title>
-      <detail-title :name="$t('transDetail.txHash')" :val="transData.TxnHash"></detail-title>
+      <list-title :name="$t('txDetail.name')"></list-title>
+      <detail-title :name="$t('txDetail.txHash')" :val="txData.TxnHash"></detail-title>
 
       <!-- Transaction Detail Basic Info: -->
       <detail-block
-        :params="[{name:$t('transDetail.time'), val:$HelperTools.getTransDate(transData.TxnTime)}]"></detail-block>
+        :params="[{name:$t('txDetail.time'), val:$HelperTools.getTransDate(txData.TxnTime)}]"></detail-block>
       <detail-block
-        :params="[{name:$t('transDetail.type'), val:transData.TxnType === 209 ? $t('transDetail.sc') : $t('transDetail.deploySC')}]"></detail-block>
+        :params="[{name:$t('txDetail.type'), val:txData.TxnType === 209 ? $t('txDetail.sc') : $t('txDetail.deploySC')}]"></detail-block>
 
       <div class="row">
-        <div class="col" @click="toBlockDetailPage(transData.Height)">
+        <div class="col" @click="toBlockDetailPage(txData.Height)">
           <div class="detail-col detail-col-left">
-            <span class="f-color">{{ $t('transDetail.height') }}</span>
-            <span class="pointer important_color">{{transData.Height}}</span>
+            <span class="f-color">{{ $t('txDetail.height') }}</span>
+            <span class="pointer important_color">{{txData.Height}}</span>
           </div>
         </div>
         <div class="col">
           <div class="detail-col detail-col-middle">
-            <span class="f-color">{{ $t('transDetail.fee') }}</span>
-            {{Number(transData.Fee)}}
+            <span class="f-color">{{ $t('txDetail.fee') }}</span>
+            {{Number(txData.Fee)}}
             <span class="important_color">ONG</span>
           </div>
         </div>
         <div class="col">
           <div class="detail-col detail-col-right">
-            <span class="f-color">{{ $t('transDetail.status') }}</span>
-            <span v-if="transData.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
+            <span class="f-color">{{ $t('txDetail.status') }}</span>
+            <span v-if="txData.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
             <span v-else style="color:#AFACAC">{{ $t('all.failed') }}</span>
           </div>
         </div>
@@ -44,7 +44,7 @@
         <tr>
           <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom n_color font-Regular">{{ $t('all.description') }}:
-              {{transData.Description}}</p>
+              {{txData.Description}}</p>
           </td>
         </tr>
         </tbody>
@@ -97,7 +97,7 @@
       <div class="row">
         <div class="col-lg-12">
           <p class="wordbreak font-size18 color32a4be font-blod important_color">Transaction Hash: <span
-            style="font-size:14px;">{{  transData.TxnHash }}</span></p>
+            style="font-size:14px;">{{  txData.TxnHash }}</span></p>
         </div>
       </div>
       <table class="table table-hover">
@@ -108,12 +108,12 @@
         <tbody>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color">
-            Transaction Time: {{$HelperTools.getTransDate(transData.TxnTime)}}
+            Transaction Time: {{$HelperTools.getTransDate(txData.TxnTime)}}
           </td>
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color"
-              v-if="transData.TxnType != 209">
+              v-if="txData.TxnType != 209">
             Type: Deploy Smart Contract
           </td>
           <td class="td11 table1_item_title font-size16 normal_color" v-else>
@@ -122,17 +122,17 @@
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color">
-            Block Height: <span class=" important_color">{{transData.Height}}</span>
+            Block Height: <span class=" important_color">{{txData.Height}}</span>
           </td>
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color">
-            Fee: {{transData.Fee}}
+            Fee: {{txData.Fee}}
           </td>
         </tr>
         <tr>
           <td class="td11 table1_item_title font-size16 normal_color"
-              v-if="transData.ConfirmFlag == 1">
+              v-if="txData.ConfirmFlag == 1">
             Status: <span style="color:#00AE1D">Confirmed</span>
           </td>
           <td class="td11 table1_item_title font-size16 normal_color" v-else>
@@ -154,7 +154,7 @@
         <tr>
           <td class="td11" style="padding: 34px 24px;">
             <p class="font-size24  p_margin_bottom n_color font-Regular">Description:</p>
-            <p class="font-size14 f-color p_margin_bottom font-Regular">{{transData.Description}}</p>
+            <p class="font-size14 f-color p_margin_bottom font-Regular">{{txData.Description}}</p>
           </td>
         </tr>
         </tbody>
@@ -214,16 +214,16 @@
       }
     },
     created() {
-      this.getTransactionData()
+      this.getTxData()
     },
     watch: {
-      '$route': 'getTransactionData',
-      'transData': function () {
-        if (this.transData.ConfirmFlag == 1) {
-          if (this.transData.Detail == undefined) {
+      '$route': 'getTxData',
+      'txData': function () {
+        if (this.txData.ConfirmFlag === 1) {
+          if (this.txData.Detail == undefined) {
             this.recordflag = true;
           } else {
-            this.Detail = this.transData.Detail
+            this.Detail = this.txData.Detail
             if (this.Detail.OntId != undefined) {
               this.idflag = true;
               this.txflag = false;
@@ -232,7 +232,7 @@
               this.idflag = false;
             }
           }
-          if (this.transData.Description == "auth") {
+          if (this.txData.Description == "auth") {
             this.authflag = true
           }
         } else {
@@ -243,12 +243,12 @@
     },
     computed: {
       ...mapState({
-        transData: state => state.TransactionDetailPage.TransactionDetail.info,
+        txData: state => state.TransactionDetailPage.TransactionDetail.info,
       }),
       issuerData: function () {
         return [
-          {name: this.$t('transDetail.issuer'), val: this.transData.Description.substr(12, 42), rows: 2},
-          {name: this.$t('all.description'), val: this.transData.Description, rows: 2}
+          {name: this.$t('txDetail.issuer'), val: this.txData.Description.substr(12, 42), rows: 2},
+          {name: this.$t('all.description'), val: this.txData.Description.substr(55), rows: 2}
         ]
       }
     },
@@ -261,7 +261,7 @@
           return num.split('').reverse().join('').substr(10, 10).split('').reverse().join('')
         }
       },
-      getTransactionData() {
+      getTxData() {
         this.$store.dispatch('getTransactionDetailPage', this.$route.params).then()
       },
       getTransactionType($case) {
@@ -299,17 +299,6 @@
 </script>
 
 <style scoped>
-  /*.detail-ont-id-desc-tit {*/
-  /*background: white;*/
-  /*margin-top: 4px;*/
-  /*padding: 34px 24px !important;*/
-  /*color: #AFACAC;*/
-  /*}*/
-
-  .detail-ont-id-desc-txt {
-    color: #32A4BE;
-  }
-
   .trans-tx-col {
     background: #32A4BE;
     color: white;

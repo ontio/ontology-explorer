@@ -103,7 +103,7 @@ module.exports = {
   transList: {
     name: 'TRANSACTIONS'
   },
-  transDetail: {
+  txDetail: {
     name: 'TRANSACTION DETAILS',
     txHash: 'Hash:',
     time: 'Time: ',
