@@ -131,5 +131,14 @@ module.exports = {
     PreviousPage: "上一页",
     NextPage: "下一页",
     Last: "末页"
+  },
+  nodes: {
+    stakeListTit: '质押授权',
+    rank: '排名',
+    name: '名称',
+    currentStake: '当前质押',
+    process: '进度',
+    toNextRound: '到下一轮',
+    blocks: '块'
   }
 }

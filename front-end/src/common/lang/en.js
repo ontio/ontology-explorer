@@ -131,5 +131,14 @@ module.exports = {
     PreviousPage: " < ",
     NextPage: " > ",
     Last: ">>"
+  },
+  nodes: {
+    stakeListTit: 'Stake Authorization',
+    rank: 'Rank',
+    name: 'Name',
+    currentStake: 'Current Stake',
+    process: 'Process',
+    toNextRound: 'To next round',
+    blocks: 'blocks'
   }
 }

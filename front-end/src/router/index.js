@@ -12,6 +12,7 @@ import TransactionPage from '@/components/transactions/List'
 import TransactionDetailPage from '@/components/transactions/Detail'
 import ClaimDetailPage from '@/components/claim/Detail'
 import ClaimVerifyPage from '@/components/claim/Verify'
+import NodeStakeAuthorization from '@/components/nodes/StakeAuthorization'
 
 Vue.use(Router)
 let routes = [
@@ -135,6 +136,16 @@ let routes = [
     name: 'ClaimVerifyTest',
     component: ClaimVerifyPage
   },
+  {
+    path: '/nodes/list',
+    name: 'NodeStakeList',
+    component: NodeStakeAuthorization
+  },
+  {
+    path: '/nodes/list/:net',
+    name: 'NodeStakeListTestNet',
+    component: NodeStakeAuthorization
+  }
 ]
 
 const router = new Router({
