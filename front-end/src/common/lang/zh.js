@@ -21,6 +21,7 @@ module.exports = {
     num: '数量',
     fee: '费用',
     amount: '总额',
+    address: '地址',
     ontId: 'ONT ID',
     content: '内容',
     confirmed: '已确认',
@@ -131,5 +132,15 @@ module.exports = {
     PreviousPage: "上一页",
     NextPage: "下一页",
     Last: "末页"
+  },
+  nodes: {
+    stakeListTit: '质押授权',
+    rank: '排名',
+    name: '名称',
+    proportion: '下一轮节点/用户的奖励比例',
+    currentStake: '当前质押',
+    process: '进度',
+    toNextRound: '到下一轮',
+    blocks: '块'
   }
 }

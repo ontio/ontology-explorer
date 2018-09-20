@@ -141,12 +141,12 @@
               if (this.$route.params.net == undefined) {
                 this.$router.push({
                   name: 'AddressDetail',
-                  params: {address: this.searchContent, pageSize: 10, pageNumber: 1}
+                  params: {address: this.searchContent, pageSize: 20, pageNumber: 1}
                 })
               } else {
                 this.$router.push({
                   name: 'AddressDetailTest',
-                  params: {address: this.searchContent, pageSize: 10, pageNumber: 1, net: 'testnet'}
+                  params: {address: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
                 })
               }
               break;
@@ -155,12 +155,12 @@
               if (this.$route.params.net == undefined) {
                 this.$router.push({
                   name: 'OntIdDetail',
-                  params: {ontid: this.searchContent, pageSize: 10, pageNumber: 1}
+                  params: {ontid: this.searchContent, pageSize: 20, pageNumber: 1}
                 })
               } else {
                 this.$router.push({
                   name: 'OntIdDetailTest',
-                  params: {ontid: this.searchContent, pageSize: 10, pageNumber: 1, net: 'testnet'}
+                  params: {ontid: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
                 })
               }
               break;

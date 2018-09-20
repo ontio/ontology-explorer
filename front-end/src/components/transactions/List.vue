@@ -3,8 +3,8 @@
     <return-home></return-home>
     <list-title :name="$t('transList.name')"></list-title>
 
-    <div class="row justify-content-center ">
-      <div class="col ">
+    <div class="row justify-content-center">
+      <div class="col">
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>

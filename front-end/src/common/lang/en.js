@@ -21,6 +21,7 @@ module.exports = {
     num: 'Number',
     fee: 'Fee',
     amount: 'Amount',
+    address: 'Address',
     ontId: 'ONT ID',
     content: 'Content',
     confirmed: 'Confirmed',
@@ -131,5 +132,15 @@ module.exports = {
     PreviousPage: " < ",
     NextPage: " > ",
     Last: ">>"
+  },
+  nodes: {
+    stakeListTit: 'Stake Authorization',
+    rank: 'Rank',
+    name: 'Name',
+    proportion: 'Reward proportion in next round Node / User',
+    currentStake: 'Current Stake',
+    process: 'Process',
+    toNextRound: 'To next round',
+    blocks: 'blocks'
   }
 }
