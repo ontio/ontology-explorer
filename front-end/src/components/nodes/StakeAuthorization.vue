@@ -26,6 +26,8 @@
             <tr>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('nodes.rank') }}</th>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('nodes.name') }}</th>
+              <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.address') }}</th>
+              <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('nodes.proportion') }}</th>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('nodes.currentStake') }}</th>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('nodes.process') }}</th>
             </tr>
@@ -34,6 +36,8 @@
             <tr v-for="nL in nodeList" class="font-size14 font-Regular">
               <td class="normal_color">{{ nL.rank }}</td>
               <td class="normal_color">{{ nL.name }}</td>
+              <td class="normal_color">{{ nL.address.value }}</td>
+              <td class="normal_color">{{ nL.nodeProportion }}</td>
               <td class="normal_color">{{ nL.currentStake }}</td>
               <td class="normal_color">{{ nL.process }}</td>
             </tr>

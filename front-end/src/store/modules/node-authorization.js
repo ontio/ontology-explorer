@@ -2,20 +2,6 @@ import axios from 'axios'
 import * as types from "../mutation-type"
 import numeral from 'numeral'
 
-/**
- * Get main net or test net url.
- *
- * @param params
- * @return {string}
- */
-function getUrl(params) {
-  if(params.net === 'testnet') {
-    return 'http://139.219.128.220:20334'
-  } else {
-    return 'http://dappnode1.ont.io:20334'
-  }
-}
-
 export default {
   state: {
     AuthorizationList: {},
@@ -31,7 +17,7 @@ export default {
   },
   actions: {
     async fetchNodeList({commit}, params) {
-      const url = getUrl(params);
+      let url = (params.net === 'testnet') ? process.env.TEST_DAPP_NODE_URL : process.env.DAPP_NODE_URL;
 
       try {
         const peerMap = await Ont.GovernanceTxBuilder.getPeerPoolMap(url);
@@ -46,7 +32,11 @@ export default {
           const nodeProportion = attr.newPeerCost + '%';
           const userProportion = (100 - attr.newPeerCost) + '%';
           item.nodeProportion = nodeProportion + ' / ' + userProportion;
-          list.push(item);
+
+          // 只有1和2显示
+          if(item.status === 1 || item.status === 2) {
+            list.push(item)
+          }
         }
 
         list.sort((v1, v2) => {
@@ -73,6 +63,8 @@ export default {
           }
         });
 
+        // console.log(list)
+
         commit({
           type: types.UPDATE_NODE_LIST,
           info: list,
@@ -82,7 +74,7 @@ export default {
       }
     },
     async fetchBlockCountdown({commit}, params) {
-      const url = getUrl(params);
+      let url = (params.net === 'testnet') ? process.env.TEST_DAPP_NODE_URL : process.env.DAPP_NODE_URL;
 
       const rest = new Ont.RestClient(url);
       try {
