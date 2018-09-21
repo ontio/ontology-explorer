@@ -21,12 +21,16 @@ package com.github.ontio.asyncService;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.common.Address;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.model.Current;
 import com.github.ontio.thread.TxnHandlerThread;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +48,7 @@ import java.util.concurrent.Future;
 @Service
 public class BlockHandleService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final String CLASS_NAME = this.getClass().getSimpleName();
+    private static final Logger logger = LoggerFactory.getLogger(BlockHandleService.class);
 
     @Autowired
     private BlockMapper blockMapper;
@@ -54,47 +56,55 @@ public class BlockHandleService {
     private CurrentMapper currentMapper;
     @Autowired
     private TxnHandlerThread txnHandlerThread;
-
+    @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
 
     /**
      * handle the block and the transactions in this block
      *
      * @param blockJson
-     * @param blockBookKeeper
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleOneBlock(JSONObject blockJson, String blockBookKeeper) throws Exception {
+    public void handleOneBlock(JSONObject blockJson) throws Exception {
 
-        int blockHeight = blockJson.getJSONObject("Header").getInteger("Height");
-        int blockTime = blockJson.getJSONObject("Header").getInteger("Timestamp");
+        //设置一个模式为BATCH，自动提交为false的session，最后统一提交，需防止内存溢出
+        SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
+
+        JSONObject blockHeader = blockJson.getJSONObject("Header");
+        int blockHeight = blockHeader.getInteger("Height");
+        int blockTime = blockHeader.getInteger("Timestamp");
         JSONArray txnArray = blockJson.getJSONArray("Transactions");
         int txnNum = txnArray.size();
         logger.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
 
-        ConstantParam.TXN_INIT_AMOUNT = 0;
         ConstantParam.ONTIDTXN_INIT_AMOUNT = 0;
 
-        //asynchronize handle transaction
-        for (int i = 0; i < txnNum; i++) {
-            JSONObject txnJson = (JSONObject) txnArray.get(i);
-            Future future = txnHandlerThread.asyncHandleTxn(txnJson, blockHeight, blockTime, i + 1);
-            future.get();
-        }
-
-        while (ConstantParam.TXN_INIT_AMOUNT < txnNum) {
-            logger.info("wait for multi thread tasks ......");
-            try {
-                Thread.sleep(50 * 1);
-            } catch (InterruptedException e) {
-                logger.error("error...{}", e);
+        try {
+            //asynchronize handle transaction
+            //future.get() 主线程阻塞等待
+            for (int i = 0; i < txnNum; i++) {
+                JSONObject txnJson = (JSONObject) txnArray.get(i);
+                Future future = txnHandlerThread.asyncHandleTxn(session, txnJson, blockHeight, blockTime, i + 1);
+                future.get();
             }
+            // 手动提交
+            session.commit();
+            // 清理缓存，防止溢出
+            session.clearCache();
+            logger.info("###batch insert success!!");
+        } catch (Exception e) {
+            logger.error("error...session.rollback", e);
+            session.rollback();
+            throw e;
+        } finally {
+            session.close();
         }
 
         if (blockHeight >= 1) {
             blockMapper.updateNextBlockHash(blockJson.getString("Hash"), blockHeight - 1);
         }
-        insertBlock(blockJson, blockBookKeeper);
+        insertBlock(blockJson);
 
         Map<String, Integer> txnMap = currentMapper.selectTxnCount();
         int txnCount = txnMap.get("TxnCount");
@@ -106,18 +116,35 @@ public class BlockHandleService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void insertBlock(JSONObject blockJson, String blockBookKeeper) throws Exception {
+    public void insertBlock(JSONObject blockJson) throws Exception {
+
+        JSONObject blockHeader = blockJson.getJSONObject("Header");
+
 
         com.github.ontio.model.Block blockDO = new com.github.ontio.model.Block();
-        blockDO.setBlocksize(blockJson.getInteger("Size"));
-        blockDO.setBlocktime(blockJson.getJSONObject("Header").getInteger("Timestamp"));
         blockDO.setHash(blockJson.getString("Hash"));
-        blockDO.setHeight(blockJson.getJSONObject("Header").getInteger("Height"));
-        blockDO.setTxnsroot(blockJson.getJSONObject("Header").getString("TransactionsRoot"));
-        blockDO.setPrevblock(blockJson.getJSONObject("Header").getString("PrevBlockHash"));
-        blockDO.setConsensusdata(blockJson.getJSONObject("Header").getString("ConsensusData"));
+        blockDO.setBlocksize(blockJson.getInteger("Size"));
+        blockDO.setBlocktime(blockHeader.getInteger("Timestamp"));
+        blockDO.setHeight(blockHeader.getInteger("Height"));
+        blockDO.setTxnsroot(blockHeader.getString("TransactionsRoot"));
+        blockDO.setPrevblock(blockHeader.getString("PrevBlockHash"));
+        blockDO.setConsensusdata(blockHeader.getString("ConsensusData"));
         blockDO.setTxnnum(blockJson.getJSONArray("Transactions").size());
-        blockDO.setBookkeeper(blockBookKeeper);
+
+        String blockKeeperStr = "";
+        JSONArray blockKeepers = blockHeader.getJSONArray("Bookkeepers");
+        if (blockKeepers.size() > 0) {
+            StringBuilder sb = new StringBuilder(400);
+            for (Object obj :
+                    blockKeepers) {
+                sb.append(Address.addressFromPubKey((String) obj).toBase58());
+                sb.append("&");
+            }
+            blockKeeperStr = sb.toString();
+            blockKeeperStr = blockKeeperStr.substring(0, blockKeeperStr.length() - 1);
+        }
+
+        blockDO.setBookkeeper(blockKeeperStr);
         blockDO.setNextblock("");
 
         blockMapper.insert(blockDO);
@@ -133,6 +160,7 @@ public class BlockHandleService {
 
         currentMapper.update(currentDO);
     }
+
 
 
 }
