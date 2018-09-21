@@ -26,10 +26,6 @@ package com.github.ontio.utils;
  */
 public enum TransactionType {
 
-    /**
-     * DeployCodeTransaction
-     */
-    BOOKKEEPER(0),
 
     /**
      * DeployCodeTransaction
