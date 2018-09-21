@@ -73,31 +73,31 @@
     <appender-ref ref="STDOUT" />  
   </root>  
   
-    <logger name="dao" level="DEBUG" additivity="false">
+    <logger name="dao" level="INFO" additivity="false">
     	<appender-ref ref="STDOUT"/>
     	<appender-ref ref="FILE_EXPLORER" />
         <appender-ref ref="FILE_TASK" />
    </logger>  
   
   <!-- For loggers in the these namespaces, log at DEBUG levels above. -->
-    <logger name="com.ont.controller" level="DEBUG" additivity="false">
+    <logger name="com.github.ontio.controller" level="DEBUG" additivity="false">
     	<appender-ref ref="STDOUT"/>
     	<appender-ref ref="FILE_EXPLORER" />
    </logger>
 
     <!-- For loggers in the these namespaces, log at DEBUG levels above. -->
-    <logger name="com.ont.service" level="DEBUG" additivity="false">
+    <logger name="com.github.ontio.service" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE_EXPLORER" />
     </logger>
 
-    <logger name="com.ont.asyncService" level="DEBUG" additivity="false">
+    <logger name="com.github.ontio.asyncService" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE_TASK" />
     </logger>
 
     <!-- For loggers in the these namespaces, log at DEBUG levels above. -->
-    <logger name="com.ont.task" level="INFO" additivity="false">
+    <logger name="com.github.ontio.thread" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE_TASK" />
     </logger>
