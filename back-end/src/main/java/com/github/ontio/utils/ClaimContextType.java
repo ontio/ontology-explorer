@@ -38,7 +38,19 @@ public enum ClaimContextType {
 
     EMPLOYMENT_CLAIM("claim:employment_authentication", "employment authentication claim"),
 
-    CFCA_CLAIM("claim:cfca_authentication", "cfca real-name authentication claim");
+    EMAIL_CLAIM("claim:email_authentication", "email authentication claim"),
+
+    MOBILE_CLAIM("claim:mobile_authentication", "mobile authentication claim"),
+
+    CFCA_CLAIM("claim:cfca_authentication", "cfca real-name authentication claim"),
+
+    IDM_PP_CLAIM("claim:idm_passport_authentication", "identitymind passport authentication claim"),
+
+    IDM_DL_CLAIM("claim:idm_dl_authentication", "identitymind driver license authentication claim"),
+
+    IDM_ID_CLAIM("claim:idm_idcard_authentication", "identitymind idcard authentication claim"),
+
+    SENTIME_CLAIM("claim:sentime_authentication", "sentime real-name authentication claim");
 
     private String desc;
 
