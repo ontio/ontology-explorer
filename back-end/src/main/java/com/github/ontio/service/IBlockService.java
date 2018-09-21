@@ -61,4 +61,5 @@ public interface IBlockService {
     Result queryBlockGenerateTime(int amount);
 
 
+
 }

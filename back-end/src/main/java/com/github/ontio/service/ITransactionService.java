@@ -95,4 +95,21 @@ public interface ITransactionService {
      */
     Result queryAddressInfoByTime(String address, String assetName, int beginTime);
 
+
+    /**
+     * 查询地址余额
+     * @param address
+     * @return
+     */
+    Result queryAddressBalance(String address);
+
+
+
+    /**
+     * 查询地址列表
+     * @return
+     */
+    Result queryAddressList();
+
+
 }
