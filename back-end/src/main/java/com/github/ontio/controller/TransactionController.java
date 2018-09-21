@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/explorer/")
 public class TransactionController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -75,9 +75,9 @@ public class TransactionController {
                            @PathVariable("pagenumber") Integer pageNumber) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber:{}",pageSize, pageNumber);
+        logger.info("pageSize:{}, pageNumber:{}", pageSize, pageNumber);
 
-        Result rs = transactionService.queryTxnList(pageSize,pageNumber);
+        Result rs = transactionService.queryTxnList(pageSize, pageNumber);
         return rs;
     }
 
@@ -91,12 +91,11 @@ public class TransactionController {
     public Result queryTxnByHash(@PathVariable("txnhash") String txnHash) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("txnHash:{}",txnHash);
+        logger.info("txnHash:{}", txnHash);
 
         Result rs = transactionService.queryTxnDetailByHash(txnHash);
         return rs;
     }
-
 
 
     /**
@@ -111,7 +110,7 @@ public class TransactionController {
                                    @PathVariable("pagenumber") int pageNumber) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},pagesize:{},pagenumber:{}",address, pageSize, pageNumber);
+        logger.info("address:{},pagesize:{},pagenumber:{}", address, pageSize, pageNumber);
 
         Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize);
         return rs;
@@ -131,7 +130,7 @@ public class TransactionController {
                                    @PathVariable("assetname") String assetName) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},pagesize:{},pagenumber:{}, assetname:{}",address, pageSize, pageNumber, assetName);
+        logger.info("address:{},pagesize:{},pagenumber:{}, assetname:{}", address, pageSize, pageNumber, assetName);
 
         Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize, assetName);
         return rs;
@@ -143,18 +142,78 @@ public class TransactionController {
      *
      * @return
      */
-    @RequestMapping(value = "/address/bytime/{address}/{assetname}/{pagesize}/{time}", method = RequestMethod.GET)
+    @RequestMapping(value = "/address/timeandpage/{address}/{assetname}/{pagesize}/{endtime}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressInfoByTime(@PathVariable("address") String address,
-                                         @PathVariable("pagesize") int pageSize,
-                                         @PathVariable("assetname") String assetName,
-                                         @PathVariable("time") int time) {
+    public Result queryAddressInfoByTimeAndPage(@PathVariable("address") String address,
+                                                @PathVariable("pagesize") int pageSize,
+                                                @PathVariable("assetname") String assetName,
+                                                @PathVariable("endtime") int endTime) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},assetname:{},pageSize:{},time:{}", address, assetName, pageSize, time);
+        logger.info("address:{},assetname:{},pageSize:{},endTime:{}", address, assetName, pageSize, endTime);
 
-        Result rs = transactionService.queryAddressInfoByTime(address, assetName, pageSize, time);
+        Result rs = transactionService.queryAddressInfoByTimeAndPage(address, assetName, pageSize, endTime);
         return rs;
     }
+
+
+
+    /**
+     * query the specially asset balance and transactions
+     *
+     * @return
+     */
+    @RequestMapping(value = "/address/time/{address}/{assetname}/{begintime}/{endtime}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryAddressInfoByTime(@PathVariable("address") String address,
+                                         @PathVariable("begintime") int beginTime,
+                                         @PathVariable("assetname") String assetName,
+                                         @PathVariable("endtime") int endTime) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("address:{},assetname:{},beginTime:{},endTime:{}", address, assetName, beginTime, endTime);
+
+        Result rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime, endTime);
+        return rs;
+    }
+
+
+    /**
+     * query the specially asset balance and transactions
+     *
+     * @return
+     */
+    @RequestMapping(value = "/address/time/{address}/{assetname}/{begintime}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryAddressInfoByTime2(@PathVariable("address") String address,
+                                          @PathVariable("begintime") int beginTime,
+                                          @PathVariable("assetname") String assetName) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("address:{},assetname:{},beginTime:{}", address, assetName, beginTime);
+
+        Result rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime);
+        return rs;
+    }
+
+
+    /**
+     * query the balance
+     *
+     * @return
+     */
+    @RequestMapping(value = "/address/balance/{address}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryAddressBalance(@PathVariable("address") String address) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("address:{}", address);
+
+        Result rs = transactionService.queryAddressBalance(address);
+        return rs;
+    }
+
+
+
 
 }
