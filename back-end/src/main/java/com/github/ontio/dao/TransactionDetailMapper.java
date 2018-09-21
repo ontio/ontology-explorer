@@ -3,6 +3,7 @@ package com.github.ontio.dao;
 import com.github.ontio.model.TransactionDetail;
 import com.github.ontio.model.TransactionDetailKey;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface TransactionDetailMapper {
 
 
 
-    List<Map> selectTxnWithoutOntId(int start , int size);
+    List<Map> selectTxnWithoutOntId(int start, int size);
 
     int selectTxnWithoutOntIdAmount();
 
@@ -33,7 +34,9 @@ public interface TransactionDetailMapper {
 
     List<Map> selectTxnByBlockHeight(int height);
 
-    int selectLastONTTransferTxnTime(String address);
+    Integer selectLastONTTransferTxnTime(String address);
+
+    Integer selectSwapTransferTxnTime(String address);
 
 
 
@@ -47,5 +50,13 @@ public interface TransactionDetailMapper {
 
     int selectTxnAmountByAddressInfo(Map<String, Object> param);
 
+    List<String> selectAllAddress();
+
+    List<Map> selectLatestTransferTxnAddr(@Param("beginIndex") int beginIndex, @Param("amount") int amount);
+
+    int selectCountByHeight(@Param("height") int height);
+
     void deleteByHeight(int height);
+
+
 }

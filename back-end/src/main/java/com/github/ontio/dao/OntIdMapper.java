@@ -2,6 +2,7 @@ package com.github.ontio.dao;
 
 import com.github.ontio.model.OntId;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,6 +31,8 @@ public interface OntIdMapper {
     List<Map> selectOntId(Map<String, Object> param);
 
     int selectCountByOntId(String ontId);
+
+    int selectCountByHeight(@Param("height") int height);
 
     void deleteByHeight(int height);
 }

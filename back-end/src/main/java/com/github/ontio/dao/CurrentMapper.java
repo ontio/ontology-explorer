@@ -37,8 +37,8 @@ public interface CurrentMapper {
 
     Map selectSummaryInfo();
 
-    Map<String,Integer> selectTxnCount();
-
     int selectDBHeight();
+
+    Map<String,Integer> selectTxnCount();
 
 }
