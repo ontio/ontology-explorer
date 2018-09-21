@@ -38,7 +38,7 @@ import java.util.Map;
 @Component
 public class OntologySDKService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(OntologySDKService.class);
 
     private static OntologySDKService instance = null;
 
@@ -82,20 +82,6 @@ public class OntologySDKService {
 
         return nodeCount;
     }
-
-    public int getGenerateBlockTime() {
-        OntSdk ontSdk = getOntSdk();
-        int generateBlockTime = 0;
-        try {
-            generateBlockTime = ontSdk.getConnect().getGenerateBlockTime();
-        } catch (Exception e) {
-            logger.error("get generateblocktime error...", e);
-            e.printStackTrace();
-        }
-
-        return generateBlockTime;
-    }
-
 
 
     /**
@@ -146,6 +132,5 @@ public class OntologySDKService {
         wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
         return wm;
     }
-
 
 }
