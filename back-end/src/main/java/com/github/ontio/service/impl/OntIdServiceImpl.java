@@ -47,7 +47,7 @@ import java.util.Map;
 @MapperScan("com.github.ontio.dao")
 public class OntIdServiceImpl implements IOntIdService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(OntIdServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
@@ -191,7 +191,26 @@ public class OntIdServiceImpl implements IOntIdService {
                 } else if (ClaimContextType.CFCA_CLAIM.context().equals(claimContext)) {
 
                     claimObj.put("ContextDesc", ClaimContextType.CFCA_CLAIM.desc());
+                } else if(ClaimContextType.IDM_DL_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextType.IDM_DL_CLAIM.desc());
+                }else if(ClaimContextType.IDM_ID_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextType.IDM_ID_CLAIM.desc());
+                }else if(ClaimContextType.IDM_PP_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextType.IDM_PP_CLAIM.desc());
+                }else if(ClaimContextType.MOBILE_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextType.MOBILE_CLAIM.desc());
+                }else if(ClaimContextType.EMAIL_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextType.EMAIL_CLAIM.desc());
+                }else if(ClaimContextType.SENTIME_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextType.SENTIME_CLAIM.desc());
                 }
+
                 Map<String, Object> formatedAttrMap = new HashMap<>();
                 formatedAttrMap.put("Claim", claimObj);
                 formatedAttrList.add(formatedAttrMap);
@@ -208,6 +227,5 @@ public class OntIdServiceImpl implements IOntIdService {
 
         return formatedAttrList;
     }
-
 
 }
