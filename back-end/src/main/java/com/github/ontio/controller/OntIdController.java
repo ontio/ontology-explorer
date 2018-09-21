@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/explorer/")
 public class OntIdController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(OntIdController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -100,6 +100,7 @@ public class OntIdController {
         return rs;
 
     }
+
 
 
 

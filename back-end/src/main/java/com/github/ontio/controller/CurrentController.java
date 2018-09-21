@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/v1/explorer")
 public class CurrentController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(CurrentController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -62,6 +62,20 @@ public class CurrentController {
 
         Result rs = currentService.querySummaryInfo();
         return rs;
+    }
+
+
+    /**
+     * 负载均衡存活探测api
+     *
+     * @return
+     */
+    @RequestMapping(value = "/detection", method = RequestMethod.GET)
+    @ResponseBody
+    public String detection() {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        return "success";
     }
 
 
