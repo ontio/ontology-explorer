@@ -18,7 +18,7 @@
     txnnum, blocksize
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_ont_block
     where height = #{height,jdbcType=INTEGER}
@@ -151,6 +151,12 @@
     where height = #{height,jdbcType=INTEGER}
   </update>
 
+  <update id="updateNextBlockHash">
+    update tbl_ont_block
+    set nextblock = #{param1}
+    where height = #{param2}
+  </update>
+
   <select id="selectBlockByPage" resultType="java.util.Map">
     select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
     from tbl_ont_block
@@ -169,12 +175,6 @@
     from tbl_ont_block
     where hash = #{hash}
   </select>
-
-  <update id="updateNextBlockHash">
-    update tbl_ont_block
-    set nextblock = #{param1}
-    where height = #{param2}
-  </update>
 
   <select id="selectHeightAndTime" resultType="java.util.Map">
     select Height, BlockTime

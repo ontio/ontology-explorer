@@ -7,6 +7,7 @@
     <result column="ontidcount" jdbcType="INTEGER" property="ontidcount" />
   </resultMap>
 
+
   <insert id="insert" parameterType="com.github.ontio.model.Current">
     insert into tbl_ont_current (height, txncount, ontidcount
     )
@@ -44,7 +45,6 @@
     from tbl_ont_current
   </select>
 
-
   <select id="selectDBHeight" resultType="java.lang.Integer">
     select Height
     from tbl_ont_current
@@ -58,6 +58,9 @@
   <update id="update" parameterType="com.github.ontio.model.Current">
     update tbl_ont_current
     set height = #{height},
-    txncount = #{txncount}
+    txncount = #{txncount},
+    ontidcount = #{ontidcount}
   </update>
+
+
 </mapper>

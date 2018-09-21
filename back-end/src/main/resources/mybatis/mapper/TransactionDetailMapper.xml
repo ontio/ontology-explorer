@@ -200,6 +200,7 @@
 
 
 
+
   <select id="selectTxnWithoutOntId" parameterType="java.lang.Integer" resultType="java.util.Map">
     select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee
     from tbl_ont_txn_detail
@@ -230,6 +231,7 @@
     and eventtype in (1,3)
   </select>
 
+
   <select id="selectTxnByAddressInfo" parameterType="java.util.Map" resultType="java.util.Map">
     select t2.* from (
     select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
@@ -238,7 +240,7 @@
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
-    and eventtype = 3
+    and eventtype in (1,3)
     union all
     select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
@@ -246,7 +248,7 @@
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
-    and eventtype = 3
+    and eventtype in (1,3)
     ) as t2
     order by t2.height DESC
     limit #{Start}, #{PageSize}
@@ -271,7 +273,7 @@
     </if>
     and  eventtype = 3
     ) as t2
-    where <![CDATA[ t2.TxnTime < #{Time} ]]>
+    where <![CDATA[ t2.TxnTime < #{EndTime} ]]>
     order by t2.TxnTime desc
     limit #{PageSize}
   </select>
@@ -297,7 +299,7 @@
     ) as t2
     where t2.TxnTime &gt;= #{BeginTime}
     <if test="EndTime != null and EndTime != ''">
-      and  <![CDATA[ t2.TxnTime <= #{EndTime} ]]>
+      and  <![CDATA[ t2.TxnTime < #{EndTime} ]]>
     </if>
     order by t2.TxnTime desc
   </select>
@@ -311,7 +313,7 @@
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
-    and eventtype = 3
+    and eventtype in (1,3)
     union all
     select txnhash
     from tbl_ont_txn_detail
@@ -319,7 +321,7 @@
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
-    and eventtype = 3
+    and eventtype in (1,3)
     ) as t2
   </select>
 
@@ -332,17 +334,53 @@
 
 
   <select id="selectLastONTTransferTxnTime" parameterType="java.lang.String" resultType="java.lang.Integer">
-    select (case when count(1) = 0 then 0 else TxnTime end) as TxnTime
+    select TxnTime
     from tbl_ont_txn_detail
-    where fromaddress = #{param1}
+    where (fromaddress = #{param1} or toaddress = #{param1})
     and assetname = 'ont'
     order by height DESC
     limit 1
+  </select>
+
+
+  <select id="selectSwapTransferTxnTime" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select TxnTime
+    from tbl_ont_txn_detail
+    where fromaddress in ('AcsptRGJ3ijThLqjwJAgbnhzihTmAefMDZ','AWyEMxiLUVr5MeVJe3Fw5Xsij7iZUmfYyk')
+    and toaddress = #{param1}
+    and assetname = 'ont'
+    order by height DESC
+    limit 1
+  </select>
+
+  <select id="selectAllAddress" resultType="java.lang.String">
+    SELECT
+    DISTINCT(toaddress)
+    FROM
+    tbl_ont_txn_detail
+    where eventtype in (1,3)
+  </select>
+
+  <select id="selectLatestTransferTxnAddr" parameterType="java.lang.Integer" resultType="java.util.Map">
+    SELECT
+    FromAddress , Height, TxnTime, Amount, ToAddress, AssetName
+    FROM
+    tbl_ont_txn_detail
+    where eventtype =3
+    order by height desc
+    limit #{beginIndex}, #{amount}
   </select>
 
   <delete id="deleteByHeight" parameterType="java.lang.Integer">
     delete from tbl_ont_txn_detail
     where height = #{param1}
   </delete>
+
+  <select id="selectCountByHeight" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_ont_txn_detail
+    where height = #{height}
+  </select>
+
 
 </mapper>
