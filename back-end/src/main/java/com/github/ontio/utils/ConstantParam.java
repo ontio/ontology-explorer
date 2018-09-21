@@ -34,58 +34,6 @@ public class ConstantParam {
 
 
     /**
-     * 节点restfulurl列表
-     */
-    public static List<String> NODE_RESTFULURLLIST = new ArrayList<>();
-
-    /**
-     * 主节点restfulurl
-     */
-    public static String MASTERNODE_RESTFULURL = "";
-
-    /**
-     * 主节点在列表中的序列号
-     */
-    public static int MASTERNODE_INDEX = 0;
-
-    /**
-     * 尝试连接的最大次数
-     */
-    public static int NODE_RETRYMAXTIME = 0;
-
-    /**
-     * the number of transactions of one block
-     *
-     */
-    public static int TXN_INIT_AMOUNT = 0;
-
-
-    /**
-     * the number of ontid transactions of one block
-     *
-     */
-    public static int ONTIDTXN_INIT_AMOUNT = 0;
-
-    /**
-     * Ontology SDK object
-     */
-    public static OntSdk ONT_SDKSERVICE = null;
-
-
-    /**
-     * transfer transaction smart contract event description
-     *
-     */
-    public static final String AUTH_OPE = "auth";
-
-
-    /**
-     * transfer transaction smart contract event description
-     *
-     */
-    public static final String TRANSFER_OPE = "transfer";
-
-    /**
      * ontId operation transaction smart contract event description
      *
      */
@@ -102,10 +50,27 @@ public class ConstantParam {
      */
     public static final String AUTH_OPE_PREFIX = "auth";
 
-
+    /**
+     * registerCandidate
+     */
     public static final String CLAIMRECORD_OPE_PREFIX = "Push";
 
+
+
     public static final String REGISTER = "Register";
+
+    /**
+     * transfer transaction smart contract event description
+     *
+     */
+    public static final String AUTH_OPE = "auth";
+
+    /**
+     * transfer transaction smart contract event description
+     *
+     */
+    public static final String TRANSFER_OPE = "transfer";
+
 
     /**
      * claim
@@ -129,9 +94,6 @@ public class ConstantParam {
     public static final String ONT = "ont";
 
 
-
-
-
     public static final BigDecimal ZERO = new BigDecimal("0");
 
 
@@ -140,6 +102,39 @@ public class ConstantParam {
 
     public static final BigDecimal ONT_TOTAL = new BigDecimal("1000000000");
 
+    /**
+     * the number of ontid transactions of one block
+     *
+     */
+    public static int ONTIDTXN_INIT_AMOUNT = 0;
 
+    /**
+     * Ontology SDK object
+     */
+    public static OntSdk ONT_SDKSERVICE = null;
+
+    /**
+     * 节点restfulurl列表
+     */
+    public static List<String> NODE_RESTFULURLLIST = new ArrayList<>();
+
+    /**
+     * 主节点restfulurl
+     */
+    public static String MASTERNODE_RESTFULURL = "";
+
+    /**
+     * 主节点在列表中的序列号
+     */
+    public static int MASTERNODE_INDEX = 0;
+
+    public static final BigDecimal ONG_DECIMAL = new BigDecimal("1000000000");
+
+
+    //ontid operation description separator
+    public static final String ONTID_SEPARATOR = "||";
+
+    //ontid operation description separator
+    public static final String ONTID_SEPARATOR2 = "&";
 
 }
