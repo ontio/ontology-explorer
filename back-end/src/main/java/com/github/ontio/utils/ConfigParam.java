@@ -87,15 +87,23 @@ public class ConfigParam {
     @Value("${asset.ong.codeHash}")
     public String ASSET_ONG_CODEHASH;
 
+
     /**
-     * ontology blockchain ONG asset smartcontract codehash
+     * ontology blockchainauth smartcontract codehash
      */
     @Value("${auth.codeHash}")
     public String AUTH_CODEHASH;
 
+    @Value("${threadPoolSize.max}")
+    public int THREADPOOLSIZE_MAX;
 
-    @Value("${genesisblock.time}")
-    public int GENESISBLOCKTIME;
+    @Value("${threadPoolSize.core}")
+    public int THREADPOOLSIZE_CORE;
 
+    @Value("${threadPoolSize.queue}")
+    public int THREADPOOLSIZE_QUEUE;
+
+    @Value("${threadPoolSize.keepalive.second}")
+    public int THREADPOOLSIZE_KEEPALIVE_SECOND;
 
 }
