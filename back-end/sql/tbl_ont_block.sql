@@ -27,7 +27,7 @@ CREATE TABLE `tbl_ont_block` (
   `txnsroot` varchar(64) NOT NULL DEFAULT '',
   `blocktime` int(11) NOT NULL,
   `consensusdata` varchar(20) NOT NULL DEFAULT '',
-  `bookkeeper` varchar(35) NOT NULL DEFAULT '',
+  `bookkeeper` varchar(500) NOT NULL DEFAULT '',
   `txnnum` int(10) NOT NULL,
   `blocksize` int(10) NOT NULL,
   PRIMARY KEY (`height`)
