@@ -216,7 +216,16 @@ th {
 }
 
 .pointer:hover {
-   text-decoration:underline;
+  text-decoration: underline;
+}
+
+.pointer2 {
+  cursor: pointer;
+}
+
+.pointer2:hover {
+  color: #32A4BE;
+  text-decoration: underline;
 }
 
 .div-block-list {

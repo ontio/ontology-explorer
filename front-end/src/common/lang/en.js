@@ -134,13 +134,31 @@ module.exports = {
     Last: ">>"
   },
   nodes: {
-    stakeListTit: 'Stake Authorization',
+    stakeListTit: 'STAKE AUTHORIZATIONS',
     rank: 'Rank',
     name: 'Name',
     proportion: 'Reward proportion in next round Node / User',
-    currentStake: 'Current Stake',
+    reward: 'Reward',
+    stake: 'Stake',
     process: 'Process',
-    toNextRound: 'To next round',
-    blocks: 'blocks'
+    toNextRound: 'To next round: ',
+    blocks: 'blocks',
+    detailTit: 'NODE DETAILS',
+    nodeName: 'Node Name: ',
+    ontId: 'ONT ID:',
+    address: 'Address:',
+    rewardRate: 'Reward Rate:',
+    rank2: 'Rank:',
+    stake2: 'Stake:',
+    stakeOWallet: 'Stake with Owallet →',
+    process2: 'Process:',
+    ip: 'IP:',
+    email: 'Email:',
+    intro: 'Introduction:',
+    vision: 'Vision:',
+    website: 'Website:',
+    guideTxt: 'To participate stake authorization, find the step-by-step guide ',
+    here: 'here.',
+    tooltipTit: 'Reward proportion in next round (Node / User)'
   }
 }

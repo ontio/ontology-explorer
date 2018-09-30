@@ -12,7 +12,8 @@ import TransactionPage from '@/components/transactions/List'
 import TransactionDetailPage from '@/components/transactions/Detail'
 import ClaimDetailPage from '@/components/claim/Detail'
 import ClaimVerifyPage from '@/components/claim/Verify'
-import NodeStakeAuthorization from '@/components/nodes/StakeAuthorization'
+import NodeStakeAuthorization from '@/components/nodes/List'
+import NodeTeamDetail from '@/components/nodes/Detail'
 
 Vue.use(Router)
 let routes = [
@@ -140,6 +141,11 @@ let routes = [
     path: '/nodes/list',
     name: 'NodeStakeList',
     component: NodeStakeAuthorization
+  },
+  {
+    path: '/nodes/detail/:pk',
+    name: 'NodeTeamDetail',
+    component: NodeTeamDetail
   },
   {
     path: '/nodes/list/:net',
