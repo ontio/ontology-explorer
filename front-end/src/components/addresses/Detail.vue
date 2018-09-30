@@ -168,11 +168,11 @@
       },
       toAddressDetailPage($address) {
         if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'AddressDetail', params: {address: $address, pageSize: 10, pageNumber: 1}})
+          this.$router.push({name: 'AddressDetail', params: {address: $address, pageSize: 20, pageNumber: 1}})
         } else {
           this.$router.push({
             name: 'AddressDetailTest',
-            params: {address: $address, pageSize: 10, pageNumber: 1, net: "testnet"}
+            params: {address: $address, pageSize: 20, pageNumber: 1, net: "testnet"}
           })
         }
       },

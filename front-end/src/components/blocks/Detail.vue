@@ -7,7 +7,7 @@
     <!--test：-->
     <!--<detail-block :params="detailParams"></detail-block>-->
 
-    <!--上一个区块及下一个区块-->
+    <!--区块时间和大小-->
     <detail-block-2 :name1="$t('blockDetail.BlockTime')" :val1="$HelperTools.getTransDate(blockData.BlockTime)"
                     :name2="$t('blockDetail.BlockSize')" :val2="blockData.BlockSize + ' bytes'">
     </detail-block-2>

@@ -11,20 +11,24 @@
             <tr>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.hash') }}</th>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.status') }}</th>
+              <!--<th class="trl-tab-border-top-none font-size18" scope="col">txn type</th>-->
+              <!--<th class="trl-tab-border-top-none font-size18" scope="col">block index</th>-->
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.height') }}</th>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.fee') }}</th>
               <th class="trl-tab-border-top-none font-size18" scope="col">{{ $t('all.time') }}</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="transaction in transactionListDetail.info" class="font-size14 font-Regular">
-              <td class="important_color pointer" @click="toTransactionDetailPage(transaction.TxnHash)">
-                {{transaction.TxnHash.substr(0,8) + '...' + transaction.TxnHash.substr(56)}}
+            <tr v-for="tx in txListData.info" class="font-size14 font-Regular">
+              <td class="important_color pointer" @click="toTransactionDetailPage(tx.TxnHash)">
+                {{tx.TxnHash.substr(0,8) + '...' + tx.TxnHash.substr(56)}}
               </td>
-              <td class="s-color">{{ transaction.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
-              <td class="normal_color">{{transaction.Height}}</td>
-              <td class="normal_color">{{Number(transaction.Fee)}}</td>
-              <td class="normal_color">{{$HelperTools.getTransDate(transaction.TxnTime)}}</td>
+              <td class="s-color">{{ tx.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
+              <!--<td class="s-color">{{ tx.TxnType === 208 ? 'Deploy' : 'Run' }}</td>-->
+              <!--<td class="s-color">{{ tx.BlockIndex }}</td>-->
+              <td class="normal_color">{{tx.Height}}</td>
+              <td class="normal_color">{{Number(tx.Fee)}}</td>
+              <td class="normal_color">{{$HelperTools.getTransDate(tx.TxnTime)}}</td>
             </tr>
             </tbody>
           </table>
@@ -32,7 +36,7 @@
       </div>
     </div>
 
-    <turn-the-page :pagesInfo="transactionListDetail" :pagesName="'TransactionListDetail'"></turn-the-page>
+    <turn-the-page :pagesInfo="txListData" :pagesName="'TransactionListDetail'"></turn-the-page>
   </div>
 </template>
 
@@ -55,12 +59,12 @@
       this.getTransactionListPage()
     },
     watch: {
-      '$route': 'getTransactionListPage',
+      '$route': 'getTransactionListPage'
     },
     computed: {
       ...mapState({
-        transactionListDetail: state => state.TransactionListPage.TransactionListDetail,
-      }),
+        txListData: state => state.TransactionListPage.TransactionListDetail
+      })
     },
     methods: {
       getTransactionListPage() {
