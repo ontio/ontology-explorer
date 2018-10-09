@@ -219,9 +219,14 @@
     watch: {
       '$route': 'getTxData',
       'txData': function () {
+        console.log(this.txData)
         if (this.txData.ConfirmFlag === 1) {
           if (this.txData.Detail == undefined) {
-            this.recordflag = true;
+            if (this.txData.Description === '') {
+              this.recordflag = false;
+            } else {
+              this.recordflag = true;
+            }
           } else {
             this.Detail = this.txData.Detail
             if (this.Detail.OntId != undefined) {
@@ -234,6 +239,8 @@
           }
           if (this.txData.Description == "auth") {
             this.authflag = true
+          } else {
+            this.authflag = false
           }
         } else {
           this.txflag = false;

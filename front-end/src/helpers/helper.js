@@ -6,14 +6,8 @@
 const HelperTools = {
   getDateTime(inputTime) {
     let date = new Date(inputTime * 1000);
-    let Y = date.getFullYear() + '-';
-    let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    let D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-    let h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
-    let m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-    let s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
-    let NowTime = new Date()
-    let showtime = (NowTime - date) / 1000
+    let NowTime = new Date();
+    let showtime = (NowTime - date) / 1000;
 
     return parseInt(showtime);
   },
@@ -35,57 +29,55 @@ const HelperTools = {
 
   getTransDate(inputTime) {
     let date = new Date(inputTime * 1000);
-    var utctime = date.getUTCHours()
-    /* console.log("utctime1",date.getUTCHours()+":"+date.getUTCMinutes()+":"+date.getUTCSeconds()) */
     let Y = date.getUTCFullYear();
     let M = (date.getUTCMonth() + 1 < 10 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1);
-    var mouth = ''
-    switch (M) {
+    let mouth = '';
+
+    switch (M.toString()) {
       case "01":
-        mouth = 'Jan-'
+        mouth = 'Jan-';
         break;
       case "02":
-        mouth = 'Feb-'
+        mouth = 'Feb-';
         break;
       case "03":
-        mouth = 'Mar-'
+        mouth = 'Mar-';
         break;
       case "04":
-        mouth = 'Apr-'
+        mouth = 'Apr-';
         break;
       case "05":
-        mouth = 'May-'
+        mouth = 'May-';
         break;
       case "06":
-        mouth = 'Jun-'
+        mouth = 'Jun-';
         break;
       case "07":
-        mouth = 'Jul-'
+        mouth = 'Jul-';
         break;
       case "08":
-        mouth = 'Aug-'
+        mouth = 'Aug-';
         break;
       case "09":
-        mouth = 'Sep-'
+        mouth = 'Sep-';
         break;
       case "10":
-        mouth = 'Oct-'
+        mouth = 'Oct-';
         break;
       case "11":
-        mouth = 'Nov-'
+        mouth = 'Nov-';
         break;
       case "12":
-        mouth = 'Dec-'
+        mouth = 'Dec-';
         break;
       default:
         break;
     }
+
     let D = date.getUTCDate() < 10 ? '0' + date.getUTCDate() + '-' : date.getUTCDate() + '-';
     let h = date.getUTCHours() < 10 ? '0' + date.getUTCHours() : date.getUTCHours();
     let m = date.getUTCMinutes() < 10 ? '0' + date.getUTCMinutes() : date.getUTCMinutes();
     let s = date.getUTCSeconds() < 10 ? '0' + date.getUTCSeconds() : date.getUTCSeconds();
-    let NowTime = new Date()
-    let showtime = (NowTime - date) / 1000
 
     return mouth + D + Y + ' ' + h + ':' + m + ':' + s + " UTC";
   },
@@ -114,11 +106,9 @@ const HelperTools = {
   },
 
   getNormalgas(gas) {
-    let showGas = gas * 0.000000001
-
-    return showGas
+    return gas * 0.000000001
   }
-}
+};
 
 export default {
   install: function (Vue) {
