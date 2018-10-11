@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.BlockMapper">
+
+  <cache type="com.github.ontio.OntSynRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Block">
     <id column="height" jdbcType="INTEGER" property="height" />
     <result column="hash" jdbcType="VARCHAR" property="hash" />
