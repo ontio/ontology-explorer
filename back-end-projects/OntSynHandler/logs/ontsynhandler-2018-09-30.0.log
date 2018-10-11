@@ -1,0 +1,48 @@
+[ INFO ] [2018-09-30 14:00:49] com.github.ontio.OntsynhandlerApplicationTests [50] - Starting OntsynhandlerApplicationTests on DESKTOP-RBHC9GE with PID 15284 (started by DELL in C:\WORK_ONCHAIN\ontology_projects\OntSynHandler)
+[ INFO ] [2018-09-30 14:00:49] com.github.ontio.OntsynhandlerApplicationTests [663] - The following profiles are active: uat
+[ INFO ] [2018-09-30 14:00:49] org.springframework.web.context.support.GenericWebApplicationContext [590] - Refreshing org.springframework.web.context.support.GenericWebApplicationContext@327bcebd: startup date [Sun Sep 30 14:00:49 CST 2018]; root of context hierarchy
+[ INFO ] [2018-09-30 14:00:51] org.springframework.data.repository.config.RepositoryConfigurationDelegate [163] - Multiple Spring Data modules found, entering strict repository configuration mode!
+[ INFO ] [2018-09-30 14:00:51] org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [328] - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a5365841] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[ INFO ] [2018-09-30 14:00:52] org.springframework.ws.soap.addressing.server.AnnotationActionEndpointMapping [236] - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+[ INFO ] [2018-09-30 14:00:52] org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [328] - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$9e9342] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.RedisConfig [37] - **********redisTemplate**************
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.BlockMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.BlockMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.BlockMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.CurrentMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.CurrentMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.CurrentMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.OntIdMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.OntIdMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.OntIdMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.TransactionDetailMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.TransactionDetailMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.TransactionDetailMapper##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntSynRedisCache [45] - ##init ExplorerRedisCache with default Cache id:defaultrediscacheid002##
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.OntsynhandlerApplication [31] - ########taskExecutor#########
+[ INFO ] [2018-09-30 14:00:53] org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor [171] - Initializing ExecutorService 
+[ INFO ] [2018-09-30 14:00:53] com.github.ontio.thread.BlockHandlerThread [70] - ========BlockHandlerThread.run=======
+[ INFO ] [2018-09-30 14:00:53] org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor [171] - Initializing ExecutorService  'taskExecutor'
+[ INFO ] [2018-09-30 14:00:54] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping [373] - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[ INFO ] [2018-09-30 14:00:54] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter [574] - Looking for @ControllerAdvice: org.springframework.web.context.support.GenericWebApplicationContext@327bcebd: startup date [Sun Sep 30 14:00:49 CST 2018]; root of context hierarchy
+[ INFO ] [2018-09-30 14:00:55] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping [547] - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+[ INFO ] [2018-09-30 14:00:55] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping [547] - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[ INFO ] [2018-09-30 14:00:55] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping [373] - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[ INFO ] [2018-09-30 14:00:55] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping [373] - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[ INFO ] [2018-09-30 14:00:55] com.github.ontio.thread.BlockHandlerThread [83] - ######remote blockheight:427089
+[ INFO ] [2018-09-30 14:00:55] com.zaxxer.hikari.HikariDataSource [110] - HikariPool-1 - Starting...
+[ INFO ] [2018-09-30 14:00:56] com.zaxxer.hikari.HikariDataSource [123] - HikariPool-1 - Start completed.
+[ INFO ] [2018-09-30 14:00:56] com.github.ontio.thread.BlockHandlerThread [86] - ######db blockheight:414717
+[ INFO ] [2018-09-30 14:00:56] com.github.ontio.asyncService.BlockHandleService [79] - handleOneBlock run-------blockHeight:414718,txnSum:1
+[ INFO ] [2018-09-30 14:00:57] com.github.ontio.thread.TxnHandlerThread [66] - TxnHandlerThread--1 run--------blockHeight:414718
+[ INFO ] [2018-09-30 14:00:57] com.github.ontio.thread.TxnHandlerThread [79] - ####txnType:209, txnHash:be0420fb8a5aae35d3c5f160e5c8387915f704aced38fd4a7bdd4819ce098e0c####
+[ INFO ] [2018-09-30 14:00:57] com.github.ontio.OntsynhandlerApplicationTests [59] - Started OntsynhandlerApplicationTests in 9.341 seconds (JVM running for 11.029)
+[ INFO ] [2018-09-30 14:00:58] com.github.ontio.thread.TxnHandlerThread [83] - eventObj:{"GasConsumed":10000000,"Notify":[{"States":["Register","did:ont:ATTRJxq52SK8ajAKrDSxn2683XtSyqD4QC"],"ContractAddress":"0300000000000000000000000000000000000000"},{"States":["transfer","AJEQRwAFknJoXVA4y8dgbbN5qFYquhkwwv","AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK",10000000],"ContractAddress":"0200000000000000000000000000000000000000"}],"TxHash":"be0420fb8a5aae35d3c5f160e5c8387915f704aced38fd4a7bdd4819ce098e0c","State":1}
+[ INFO ] [2018-09-30 14:00:58] com.github.ontio.thread.TxnHandlerThread [355] - ####Register OntId:did:ont:ATTRJxq52SK8ajAKrDSxn2683XtSyqD4QC
+[ INFO ] [2018-09-30 14:00:58] com.github.ontio.thread.TxnHandlerThread [205] - ####fromAddress:AJEQRwAFknJoXVA4y8dgbbN5qFYquhkwwv,toAddress:AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK,amount:10000000####
+[ INFO ] [2018-09-30 14:00:58] com.github.ontio.thread.TxnHandlerThread [70] - TxnHandlerThread--1 end-------blockHeight:414718
+[ INFO ] [2018-09-30 14:00:58] org.springframework.web.context.support.GenericWebApplicationContext [993] - Closing org.springframework.web.context.support.GenericWebApplicationContext@327bcebd: startup date [Sun Sep 30 14:00:49 CST 2018]; root of context hierarchy
+[ INFO ] [2018-09-30 14:00:58] org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor [208] - Shutting down ExecutorService 'taskExecutor'
+[ INFO ] [2018-09-30 14:00:58] com.github.ontio.OntSynRedisCache [102] - clear Redis Cache,this.id:com.github.ontio.dao.OntIdMapper
+[ INFO ] [2018-09-30 14:00:58] com.zaxxer.hikari.HikariDataSource [381] - HikariPool-1 - Shutdown initiated...
+[ INFO ] [2018-09-30 14:00:58] com.zaxxer.hikari.HikariDataSource [383] - HikariPool-1 - Shutdown completed.
