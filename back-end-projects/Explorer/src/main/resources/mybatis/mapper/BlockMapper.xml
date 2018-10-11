@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.dao.BlockMapper">
+
+<!--  <cache type="com.github.ontio.ExplorerRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>-->
+
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.Block">
+    <id column="height" jdbcType="INTEGER" property="height" />
+    <result column="hash" jdbcType="VARCHAR" property="hash" />
+    <result column="prevblock" jdbcType="VARCHAR" property="prevblock" />
+    <result column="nextblock" jdbcType="VARCHAR" property="nextblock" />
+    <result column="txnsroot" jdbcType="VARCHAR" property="txnsroot" />
+    <result column="blocktime" jdbcType="INTEGER" property="blocktime" />
+    <result column="consensusdata" jdbcType="VARCHAR" property="consensusdata" />
+    <result column="bookkeeper" jdbcType="VARCHAR" property="bookkeeper" />
+    <result column="txnnum" jdbcType="INTEGER" property="txnnum" />
+    <result column="blocksize" jdbcType="INTEGER" property="blocksize" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    height, hash, prevblock, nextblock, txnsroot, blocktime, consensusdata, bookkeeper, 
+    txnnum, blocksize
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_ont_block
+    where height = #{height,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_ont_block
+    where height = #{height,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.github.ontio.model.Block">
+    insert into tbl_ont_block (height, hash, prevblock, 
+      nextblock, txnsroot, blocktime, 
+      consensusdata, bookkeeper, txnnum, 
+      blocksize)
+    values (#{height,jdbcType=INTEGER}, #{hash,jdbcType=VARCHAR}, #{prevblock,jdbcType=VARCHAR}, 
+      #{nextblock,jdbcType=VARCHAR}, #{txnsroot,jdbcType=VARCHAR}, #{blocktime,jdbcType=INTEGER}, 
+      #{consensusdata,jdbcType=VARCHAR}, #{bookkeeper,jdbcType=VARCHAR}, #{txnnum,jdbcType=INTEGER}, 
+      #{blocksize,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.github.ontio.model.Block">
+    insert into tbl_ont_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="height != null">
+        height,
+      </if>
+      <if test="hash != null">
+        hash,
+      </if>
+      <if test="prevblock != null">
+        prevblock,
+      </if>
+      <if test="nextblock != null">
+        nextblock,
+      </if>
+      <if test="txnsroot != null">
+        txnsroot,
+      </if>
+      <if test="blocktime != null">
+        blocktime,
+      </if>
+      <if test="consensusdata != null">
+        consensusdata,
+      </if>
+      <if test="bookkeeper != null">
+        bookkeeper,
+      </if>
+      <if test="txnnum != null">
+        txnnum,
+      </if>
+      <if test="blocksize != null">
+        blocksize,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="height != null">
+        #{height,jdbcType=INTEGER},
+      </if>
+      <if test="hash != null">
+        #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="prevblock != null">
+        #{prevblock,jdbcType=VARCHAR},
+      </if>
+      <if test="nextblock != null">
+        #{nextblock,jdbcType=VARCHAR},
+      </if>
+      <if test="txnsroot != null">
+        #{txnsroot,jdbcType=VARCHAR},
+      </if>
+      <if test="blocktime != null">
+        #{blocktime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusdata != null">
+        #{consensusdata,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeeper != null">
+        #{bookkeeper,jdbcType=VARCHAR},
+      </if>
+      <if test="txnnum != null">
+        #{txnnum,jdbcType=INTEGER},
+      </if>
+      <if test="blocksize != null">
+        #{blocksize,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Block">
+    update tbl_ont_block
+    <set>
+      <if test="hash != null">
+        hash = #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="prevblock != null">
+        prevblock = #{prevblock,jdbcType=VARCHAR},
+      </if>
+      <if test="nextblock != null">
+        nextblock = #{nextblock,jdbcType=VARCHAR},
+      </if>
+      <if test="txnsroot != null">
+        txnsroot = #{txnsroot,jdbcType=VARCHAR},
+      </if>
+      <if test="blocktime != null">
+        blocktime = #{blocktime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusdata != null">
+        consensusdata = #{consensusdata,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeeper != null">
+        bookkeeper = #{bookkeeper,jdbcType=VARCHAR},
+      </if>
+      <if test="txnnum != null">
+        txnnum = #{txnnum,jdbcType=INTEGER},
+      </if>
+      <if test="blocksize != null">
+        blocksize = #{blocksize,jdbcType=INTEGER},
+      </if>
+    </set>
+    where height = #{height,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.Block">
+    update tbl_ont_block
+    set hash = #{hash,jdbcType=VARCHAR},
+      prevblock = #{prevblock,jdbcType=VARCHAR},
+      nextblock = #{nextblock,jdbcType=VARCHAR},
+      txnsroot = #{txnsroot,jdbcType=VARCHAR},
+      blocktime = #{blocktime,jdbcType=INTEGER},
+      consensusdata = #{consensusdata,jdbcType=VARCHAR},
+      bookkeeper = #{bookkeeper,jdbcType=VARCHAR},
+      txnnum = #{txnnum,jdbcType=INTEGER},
+      blocksize = #{blocksize,jdbcType=INTEGER}
+    where height = #{height,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectBlockByPage" resultType="java.util.Map">
+    select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
+    from tbl_ont_block
+    order by height DESC
+    limit #{param1}, #{param2}
+  </select>
+
+  <select id="selectBlockByHeight" resultType="java.util.Map">
+    select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
+    from tbl_ont_block
+    where height = #{height}
+  </select>
+
+  <select id="selectBlockByHash" resultType="java.util.Map">
+    select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
+    from tbl_ont_block
+    where hash = #{hash}
+  </select>
+
+  <select id="selectHeightAndTime" resultType="java.util.Map">
+    select Height, BlockTime
+    from tbl_ont_block
+    order by height DESC
+    limit 0, #{param1}
+  </select>
+
+</mapper>
