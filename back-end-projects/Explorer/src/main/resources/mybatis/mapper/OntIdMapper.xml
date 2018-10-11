@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.OntIdMapper">
 
-<!--  <cache type="com.github.ontio.ExplorerRedisCache">
+  <cache type="com.github.ontio.ExplorerRedisCache">
     <property name="eviction" value="LRU" />
     <property name="size" value="1024" />
     <property name="readOnly" value="false" />
-  </cache>-->
+  </cache>
 
   <resultMap id="BaseResultMap" type="com.github.ontio.model.OntId">
     <id column="txnhash" jdbcType="VARCHAR" property="txnhash" />
