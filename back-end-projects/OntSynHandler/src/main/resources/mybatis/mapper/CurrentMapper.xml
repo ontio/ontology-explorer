@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.CurrentMapper">
+
+  <cache type="com.github.ontio.OntSynRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+
+
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Current">
     <result column="height" jdbcType="INTEGER" property="height" />
     <result column="txncount" jdbcType="INTEGER" property="txncount" />
@@ -39,12 +48,12 @@
   </insert>
 
 
-  <select id="selectDBHeight" resultType="java.lang.Integer">
+  <select id="selectDBHeight" resultType="java.lang.Integer" useCache="false">
     select Height
     from tbl_ont_current
   </select>
 
-  <select id="selectTxnCount" resultType="java.util.Map">
+  <select id="selectTxnCount" resultType="java.util.Map" useCache="false">
     select TxnCount, OntIdCount
     from tbl_ont_current
   </select>
