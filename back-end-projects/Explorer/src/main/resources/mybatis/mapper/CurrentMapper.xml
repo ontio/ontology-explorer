@@ -7,13 +7,11 @@
     <result column="ontidcount" jdbcType="INTEGER" property="ontidcount" />
   </resultMap>
 
-<!--
   <cache type="com.github.ontio.ExplorerRedisCache">
     <property name="eviction" value="LRU" />
     <property name="size" value="1024" />
     <property name="readOnly" value="false" />
   </cache>
--->
 
 
   <insert id="insert" parameterType="com.github.ontio.model.Current">
