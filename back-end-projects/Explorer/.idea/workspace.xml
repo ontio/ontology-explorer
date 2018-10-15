@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="baed4ecd-bb4f-4e9e-ad0f-1854bcc696f9" name="Default" comment="" />
+    <list default="true" id="baed4ecd-bb4f-4e9e-ad0f-1854bcc696f9" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/logs/explorer-2018-10-11.0.log" afterPath="$PROJECT_DIR$/logs/explorer-2018-10-11.0.log" />
+      <change beforePath="$PROJECT_DIR$/target/classes/mybatis/mapper/BlockMapper.xml" afterPath="$PROJECT_DIR$/target/classes/mybatis/mapper/BlockMapper.xml" />
+      <change beforePath="$PROJECT_DIR$/target/classes/mybatis/mapper/CurrentMapper.xml" afterPath="$PROJECT_DIR$/target/classes/mybatis/mapper/CurrentMapper.xml" />
+      <change beforePath="$PROJECT_DIR$/target/classes/mybatis/mapper/OntIdMapper.xml" afterPath="$PROJECT_DIR$/target/classes/mybatis/mapper/OntIdMapper.xml" />
+      <change beforePath="$PROJECT_DIR$/target/classes/mybatis/mapper/TransactionDetailMapper.xml" afterPath="$PROJECT_DIR$/target/classes/mybatis/mapper/TransactionDetailMapper.xml" />
+      <change beforePath="$PROJECT_DIR$/../OntSynHandler/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../OntSynHandler/.idea/workspace.xml" />
+    </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -11,12 +20,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
       <file leaf-file-name="CurrentServiceImpl.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/service/impl/CurrentServiceImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="930">
-              <caret line="79" column="37" lean-forward="false" selection-start-line="79" selection-start-column="37" selection-end-line="79" selection-end-column="37" />
+            <state relative-caret-position="647">
+              <caret line="67" column="13" lean-forward="true" selection-start-line="67" selection-start-column="13" selection-end-line="67" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -35,12 +44,9 @@
       <file leaf-file-name="ExplorerApplication.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/ExplorerApplication.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-              <folding>
-                <element signature="e#247#248#0" expanded="true" />
-                <element signature="e#308#309#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="130">
+              <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -55,10 +61,125 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="RedisConfig.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/RedisConfig.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="832">
+              <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BlockMapper.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/BlockMapper.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="8" column="10" lean-forward="false" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+              <folding>
+                <marker date="1539251474014" expanded="true" signature="1456:1573" ph="select from tbl_ont_block" />
+                <marker date="1539251474014" expanded="true" signature="1659:1730" ph="delete from tbl_ont_block... " />
+                <marker date="1539251474014" expanded="true" signature="1815:2301" ph="insert into tbl_ont_block... " />
+                <marker date="1539251474014" expanded="true" signature="4175:5141" ph="update tbl_ont_block... " />
+                <marker date="1539251474014" expanded="true" signature="5238:5738" ph="update tbl_ont_block... " />
+                <marker date="1539251474014" expanded="true" signature="5817:6004" ph="select Heigh... tbl_ont_block" />
+                <marker date="1539251474014" expanded="true" signature="6085:6245" ph="select Heigh... tbl_ont_block" />
+                <marker date="1539251474014" expanded="true" signature="6324:6480" ph="select Heigh... tbl_ont_block" />
+                <marker date="1539251474014" expanded="true" signature="6561:6656" ph="select Heigh... tbl_ont_block" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CurrentMapper.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/CurrentMapper.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="338">
+              <caret line="13" column="10" lean-forward="false" selection-start-line="13" selection-start-column="10" selection-end-line="13" selection-end-column="10" />
+              <folding>
+                <marker date="1539251474000" expanded="true" signature="780:954" ph="insert into tbl_ont_current... " />
+                <marker date="1539251474000" expanded="true" signature="1743:1803" ph="select TxnCo... tbl_ont_current" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OntIdMapper.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/OntIdMapper.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="8" column="10" lean-forward="false" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+              <folding>
+                <marker date="1539251474042" expanded="true" signature="1182:1308" ph="select from tbl_ont_ontid_detail" />
+                <marker date="1539251474042" expanded="true" signature="1393:1473" ph="delete from tbl_ont_ontid_detail... " />
+                <marker date="1539251474042" expanded="true" signature="1558:1891" ph="insert into tbl_ont_ontid_detail... " />
+                <marker date="1539251474042" expanded="true" signature="3270:3915" ph="update tbl_ont_ontid_detail... " />
+                <marker date="1539251474042" expanded="true" signature="4012:4352" ph="update tbl_ont_ontid_detail... " />
+                <marker date="1539251474042" expanded="true" signature="4466:4617" ph="select TxnHa... tbl_ont_ontid_detail" />
+                <marker date="1539251474042" expanded="true" signature="4702:4747" ph="select count... tbl_ont_ontid_detail" />
+                <marker date="1539251474042" expanded="true" signature="4850:5029" ph="select TxnHa... tbl_ont_ontid_detail" />
+                <marker date="1539251474042" expanded="true" signature="5146:5218" ph="select count... tbl_ont_ontid_detail" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TransactionDetailMapper.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/TransactionDetailMapper.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="234">
+              <caret line="9" column="10" lean-forward="false" selection-start-line="9" selection-start-column="10" selection-end-line="9" selection-end-column="10" />
+              <folding>
+                <marker date="1539251473987" expanded="true" signature="1878:2052" ph="select from tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="2164:2292" ph="delete from tbl_ont_txn_detail... " />
+                <marker date="1539251473987" expanded="true" signature="2389:3052" ph="insert into tbl_ont_txn_detail... " />
+                <marker date="1539251473987" expanded="true" signature="5551:6856" ph="update tbl_ont_txn_detail... " />
+                <marker date="1539251473987" expanded="true" signature="6965:7659" ph="update tbl_ont_txn_detail... " />
+                <marker date="1539251473987" expanded="true" signature="7779:7987" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="8080:8172" ph="select count... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="8282:8458" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="8582:8729" ph="select ToAdd... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="8844:9605" ph="select t2.* TxnHash" />
+                <marker date="1539251473987" expanded="true" signature="8867:9177" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="9196:9508" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="9731:10478" ph="select t2.* TxnHash" />
+                <marker date="1539251473987" expanded="true" signature="9754:10050" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="10069:10367" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="10600:11426" ph="select t2.* TxnHash" />
+                <marker date="1539251473987" expanded="true" signature="10623:10919" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="10938:11236" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="11551:12032" ph="select count... txnhash" />
+                <marker date="1539251473987" expanded="true" signature="11597:11798" ph="select txnha... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="11817:12020" ph="select txnha... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="12150:12272" ph="select TxnHa... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="12400:12566" ph="select TxnTi... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="12691:12927" ph="select TxnTi... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="13008:13093" ph="SELECT DISTI... tbl_ont_txn_detail" />
+                <marker date="1539251473987" expanded="true" signature="13218:13397" ph="SELECT FromA... tbl_ont_txn_detail" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="generatorConfig.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/generatorConfig.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-809">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/../.." value="master" />
+      </map>
+    </option>
   </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
@@ -68,8 +189,14 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/github/ontio/service/impl/CurrentServiceImpl.java" />
         <option value="$PROJECT_DIR$/config/application-uat.properties" />
+        <option value="$PROJECT_DIR$/src/main/java/com/github/ontio/ExplorerRedisCache.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/mybatis/mapper/BlockMapper.xml" />
+        <option value="$PROJECT_DIR$/src/main/resources/mybatis/mapper/CurrentMapper.xml" />
+        <option value="$PROJECT_DIR$/src/main/resources/mybatis/mapper/OntIdMapper.xml" />
+        <option value="$PROJECT_DIR$/src/main/resources/mybatis/mapper/TransactionDetailMapper.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/com/github/ontio/RedisConfig.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/github/ontio/service/impl/CurrentServiceImpl.java" />
       </list>
     </option>
   </component>
@@ -103,10 +230,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -214,6 +337,21 @@
               <item name="explorer" type="b2602c69:ProjectViewProjectNode" />
               <item name="Explorer" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="explorer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Explorer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+              <item name="mapper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="explorer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Explorer" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -235,6 +373,10 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -243,8 +385,13 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../.." />
     <property name="GO_FMT" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\WORK_ONCHAIN\github\ontology-explorer\back-end-projects\Explorer\src\main\java\com\github\ontio" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -440,6 +587,7 @@
       <option name="presentableId" value="Default" />
       <updated>1539244275249</updated>
       <workItem from="1539244276865" duration="354000" />
+      <workItem from="1539251164851" duration="697000" />
     </task>
     <task id="LOCAL-00001" summary="add explorer-back-end project">
       <created>1539244612773</created>
@@ -448,49 +596,63 @@
       <option name="project" value="LOCAL" />
       <updated>1539244612773</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="add redis">
+      <created>1539251710719</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1539251710720</updated>
+    </task>
+    <task id="LOCAL-00003" summary="add mybatis cache">
+      <created>1539251758236</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1539251758236</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="354000" />
+    <option name="totallyTimeSpent" value="1051000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="2869" y="-11" width="2902" height="1582" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4340303" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="CheckStyle" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5942238" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="CheckStyle" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25284496" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -500,17 +662,30 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
     <MESSAGE value="add explorer-back-end project" />
-    <option name="LAST_COMMIT_MESSAGE" value="add explorer-back-end project" />
+    <MESSAGE value="add redis" />
+    <MESSAGE value="add mybatis cache" />
+    <option name="LAST_COMMIT_MESSAGE" value="add mybatis cache" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/service/impl/CurrentServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/ApplicationContextProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
+        <state relative-caret-position="858">
           <caret line="33" column="13" lean-forward="false" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
           <folding />
         </state>
@@ -518,12 +693,142 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/ExplorerApplication.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
+        <state relative-caret-position="312">
           <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding>
-            <element signature="e#247#248#0" expanded="true" />
-            <element signature="e#308#309#0" expanded="true" />
+            <element signature="e#247#248#0" expanded="false" />
+            <element signature="e#308#309#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/application-uat.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/ExplorerRedisCache.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/OntIdMapper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="8" column="10" lean-forward="false" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+          <folding>
+            <marker date="1539251474042" expanded="true" signature="1182:1308" ph="select from tbl_ont_ontid_detail" />
+            <marker date="1539251474042" expanded="true" signature="1393:1473" ph="delete from tbl_ont_ontid_detail... " />
+            <marker date="1539251474042" expanded="true" signature="1558:1891" ph="insert into tbl_ont_ontid_detail... " />
+            <marker date="1539251474042" expanded="true" signature="3270:3915" ph="update tbl_ont_ontid_detail... " />
+            <marker date="1539251474042" expanded="true" signature="4012:4352" ph="update tbl_ont_ontid_detail... " />
+            <marker date="1539251474042" expanded="true" signature="4466:4617" ph="select TxnHa... tbl_ont_ontid_detail" />
+            <marker date="1539251474042" expanded="true" signature="4702:4747" ph="select count... tbl_ont_ontid_detail" />
+            <marker date="1539251474042" expanded="true" signature="4850:5029" ph="select TxnHa... tbl_ont_ontid_detail" />
+            <marker date="1539251474042" expanded="true" signature="5146:5218" ph="select count... tbl_ont_ontid_detail" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/TransactionDetailMapper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="9" column="10" lean-forward="false" selection-start-line="9" selection-start-column="10" selection-end-line="9" selection-end-column="10" />
+          <folding>
+            <marker date="1539251473987" expanded="true" signature="1878:2052" ph="select from tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="2164:2292" ph="delete from tbl_ont_txn_detail... " />
+            <marker date="1539251473987" expanded="true" signature="2389:3052" ph="insert into tbl_ont_txn_detail... " />
+            <marker date="1539251473987" expanded="true" signature="5551:6856" ph="update tbl_ont_txn_detail... " />
+            <marker date="1539251473987" expanded="true" signature="6965:7659" ph="update tbl_ont_txn_detail... " />
+            <marker date="1539251473987" expanded="true" signature="7779:7987" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="8080:8172" ph="select count... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="8282:8458" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="8582:8729" ph="select ToAdd... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="8844:9605" ph="select t2.* TxnHash" />
+            <marker date="1539251473987" expanded="true" signature="8867:9177" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="9196:9508" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="9731:10478" ph="select t2.* TxnHash" />
+            <marker date="1539251473987" expanded="true" signature="9754:10050" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="10069:10367" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="10600:11426" ph="select t2.* TxnHash" />
+            <marker date="1539251473987" expanded="true" signature="10623:10919" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="10938:11236" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="11551:12032" ph="select count... txnhash" />
+            <marker date="1539251473987" expanded="true" signature="11597:11798" ph="select txnha... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="11817:12020" ph="select txnha... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="12150:12272" ph="select TxnHa... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="12400:12566" ph="select TxnTi... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="12691:12927" ph="select TxnTi... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="13008:13093" ph="SELECT DISTI... tbl_ont_txn_detail" />
+            <marker date="1539251473987" expanded="true" signature="13218:13397" ph="SELECT FromA... tbl_ont_txn_detail" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/generatorConfig.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-809">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/RedisConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="832">
+          <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/BlockMapper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="8" column="10" lean-forward="false" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
+          <folding>
+            <marker date="1539251474014" expanded="true" signature="1456:1573" ph="select from tbl_ont_block" />
+            <marker date="1539251474014" expanded="true" signature="1659:1730" ph="delete from tbl_ont_block... " />
+            <marker date="1539251474014" expanded="true" signature="1815:2301" ph="insert into tbl_ont_block... " />
+            <marker date="1539251474014" expanded="true" signature="4175:5141" ph="update tbl_ont_block... " />
+            <marker date="1539251474014" expanded="true" signature="5238:5738" ph="update tbl_ont_block... " />
+            <marker date="1539251474014" expanded="true" signature="5817:6004" ph="select Heigh... tbl_ont_block" />
+            <marker date="1539251474014" expanded="true" signature="6085:6245" ph="select Heigh... tbl_ont_block" />
+            <marker date="1539251474014" expanded="true" signature="6324:6480" ph="select Heigh... tbl_ont_block" />
+            <marker date="1539251474014" expanded="true" signature="6561:6656" ph="select Heigh... tbl_ont_block" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/mybatis/mapper/CurrentMapper.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="338">
+          <caret line="13" column="10" lean-forward="false" selection-start-line="13" selection-start-column="10" selection-end-line="13" selection-end-column="10" />
+          <folding>
+            <marker date="1539251474000" expanded="true" signature="780:954" ph="insert into tbl_ont_current... " />
+            <marker date="1539251474000" expanded="true" signature="1743:1803" ph="select TxnCo... tbl_ont_current" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/ExplorerApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/ApplicationContextProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="364">
+          <caret line="33" column="13" lean-forward="false" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -537,8 +842,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/github/ontio/service/impl/CurrentServiceImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="930">
-          <caret line="79" column="37" lean-forward="false" selection-start-line="79" selection-start-column="37" selection-end-line="79" selection-end-column="37" />
+        <state relative-caret-position="647">
+          <caret line="67" column="13" lean-forward="true" selection-start-line="67" selection-start-column="13" selection-end-line="67" selection-end-column="13" />
           <folding />
         </state>
       </provider>
