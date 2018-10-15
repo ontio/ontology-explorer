@@ -13,16 +13,12 @@ export default {
   },
   actions: {
     getOntIdListPage({dispatch, commit},$param) {
-      let used_url 
-      if($param.net=="testnet"){
-        used_url = process.env.TEST_API_URL
-      }else{
-        used_url = process.env.API_URL
-      }
-      return axios.get(used_url + '/ontidlist/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
+      let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+
+      return axios.get(apiUrl + '/ontidlist/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
         let msg = response.data
         let allPageNum = msg.Result.Total
-        let finalPageNum = parseInt(allPageNum/10)+1
+        let finalPageNum = parseInt(allPageNum/20)+1
         let lastPageNum = 1
         if ($param.pageNumber>1){
           lastPageNum = $param.pageNumber-1
@@ -36,19 +32,19 @@ export default {
           info: msg.Result.OntIdList,
           allPage: allPageNum,
           firstPage: {
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: 1
           },
           lastPage:{
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: lastPageNum
           },
           nextPage:{
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: nextPageNum
           },
           finalPage: {
-            pageSize: '10',
+            pageSize: '20',
             pageNumber: finalPageNum
           }
         }

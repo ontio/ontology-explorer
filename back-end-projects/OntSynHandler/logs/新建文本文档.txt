@@ -1,0 +1,116 @@
+##测试组01
+线程池 8-16 mysql+redis
+log:debug+info
+
+耗时	交易数	区间高度
+60s 	9423   	125height
+80s 	11735 	126height
+80s 	12393 	127height
+64s 	9820 	128height
+73s 	10828 	129height
+67s 	10212 	130height
+22s 	3512 	131height
+12s 	1996 	132height
+11s 	1961 	133height
+10s 	1734	134height
+
+##测试组02
+线程池 16-32 mysql+redis
+log:debug+info
+
+150tps
+
+60s 9423 		125height
+75s 11735 	126height
+80s 12393 	127height
+65s 9820		128height
+71s 10828 	129height
+68s 10212	130height
+22s 3512		131height
+13s 1996		132height
+
+##测试组03
+线程池 8-16 mysql+redis
+log: info+info
+
+170tps
+
+55s 9423 		125height
+70s 11735 	126height
+73s 12393 	127height
+58s 9820		128height
+61s 10828 	129height
+59s 10212	130height
+19s 3512		131height
+12s 1996		132height
+
+
+##测试组04
+代码优化
+
+线程池 8-16 mysql+redis
+log: info+info
+
+220tps
+
+耗时	交易数	区间高度
+55s 	9423 	125height
+73s 	11735 	126height
+63s 	12393 	127height
+44s 	9820	128height
+45s 	10828 	129height
+48s 	10212	130height
+19s 	3512	131height
+11s 	1996	132height
+
+
+110tps
+
+83s	8839	135
+70s	7357	136
+67	7361	137
+69s	7434	138
+67s	7326	139
+68s	7403	140
+
+
+90s	8839	135
+88s	7357	136
+67	7361	137
+69s	7434	138
+67s	7326	139
+68s	7403	140
+
+
+13s	2458
+77s	12525
+71s	11255
+57s	9923
+73s	11245
+76s	11657
+
+##测试组05
+16C+4C MYSQL
+线程池核心数32
+log：info+info
+batch insert
+
+1000tps
+
+耗时	交易数	区块高度
+9s	8839	135
+7s	7357	136
+7s	7361	137
+7s	7434	138
+7s	7326	139
+
+##测试组06
+4s	2458	79
+18s	12525	80
+27s	11255	81
+21s	9923	82
+28s	11249	83
+25s	11657	84
+19s	8988	85
+20s	9642	86
+13s	5412	87

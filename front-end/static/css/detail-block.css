@@ -1,0 +1,41 @@
+/**
+ * 各种Details页面的CSS
+ */
+
+/* 基础白色块属性 */
+.detail-col {
+  padding: 24px !important;
+  margin-top: 4px;
+  color: #595757;
+  background: white;
+  font-size: 24px;
+}
+
+/* 基础白色块属性 - 超出部分省略 */
+.detail-col {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+/* 三块中间那块区域使用 */
+.detail-col-middle {
+  margin-left: -13px;
+  margin-right: -13px;
+}
+
+/* 两块左间那块区域使用 */
+.detail-col-left {
+  margin-right: -13px;
+}
+
+/* 两块右间那块区域使用 */
+.detail-col-right {
+  margin-left: -13px;
+}
+
+/* 长英文字母串强制折行 */
+.word-break {
+  word-break: break-all;
+}

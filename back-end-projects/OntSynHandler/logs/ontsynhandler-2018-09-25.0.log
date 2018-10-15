@@ -1,0 +1,94 @@
+[ INFO ] [2018-09-25 18:55:19] com.github.ontio.OntsynhandlerApplicationTests [50] - Starting OntsynhandlerApplicationTests on DESKTOP-RBHC9GE with PID 11020 (started by DELL in C:\WORK_ONCHAIN\ontology_projects\OntSynHandler)
+[ INFO ] [2018-09-25 18:55:19] com.github.ontio.OntsynhandlerApplicationTests [663] - The following profiles are active: uat
+[ INFO ] [2018-09-25 18:55:19] org.springframework.web.context.support.GenericWebApplicationContext [590] - Refreshing org.springframework.web.context.support.GenericWebApplicationContext@3403e2ac: startup date [Tue Sep 25 18:55:19 CST 2018]; root of context hierarchy
+[ INFO ] [2018-09-25 18:55:22] org.springframework.data.repository.config.RepositoryConfigurationDelegate [163] - Multiple Spring Data modules found, entering strict repository configuration mode!
+[ INFO ] [2018-09-25 18:55:24] org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [328] - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$41be2cee] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[ INFO ] [2018-09-25 18:55:24] org.springframework.ws.soap.addressing.server.AnnotationActionEndpointMapping [236] - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+[ INFO ] [2018-09-25 18:55:24] org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [328] - Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$9d2667ef] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[ INFO ] [2018-09-25 18:55:26] com.github.ontio.RedisConfig [37] - **********redisTemplate**************
+[ INFO ] [2018-09-25 18:55:26] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.BlockMapper##
+[ INFO ] [2018-09-25 18:55:26] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.BlockMapper##
+[ INFO ] [2018-09-25 18:55:26] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.BlockMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.CurrentMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.CurrentMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.CurrentMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.OntIdMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.OntIdMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.OntIdMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [37] - ##init ExplorerRedisCache, Cache id:com.github.ontio.dao.TransactionDetailMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.TransactionDetailMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [50] - ##get Redis Cache Id:com.github.ontio.dao.TransactionDetailMapper##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntSynRedisCache [45] - ##init ExplorerRedisCache with default Cache id:defaultrediscacheid002##
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.OntsynhandlerApplication [31] - ########taskExecutor#########
+[ INFO ] [2018-09-25 18:55:27] org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor [171] - Initializing ExecutorService 
+[ INFO ] [2018-09-25 18:55:27] com.github.ontio.thread.BlockHandlerThread [70] - ========BlockHandlerThread.run=======
+[ INFO ] [2018-09-25 18:55:27] org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor [171] - Initializing ExecutorService  'taskExecutor'
+[ ERROR] [2018-09-25 18:55:29] com.github.ontio.thread.BlockHandlerThread [146] - getBlockHeight error, try again...restful:http://127.0.0.1:20334,error:
+com.github.ontio.network.exception.RestfulException: {"Desc":"Interfaces Error,connect error:","Error":58402}http://127.0.0.1:20334
+	at com.github.ontio.network.rest.Interfaces.getBlockHeight(Interfaces.java:98)
+	at com.github.ontio.network.rest.RestClient.getBlockHeight(RestClient.java:106)
+	at com.github.ontio.sdk.manager.ConnectMgr.getBlockHeight(ConnectMgr.java:190)
+	at com.github.ontio.thread.BlockHandlerThread.getRemoteBlockHeight(BlockHandlerThread.java:143)
+	at com.github.ontio.thread.BlockHandlerThread.run(BlockHandlerThread.java:82)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method)
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:85)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:172)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:175)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:463)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:558)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:242)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:339)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:357)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1202)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1138)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1032)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:966)
+	at com.github.ontio.network.rest.http.get(http.java:153)
+	at com.github.ontio.network.rest.http.get(http.java:182)
+	at com.github.ontio.network.rest.Interfaces.getBlockHeight(Interfaces.java:96)
+	... 4 common frames omitted
+[ INFO ] [2018-09-25 18:55:30] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping [373] - Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[ ERROR] [2018-09-25 18:55:32] com.github.ontio.thread.BlockHandlerThread [146] - getBlockHeight error, try again...restful:http://127.0.0.1:20334,error:
+com.github.ontio.network.exception.RestfulException: {"Desc":"Interfaces Error,connect error:","Error":58402}http://127.0.0.1:20334
+	at com.github.ontio.network.rest.Interfaces.getBlockHeight(Interfaces.java:98)
+	at com.github.ontio.network.rest.RestClient.getBlockHeight(RestClient.java:106)
+	at com.github.ontio.sdk.manager.ConnectMgr.getBlockHeight(ConnectMgr.java:190)
+	at com.github.ontio.thread.BlockHandlerThread.getRemoteBlockHeight(BlockHandlerThread.java:143)
+	at com.github.ontio.thread.BlockHandlerThread.run(BlockHandlerThread.java:82)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.net.DualStackPlainSocketImpl.waitForConnect(Native Method)
+	at java.net.DualStackPlainSocketImpl.socketConnect(DualStackPlainSocketImpl.java:85)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:172)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:175)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:463)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:558)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:242)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:339)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:357)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1202)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1138)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1032)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:966)
+	at com.github.ontio.network.rest.http.get(http.java:153)
+	at com.github.ontio.network.rest.http.get(http.java:182)
+	at com.github.ontio.network.rest.Interfaces.getBlockHeight(Interfaces.java:96)
+	... 4 common frames omitted
+[ INFO ] [2018-09-25 18:55:33] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter [574] - Looking for @ControllerAdvice: org.springframework.web.context.support.GenericWebApplicationContext@3403e2ac: startup date [Tue Sep 25 18:55:19 CST 2018]; root of context hierarchy
+[ INFO ] [2018-09-25 18:55:33] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping [547] - Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+[ INFO ] [2018-09-25 18:55:33] org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping [547] - Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[ INFO ] [2018-09-25 18:55:33] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping [373] - Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[ INFO ] [2018-09-25 18:55:33] org.springframework.web.servlet.handler.SimpleUrlHandlerMapping [373] - Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[ INFO ] [2018-09-25 18:55:35] com.github.ontio.OntsynhandlerApplicationTests [59] - Started OntsynhandlerApplicationTests in 17.763 seconds (JVM running for 19.775)
+[ INFO ] [2018-09-25 18:55:35] org.springframework.web.context.support.GenericWebApplicationContext [993] - Closing org.springframework.web.context.support.GenericWebApplicationContext@3403e2ac: startup date [Tue Sep 25 18:55:19 CST 2018]; root of context hierarchy
+[ INFO ] [2018-09-25 18:55:35] org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor [208] - Shutting down ExecutorService 'taskExecutor'
