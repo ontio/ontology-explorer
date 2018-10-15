@@ -1,30 +1,30 @@
 <template>
-  <div id="app" class="container-bg-color">
+  <div id="app" class="container-fluid container-bg-color">
     <top-nav></top-nav>
     <router-view/>
-    <bottom></bottom>
+    <the-footer></the-footer>
   </div>
 </template>
 
 <script>
   import 'bootstrap/dist/css/bootstrap.min.css'
   import 'bootstrap/dist/js/bootstrap.min.js'
+  import 'chart.js'
   import TopNav from './common/TopNav'
-  import bottom from './common/bottom'
+  import TheFooter from './common/TheFooter'
 
   export default {
     name: 'App',
     components: {
       TopNav,
-      bottom
+      TheFooter
     }
   }
 </script>
 
 <style>
-  @import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700,900");
-
   .container-bg-color {
     background-color: #f4f4f4;
+    padding: 0 !important;
   }
 </style>

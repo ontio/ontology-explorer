@@ -2,33 +2,37 @@
   <div class="container div-run-status">
     <div class="row">
       <div class="col col-click" @click="toBlockListPage">
-        <label class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.CurrentHeight}}</p>
+        <span class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</span>
+        <span class="view-go-to">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.CurrentHeight}}</span>
       </div>
       <div class="col col-click" @click="toTransactionListPage">
-        <label class="run-status-label">{{ $t('runStatus.TxnCount') }}</label>
-        <p class=" run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</p>
+        <span class="run-status-label">{{ $t('runStatus.TxnCount') }}</span>
+        <span class="view-go-to">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</span>
       </div>
-      <div class="col col-click" @click="toAddressListPage">
-        <label class="run-status-label">{{ $t('runStatus.addressCount') }}</label>
-        <p class="run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</p>
+      <div class="col col-click" @click="toOnlineNodes" v-if="$route.params.net !== 'testnet'">
+        <span class="run-status-label">{{ $t('runStatus.NodeCount') }}</span>
+        <span class="view-go-to">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</span>
+      </div>
+      <!--<div class="col col-click" @click="toAddressListPage">-->
+      <div class="col col-no-click-fix">
+        <span class="run-status-label">{{ $t('runStatus.addressCount') }}</span>
+        <!--<span class="view-go-to">>></span>-->
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</span>
       </div>
       <div class="col col-click" @click="toOntIdListPage">
-        <label class="run-status-label">{{ $t('runStatus.ontid') }}</label>
-        <p class=" run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</p>
+        <span class="run-status-label">{{ $t('runStatus.ontid') }}</span>
+        <span class="view-go-to">>></span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</span>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-4 text-left">
-        <label class="run-status-chart-title">Time Since Last Block</label>
-      </div>
-    </div>
-
-    <div class="row">
+    <div class="row chart-margin-top">
       <div class="col">
         <div id="chartwrapper" class="chart-container">
-          <canvas id="myChart" class="mycanvas" height="100"></canvas>
+          <canvas id="myChart" class="mycanvas" height="90"></canvas>
         </div>
       </div>
     </div>
@@ -55,85 +59,7 @@
         lastheight: 0,
         chartData: [],
         chartLabels: [],
-        chartbackgroundColor: [
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(228, 228, 228, 1)',
-          'rgba(50, 164, 190, 1)',
-
-        ]
+        chartbackgroundColor: this.generateBgColor()
       }
     },
     created() {
@@ -147,7 +73,6 @@
     watch: {
       '$route': 'getRunStatus',
       'getTime.info': function () {
-
         if (this.getTime.info.length > 1) {
           for (var i = 0; i < this.getTime.info.length; i++) {
             this.chartData[75 - i] = this.getTime.info[i].GenerateTime
@@ -156,7 +81,7 @@
           }
           this.myChart.update();
         } else {
-          if (this.getTime.info[0].Height != this.lastheight) {
+          if (this.getTime.info[0].Height !== this.lastheight) {
             this.chartData.splice(0, 1)
             this.chartLabels.splice(0, 1)
             this.chartData.push(this.getTime.info[0].GenerateTime)
@@ -175,48 +100,52 @@
       })
     },
     methods: {
-      toBlockListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'blockListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'blockListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      generateBgColor() {
+        let retData = []
+        for (let i = 0; i < 76; i++) {
+          retData[i] = 'rgba(228, 228, 228, 1)'
+        }
+        retData.splice(75, 0, 'rgba(50, 164, 190, 1)')
+
+        return retData
+      },
+      toBlockListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'blockListDetail', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'blockListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
-      toTransactionListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'TransactionListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'TransactionListDetailTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      toTransactionListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
-      toAddressListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'addressList', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'addressListTest', params:{pageSize:10,pageNumber:1,net:"testnet"}})
+      toAddressListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'addressList', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'addressListTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
-      toOntIdListPage(){
-        if(this.$route.params.net == undefined){
-          this.$router.push({ name:'OntIdListDetail', params:{pageSize:10,pageNumber:1}})
-        }else{
-          this.$router.push({ name:'OntIdListDetailTest', params:{pageSize:10,pageNumber:1,net:'testnet'}})
+      toOntIdListPage() {
+        if (this.$route.params.net == undefined) {
+          this.$router.push({name: 'OntIdListDetail', params: {pageSize: 20, pageNumber: 1}})
+        } else {
+          this.$router.push({name: 'OntIdListDetailTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
         }
+      },
+      toOnlineNodes() {
+        window.location.href = 'https://monitor.ont.io/'
       },
       getRunStatus() {
-        this.$store.dispatch('getRunStatus', this.$route.params).then(response => {
-          /* console.log(response) */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$store.dispatch('getRunStatus', this.$route.params).then()
       },
       generateTime(amount) {
-        this.$route.params.amount = amount
-        this.$store.dispatch('generateTime', this.$route.params).then(response => {
-          /* console.log("11111",response) */
-        }).catch(error => {
-          console.log(error)
-        })
+        this.$route.params.amount = amount;
+        this.$store.dispatch('generateTime', this.$route.params).then()
       },
       getDay($time) {
         return Helper.getDayfunction($time)
@@ -291,7 +220,6 @@
         });
         chart.update();
       },
-
       removeData: function (chart) {
         chart.data.datasets.forEach((dataset) => {
           dataset.data.pop();
@@ -306,10 +234,11 @@
           symbol: '',//默认的分割符号，千，万，千万
           dot: 0 //保留几位小数点
         }
+
         //如果setting为空，就取default的值
         var setting = $.extend(defaults, setting);
-        //如果对象有多个，提示出错
 
+        //如果对象有多个，提示出错
         if ($(className).length > 1) {
           alert("just only one obj!");
           return;
@@ -344,6 +273,7 @@
 
           return arrStr;
         }
+
         //设置DOM symbol:分割符号
         var setNumDom = function (arrStr) {
           var shtml = '<div class="mt-number-animate">';
@@ -357,6 +287,7 @@
           shtml += '</div>';
           return shtml;
         }
+
         //执行动画
         var runAnimate = function ($parent) {
           $parent.find(".mt-number-animate-dom").each(function () {
@@ -415,6 +346,7 @@
           }
           runAnimate($(className));
         }
+
         //init
         init($(className));
         return this;
@@ -429,16 +361,34 @@
 <style scoped>
   .div-run-status {
     border-radius: 0.25rem;
-    padding: 15px 0;
+    padding: 15px;
   }
 
   label {
     font-size: 16px;
   }
 
+  .view-go-to {
+    color: #afacac;
+    margin-left: 6px;
+  }
+
+  .col-click,
+  .col-no-click-fix{
+    padding-top: 15px;
+  }
+
   .col-click:hover {
     cursor: pointer;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+    color: #32A4BE;
+  }
+
+  .col-click:hover > .run-status-label {
+    color: #32A4BE;
+  }
+
+  .col-click:hover > .view-go-to {
+    color: #32A4BE;
   }
 
   .run-status-label {
@@ -453,10 +403,8 @@
     color: #595757;
   }
 
-  .run-status-chart-title {
-    color: #AFACAC;
-    margin-top: 13px;
-    margin-bottom: 0px;
+  .chart-margin-top {
+    margin-top: 30px;
   }
 
   .div-run-status {

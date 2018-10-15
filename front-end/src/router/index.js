@@ -2,16 +2,18 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import Home from '@/components/home/Index'
-import BlockListPage from '@/components/BlockListDetail/BlockListPage'
-import BlockDetailPage from '@/components/BlockListDetail/BlockDetailPage'
-import OntIdListPage from '@/components/OntIdListDetail/OntIdListPage'
-import OntIdDetailPage from '@/components/OntIdListDetail/OntIdDetailPage'
-import AddressDetailPage from '@/components/AddressDetail/AddressDetailPage'
-import AddressList from '@/components/AddressDetail/List'
-import TransactionPage from '@/components/TransactionListDetail/TransactionListPage'
-import TransactionDetailPage from '@/components/TransactionListDetail/TransactionDetailPage'
-import ClaimDetailPage from '@/components/claim/ClaimDetailPage'
-import ClaimVerifyPage from '@/components/claim/ClaimVerifyPage'
+import BlockListPage from '@/components/blocks/List'
+import BlockDetailPage from '@/components/blocks/Detail'
+import OntIdListPage from '@/components/ontId/List'
+import OntIdDetailPage from '@/components/ontId/Detail'
+import AddressDetailPage from '@/components/addresses/Detail'
+import AddressList from '@/components/addresses/List'
+import TransactionPage from '@/components/transactions/List'
+import TransactionDetailPage from '@/components/transactions/Detail'
+import ClaimDetailPage from '@/components/claim/Detail'
+import ClaimVerifyPage from '@/components/claim/Verify'
+import NodeStakeAuthorization from '@/components/nodes/List'
+import NodeTeamDetail from '@/components/nodes/Detail'
 
 Vue.use(Router)
 let routes = [
@@ -28,6 +30,16 @@ let routes = [
   {
     path: '/block/:param',
     name: 'blockDetail',
+    component: BlockDetailPage
+  },
+  {
+    path: '/BlockListDetail/:pageSize/:pageNumber/:net',
+    name: 'blockListDetailTest',
+    component: BlockListPage
+  },
+  {
+    path: '/block/:param/:net',
+    name: 'blockDetailTest',
     component: BlockDetailPage
   },
   {
@@ -51,8 +63,13 @@ let routes = [
     component: AddressDetailPage
   },
   {
-    path: '/address-list/:pageSize/:pageNumber',
+    path: '/addresses/:pageSize/:pageNumber',
     name: 'addressList',
+    component: AddressList
+  },
+  {
+    path: '/addresses/:pageSize/:pageNumber/:net',
+    name: 'addressListTest',
     component: AddressList
   },
   {
@@ -79,16 +96,6 @@ let routes = [
     path: '/:net',
     name: 'HomeTest',
     component: Home
-  },
-  {
-    path: '/BlockListDetail/:pageSize/:pageNumber/:net',
-    name: 'blockListDetailTest',
-    component: BlockListPage
-  },
-  {
-    path: '/block/:param/:net',
-    name: 'blockDetailTest',
-    component: BlockDetailPage
   },
   {
     path: '/ontidlist/:pageSize/:pageNumber/:net',
@@ -130,6 +137,21 @@ let routes = [
     name: 'ClaimVerifyTest',
     component: ClaimVerifyPage
   },
+  {
+    path: '/nodes/list',
+    name: 'NodeStakeList',
+    component: NodeStakeAuthorization
+  },
+  {
+    path: '/nodes/detail/:pk',
+    name: 'NodeTeamDetail',
+    component: NodeTeamDetail
+  },
+  {
+    path: '/nodes/list/:net',
+    name: 'NodeStakeListTestNet',
+    component: NodeStakeAuthorization
+  }
 ]
 
 const router = new Router({
