@@ -1,9 +1,9 @@
-/*
+﻿/*
 Navicat MySQL Data Transfer
 
-Source Server         : Ontology-mainnet主网
-Source Server Version : 50639
-Source Host           : explorer.mysql.database.azure.com:3306
+Source Server         : localhost
+Source Server Version : 50717
+Source Host           : localhost:3306
 Source Database       : explorer
 
 Target Server Type    : MYSQL
