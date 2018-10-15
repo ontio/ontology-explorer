@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import BlockChain from './modules/block-chain'
 import RunStatus from './modules/run-status'
 import OntIdList from './modules/ont-id-list'
 import OntIdListPage from './modules/ont-id-list-page'
@@ -12,15 +11,15 @@ import BlockDetailPage from './modules/block-detail-page'
 import TransactionList from './modules/transaction-list'
 import TransactionListPage from './modules/transaction-list-page'
 import TransactionDetailPage from './modules/transaction-detail-page'
-import AddressDetailPage from './modules/address-detail-page'
-import AddressListPage from './modules/address-list-page'
+import AddressDetailPage from './modules/address-detail'
+import AddressListPage from './modules/address-list'
 import ClaimDetailPage from './modules/claim-verify-page'
+import NodeAuthorization from './modules/node-authorization.js'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
-    BlockChain,
     RunStatus,
     OntIdList,
     OntIdListPage,
@@ -33,6 +32,7 @@ export default new Vuex.Store({
     TransactionDetailPage,
     AddressDetailPage,
     AddressListPage,
-    ClaimDetailPage
+    ClaimDetailPage,
+    NodeAuthorization
   }
 })

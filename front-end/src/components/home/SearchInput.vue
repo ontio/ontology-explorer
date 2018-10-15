@@ -2,15 +2,13 @@
   <div>
     <div class="container">
       <div class="row">
-        <div class="col-lg-12 form-group search-area text-center">
-          <h2 class="font-ExtraLight font-size40" style="color:white;font-weight:100;">Blockchain Explorer & Trust
-            Verifier</h2>
+        <div class="col form-group search-area text-center">
+          <h2 class="font-ExtraLight font-size40" style="color:white;font-weight:100;">{{$t('searchInput.slogan')}}</h2>
           <div class="input-group">
             <input type="text" class="form-control input-search search-input-txt"
-                   v-model="searchContent" :placeholder="$t('searchInput.placeholder')">
+                   v-model="searchContent" @keyup.13="submitSearch" :placeholder="$t('searchInput.placeholder')">
             <div class="input-group-addon input-submit-search search-input-txt search-btn text-center font-weight-bold"
                  @click="submitSearch">
-              <!--<span class=""></span>-->
               {{$t('searchInput.search')}}
             </div>
           </div>
@@ -29,15 +27,13 @@
           </div>
           <div class="modal-body">
             <div>
-              <!-- <p class="font-Regular" style="width:100%">Please Input Claim URL</p> -->
               <p><input class="font-Regular font-size14" type="text" style="width:100%;padding:12px"
                         placeholder="Input Your Claim URI"/></p>
             </div>
             <div>
-              <p class="font-Regular font-size24 " style="text-align: center;width:100%">Or</p>
+              <p class="font-Regular font-size24" style="text-align: center;width:100%">Or</p>
             </div>
             <div>
-              <!-- <p class="font-Regular">Upload Claim File</p> -->
               <p>
                 <button type="button" class="upload_btn btn-primary font-Regular" data-dismiss="modal"
                         style="margin:auto"><i class="fa fa-lg fa-folder-open-o"></i> Choose Your Claim File
@@ -87,12 +83,12 @@
               if (this.$route.params.net == undefined) {
                 this.$router.push({
                   name: 'AddressDetail',
-                  params: {address: this.searchContent, pageSize: 10, pageNumber: 1}
+                  params: {address: this.searchContent, pageSize: 20, pageNumber: 1}
                 })
               } else {
                 this.$router.push({
                   name: 'AddressDetailTest',
-                  params: {address: this.searchContent, pageSize: 10, pageNumber: 1, net: 'testnet'}
+                  params: {address: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
                 })
               }
               break;
@@ -101,12 +97,12 @@
               if (this.$route.params.net == undefined) {
                 this.$router.push({
                   name: 'OntIdDetail',
-                  params: {ontid: this.searchContent, pageSize: 10, pageNumber: 1}
+                  params: {ontid: this.searchContent, pageSize: 20, pageNumber: 1}
                 })
               } else {
                 this.$router.push({
                   name: 'OntIdDetailTest',
-                  params: {ontid: this.searchContent, pageSize: 10, pageNumber: 1, net: 'testnet'}
+                  params: {ontid: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
                 })
               }
               break;

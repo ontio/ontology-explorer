@@ -1,91 +1,85 @@
 /**
- * The lang saved to the localStorage.
+ * 一些工具函数，自定义名称为：$HelperTools。
+ * 在main.js import和use可全局使用。
  */
-export default {
+
+const HelperTools = {
   getDateTime(inputTime) {
     let date = new Date(inputTime * 1000);
-    let Y = date.getFullYear() + '-';
-    let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-    let D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-    let h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
-    let m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-    let s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
-    let NowTime = new Date()
-    let showtime = (NowTime - date)/1000
-    /* return Y + M + D + ' ' + h + ':' + m + ':' + s; */
+    let NowTime = new Date();
+    let showtime = (NowTime - date) / 1000;
+
     return parseInt(showtime);
   },
 
   getshowDate(inputTime) {
-    if(inputTime <=60){
-      return inputTime+"s"
+    if (inputTime <= 60) {
+      return inputTime + "s"
     }
-    if(60< inputTime &&  inputTime <=3600){
-      return parseInt(inputTime/60)+"m"
+    if (60 < inputTime && inputTime <= 3600) {
+      return parseInt(inputTime / 60) + "m"
     }
-    if(3600 < inputTime &&  inputTime  <=86400){
-      return parseInt(inputTime/3600)+"h"
+    if (3600 < inputTime && inputTime <= 86400) {
+      return parseInt(inputTime / 3600) + "h"
     }
-    if(inputTime >86400){
-      return parseInt(inputTime/86400)+"d"
+    if (inputTime > 86400) {
+      return parseInt(inputTime / 86400) + "d"
     }
   },
 
-  getDate(inputTime) {
+  getTransDate(inputTime) {
     let date = new Date(inputTime * 1000);
-    var utctime = date.getUTCHours()
-    /* console.log("utctime1",date.getUTCHours()+":"+date.getUTCMinutes()+":"+date.getUTCSeconds()) */
-    let Y = date.getUTCFullYear() ;
+    let Y = date.getUTCFullYear();
     let M = (date.getUTCMonth() + 1 < 10 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1);
-    var mouth = ''
-    switch(M){
+    let mouth = '';
+
+    switch (M.toString()) {
       case "01":
-        mouth = 'Jan-'
-      break;
+        mouth = 'Jan-';
+        break;
       case "02":
-        mouth = 'Feb-'
-      break;
+        mouth = 'Feb-';
+        break;
       case "03":
-        mouth = 'Mar-'
-      break;
+        mouth = 'Mar-';
+        break;
       case "04":
-        mouth = 'Apr-'
-      break;
+        mouth = 'Apr-';
+        break;
       case "05":
-        mouth = 'May-'
-      break;
+        mouth = 'May-';
+        break;
       case "06":
-        mouth = 'Jun-'
-      break;
+        mouth = 'Jun-';
+        break;
       case "07":
-        mouth = 'Jul-'
-      break;
+        mouth = 'Jul-';
+        break;
       case "08":
-        mouth = 'Aug-'
-      break;
+        mouth = 'Aug-';
+        break;
       case "09":
-        mouth = 'Sep-'
-      break;
+        mouth = 'Sep-';
+        break;
       case "10":
-        mouth = 'Oct-'
-      break;
+        mouth = 'Oct-';
+        break;
       case "11":
-        mouth = 'Nov-'
-      break;
+        mouth = 'Nov-';
+        break;
       case "12":
-        mouth = 'Dec-'
-      break;
+        mouth = 'Dec-';
+        break;
       default:
-      break;
+        break;
     }
-    let D = date.getUTCDate() < 10 ? '0' + date.getUTCDate() + '-': date.getUTCDate()+'-';
+
+    let D = date.getUTCDate() < 10 ? '0' + date.getUTCDate() + '-' : date.getUTCDate() + '-';
     let h = date.getUTCHours() < 10 ? '0' + date.getUTCHours() : date.getUTCHours();
     let m = date.getUTCMinutes() < 10 ? '0' + date.getUTCMinutes() : date.getUTCMinutes();
     let s = date.getUTCSeconds() < 10 ? '0' + date.getUTCSeconds() : date.getUTCSeconds();
-    let NowTime = new Date()
-    let showtime = (NowTime - date)/1000
-    return mouth+D+Y +' ' + h + ':' + m + ':' + s+" UTC";
-    /* return parseInt(showtime); */
+
+    return mouth + D + Y + ' ' + h + ':' + m + ':' + s + " UTC";
   },
 
   getDayfunction(second_time) {
@@ -111,8 +105,13 @@ export default {
     return time;
   },
 
-  getNormalgas(gas){
-    let showGas = gas*0.000000001
-    return showGas
+  getNormalgas(gas) {
+    return gas * 0.000000001
+  }
+};
+
+export default {
+  install: function (Vue) {
+    Vue.prototype.$HelperTools = HelperTools
   }
 }

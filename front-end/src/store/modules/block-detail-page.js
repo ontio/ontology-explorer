@@ -18,15 +18,14 @@ export default {
   },
   actions: {
     getBlockDetailPage({dispatch, commit},$param) {
-      let used_url 
-      if($param.net=="testnet"){
-        used_url = process.env.TEST_API_URL
-      }else{
-        used_url = process.env.API_URL
-      }
-      return axios.get(used_url + '/block/'+$param.param).then(response => {
+      let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+
+      return axios.get(apiUrl + '/block/'+$param.param).then(response => {
         let msg = response.data
-        //console.log(msg.Result)
+        let blockData = msg.Result
+
+        // 将bookkeeper拆成数组
+        blockData.BookKeeper = blockData.BookKeeper.split('&')
 
         let blockHeight = msg.Result.Height
         let nextBlock
@@ -39,7 +38,7 @@ export default {
 
         commit({
           type: types.SET_BLOCK_DETAIL_PAGE,
-          info: msg.Result,
+          info: blockData,
           lastBlockHeight: lastBlock,
           nextBlockHeight: nextBlock,
         })
