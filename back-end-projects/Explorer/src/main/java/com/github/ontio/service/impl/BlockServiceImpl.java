@@ -156,4 +156,36 @@ public class BlockServiceImpl implements IBlockService {
 
         return Helper.result("QueryBlockGenerateTime", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsList);
     }
+
+    @Override
+    public Result blockCountInTwoWeeks(int time) {
+
+        List<Map> twoWeeksBlockCountList = new ArrayList<>();
+        int zeroTime  = time/86400*86400;
+        try {
+            for(int i = 0; i < 14 ; i++){
+                if(i == 0){
+                    int count = blockMapper.selectBlockCountInOneDay(zeroTime, time);
+                    Map<String, Object> oneDayCount = new HashMap<>();
+                    oneDayCount.put("day",zeroTime);
+                    oneDayCount.put("count",count);
+                    twoWeeksBlockCountList.add(oneDayCount);
+                }else{
+                    int dayEndTime = zeroTime - (i-1) * 86400;
+                    int dayStartTime = dayEndTime - 86400;
+                    int count = blockMapper.selectBlockCountInOneDay(dayStartTime, dayEndTime);
+                    Map<String, Object> oneDayCount = new HashMap<>();
+                    oneDayCount.put("day",dayStartTime);
+                    oneDayCount.put("count",count);
+                    twoWeeksBlockCountList.add(oneDayCount);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("db error...",e);
+            e.printStackTrace();
+            return Helper.result("BlockCountInTwoWeeks", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION,false);
+        }
+
+        return Helper.result("BlockCountInTwoWeeks", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, twoWeeksBlockCountList);
+    }
 }
