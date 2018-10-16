@@ -32,6 +32,8 @@ public interface TransactionDetailMapper {
 
     int selectTxnWithoutOntIdAmount();
 
+    int selectTxnCountInOneDay(int startTime,int endTime);
+
     Map<String,Object> selectTxnByHash(String txnHash);
 
     List<Map> selectTxnByBlockHeight(int height);
