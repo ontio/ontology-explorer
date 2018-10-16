@@ -52,6 +52,14 @@ public interface ITransactionService {
      */
     Result queryTxnList(int pageSize, int pageNumber);
 
+    /**
+     * query txn by page
+     *
+     * @param time
+     * @return
+     */
+    Result txnCountInTwoWeeks(int time);
+
 
     /**
      *  query asset balance and transactions

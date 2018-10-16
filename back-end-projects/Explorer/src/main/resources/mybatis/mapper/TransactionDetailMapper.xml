@@ -378,7 +378,11 @@
     limit #{beginIndex}, #{amount}
   </select>
 
-
+  <select id="selectTxnCountInOneDay" resultType="java.lang.Integer">
+    select count(*) as nums
+    from tbl_ont_txn_detail
+    where txntime between #{startTime} and #{endTime}
+  </select>
 
 
 </mapper>

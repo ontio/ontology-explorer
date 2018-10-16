@@ -97,6 +97,38 @@ public class TransactionServiceImpl implements ITransactionService {
         return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
 
+    @Override
+    public Result txnCountInTwoWeeks(int time) {
+
+        List<Map> twoWeeksTxnCountList = new ArrayList<>();
+        int zeroTime  = time/86400*86400;
+        try {
+            for(int i = 0; i < 14 ; i++){
+                if(i == 0){
+                    int count = transactionDetailMapper.selectTxnCountInOneDay(zeroTime, time);
+                    Map<String, Object> oneDayCount = new HashMap<>();
+                    oneDayCount.put("day",zeroTime);
+                    oneDayCount.put("count",count);
+                    twoWeeksTxnCountList.add(oneDayCount);
+                }else{
+                    int dayEndTime = zeroTime - (i-1) * 86400;
+                    int dayStartTime = dayEndTime - 86400;
+                    int count = transactionDetailMapper.selectTxnCountInOneDay(dayStartTime, dayEndTime);
+                    Map<String, Object> oneDayCount = new HashMap<>();
+                    oneDayCount.put("day",dayStartTime);
+                    oneDayCount.put("count",count);
+                    twoWeeksTxnCountList.add(oneDayCount);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("db error...",e);
+            e.printStackTrace();
+            return Helper.result("txnCountInTwoWeeks", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION,false);
+        }
+
+        return Helper.result("txnCountInTwoWeeks", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, twoWeeksTxnCountList);
+    }
+
 
     @Override
     public Result queryTxnDetailByHash(String txnHash) {
