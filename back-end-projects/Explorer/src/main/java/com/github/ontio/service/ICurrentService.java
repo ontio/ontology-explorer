@@ -34,4 +34,6 @@ public interface ICurrentService {
      * @return
      */
     Result querySummaryInfo();
+
+    Result queryMarketingInfo();
 }
