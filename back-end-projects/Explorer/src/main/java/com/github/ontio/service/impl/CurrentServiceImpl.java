@@ -85,4 +85,19 @@ public class CurrentServiceImpl implements ICurrentService {
 
         return Helper.result("QueryCurrentInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
+
+
+    @Override
+    public Result queryMarketingInfo() {
+
+        Map summary = currentMapper.selectSummaryInfo();
+        int height = (Integer) summary.get("Height");
+
+        Map<String,Object> rsMap = new HashMap<>();
+        rsMap.put("CurrentHeight", height);
+        rsMap.put("CurrentSupply", "59.75%");
+
+        return Helper.result("QueryMarketingInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
+    }
+
 }
