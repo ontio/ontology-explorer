@@ -79,5 +79,18 @@ public class CurrentController {
     }
 
 
+    /**
+     * query current summary information
+     *
+     * @return
+     */
+    @RequestMapping(value = "/marketing/info", method = RequestMethod.GET)
+    public Result queryMarketingInfo() {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = currentService.queryMarketingInfo();
+        return rs;
+    }
 
 }
