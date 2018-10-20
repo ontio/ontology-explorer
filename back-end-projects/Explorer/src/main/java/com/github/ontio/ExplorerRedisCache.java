@@ -53,7 +53,7 @@ public class ExplorerRedisCache implements Cache {
 
     @Override
     public void putObject(Object key, Object value) {
-      //  logger.info("##putObject. key:{}, value:{}##", key, value);
+        logger.info("##putObject. key:{}, value:{}##", key, value);
         if (value != null) {
             // 向Redis中添加数据，有效时间是2天
             redisTemplate.opsForValue().set(key.toString(), value, 2, TimeUnit.DAYS);
@@ -66,7 +66,7 @@ public class ExplorerRedisCache implements Cache {
         try {
             if (key != null) {
                 Object obj = redisTemplate.opsForValue().get(key.toString());
-              //  logger.info("##getObject. value:{}", obj);
+       //         logger.info("##getRedisObject. value:{}", obj);
                 return obj;
             }
         } catch (Exception e) {
