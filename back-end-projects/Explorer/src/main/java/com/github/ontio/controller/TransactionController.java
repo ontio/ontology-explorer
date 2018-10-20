@@ -96,21 +96,6 @@ public class TransactionController {
         return rs;
     }
 
-    /**
-     * transaction count in two weeks
-     *
-     * @return
-     */
-    @RequestMapping(value = "/txnCountInTwoWeeks/{time}", method = RequestMethod.GET)
-    @ResponseBody
-    public Result txnCountInTwoWeeks(@PathVariable("time") int time) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("txnHash:{}", time);
-
-        Result rs = transactionService.txnCountInTwoWeeks(time);
-        return rs;
-    }
 
     /**
      * query asset balance and transactions by address
@@ -233,7 +218,7 @@ public class TransactionController {
      *
      * @return
      */
-    @RequestMapping(value = "/address/list", method = RequestMethod.GET)
+/*    @RequestMapping(value = "/address/list", method = RequestMethod.GET)
     @ResponseBody
     public Result queryAddressList() {
 
@@ -241,7 +226,7 @@ public class TransactionController {
 
         Result rs = transactionService.queryAddressList();
         return rs;
-    }
+    }*/
 
 
     /**
