@@ -218,7 +218,7 @@ public class TransactionController {
      *
      * @return
      */
-    @RequestMapping(value = "/address/list", method = RequestMethod.GET)
+/*    @RequestMapping(value = "/address/list", method = RequestMethod.GET)
     @ResponseBody
     public Result queryAddressList() {
 
@@ -226,7 +226,7 @@ public class TransactionController {
 
         Result rs = transactionService.queryAddressList();
         return rs;
-    }
+    }*/
 
 
     /**
