@@ -80,6 +80,10 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public Result queryTxnList(int pageSize, int pageNumber) {
 
+        if(pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit "+configParam.QUERYADDRINFO_PAGESIZE);
+        }
+
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
         List<Map> txnList = transactionDetailMapper.selectTxnWithoutOntId(start, pageSize);
@@ -150,6 +154,10 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize) {
 
+        if(pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit "+configParam.QUERYADDRINFO_PAGESIZE);
+        }
+
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Address", address);
         int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(paramMap);
@@ -167,7 +175,7 @@ public class TransactionServiceImpl implements ITransactionService {
         while (difAmount > 0) {
 
             paramMap.put("Start", limitStart);
-            paramMap.put("PageSize", dbReturnNum);
+            paramMap.put("PageSize", dbReturnNum * 2);
             //保证转账event在前，手续费event在后
             List<Map> dbTxnList = transactionDetailMapper.selectTxnByAddressInfo(paramMap);
             //格式化转账交易列表，txnlist数量会减少
@@ -215,6 +223,10 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName) {
+
+        if(pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit "+configParam.QUERYADDRINFO_PAGESIZE);
+        }
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Address", address);
