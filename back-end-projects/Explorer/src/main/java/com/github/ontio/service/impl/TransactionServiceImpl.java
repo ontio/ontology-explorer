@@ -80,6 +80,10 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public Result queryTxnList(int pageSize, int pageNumber) {
 
+        if(pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit "+configParam.QUERYADDRINFO_PAGESIZE);
+        }
+
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
         List<Map> txnList = transactionDetailMapper.selectTxnWithoutOntId(start, pageSize);
@@ -95,38 +99,6 @@ public class TransactionServiceImpl implements ITransactionService {
         rs.put("Total", amount);
 
         return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
-    }
-
-    @Override
-    public Result txnCountInTwoWeeks(int time) {
-
-        List<Map> twoWeeksTxnCountList = new ArrayList<>();
-        int zeroTime  = time/86400*86400;
-        try {
-            for(int i = 0; i < 14 ; i++){
-                if(i == 0){
-                    int count = transactionDetailMapper.selectTxnCountInOneDay(zeroTime, time);
-                    Map<String, Object> oneDayCount = new HashMap<>();
-                    oneDayCount.put("day",zeroTime);
-                    oneDayCount.put("count",count);
-                    twoWeeksTxnCountList.add(oneDayCount);
-                }else{
-                    int dayEndTime = zeroTime - (i-1) * 86400;
-                    int dayStartTime = dayEndTime - 86400;
-                    int count = transactionDetailMapper.selectTxnCountInOneDay(dayStartTime, dayEndTime);
-                    Map<String, Object> oneDayCount = new HashMap<>();
-                    oneDayCount.put("day",dayStartTime);
-                    oneDayCount.put("count",count);
-                    twoWeeksTxnCountList.add(oneDayCount);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("db error...",e);
-            e.printStackTrace();
-            return Helper.result("txnCountInTwoWeeks", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION,false);
-        }
-
-        return Helper.result("txnCountInTwoWeeks", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, twoWeeksTxnCountList);
     }
 
 
@@ -182,6 +154,10 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize) {
 
+        if(pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit "+configParam.QUERYADDRINFO_PAGESIZE);
+        }
+
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Address", address);
         int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(paramMap);
@@ -199,7 +175,7 @@ public class TransactionServiceImpl implements ITransactionService {
         while (difAmount > 0) {
 
             paramMap.put("Start", limitStart);
-            paramMap.put("PageSize", dbReturnNum);
+            paramMap.put("PageSize", dbReturnNum * 2);
             //保证转账event在前，手续费event在后
             List<Map> dbTxnList = transactionDetailMapper.selectTxnByAddressInfo(paramMap);
             //格式化转账交易列表，txnlist数量会减少
@@ -247,6 +223,10 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName) {
+
+        if(pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit "+configParam.QUERYADDRINFO_PAGESIZE);
+        }
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Address", address);
