@@ -262,6 +262,32 @@
   </select>
 
 
+    <select id="selectTxnByFromAddressInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, Txnindex
+        from tbl_ont_txn_detail
+        where fromaddress = #{Address}
+        <if test="AssetName != '' and AssetName != null">
+            and assetname = #{AssetName}
+        </if>
+        and eventtype in (1,3)
+        order by height DESC
+        limit #{Start}, #{PageSize}
+    </select>
+
+
+    <select id="selectTxnByToAddressInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, Txnindex
+        from tbl_ont_txn_detail
+        where toaddress = #{Address}
+        <if test="AssetName != '' and AssetName != null">
+            and assetname = #{AssetName}
+        </if>
+        and eventtype in (1,3)
+        order by height DESC
+        limit #{Start}, #{PageSize}
+    </select>
+
+
   <select id="selectTxnByAddressInfoAndTimePage" parameterType="java.util.Map" resultType="java.util.Map">
     select t2.* from (
     select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress
