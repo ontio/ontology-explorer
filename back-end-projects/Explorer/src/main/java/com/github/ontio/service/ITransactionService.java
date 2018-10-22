@@ -112,7 +112,5 @@ public interface ITransactionService {
     Result queryAddressList();
 
 
-    Result queryLatestTransferTxnAddrInfo(int amount);
-
 
 }
