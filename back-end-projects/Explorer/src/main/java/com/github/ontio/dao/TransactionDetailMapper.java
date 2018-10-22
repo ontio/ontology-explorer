@@ -46,6 +46,11 @@ public interface TransactionDetailMapper {
 
     List<Map> selectTxnByAddressInfo(Map<String, Object> param);
 
+    List<Map> selectTxnByToAddressInfo(Map<String, Object> param);
+
+    List<Map> selectTxnByFromAddressInfo(Map<String, Object> param);
+
+
     List<Map> selectTxnByAddressInfoAndTimePage(Map<String, Object> param);
 
     List<Map> selectTxnByAddressInfoAndTime(Map<String, Object> param);
