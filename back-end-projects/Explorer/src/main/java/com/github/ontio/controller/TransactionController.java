@@ -229,21 +229,5 @@ public class TransactionController {
     }*/
 
 
-    /**
-     * query the last few transactions
-     *
-     * @return
-     */
-/*    @RequestMapping(value = "/latest/transfertxn/addrinfo/{amount}", method = RequestMethod.GET)
-    @ResponseBody
-    public Result queryLatestTransferTxnAddrInfo(@PathVariable("amount") int amount) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}",amount);
-
-        Result rs = transactionService.queryLatestTransferTxnAddrInfo(amount);
-        return rs;
-    }*/
-
 
 }
