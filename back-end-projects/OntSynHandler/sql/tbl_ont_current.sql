@@ -22,7 +22,8 @@ DROP TABLE IF EXISTS `tbl_ont_current`;
 CREATE TABLE `tbl_ont_current` (
   `height` int(12) NOT NULL,
   `txncount` int(12) NOT NULL,
-  `ontidcount` int(12) NOT NULL
+  `ontidcount` int(12) NOT NULL,
+  `nonontidtxncount` int(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into tbl_ont_current(height,txncount,ontidcount) values(-1,0,0);
+insert into tbl_ont_current(height,txncount,ontidcount,nonontidtxncount) values(-1,0,0,0);
