@@ -61,4 +61,11 @@ public interface IBlockService {
     Result queryBlockGenerateTime(int amount);
 
 
+    /**
+     * Block number in two weeks
+     *
+     * @param time
+     * @return
+     */
+    Result blockCountInTwoWeeks(int time);
 }
