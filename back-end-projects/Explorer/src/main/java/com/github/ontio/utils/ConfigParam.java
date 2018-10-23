@@ -43,9 +43,5 @@ public class ConfigParam {
     public int GENESISBLOCKTIME;
 
 
-    @Value("${queryAddr.pageSize}")
-    public int QUERYADDRINFO_PAGESIZE;
-
-
 
 }
