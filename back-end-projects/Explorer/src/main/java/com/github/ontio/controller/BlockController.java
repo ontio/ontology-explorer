@@ -139,8 +139,23 @@ public class BlockController {
         logger.info("reqParam:{}",reqParam);
 
         return Helper.result("AuthConfirm", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION,true);
-
-
     }
 
+
+    /**
+     * query the last few blocks
+     *
+     * @param time the amount of queries
+     * @return
+     */
+    @RequestMapping(value = "/blockCountInTwoWeeks/{time}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result blockCountInTwoWeeks(@PathVariable("time") int time) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("time:{}", time);
+
+        Result rs = blockService.blockCountInTwoWeeks(time);
+        return rs;
+    }
 }
