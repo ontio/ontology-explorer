@@ -9,17 +9,17 @@
   </cache>
 
 
-
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Current">
     <result column="height" jdbcType="INTEGER" property="height" />
     <result column="txncount" jdbcType="INTEGER" property="txncount" />
     <result column="ontidcount" jdbcType="INTEGER" property="ontidcount" />
+    <result column="nonontidtxncount" jdbcType="INTEGER" property="nonontidtxncount" />
   </resultMap>
   <insert id="insert" parameterType="com.github.ontio.model.Current">
-    insert into tbl_ont_current (height, txncount, ontidcount
-      )
-    values (#{height,jdbcType=INTEGER}, #{txncount,jdbcType=INTEGER}, #{ontidcount,jdbcType=INTEGER}
-      )
+    insert into tbl_ont_current (height, txncount, ontidcount, 
+      nonontidtxncount)
+    values (#{height,jdbcType=INTEGER}, #{txncount,jdbcType=INTEGER}, #{ontidcount,jdbcType=INTEGER}, 
+      #{nonontidtxncount,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.Current">
     insert into tbl_ont_current
@@ -33,6 +33,9 @@
       <if test="ontidcount != null">
         ontidcount,
       </if>
+      <if test="nonontidtxncount != null">
+        nonontidtxncount,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="height != null">
@@ -44,17 +47,19 @@
       <if test="ontidcount != null">
         #{ontidcount,jdbcType=INTEGER},
       </if>
+      <if test="nonontidtxncount != null">
+        #{nonontidtxncount,jdbcType=INTEGER},
+      </if>
     </trim>
   </insert>
-
 
   <select id="selectDBHeight" resultType="java.lang.Integer" useCache="false">
     select Height
     from tbl_ont_current
   </select>
 
-  <select id="selectTxnCount" resultType="java.util.Map" useCache="false">
-    select TxnCount, OntIdCount
+  <select id="selectSummary" resultType="java.util.Map" useCache="false">
+    select TxnCount, OntIdCount, NonOntIdTxnCount, Height
     from tbl_ont_current
   </select>
 
@@ -62,7 +67,8 @@
     update tbl_ont_current
     set height = #{height},
     txncount = #{txncount},
-    ontidcount = #{ontidcount}
+    ontidcount = #{ontidcount},
+    nonontidtxncount = #{nonontidtxncount}
   </update>
 
 </mapper>
