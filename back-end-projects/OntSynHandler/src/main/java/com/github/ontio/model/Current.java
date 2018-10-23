@@ -7,6 +7,8 @@ public class Current {
 
     private Integer ontidcount;
 
+    private Integer nonontidtxncount;
+
     public Integer getHeight() {
         return height;
     }
@@ -29,5 +31,13 @@ public class Current {
 
     public void setOntidcount(Integer ontidcount) {
         this.ontidcount = ontidcount;
+    }
+
+    public Integer getNonontidtxncount() {
+        return nonontidtxncount;
+    }
+
+    public void setNonontidtxncount(Integer nonontidtxncount) {
+        this.nonontidtxncount = nonontidtxncount;
     }
 }
