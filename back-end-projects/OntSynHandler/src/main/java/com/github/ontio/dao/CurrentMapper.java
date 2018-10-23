@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-
 @Mapper
 @Component(value = "CurrentMapper")
 public interface CurrentMapper {
@@ -16,8 +15,7 @@ public interface CurrentMapper {
 
     int selectDBHeight();
 
-    Map<String,Integer> selectTxnCount();
+    Map<String,Integer> selectSummary();
 
     void update(Current current);
-
 }
