@@ -52,4 +52,6 @@ public interface BlockMapper {
 
     List<Map> selectHeightAndTime(int amount);
 
+    int selectBlockCountInOneDay(int startTime,int endTime);
+
 }
