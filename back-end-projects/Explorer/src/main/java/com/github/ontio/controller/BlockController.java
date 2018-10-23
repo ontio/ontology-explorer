@@ -131,16 +131,6 @@ public class BlockController {
     }
 
 
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    @ResponseBody
-    public Result test(@RequestBody String reqParam) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("reqParam:{}",reqParam);
-
-        return Helper.result("AuthConfirm", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION,true);
-    }
-
 
     /**
      * query the last few blocks
