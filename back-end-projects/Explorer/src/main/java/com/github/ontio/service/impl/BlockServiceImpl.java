@@ -43,7 +43,7 @@ import java.util.Map;
 //@MapperScan("com.github.ontio.dao")
 public class BlockServiceImpl implements IBlockService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(BlockServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
@@ -58,14 +58,7 @@ public class BlockServiceImpl implements IBlockService {
     @Override
     public Result queryBlockList(int amount) {
 
-        List<Map> blockList = new ArrayList<>();
-        try {
-            blockList = queryBlockByPage(0, amount);
-        } catch (Exception e) {
-            logger.error("db error...",e);
-            e.printStackTrace();
-            return Helper.result("QueryBlockList", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION,false);
-        }
+        List<Map> blockList = blockMapper.selectBlockByPage(0, amount);
 
         return Helper.result("QueryBlockList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, blockList);
     }
@@ -73,49 +66,26 @@ public class BlockServiceImpl implements IBlockService {
     @Override
     public Result queryBlockList(int pageSize, int pageNumber) {
 
-        int start = pageSize * (pageNumber - 1) < 0 ? 0:pageSize * (pageNumber - 1);
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+        List<Map> blockList = blockMapper.selectBlockByPage(start, pageSize);
 
-        List<Map> blockList = new ArrayList<>();
-        Map summaryMap = new HashMap();
-        try {
-            blockList = queryBlockByPage(start, pageSize);
-            summaryMap = currentMapper.selectSummaryInfo();
-        } catch (Exception e) {
-            logger.error("db error...",e);
-            e.printStackTrace();
-            return Helper.result("QueryBlockList", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION,false);
-        }
-
+        Map summaryMap = currentMapper.selectSummaryInfo();
         int total = (Integer) summaryMap.get("Height");
 
-        Map<String,Object> rs = new HashMap<>();
+        Map<String, Object> rs = new HashMap<>();
         rs.put("BlockList", blockList);
-        rs.put("Total",total);
+        rs.put("Total", total);
 
-        return Helper.result("QueryBlockList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(),VERSION, rs);
+        return Helper.result("QueryBlockList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
 
-
-    /**
-     * query blocks by page
-     *
-     * @param start
-     * @param pageSize
-     * @return
-     * @throws Exception
-     */
-    private List<Map> queryBlockByPage (int start, int pageSize) throws Exception{
-
-        List<Map> blockList  = blockMapper.selectBlockByPage(start, pageSize);
-        return blockList;
-    }
 
     @Override
     public Result queryBlockByHeight(int height) {
 
         Map blockInfo = blockMapper.selectBlockByHeight(height);
-        if(blockInfo == null) {
-            return Helper.result("QueryBlock", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION,false);
+        if (Helper.isEmptyOrNull(blockInfo)) {
+            return Helper.result("QueryBlock", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
         }
 
         List<Map> txnList = transactionDetailMapper.selectTxnByBlockHeight(height);
@@ -128,8 +98,7 @@ public class BlockServiceImpl implements IBlockService {
     public Result queryBlockByHash(String hash) {
 
         Map blockInfo = blockMapper.selectBlockByHash(hash);
-
-        if(blockInfo == null) {
+        if (Helper.isEmptyOrNull(blockInfo)) {
             return Helper.result("QueryBlock", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
         }
 
@@ -146,8 +115,8 @@ public class BlockServiceImpl implements IBlockService {
         List<Map> dataList = blockMapper.selectHeightAndTime(amount + 1);
         List<Map> rsList = new ArrayList<>();
 
-        for(int i = 0; i < dataList.size() - 1; i++) {
-            int time = (Integer)dataList.get(i).get("BlockTime") - (Integer)dataList.get(i+1).get("BlockTime");
+        for (int i = 0; i < dataList.size() - 1; i++) {
+            int time = (Integer) dataList.get(i).get("BlockTime") - (Integer) dataList.get(i + 1).get("BlockTime");
             Map<String, Object> temp = new HashMap<>();
             temp.put("Height", dataList.get(i).get("Height"));
             temp.put("GenerateTime", time);
@@ -155,5 +124,37 @@ public class BlockServiceImpl implements IBlockService {
         }
 
         return Helper.result("QueryBlockGenerateTime", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsList);
+    }
+
+    @Override
+    public Result blockCountInTwoWeeks(int time) {
+
+        List<Map> twoWeeksBlockCountList = new ArrayList<>();
+        int zeroTime = time / 86400 * 86400;
+        try {
+            for (int i = 0; i < 14; i++) {
+                if (i == 0) {
+                    int count = blockMapper.selectBlockCountInOneDay(zeroTime, time);
+                    Map<String, Object> oneDayCount = new HashMap<>();
+                    oneDayCount.put("day", zeroTime);
+                    oneDayCount.put("count", count);
+                    twoWeeksBlockCountList.add(oneDayCount);
+                } else {
+                    int dayEndTime = zeroTime - (i - 1) * 86400;
+                    int dayStartTime = dayEndTime - 86400;
+                    int count = blockMapper.selectBlockCountInOneDay(dayStartTime, dayEndTime);
+                    Map<String, Object> oneDayCount = new HashMap<>();
+                    oneDayCount.put("day", dayStartTime);
+                    oneDayCount.put("count", count);
+                    twoWeeksBlockCountList.add(oneDayCount);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("db error...", e);
+            e.printStackTrace();
+            return Helper.result("BlockCountInTwoWeeks", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION, false);
+        }
+
+        return Helper.result("BlockCountInTwoWeeks", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, twoWeeksBlockCountList);
     }
 }
