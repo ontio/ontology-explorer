@@ -22,6 +22,7 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.IOntIdService;
@@ -47,12 +48,14 @@ import java.util.Map;
 @MapperScan("com.github.ontio.dao")
 public class OntIdServiceImpl implements IOntIdService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(OntIdServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
     @Autowired
     private OntIdMapper ontIdMapper;
+    @Autowired
+    private CurrentMapper currentMapper;
     @Autowired
     private ConfigParam configParam;
 
@@ -72,8 +75,7 @@ public class OntIdServiceImpl implements IOntIdService {
         for (Map map :
                 ontIdList) {
             map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
-            BigDecimal fee = (BigDecimal) map.get("Fee");
-            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
+            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
         }
 
         return Helper.result("QueryOntIdList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, ontIdList);
@@ -82,17 +84,20 @@ public class OntIdServiceImpl implements IOntIdService {
     @Override
     public Result queryOntIdList(int pageSize, int pageNumber) {
 
+        if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryOntIdList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
+        }
+
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
-
-        int count = ontIdMapper.selectOntIdTxnCount();
         List<Map> ontIdList = ontIdMapper.selectOntIdByPage(start, pageSize);
-
         for (Map map :
                 ontIdList) {
             map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
-            BigDecimal fee = (BigDecimal) map.get("Fee");
-            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
+            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
         }
+
+        Map currentMap = currentMapper.selectSummaryInfo();
+        int count = (Integer)currentMap.get("TxnCount") - (Integer) currentMap.get("NonOntIdTxnCount");
 
         Map<String, Object> rs = new HashMap<>();
         rs.put("OntIdList", ontIdList);
@@ -104,30 +109,30 @@ public class OntIdServiceImpl implements IOntIdService {
     @Override
     public Result queryOntIdDetail(String ontId, int pageSize, int pageNumber) {
 
+        if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
+            return Helper.result("QueryOntId", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
+        }
+
         int start = (pageNumber - 1) * pageSize < 0 ? 0 : (pageNumber - 1) * pageSize;
 
         Map<String, Object> param = new HashMap<>();
         param.put("PageSize", pageSize);
         param.put("Start", start);
         param.put("OntId", ontId);
-
         List<Map> ontIdList = ontIdMapper.selectOntId(param);
         if (ontIdList.size() == 0) {
             return Helper.result("QueryOntId", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
         }
 
-        int amount = ontIdMapper.selectCountByOntId(ontId);
-
         for (Map map :
                 ontIdList) {
             map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
-            BigDecimal fee = (BigDecimal) map.get("Fee");
-            map.put("Fee", fee.compareTo(ConstantParam.ZERO) == 0 ? "0" : fee.toString());
+            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
         }
 
         initSDK();
         String ddoStr = sdkService.getDDO(ontId);
-        logger.info("{} query ddo info:{}", ddoStr);
+        logger.info("{} query ddo info:{}", ontId, ddoStr);
 
         JSONObject ddoObj = JSON.parseObject(ddoStr);
         if (ddoObj.containsKey("Attributes")) {
@@ -135,6 +140,7 @@ public class OntIdServiceImpl implements IOntIdService {
             ddoObj.replace("Attributes", formatedAttrList);
         }
 
+        int amount = ontIdMapper.selectCountByOntId(ontId);
         Map<String, Object> rs = new HashMap<>();
         rs.put("Ddo", ddoObj);
         rs.put("TxnList", ontIdList);
