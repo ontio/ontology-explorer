@@ -68,7 +68,13 @@ public final class ConstantParam {
      * the number of ontid transactions of one block
      *
      */
-    public static int ONTIDTXN_INIT_AMOUNT = 0;
+    public static int ONEBLOCK_ONTID_AMOUNT = 0;
+
+    /**
+     * the number of nonontid transactions of one block
+     *
+     */
+    public static int ONEBLOCK_ONTIDTXN_AMOUNT = 0;
 
     /**
      * ontId operation transaction smart contract event description
