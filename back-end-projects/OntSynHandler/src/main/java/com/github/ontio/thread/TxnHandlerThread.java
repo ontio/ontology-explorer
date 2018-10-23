@@ -121,6 +121,7 @@ public class TxnHandlerThread {
                         //ontId operation transaction
                         handleOntIdTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
                                 gasConsumed, i + 1);
+                        addOneBlockOntIdTxnCount();
 
                     } else if (configParam.CLAIMRECORD_CODEHASH.equals(contractAddress)) {
                         //claimrecord transaction
@@ -164,8 +165,12 @@ public class TxnHandlerThread {
     }
 
 
-    public synchronized void addOntIdTxncount() {
-        ConstantParam.ONTIDTXN_INIT_AMOUNT++;
+    public synchronized void addOneBlockOntIdCount() {
+        ConstantParam.ONEBLOCK_ONTID_AMOUNT++;
+    }
+
+    public synchronized void addOneBlockOntIdTxnCount() {
+        ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT++;
     }
 
 
@@ -260,7 +265,7 @@ public class TxnHandlerThread {
 
         if (ConstantParam.REGISTER.equals(action)) {
             //ontid数量加1
-            addOntIdTxncount();
+            addOneBlockOntIdCount();
         }
 
     }
