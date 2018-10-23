@@ -62,15 +62,15 @@
         <table tableName="view_ont_transaction" domainObjectName="Transaction" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
 -->
 
-<!--
         <table tableName="tbl_ont_current" domainObjectName="Current" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
--->
 
 <!--
         <table tableName="tbl_ont_ontid_detail" domainObjectName="OntId" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
 -->
 
+<!--
         <table tableName="tbl_ont_txn_detail" domainObjectName="TransactionDetail" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+-->
 
     </context>
 </generatorConfiguration>
