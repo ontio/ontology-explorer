@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/explorer/")
 public class TransactionController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -214,7 +214,7 @@ public class TransactionController {
 
 
     /**
-     * query the last few transactions
+     * query all address information
      *
      * @return
      */
