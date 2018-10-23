@@ -78,7 +78,8 @@ public class BlockHandleService {
         int txnNum = txnArray.size();
         logger.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
 
-        ConstantParam.ONTIDTXN_INIT_AMOUNT = 0;
+        ConstantParam.ONEBLOCK_ONTID_AMOUNT = 0;
+        ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT = 0;
 
         try {
             //asynchronize handle transaction
@@ -106,10 +107,12 @@ public class BlockHandleService {
         }
         insertBlock(blockJson);
 
-        Map<String, Integer> txnMap = currentMapper.selectTxnCount();
+        Map<String, Integer> txnMap = currentMapper.selectSummary();
         int txnCount = txnMap.get("TxnCount");
-        int ontIdTxnCount = txnMap.get("OntIdCount");
-        updateCurrent(blockHeight, txnCount + txnNum, ontIdTxnCount + ConstantParam.ONTIDTXN_INIT_AMOUNT);
+        int ontIdCount = txnMap.get("OntIdCount");
+        int nonOntIdTxnCount = txnMap.get("NonOntIdTxnCount");
+        updateCurrent(blockHeight, txnCount + txnNum,
+                ontIdCount + ConstantParam.ONEBLOCK_ONTID_AMOUNT, nonOntIdTxnCount + txnNum - ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT);
 
         logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }
@@ -151,12 +154,13 @@ public class BlockHandleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateCurrent(int height, int txnCount, int ontIdTxnCount) throws Exception {
+    public void updateCurrent(int height, int txnCount, int ontIdTxnCount, int nonontIdTxnCount) throws Exception {
 
         Current currentDO = new Current();
         currentDO.setHeight(height);
         currentDO.setTxncount(txnCount);
         currentDO.setOntidcount(ontIdTxnCount);
+        currentDO.setNonontidtxncount(nonontIdTxnCount);
 
         currentMapper.update(currentDO);
     }
