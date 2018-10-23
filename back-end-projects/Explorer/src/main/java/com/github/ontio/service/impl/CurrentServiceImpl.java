@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +45,7 @@ import java.util.Map;
 @MapperScan("com.github.ontio.dao")
 public class CurrentServiceImpl implements ICurrentService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(CurrentServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
@@ -69,35 +68,19 @@ public class CurrentServiceImpl implements ICurrentService {
     public Result querySummaryInfo() {
 
         Map summary = currentMapper.selectSummaryInfo();
-        List<String> addrList = transactionDetailMapper.selectAllAddress();
+       // List<String> addrList = transactionDetailMapper.selectAllAddress();
 
-
-        initSDK();
-        int nodeCount = sdk.getNodeCount();
+        //initSDK();
+        //int nodeCount = sdk.getNodeCount();
 
         Map<String, Object> rs = new HashMap();
 
-        rs.put("NodeCount", nodeCount);
+        rs.put("NodeCount", 33);
         rs.put("CurrentHeight", summary.get("Height"));
         rs.put("TxnCount", summary.get("TxnCount"));
         rs.put("OntIdCount", summary.get("OntIdCount"));
-        rs.put("AddrCount", addrList.size());
+       // rs.put("AddrCount", addrList.size());
 
         return Helper.result("QueryCurrentInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
-
-
-    @Override
-    public Result queryMarketingInfo() {
-
-        Map summary = currentMapper.selectSummaryInfo();
-        int height = (Integer) summary.get("Height");
-
-        Map<String,Object> rsMap = new HashMap<>();
-        rsMap.put("CurrentHeight", height);
-        rsMap.put("CurrentSupply", "59.75%");
-
-        return Helper.result("QueryMarketingInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
-    }
-
 }
