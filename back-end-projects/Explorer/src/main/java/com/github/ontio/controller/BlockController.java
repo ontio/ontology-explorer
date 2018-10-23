@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/explorer")
 public class BlockController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(BlockController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -130,16 +130,6 @@ public class BlockController {
         return rs;
     }
 
-
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    @ResponseBody
-    public Result test(@RequestBody String reqParam) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("reqParam:{}",reqParam);
-
-        return Helper.result("AuthConfirm", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION,true);
-    }
 
 
     /**

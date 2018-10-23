@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/explorer/")
 public class TransactionController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -214,7 +214,7 @@ public class TransactionController {
 
 
     /**
-     * query the last few transactions
+     * query all address information
      *
      * @return
      */
@@ -228,22 +228,6 @@ public class TransactionController {
         return rs;
     }*/
 
-
-    /**
-     * query the last few transactions
-     *
-     * @return
-     */
-/*    @RequestMapping(value = "/latest/transfertxn/addrinfo/{amount}", method = RequestMethod.GET)
-    @ResponseBody
-    public Result queryLatestTransferTxnAddrInfo(@PathVariable("amount") int amount) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}",amount);
-
-        Result rs = transactionService.queryLatestTransferTxnAddrInfo(amount);
-        return rs;
-    }*/
 
 
 }
