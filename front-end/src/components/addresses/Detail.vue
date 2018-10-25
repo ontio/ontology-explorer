@@ -44,6 +44,52 @@
       </div>
     </div>
 
+    <!--2018年万圣节南瓜活动资产-->
+    <div class="row" v-if="havePumpkin">
+      <div class="col">
+        <div class="detail-col">
+          <b>{{ $t('addressDetail.oep8Assets') }}</b>
+          <div class="row pumpkin-color font-size14 text-center" style="margin-top: 20px">
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin08'">
+              <div>{{ $t('pumpkin.golden') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin01'">
+              <div>{{ $t('pumpkin.red') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin02'">
+              <div>{{ $t('pumpkin.orange') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin03'">
+              <div>{{ $t('pumpkin.yellow') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+          </div>
+
+          <div class="row pumpkin-color font-size14 text-center" style="margin-top: 20px">
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin04'">
+              <div>{{ $t('pumpkin.green') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin05'">
+              <div>{{ $t('pumpkin.indigo') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin06'">
+              <div>{{ $t('pumpkin.blue') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin07'">
+              <div>{{ $t('pumpkin.purple') }}</div>
+              <div class="font-size24">{{asset.Balance}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!--交易历史-->
     <div class="row">
       <div class="col">
@@ -125,6 +171,7 @@
         Ddo: {},
         claimflag: true,
         AssetBalance: [],
+        havePumpkin: false,
         TxnList: [],
         info: []
       }
@@ -141,6 +188,7 @@
       'addressDetail.info.info': function () {
         this.info = this.addressDetail.info.info
         this.AssetBalance = this.info.AssetBalance
+        this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0 )
         this.TxnList = this.info.TxnList
       }
     },
