@@ -47,5 +47,9 @@ public class ConfigParam {
     public int QUERYADDRINFO_PAGESIZE;
 
 
+    @Value("${oep8.pumpkin.codeHash}")
+    public String OEP8_PUMPKIN_CODEHASH;
+
+
 
 }
