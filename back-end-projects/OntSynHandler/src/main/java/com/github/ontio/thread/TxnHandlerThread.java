@@ -82,10 +82,9 @@ public class TxnHandlerThread {
             JSONObject eventObj = getEventObjByTxnHash(txnHash);
             logger.info("eventObj:{}", eventObj.toJSONString());
             //eventstate 1:success 0:failed
-            int state = eventObj.getInteger("State");
             //confimflag 1:success 2:failed
             int confirmFlag = 1;
-            if (state == 0) {
+            if (eventObj.getInteger("State") == 0) {
                 confirmFlag = 2;
             }
             BigDecimal gasConsumed = new BigDecimal(eventObj.getLongValue("GasConsumed")).divide(ConstantParam.ONG_DECIMAL);
@@ -133,6 +132,10 @@ public class TxnHandlerThread {
                         insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, ConstantParam.AUTH_OPE_PREFIX,
                                 gasConsumed, i + 1, 6);
 
+                    } else if (configParam.OEP8_PUMPKIN_CODEHASH.equals(contractAddress)) {
+                        handlePumpkinTransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                                gasConsumed, i + 1, confirmFlag);
+
                     } else {
                         //other transaction
                         insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
@@ -149,13 +152,6 @@ public class TxnHandlerThread {
             logger.error("handleOneTxn RestfulException...{}", e);
             e.printStackTrace();
             throw e;
-/*            if (com.github.ontio.utils.Helper.isJSONStr(e.getMessage())) {
-                JSONObject eObj = JSON.parseObject(e.getMessage());
-                if (43001 == eObj.getLong("Error") || 42002 == eObj.getLong("Error")) {
-                    logger.info("######this transaction no event ...");
-                    insertTxnBasicInfo(txnType,txnHash, blockHeight, blockTime, indexInBlock, 2, "", ConstantParam.ZERO, 1, 0);
-                }
-            }*/
         } catch (Exception e) {
             logger.error("handleOneTxn error...", e);
             e.printStackTrace();
@@ -171,6 +167,84 @@ public class TxnHandlerThread {
 
     public synchronized void addOneBlockOntIdTxnCount() {
         ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT++;
+    }
+
+
+    /**
+     * insert pumpkin transfer transaction
+     *
+     * @param txnType
+     * @param txnHash
+     * @param blockHeight
+     * @param blockTime
+     * @param indexInBlock
+     * @throws Exception
+     */
+    public void handlePumpkinTransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash,
+                                         int blockHeight, int blockTime, int indexInBlock,
+                                         BigDecimal gasConsumed, int indexInTxn, int confirmFlag) throws Exception {
+
+        String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+
+        String fromAddress = (String) stateArray.get(1);
+        if (!"00".equals(fromAddress)) {
+            fromAddress = Address.parse(fromAddress).toBase58();
+        }
+        String toAddress = (String) stateArray.get(2);
+        if (!"00".equals(toAddress)) {
+            toAddress = Address.parse(toAddress).toBase58();
+        }
+
+        String assetName = "";
+        String tokenId = (String) stateArray.get(3);
+        switch (tokenId) {
+            case "01":
+                assetName = "pumpkin01";
+                break;
+            case "02":
+                assetName = "pumpkin02";
+                break;
+            case "03":
+                assetName = "pumpkin03";
+                break;
+            case "04":
+                assetName = "pumpkin04";
+                break;
+            case "05":
+                assetName = "pumpkin05";
+                break;
+            case "06":
+                assetName = "pumpkin06";
+                break;
+            case "07":
+                assetName = "pumpkin07";
+                break;
+            case "08":
+                assetName = "pumpkin08";
+                break;
+        }
+
+
+        BigDecimal amount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
+        logger.info("fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, amount);
+
+        TransactionDetail transactionDetailDO = new TransactionDetail();
+        transactionDetailDO.setFromaddress(fromAddress);
+        transactionDetailDO.setToaddress(toAddress);
+        transactionDetailDO.setAssetname(assetName);
+        transactionDetailDO.setDescription(action);
+        transactionDetailDO.setFee(gasConsumed);
+        transactionDetailDO.setHeight(blockHeight);
+        transactionDetailDO.setBlockindex(indexInBlock);
+        transactionDetailDO.setTxnhash(txnHash);
+        transactionDetailDO.setTxntype(txnType);
+        transactionDetailDO.setTxntime(blockTime);
+        transactionDetailDO.setAmount(amount);
+        transactionDetailDO.setTxnindex(indexInTxn);
+        transactionDetailDO.setConfirmflag(confirmFlag);
+        transactionDetailDO.setEventtype(3);
+        session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+
     }
 
 
@@ -238,7 +312,7 @@ public class TxnHandlerThread {
      * @param indexInBlock
      * @throws Exception
      */
-    public void handleOntIdTxn(SqlSession session,JSONArray stateList, int txnType, String txnHash, int blockHeight, int blockTime, int indexInBlock,
+    public void handleOntIdTxn(SqlSession session, JSONArray stateList, int txnType, String txnHash, int blockHeight, int blockTime, int indexInBlock,
                                BigDecimal gasConsumed, int indexInTxn) throws Exception {
 
         String action = stateList.getString(0);
@@ -336,7 +410,7 @@ public class TxnHandlerThread {
         transactionDetailDO.setEventtype(eventType);
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
 
-       // transactionDetailMapper.insertSelective(transactionDetailDO);
+        // transactionDetailMapper.insertSelective(transactionDetailDO);
     }
 
     /**
@@ -486,9 +560,9 @@ public class TxnHandlerThread {
         DeployCode deployCodeObj = (DeployCode) ConstantParam.ONT_SDKSERVICE.getConnect().getTransaction(txnHash);
         String code = Helper.toHexString(deployCodeObj.code);
         String codeHash = Address.AddressFromVmCode(code).toHexString();
-       // logger.info("smartcontract codehash:{}",codeHash);
+        // logger.info("smartcontract codehash:{}",codeHash);
         JSONObject contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(codeHash);
-        logger.info("smactcontract obj:{}",contractObj.toJSONString());
+        logger.info("smartcontract obj:{}", contractObj.toJSONString());
         contractObj.remove("Code");
         return contractObj.toJSONString();
 
