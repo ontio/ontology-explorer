@@ -20,6 +20,8 @@
 package com.github.ontio.utils;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.github.ontio.OntSdk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +107,27 @@ public class OntologySDKService {
         return balanceMap;
     }
 
+    /**
+     * 获取账户南瓜余额，包括unboundong
+     *
+     * @param address
+     * @return
+     */
+    public JSONArray getAddressOpe8Balance(String address, String codeHash) {
+
+        JSONArray balanceArray = new JSONArray();
+        OntSdk ontSdk = getOntSdk(codeHash);
+        try {
+            String balance = ontSdk.neovm().oep8().balancesOf(address);
+            balanceArray = JSON.parseArray(balance);
+        } catch (Exception e) {
+            logger.error("getAddressOpe8Balance error...", e);
+            e.printStackTrace();
+            return null;
+        }
+
+        return balanceArray;
+    }
 
     /**
      * 获取unboundong
@@ -130,6 +153,13 @@ public class OntologySDKService {
     private OntSdk getOntSdk() {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
+        return wm;
+    }
+
+    private OntSdk getOntSdk(String codeHash) {
+        OntSdk wm = OntSdk.getInstance();
+        wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
+        wm.neovm().oep8().setContractAddress(codeHash);
         return wm;
     }
 
