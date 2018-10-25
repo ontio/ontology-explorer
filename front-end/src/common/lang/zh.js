@@ -83,7 +83,18 @@ module.exports = {
     ongBalance: 'ONG： ',
     claimable: '可提取的ONG： ',
     unbound: '未解绑的ONG： ',
-    txOnAddr: '笔交易在这个地址上：'
+    txOnAddr: '笔交易在这个地址上：',
+    oep8Assets: 'OEP-8 资产：'
+  },
+  pumpkin: {
+    red: '红南瓜',
+    orange: '橘南瓜',
+    yellow: '黄南瓜',
+    green: '绿南瓜',
+    indigo: '靛南瓜',
+    blue: '蓝南瓜',
+    purple: '紫南瓜',
+    golden: '金南瓜'
   },
   blockDetail: {
     nickname: '区块详情',
