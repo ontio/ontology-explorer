@@ -88,6 +88,11 @@ public class ConfigParam {
     public String ASSET_ONG_CODEHASH;
 
 
+
+    @Value("${oep8.pumpkin.codeHash}")
+    public String OEP8_PUMPKIN_CODEHASH;
+
+
     /**
      * ontology blockchainauth smartcontract codehash
      */
