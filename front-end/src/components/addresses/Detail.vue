@@ -193,7 +193,9 @@
       'addressDetail.info.info': function () {
         this.info = this.addressDetail.info.info
         this.AssetBalance = this.info.AssetBalance
-        this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0 )
+        if(this.info.AssetBalance.length > 4) {
+          this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0 )
+        }
         this.TxnList = this.info.TxnList
         this.haveNext = this.addressDetail.info.nextPage.pageNumber
       }
