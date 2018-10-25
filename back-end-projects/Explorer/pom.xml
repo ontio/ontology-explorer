@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>com.github.ontio</groupId>
 			<artifactId>javasdk</artifactId>
-			<version>v1.0</version>
+			<version>v1.1</version>
 		</dependency>
 
 
@@ -97,6 +97,12 @@
 			<artifactId>jasypt-spring-boot-starter</artifactId>
 			<version>1.14</version>
 		</dependency>-->
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.59</version>
+        </dependency>
 
 	</dependencies>
 
