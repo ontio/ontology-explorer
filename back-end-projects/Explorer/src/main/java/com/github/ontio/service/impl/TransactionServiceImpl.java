@@ -19,6 +19,7 @@
 
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
@@ -164,7 +165,6 @@ public class TransactionServiceImpl implements ITransactionService {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Address", address);
         //int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(paramMap);
-
         //db查询返回总条数or分页的前几十条
 //        int dbReturnNum = (pageNumber * pageSize) > txnAmount ? txnAmount : (pageNumber * pageSize);
         paramMap.put("Start", 0);
@@ -185,9 +185,8 @@ public class TransactionServiceImpl implements ITransactionService {
 
         List<Map> returnTxnList = new LinkedList<>();
         //先查询出txnlist，再根据请求条数进行分页
-        //分页开始index
+        //根据分页确认start，end即请求的pageSize条数
         int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
-        //api返回条数： 根据请求的pageSize对应的条数
         int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
         for (int k = start; k < end; k++) {
             returnTxnList.add(formattedTxnList.get(k));
@@ -233,7 +232,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
         List<Map> returnTxnList = new LinkedList<>();
         //先查询出txnlist，再根据请求条数进行分页
-        //分页开始index
+        //根据分页确认start，end即请求的pageSize条数
         int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
         int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
         for (int k = start; k < end; k++) {
@@ -360,9 +359,6 @@ public class TransactionServiceImpl implements ITransactionService {
         initSDK();
 
         Map<String, Object> balanceMap = sdk.getAddressBalance(address);
-        if (Helper.isEmptyOrNull(balanceMap)) {
-            return balanceList;
-        }
 
         if (Helper.isEmptyOrNull(assetName) || ConstantParam.ONG.equals(assetName)) {
 
@@ -403,6 +399,136 @@ public class TransactionServiceImpl implements ITransactionService {
             ontMap.put("Balance", balanceMap.get("ont"));
             balanceList.add(ontMap);
         }
+
+        if(Helper.isEmptyOrNull(assetName) || assetName.startsWith("pumpkin")) {
+            balanceList = getPumpkinBalance(sdk, balanceList, address, assetName);
+        }
+
+        return balanceList;
+    }
+
+
+    /**
+     * 查询南瓜余额
+     *
+     * @param sdkService
+     * @param balanceList
+     * @param address
+     * @return
+     */
+    private List getPumpkinBalance(OntologySDKService sdkService, List<Object> balanceList, String address, String assetName) {
+
+        JSONArray oep8Balance = sdkService.getAddressOpe8Balance(address, configParam.OEP8_PUMPKIN_CODEHASH);
+
+        int pumpkinTotal = 0;
+        for (Object obj:
+             oep8Balance) {
+            pumpkinTotal = pumpkinTotal + (Integer)obj;
+        }
+        Map<String, Object> pumpkinMap = new HashMap<>();
+        switch (assetName){
+            case "pumpkin01":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(0).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin02":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(1).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin03":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(2).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin04":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(3).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin05":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(4).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin06":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(5).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin07":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(6).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin08":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(7).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "":
+                getAllPumpkinBalance(oep8Balance, balanceList);
+                break;
+        }
+
+        Map<String, Object> pumpkinMap2 = new HashMap<>();
+        pumpkinMap2.put("AssetName", "totalpumpkin");
+        pumpkinMap2.put("Balance", String.valueOf(pumpkinTotal));
+        balanceList.add(pumpkinMap2);
+
+        return balanceList;
+    }
+
+    /**
+     * 获取所有南瓜余额
+     *
+     * @param oep8Balance
+     * @param balanceList
+     * @return
+     */
+    private List<Object> getAllPumpkinBalance(JSONArray oep8Balance,List<Object> balanceList) {
+
+        Map<String, Object> pumpkinMap1 = new HashMap<>();
+        pumpkinMap1.put("AssetName", "pumpkin01");
+        pumpkinMap1.put("Balance", oep8Balance.get(0).toString());
+        balanceList.add(pumpkinMap1);
+
+        Map<String, Object> pumpkinMap2 = new HashMap<>();
+        pumpkinMap2.put("AssetName", "pumpkin02");
+        pumpkinMap2.put("Balance", oep8Balance.get(1).toString());
+        balanceList.add(pumpkinMap2);
+
+        Map<String, Object> pumpkinMap3 = new HashMap<>();
+        pumpkinMap3.put("AssetName", "pumpkin03");
+        pumpkinMap3.put("Balance", oep8Balance.get(2).toString());
+        balanceList.add(pumpkinMap3);
+
+        Map<String, Object> pumpkinMap4 = new HashMap<>();
+        pumpkinMap4.put("AssetName", "pumpkin04");
+        pumpkinMap4.put("Balance", oep8Balance.get(3).toString());
+        balanceList.add(pumpkinMap4);
+
+        Map<String, Object> pumpkinMap5 = new HashMap<>();
+        pumpkinMap5.put("AssetName", "pumpkin05");
+        pumpkinMap5.put("Balance", oep8Balance.get(4).toString());
+        balanceList.add(pumpkinMap5);
+
+        Map<String, Object> pumpkinMap6 = new HashMap<>();
+        pumpkinMap6.put("AssetName", "pumpkin06");
+        pumpkinMap6.put("Balance", oep8Balance.get(5).toString());
+        balanceList.add(pumpkinMap6);
+
+
+        Map<String, Object> pumpkinMap7 = new HashMap<>();
+        pumpkinMap7.put("AssetName", "pumpkin07");
+        pumpkinMap7.put("Balance", oep8Balance.get(6).toString());
+        balanceList.add(pumpkinMap7);
+
+        Map<String, Object> pumpkinMap8 = new HashMap<>();
+        pumpkinMap8.put("AssetName", "pumpkin08");
+        pumpkinMap8.put("Balance", oep8Balance.get(7).toString());
+        balanceList.add(pumpkinMap8);
 
         return balanceList;
     }
@@ -455,7 +581,7 @@ public class TransactionServiceImpl implements ITransactionService {
             }
 
             String txnhash = (String) map.get("TxnHash");
-           // logger.info("txnhash:{}", txnhash);
+            // logger.info("txnhash:{}", txnhash);
 
             if (txnInfoMap.containsKey(txnhash)) {
 
