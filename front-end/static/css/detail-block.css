@@ -39,3 +39,8 @@
 .word-break {
   word-break: break-all;
 }
+
+/* 万圣节南瓜资产颜色 */
+.pumpkin-color {
+  color: #D3A02E !important;
+}
