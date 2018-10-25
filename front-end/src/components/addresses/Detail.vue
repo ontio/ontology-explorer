@@ -96,7 +96,8 @@
         <div class="detail-col">
           <div class="row font-size24 font-blod normal_color">
             <div class="col">
-              {{ addressDetail.info.allPage }} {{ $t('addressDetail.txOnAddr') }}
+              <!--{{ addressDetail.info.allPage }} {{ $t('addressDetail.txOnAddr') }}-->
+              {{ $t('addressDetail.txns') }}
             </div>
           </div>
           <div class="row table-responsive">
@@ -149,12 +150,15 @@
     </div>
 
     <div class="row justify-content-center" style="margin-top: 30px;">
-      <div id="page" v-show="addressDetail.info.allPage > 10">
+      <!--<div id="page" v-show="addressDetail.info.allPage > 10">-->
+      <div id="page">
         <ul class="pagination">
           <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
           <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.lastPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.PreviousPage')}}</a></button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.nextPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.finalPage)" ><button style="border-left:0px" class="goto_btn"><a>{{$t('page.Last')}}</a></button> </li>
+          <li v-show="haveNext" class="transaction-list-page-check-hand padding0"
+              @click="goToPage(addressDetail.info.nextPage)">
+            <button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>
+          <!--<li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.finalPage)" ><button style="border-left:0px" class="goto_btn"><a>{{$t('page.Last')}}</a></button> </li>-->
         </ul>
       </div>
     </div>
@@ -171,9 +175,10 @@
         Ddo: {},
         claimflag: true,
         AssetBalance: [],
-        havePumpkin: false,
+        havePumpkin: false, // 标识是否显示2018年万圣节南瓜资产
         TxnList: [],
-        info: []
+        info: [],
+        haveNext: false // 标识是否显示下一页的导航按钮
       }
     },
     created() {
@@ -188,8 +193,11 @@
       'addressDetail.info.info': function () {
         this.info = this.addressDetail.info.info
         this.AssetBalance = this.info.AssetBalance
-        this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0 )
+        if(this.info.AssetBalance.length > 4) {
+          this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0 )
+        }
         this.TxnList = this.info.TxnList
+        this.haveNext = this.addressDetail.info.nextPage.pageNumber
       }
     },
     computed: {
