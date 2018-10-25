@@ -138,6 +138,7 @@ public class TransactionController {
 
     /**
      * query the specially asset balance and transactions
+     * ONTO use
      *
      * @return
      */
@@ -159,7 +160,7 @@ public class TransactionController {
 
     /**
      * query the specially asset balance and transactions
-     *
+     * ONTO use
      * @return
      */
     @RequestMapping(value = "/address/time/{address}/{assetname}/{begintime}/{endtime}", method = RequestMethod.GET)
@@ -197,7 +198,7 @@ public class TransactionController {
 
 
     /**
-     * query the last few transactions
+     * query the balance
      *
      * @return
      */
