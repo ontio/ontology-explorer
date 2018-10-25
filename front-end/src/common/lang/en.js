@@ -83,7 +83,18 @@ module.exports = {
     ongBalance: 'ONG Balance: ',
     claimable: 'Claimable ONG: ',
     unbound: 'Unbound ONG: ',
-    txOnAddr: 'Transactions on this Address:'
+    txOnAddr: 'Transactions on this Address:',
+    oep8Assets: 'OEP-8 Assets:'
+  },
+  pumpkin: {
+    red: 'Red Pumpkin',
+    orange: 'Orange Pumpkin',
+    yellow: 'Yellow Pumpkin',
+    green: 'Green Pumpkin',
+    indigo: 'Indigo Pumpkin',
+    blue: 'Blue Pumpkin',
+    purple: 'Purple Pumpkin',
+    golden: 'Golden Pumpkin'
   },
   blockDetail: {
     nickname: 'BLOCK DETAILS',
