@@ -427,34 +427,9 @@ public class TransactionServiceImpl implements ITransactionService {
         }
         Map<String, Object> pumpkinMap = new HashMap<>();
         switch (assetName){
-            case "pumpkin01":
+            case "pumpkin08":
                 pumpkinMap.put("AssetName", assetName);
-                pumpkinMap.put("Balance", oep8Balance.get(0).toString());
-                balanceList.add(pumpkinMap);
-                break;
-            case "pumpkin02":
-                pumpkinMap.put("AssetName", assetName);
-                pumpkinMap.put("Balance", oep8Balance.get(1).toString());
-                balanceList.add(pumpkinMap);
-                break;
-            case "pumpkin03":
-                pumpkinMap.put("AssetName", assetName);
-                pumpkinMap.put("Balance", oep8Balance.get(2).toString());
-                balanceList.add(pumpkinMap);
-                break;
-            case "pumpkin04":
-                pumpkinMap.put("AssetName", assetName);
-                pumpkinMap.put("Balance", oep8Balance.get(3).toString());
-                balanceList.add(pumpkinMap);
-                break;
-            case "pumpkin05":
-                pumpkinMap.put("AssetName", assetName);
-                pumpkinMap.put("Balance", oep8Balance.get(4).toString());
-                balanceList.add(pumpkinMap);
-                break;
-            case "pumpkin06":
-                pumpkinMap.put("AssetName", assetName);
-                pumpkinMap.put("Balance", oep8Balance.get(5).toString());
+                pumpkinMap.put("Balance", oep8Balance.get(7).toString());
                 balanceList.add(pumpkinMap);
                 break;
             case "pumpkin07":
@@ -462,9 +437,34 @@ public class TransactionServiceImpl implements ITransactionService {
                 pumpkinMap.put("Balance", oep8Balance.get(6).toString());
                 balanceList.add(pumpkinMap);
                 break;
-            case "pumpkin08":
+            case "pumpkin06":
                 pumpkinMap.put("AssetName", assetName);
-                pumpkinMap.put("Balance", oep8Balance.get(7).toString());
+                pumpkinMap.put("Balance", oep8Balance.get(5).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin05":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(4).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin04":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(3).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin03":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(2).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin02":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(1).toString());
+                balanceList.add(pumpkinMap);
+                break;
+            case "pumpkin01":
+                pumpkinMap.put("AssetName", assetName);
+                pumpkinMap.put("Balance", oep8Balance.get(0).toString());
                 balanceList.add(pumpkinMap);
                 break;
             case "":
@@ -489,46 +489,45 @@ public class TransactionServiceImpl implements ITransactionService {
      */
     private List<Object> getAllPumpkinBalance(JSONArray oep8Balance,List<Object> balanceList) {
 
-        Map<String, Object> pumpkinMap1 = new HashMap<>();
-        pumpkinMap1.put("AssetName", "pumpkin01");
-        pumpkinMap1.put("Balance", oep8Balance.get(0).toString());
-        balanceList.add(pumpkinMap1);
-
-        Map<String, Object> pumpkinMap2 = new HashMap<>();
-        pumpkinMap2.put("AssetName", "pumpkin02");
-        pumpkinMap2.put("Balance", oep8Balance.get(1).toString());
-        balanceList.add(pumpkinMap2);
-
-        Map<String, Object> pumpkinMap3 = new HashMap<>();
-        pumpkinMap3.put("AssetName", "pumpkin03");
-        pumpkinMap3.put("Balance", oep8Balance.get(2).toString());
-        balanceList.add(pumpkinMap3);
-
-        Map<String, Object> pumpkinMap4 = new HashMap<>();
-        pumpkinMap4.put("AssetName", "pumpkin04");
-        pumpkinMap4.put("Balance", oep8Balance.get(3).toString());
-        balanceList.add(pumpkinMap4);
-
-        Map<String, Object> pumpkinMap5 = new HashMap<>();
-        pumpkinMap5.put("AssetName", "pumpkin05");
-        pumpkinMap5.put("Balance", oep8Balance.get(4).toString());
-        balanceList.add(pumpkinMap5);
-
-        Map<String, Object> pumpkinMap6 = new HashMap<>();
-        pumpkinMap6.put("AssetName", "pumpkin06");
-        pumpkinMap6.put("Balance", oep8Balance.get(5).toString());
-        balanceList.add(pumpkinMap6);
-
+        Map<String, Object> pumpkinMap8 = new HashMap<>();
+        pumpkinMap8.put("AssetName", "pumpkin08");
+        pumpkinMap8.put("Balance", oep8Balance.get(7).toString());
+        balanceList.add(pumpkinMap8);
 
         Map<String, Object> pumpkinMap7 = new HashMap<>();
         pumpkinMap7.put("AssetName", "pumpkin07");
         pumpkinMap7.put("Balance", oep8Balance.get(6).toString());
         balanceList.add(pumpkinMap7);
 
-        Map<String, Object> pumpkinMap8 = new HashMap<>();
-        pumpkinMap8.put("AssetName", "pumpkin08");
-        pumpkinMap8.put("Balance", oep8Balance.get(7).toString());
-        balanceList.add(pumpkinMap8);
+        Map<String, Object> pumpkinMap6 = new HashMap<>();
+        pumpkinMap6.put("AssetName", "pumpkin06");
+        pumpkinMap6.put("Balance", oep8Balance.get(5).toString());
+        balanceList.add(pumpkinMap6);
+
+        Map<String, Object> pumpkinMap5 = new HashMap<>();
+        pumpkinMap5.put("AssetName", "pumpkin05");
+        pumpkinMap5.put("Balance", oep8Balance.get(4).toString());
+        balanceList.add(pumpkinMap5);
+
+        Map<String, Object> pumpkinMap4 = new HashMap<>();
+        pumpkinMap4.put("AssetName", "pumpkin04");
+        pumpkinMap4.put("Balance", oep8Balance.get(3).toString());
+        balanceList.add(pumpkinMap4);
+
+        Map<String, Object> pumpkinMap3 = new HashMap<>();
+        pumpkinMap3.put("AssetName", "pumpkin03");
+        pumpkinMap3.put("Balance", oep8Balance.get(2).toString());
+        balanceList.add(pumpkinMap3);
+
+        Map<String, Object> pumpkinMap2 = new HashMap<>();
+        pumpkinMap2.put("AssetName", "pumpkin02");
+        pumpkinMap2.put("Balance", oep8Balance.get(1).toString());
+        balanceList.add(pumpkinMap2);
+
+        Map<String, Object> pumpkinMap1 = new HashMap<>();
+        pumpkinMap1.put("AssetName", "pumpkin01");
+        pumpkinMap1.put("Balance", oep8Balance.get(0).toString());
+        balanceList.add(pumpkinMap1);
 
         return balanceList;
     }
