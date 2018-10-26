@@ -84,6 +84,7 @@ module.exports = {
     claimable: 'Claimable ONG: ',
     unbound: 'Unbound ONG: ',
     txOnAddr: 'Transactions on this Address:',
+    txns: 'Transactions:',
     oep8Assets: 'OEP-8 Assets:'
   },
   pumpkin: {
