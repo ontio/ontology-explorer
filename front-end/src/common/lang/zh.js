@@ -84,6 +84,7 @@ module.exports = {
     claimable: '可提取的ONG： ',
     unbound: '未解绑的ONG： ',
     txOnAddr: '笔交易在这个地址上：',
+    txns: '交易列表:',
     oep8Assets: 'OEP-8 资产：'
   },
   pumpkin: {
