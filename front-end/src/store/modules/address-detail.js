@@ -61,21 +61,25 @@ export default {
 
       return axios.get(apiUrl + '/address/'+$param.address+'/'+$param.pageSize+'/'+$param.pageNumber).then(response => {
         let msg = response.data
-        
-        let allPageNum = msg.Result.TxnTotal
-        let finalPageNum = parseInt(allPageNum/20)+1
+
+        // let allPageNum = msg.Result.TxnTotal
+        // let finalPageNum = parseInt(allPageNum/20)+1
         let lastPageNum = 1
         if ($param.pageNumber>1){
           lastPageNum = $param.pageNumber-1
         }
-        let nextPageNum = finalPageNum
-        if ($param.pageNumber<finalPageNum){
-          nextPageNum = $param.pageNumber-1+2
+        let nextPageNum = $param.pageNumber-1+2
+        if(msg.Result.TxnList.length !== 20) { // 不足20表示是最后一页
+          nextPageNum = false
         }
+        // let nextPageNum = finalPageNum
+        // if ($param.pageNumber<finalPageNum){
+        //   nextPageNum = $param.pageNumber-1+2
+        // }
 
         let info={
           info: getTransAmount($param.address, msg.Result),
-          allPage: allPageNum,
+          // allPage: allPageNum,
           firstPage: {
             pageSize: '20',
             pageNumber: 1
@@ -88,10 +92,10 @@ export default {
             pageSize: '20',
             pageNumber: nextPageNum
           },
-          finalPage: {
-            pageSize: '20',
-            pageNumber: finalPageNum
-          }
+          // finalPage: {
+          //   pageSize: '20',
+          //   pageNumber: finalPageNum
+          // }
         }
         commit({
           type: types.SET_ADDRESS_DETAIL_PAGE,
