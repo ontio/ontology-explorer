@@ -187,7 +187,7 @@
             <div class="row ">
               <div class="col-lg-4 padding0-right pointer">{{tx.FromAddress}}</div>
               <div class="col-lg-1 ">>></div>
-              <div class="col-lg-2 ">{{toMoney(tx)}} {{tx.AssetName}}</div>
+              <div class="col-lg-2 ">{{toMoney(tx)}} {{getAssetName(tx.AssetName)}}</div>
               <div class="col-lg-1 ">>></div>
               <div class="col-lg-4 padding0-left pointer ">{{tx.ToAddress}}</div>
             </div>
