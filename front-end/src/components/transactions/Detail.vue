@@ -75,12 +75,12 @@
         <div class="col">
           <div class="detail-col trans-tx-col">
             <div class="row">
-              <div class="col-4 pointer" @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
-              <div class="col-1">>></div>
-              <div class="col-2 text-center font-weight-bold font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{tx.AssetName}}</span>
+              <div class="col pointer" @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
+              <div class="col">>></div>
+              <div class="col-4 text-center font-weight-bold font-size18">{{toMoney(tx)}} <span class="text-uppercase">{{getAssetName(tx.AssetName)}}</span>
               </div>
-              <div class="col-1 text-right">>></div>
-              <div class="col-4 text-right pointer" @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
+              <div class="col text-right">>></div>
+              <div class="col text-right pointer" @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
             </div>
           </div>
         </div>
@@ -159,6 +159,7 @@
         </tr>
         </tbody>
       </table>
+
       <table v-if="idflag" class="table table-hover">
         <thead>
         <tr>
@@ -210,7 +211,7 @@
         txflag: false,
         idflag: false,
         recordflag: false,
-        authflag: false,
+        authflag: false
       }
     },
     created() {
@@ -219,7 +220,6 @@
     watch: {
       '$route': 'getTxData',
       'txData': function () {
-        console.log(this.txData)
         if (this.txData.ConfirmFlag === 1) {
           if (this.txData.Detail == undefined) {
             if (this.txData.Description === '') {
@@ -237,6 +237,7 @@
               this.idflag = false;
             }
           }
+
           if (this.txData.Description == "auth") {
             this.authflag = true
           } else {
@@ -260,10 +261,56 @@
       }
     },
     methods: {
+      /**
+       * 获取资产的真实名称
+       *
+       * @param name
+       * @return {*|string}
+       */
+      getAssetName(name) {
+        let realname = '';
+
+        switch (name) {
+          case 'pumpkin01':
+            realname = this.$t('pumpkin.red');
+            break;
+          case 'pumpkin02':
+            realname = this.$t('pumpkin.orange');
+            break;
+          case 'pumpkin03':
+            realname = this.$t('pumpkin.yellow');
+            break;
+          case 'pumpkin04':
+            realname = this.$t('pumpkin.green');
+            break;
+          case 'pumpkin05':
+            realname = this.$t('pumpkin.indigo');
+            break;
+          case 'pumpkin06':
+            realname = this.$t('pumpkin.blue');
+            break;
+          case 'pumpkin07':
+            realname = this.$t('pumpkin.purple');
+            break;
+          case 'pumpkin08':
+            realname = this.$t('pumpkin.golden');
+            break;
+          case 'ong':
+            realname = 'ONG';
+            break;
+          default:
+            realname = 'ONT'
+        }
+
+        return realname;
+      },
       toMoney(txTmp) {
         if (txTmp.AssetName === 'ong') {
           return Number(txTmp.Amount)
+        } else if (txTmp.AssetName.indexOf('pumpkin') > -1) { // OEP-8资产：2018年万圣节南瓜活动
+          return Number(txTmp.Amount)
         } else {
+          console.log(txTmp.Amount)
           let num = txTmp.Amount;
           return num.split('').reverse().join('').substr(10, 10).split('').reverse().join('')
         }
