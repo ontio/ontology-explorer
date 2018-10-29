@@ -28,7 +28,23 @@ const HelperTools = {
   },
 
   getTransDate(inputTime) {
-    let date = new Date(inputTime * 1000);
+    inputTime = inputTime * 1000;
+
+    if(window.localStorage.getItem('user_lang') === 'zh') {
+      return this.getPRCTime(inputTime)
+    } else {
+      return this.getUTCTime(inputTime)
+    }
+  },
+
+  /**
+   * 获取UTC标准时间
+   *
+   * @param inputTime
+   * @return {string}
+   */
+  getUTCTime(inputTime) {
+    let date = new Date(inputTime);
     let Y = date.getUTCFullYear();
     let M = (date.getUTCMonth() + 1 < 10 ? '0' + (date.getUTCMonth() + 1) : date.getUTCMonth() + 1);
     let mouth = '';
@@ -80,6 +96,28 @@ const HelperTools = {
     let s = date.getUTCSeconds() < 10 ? '0' + date.getUTCSeconds() : date.getUTCSeconds();
 
     return mouth + D + Y + ' ' + h + ':' + m + ':' + s + " UTC";
+  },
+
+  /**
+   * 获取PRC地区的时间
+   *
+   * @param inputTime
+   * @return {string}
+   */
+  getPRCTime(inputTime) {
+    let date = new Date(inputTime);
+    let y = date.getFullYear();
+    let m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    let d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    let h = date.getHours();
+    h = h < 10 ? ('0' + h) : h;
+    let minute = date.getMinutes();
+    let second = date.getSeconds();
+    minute = minute < 10 ? ('0' + minute) : minute;
+    second = second < 10 ? ('0' + second) : second;
+    return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
   },
 
   getDayfunction(second_time) {

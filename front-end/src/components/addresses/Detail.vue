@@ -138,7 +138,7 @@
                     <span v-if="tx.amount.ong > 0" style="color: #00AE1D">
                     {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
                     </span>
-                      <span v-else style="color: #32A4BE">
+                    <span v-else style="color: #32A4BE">
                       {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
                     </span>
 
@@ -154,7 +154,7 @@
                     <span v-if="tx.amount.pumpkin > 0" style="color: #00AE1D">
                     {{ tx.amount.pumpkin === 0 ? '' : tx.amount.pumpkin + ' PUMPKIN' }}
                     </span>
-                      <span v-else style="color: #32A4BE">
+                    <span v-else style="color: #32A4BE">
                       {{ tx.amount.pumpkin === 0 ? '' : tx.amount.pumpkin + ' PUMPKIN' }}
                     </span>
                   </td>
