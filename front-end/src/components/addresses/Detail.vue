@@ -116,27 +116,47 @@
                   <td class="font-size14 font-Regular f-color pointer" @click="toTransactionDetailPage(tx.TxnHash)">
                     {{tx.TxnHash.substr(0,16) + '...'}}
                   </td>
+
                   <td class="font-size14 font-Regular">
-                  <span v-if="tx.amount.ont > 0" style="color: #00AE1D">
-                    {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
-                  </span>
+                    <!--ont的收支-->
+                    <span v-if="tx.amount.ont > 0" style="color: #00AE1D">
+                      {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
+                    </span>
                     <span v-else style="color: #32A4BE">
-                    {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
-                  </span>
+                      {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
+                    </span>
 
+                    <!--ont和ong中间是否有逗号-->
                     <span v-if="tx.amount.ont > 0 | tx.amount.ong > 0" style="color: #00AE1D">
-                    {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
-                  </span>
+                      {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
+                    </span>
                     <span v-else style="color: #32A4BE">
-                    {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
-                  </span>
+                      {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
+                    </span>
 
+                    <!--ong的收支-->
                     <span v-if="tx.amount.ong > 0" style="color: #00AE1D">
                     {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
-                  </span>
+                    </span>
+                      <span v-else style="color: #32A4BE">
+                      {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
+                    </span>
+
+                    <!--ong和2018年万圣节南瓜OEP-8资产中间是否有逗号-->
+                    <span v-if="tx.amount.ong > 0 | tx.amount.pumpkin > 0" style="color: #00AE1D">
+                      {{ (tx.amount.ong !== 0 & tx.amount.pumpkin !== 0) ? ' , ' : '' }}
+                    </span>
                     <span v-else style="color: #32A4BE">
-                    {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
-                  </span>
+                      {{ (tx.amount.ong !== 0 & tx.amount.pumpkin !== 0) ? ' , ' : '' }}
+                    </span>
+
+                    <!--2018年万圣节南瓜OEP-8资产的收支-->
+                    <span v-if="tx.amount.pumpkin > 0" style="color: #00AE1D">
+                    {{ tx.amount.pumpkin === 0 ? '' : tx.amount.pumpkin + ' PUMPKIN' }}
+                    </span>
+                      <span v-else style="color: #32A4BE">
+                      {{ tx.amount.pumpkin === 0 ? '' : tx.amount.pumpkin + ' PUMPKIN' }}
+                    </span>
                   </td>
                   <td class="font-size14 font-Regular s-color">{{ tx.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
                   <td class="font-size14 font-Regular normal_color">{{$HelperTools.getTransDate(tx.TxnTime)}}</td>
