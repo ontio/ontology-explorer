@@ -184,12 +184,29 @@ public class TransactionServiceImpl implements ITransactionService {
         List<Map> formattedTxnList = formatTransferTxnList2(dbTxnList);
 
         List<Map> returnTxnList = new LinkedList<>();
-        //先查询出txnlist，再根据请求条数进行分页
-        //根据分页确认start，end即请求的pageSize条数
-        int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
-        int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
-        for (int k = start; k < end; k++) {
-            returnTxnList.add(formattedTxnList.get(k));
+
+        if (formattedTxnList.size() < pageSize * pageNumber && formattedTxnList.size() > 0) {
+            int amount = transactionDetailMapper.selectAddressRecordAmount(address);
+            //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
+            if (amount > pageNumber * pageSize * 3) {
+                returnTxnList = queryAddressInfoSpe(address, pageNumber, pageSize, amount);
+            } else {
+                //先查询出txnlist，再根据请求条数进行分页
+                //根据分页确认start，end即请求的pageSize条数
+                int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+                int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
+                for (int k = start; k < end; k++) {
+                    returnTxnList.add(formattedTxnList.get(k));
+                }
+            }
+        } else {
+            //先查询出txnlist，再根据请求条数进行分页
+            //根据分页确认start，end即请求的pageSize条数
+            int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+            int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
+            for (int k = start; k < end; k++) {
+                returnTxnList.add(formattedTxnList.get(k));
+            }
         }
 
         //获取账户余额，可提取的ong，待提取的ong
@@ -201,6 +218,50 @@ public class TransactionServiceImpl implements ITransactionService {
 
         return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
 
+    }
+
+    /**
+     * 针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
+     *
+     * @param address
+     * @param pageNumber
+     * @param pageSize
+     * @param amount
+     * @return
+     */
+    private List<Map> queryAddressInfoSpe(String address, int pageNumber, int pageSize, int amount) {
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("Address", address);
+        //int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(paramMap);
+        //db查询返回总条数or分页的前几十条
+//        int dbReturnNum = (pageNumber * pageSize) > txnAmount ? txnAmount : (pageNumber * pageSize);
+        paramMap.put("Start", 0);
+        paramMap.put("PageSize", amount);
+
+        List<Map> fromAddrTxnList = transactionDetailMapper.selectTxnByFromAddressInfo(paramMap);
+        List<Map> toAddrTxnList = transactionDetailMapper.selectTxnByToAddressInfo(paramMap);
+
+        List<Map> dbTxnList = new ArrayList<>();
+        dbTxnList.addAll(fromAddrTxnList);
+        dbTxnList.addAll(toAddrTxnList);
+
+        if (fromAddrTxnList.size() != 0 && toAddrTxnList.size() != 0) {
+            sortTxnList(dbTxnList);
+        }
+
+        List<Map> formattedTxnList = formatTransferTxnList2(dbTxnList);
+
+        List<Map> returnTxnList = new LinkedList<>();
+        //先查询出txnlist，再根据请求条数进行分页
+        //根据分页确认start，end即请求的pageSize条数
+        int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+        int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
+        for (int k = start; k < end; k++) {
+            returnTxnList.add(formattedTxnList.get(k));
+        }
+
+        return returnTxnList;
     }
 
 
@@ -231,12 +292,29 @@ public class TransactionServiceImpl implements ITransactionService {
         List<Map> formattedTxnList = formatTransferTxnList2(dbTxnList);
 
         List<Map> returnTxnList = new LinkedList<>();
-        //先查询出txnlist，再根据请求条数进行分页
-        //根据分页确认start，end即请求的pageSize条数
-        int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
-        int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
-        for (int k = start; k < end; k++) {
-            returnTxnList.add(formattedTxnList.get(k));
+
+        if (formattedTxnList.size() < pageSize * pageNumber && formattedTxnList.size() > 0) {
+            int amount = transactionDetailMapper.selectAddressRecordAmount(address);
+            //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
+            if (amount > pageNumber * pageSize * 3) {
+                returnTxnList = queryAddressInfoSpe(address, pageNumber, pageSize, amount);
+            } else {
+                //先查询出txnlist，再根据请求条数进行分页
+                //根据分页确认start，end即请求的pageSize条数
+                int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+                int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
+                for (int k = start; k < end; k++) {
+                    returnTxnList.add(formattedTxnList.get(k));
+                }
+            }
+        } else {
+            //先查询出txnlist，再根据请求条数进行分页
+            //根据分页确认start，end即请求的pageSize条数
+            int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+            int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
+            for (int k = start; k < end; k++) {
+                returnTxnList.add(formattedTxnList.get(k));
+            }
         }
 
         //获取账户余额，可提取的ong，待提取的ong
@@ -400,7 +478,7 @@ public class TransactionServiceImpl implements ITransactionService {
             balanceList.add(ontMap);
         }
 
-        if(Helper.isEmptyOrNull(assetName) || assetName.startsWith("pumpkin")) {
+        if (Helper.isEmptyOrNull(assetName) || assetName.startsWith("pumpkin")) {
             balanceList = getPumpkinBalance(sdk, balanceList, address, assetName);
         }
 
@@ -421,12 +499,12 @@ public class TransactionServiceImpl implements ITransactionService {
         JSONArray oep8Balance = sdkService.getAddressOpe8Balance(address, configParam.OEP8_PUMPKIN_CODEHASH);
 
         int pumpkinTotal = 0;
-        for (Object obj:
-             oep8Balance) {
-            pumpkinTotal = pumpkinTotal + (Integer)obj;
+        for (Object obj :
+                oep8Balance) {
+            pumpkinTotal = pumpkinTotal + (Integer) obj;
         }
         Map<String, Object> pumpkinMap = new HashMap<>();
-        switch (assetName){
+        switch (assetName) {
             case "pumpkin08":
                 pumpkinMap.put("AssetName", assetName);
                 pumpkinMap.put("Balance", oep8Balance.get(7).toString());
@@ -487,7 +565,7 @@ public class TransactionServiceImpl implements ITransactionService {
      * @param balanceList
      * @return
      */
-    private List<Object> getAllPumpkinBalance(JSONArray oep8Balance,List<Object> balanceList) {
+    private List<Object> getAllPumpkinBalance(JSONArray oep8Balance, List<Object> balanceList) {
 
         Map<String, Object> pumpkinMap8 = new HashMap<>();
         pumpkinMap8.put("AssetName", "pumpkin08");
@@ -567,13 +645,13 @@ public class TransactionServiceImpl implements ITransactionService {
         //保持原排序不变动
         Map<String, Object> txnInfoMap = new LinkedHashMap<>();
 
+        int previousTxnIndex = 0;
         for (Map map :
                 dbTxnList) {
 
             map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
             String assetName = (String) map.get("AssetName");
             BigDecimal amount = (BigDecimal) map.get("Amount");
-            //金额转换string给前端显示
             //ONG 精度格式化
             if (ConstantParam.ONG.equals(assetName)) {
                 amount = amount.divide(ConstantParam.ONT_TOTAL);
@@ -581,13 +659,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
             String txnhash = (String) map.get("TxnHash");
             // logger.info("txnhash:{}", txnhash);
-
             if (txnInfoMap.containsKey(txnhash)) {
-
-                String fromaddress = (String) map.get("FromAddress");
-                String toaddress = (String) map.get("ToAddress");
                 //自己给自己转账，sql会查询出两条记录.
-                if (!fromaddress.equals(toaddress)) {
+                if (previousTxnIndex != (Integer) map.get("TxnIndex")) {
                     Map tempMap = (Map) txnInfoMap.get(txnhash);
                     List<Map> transferTxnList = (List<Map>) tempMap.get("TransferList");
 
@@ -599,7 +673,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
                     transferTxnList.add(transfertxnListMap);
                 }
-
+                previousTxnIndex = (Integer) map.get("TxnIndex");
             } else {
 
                 Map<String, Object> transfertxnListMap = new HashMap<>();
@@ -617,9 +691,11 @@ public class TransactionServiceImpl implements ITransactionService {
                 map.remove("Amount");
                 map.remove("AssetName");
 
+                previousTxnIndex = (Integer) map.get("TxnIndex");
+                map.remove("TxnIndex");
+
                 txnInfoMap.put((String) map.get("TxnHash"), map);
             }
-
         }
 
         List<Map> rsList = new ArrayList<>();
@@ -650,8 +726,8 @@ public class TransactionServiceImpl implements ITransactionService {
                     String txnHash2 = o2.get("TxnHash").toString();
                     if (txnHash1.compareTo(txnHash2) == 0) {
                         if (o1.containsKey("TxnIndex") && o2.containsKey("TxnIndex")) {
-                            Integer txnindex1 = (Integer) o1.get("Txnindex");
-                            Integer txnindex2 = (Integer) o2.get("Txnindex");
+                            Integer txnindex1 = (Integer) o1.get("TxnIndex");
+                            Integer txnindex2 = (Integer) o2.get("TxnIndex");
                             return txnindex1.compareTo(txnindex2);
                         }
                         return txnHash1.compareTo(txnHash2);
@@ -679,6 +755,7 @@ public class TransactionServiceImpl implements ITransactionService {
         List<Map> formattedTxnList = new ArrayList<>();
 
         String previousTxnHash = "";
+        int previousTxnIndex = 0;
         for (int i = 0; i < dbTxnList.size(); i++) {
             Map map = dbTxnList.get(i);
             //金额转换string给前端显示
@@ -694,11 +771,8 @@ public class TransactionServiceImpl implements ITransactionService {
             //   logger.info("txnhash:{}", txnhash);
 
             if (txnhash.equals(previousTxnHash)) {
-
-                String fromaddress = (String) map.get("FromAddress");
-                String toaddress = (String) map.get("ToAddress");
                 //自己给自己转账，sql会查询出两条记录.
-                if (!fromaddress.equals(toaddress)) {
+                if (previousTxnIndex != (Integer) map.get("TxnIndex")) {
 
                     Map<String, Object> transfertxnListMap = new HashMap<>();
                     transfertxnListMap.put("Amount", amount.toPlainString());
@@ -709,6 +783,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     List<Map> transferTxnList = (List<Map>) (formattedTxnList.get(formattedTxnList.size() - 1)).get("TransferList");
                     transferTxnList.add(transfertxnListMap);
                 }
+                previousTxnIndex = (Integer) map.get("TxnIndex");
             } else {
 
                 Map<String, Object> transfertxnListMap = new HashMap<>();
@@ -726,6 +801,8 @@ public class TransactionServiceImpl implements ITransactionService {
                 map.remove("ToAddress");
                 map.remove("Amount");
                 map.remove("AssetName");
+                previousTxnIndex = (Integer) map.get("TxnIndex");
+                map.remove("TxnIndex");
 
                 formattedTxnList.add(map);
             }
