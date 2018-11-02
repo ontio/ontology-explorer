@@ -400,4 +400,13 @@
   </select>
 
 
+  <select id="selectAddressRecordAmount" resultType="java.lang.Integer">
+    SELECT count(1)
+    FROM
+	tbl_ont_txn_detail
+    WHERE
+	fromaddress = #{param1}
+	OR toaddress = #{param1}
+  </select>
+
 </mapper>
