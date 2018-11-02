@@ -60,4 +60,8 @@ public interface TransactionDetailMapper {
 
     List<String> selectAllAddress();
 
+
+    int selectAddressRecordAmount(String address);
+
+
 }
