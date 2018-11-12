@@ -40,7 +40,7 @@ import java.util.Map;
 @Component
 public class OntologySDKService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(OntologySDKService.class);
 
     private static OntologySDKService instance = null;
 
@@ -107,6 +107,26 @@ public class OntologySDKService {
         return balanceMap;
     }
 
+
+    /**
+     * 获取OEP4账户余额
+     *
+     * @param address
+     * @return
+     */
+    public String getAddressOep4Balance(String address, String contractAddr) {
+
+        OntSdk ontSdk = getOep4OntSdk(contractAddr);
+        try {
+            String balance = ontSdk.neovm().oep4().queryBalanceOf(address);
+            return balance;
+        } catch (Exception e) {
+            logger.error("getAddressOep4Balance error...", e);
+            return "";
+        }
+    }
+
+
     /**
      * 获取账户南瓜余额，包括unboundong
      *
@@ -116,7 +136,7 @@ public class OntologySDKService {
     public JSONArray getAddressOpe8Balance(String address, String codeHash) {
 
         JSONArray balanceArray = new JSONArray();
-        OntSdk ontSdk = getOntSdk(codeHash);
+        OntSdk ontSdk = getOep8OntSdk(codeHash);
         try {
             String balance = ontSdk.neovm().oep8().balancesOf(address);
             balanceArray = JSON.parseArray(balance);
@@ -156,10 +176,17 @@ public class OntologySDKService {
         return wm;
     }
 
-    private OntSdk getOntSdk(String codeHash) {
+    private OntSdk getOep8OntSdk(String codeHash) {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
         wm.neovm().oep8().setContractAddress(codeHash);
+        return wm;
+    }
+
+    private OntSdk getOep4OntSdk(String codeHash) {
+        OntSdk wm = OntSdk.getInstance();
+        wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
+        wm.neovm().oep4().setContractAddress(codeHash);
         return wm;
     }
 
