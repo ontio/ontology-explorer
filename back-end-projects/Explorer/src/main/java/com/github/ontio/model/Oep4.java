@@ -16,6 +16,10 @@ public class Oep4 extends Oep4Key {
 
     private Date createtime;
 
+    private Integer auditflag;
+
+    private Date updatetime;
+
     public BigDecimal getTotalsupply() {
         return totalsupply;
     }
@@ -62,5 +66,21 @@ public class Oep4 extends Oep4Key {
 
     public void setCreatetime(Date createtime) {
         this.createtime = createtime;
+    }
+
+    public Integer getAuditflag() {
+        return auditflag;
+    }
+
+    public void setAuditflag(Integer auditflag) {
+        this.auditflag = auditflag;
+    }
+
+    public Date getUpdatetime() {
+        return updatetime;
+    }
+
+    public void setUpdatetime(Date updatetime) {
+        this.updatetime = updatetime;
     }
 }
