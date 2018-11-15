@@ -22,8 +22,7 @@ package com.github.ontio.utils;
 import com.github.ontio.OntSdk;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author zhouq
@@ -121,5 +120,10 @@ public final class ConstantParam {
 
     //ontid operation description separator
     public static final String ONTID_SEPARATOR2 = "&";
+
+
+    public static Map<String,Object> OEP4MAP = new HashMap<>();
+
+    public static Set<String> OEP4CONTRACTS = new HashSet<>();
 
 }
