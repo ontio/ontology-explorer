@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.dao.Oep4Mapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.Oep4">
+    <id column="Contract" jdbcType="VARCHAR" property="contract" />
+    <id column="Name" jdbcType="VARCHAR" property="name" />
+    <result column="TotalSupply" jdbcType="DECIMAL" property="totalsupply" />
+    <result column="Symbol" jdbcType="VARCHAR" property="symbol" />
+    <result column="Decimals" jdbcType="DECIMAL" property="decimals" />
+    <result column="Description" jdbcType="VARCHAR" property="description" />
+    <result column="ContactInfo" jdbcType="VARCHAR" property="contactinfo" />
+    <result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="AuditFlag" jdbcType="INTEGER" property="auditflag" />
+    <result column="UpdateTime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    Contract, Name, TotalSupply, Symbol, Decimals, Description, ContactInfo, CreateTime, 
+    AuditFlag, UpdateTime
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_ont_oep4
+    where Contract = #{contract,jdbcType=VARCHAR}
+      and Name = #{name,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key">
+    delete from tbl_ont_oep4
+    where Contract = #{contract,jdbcType=VARCHAR}
+      and Name = #{name,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.github.ontio.model.Oep4">
+    insert into tbl_ont_oep4 (Contract, Name, TotalSupply, 
+      Symbol, Decimals, Description, 
+      ContactInfo, CreateTime, AuditFlag, 
+      UpdateTime)
+    values (#{contract,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{totalsupply,jdbcType=DECIMAL}, 
+      #{symbol,jdbcType=VARCHAR}, #{decimals,jdbcType=DECIMAL}, #{description,jdbcType=VARCHAR}, 
+      #{contactinfo,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{auditflag,jdbcType=INTEGER}, 
+      #{updatetime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.github.ontio.model.Oep4">
+    insert into tbl_ont_oep4
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="contract != null">
+        Contract,
+      </if>
+      <if test="name != null">
+        Name,
+      </if>
+      <if test="totalsupply != null">
+        TotalSupply,
+      </if>
+      <if test="symbol != null">
+        Symbol,
+      </if>
+      <if test="decimals != null">
+        Decimals,
+      </if>
+      <if test="description != null">
+        Description,
+      </if>
+      <if test="contactinfo != null">
+        ContactInfo,
+      </if>
+      <if test="createtime != null">
+        CreateTime,
+      </if>
+      <if test="auditflag != null">
+        AuditFlag,
+      </if>
+      <if test="updatetime != null">
+        UpdateTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="contract != null">
+        #{contract,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="totalsupply != null">
+        #{totalsupply,jdbcType=DECIMAL},
+      </if>
+      <if test="symbol != null">
+        #{symbol,jdbcType=VARCHAR},
+      </if>
+      <if test="decimals != null">
+        #{decimals,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="contactinfo != null">
+        #{contactinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditflag != null">
+        #{auditflag,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Oep4">
+    update tbl_ont_oep4
+    <set>
+      <if test="totalsupply != null">
+        TotalSupply = #{totalsupply,jdbcType=DECIMAL},
+      </if>
+      <if test="symbol != null">
+        Symbol = #{symbol,jdbcType=VARCHAR},
+      </if>
+      <if test="decimals != null">
+        Decimals = #{decimals,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null">
+        Description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="contactinfo != null">
+        ContactInfo = #{contactinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditflag != null">
+        AuditFlag = #{auditflag,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null">
+        UpdateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where Contract = #{contract,jdbcType=VARCHAR}
+      and Name = #{name,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.Oep4">
+    update tbl_ont_oep4
+    set TotalSupply = #{totalsupply,jdbcType=DECIMAL},
+      Symbol = #{symbol,jdbcType=VARCHAR},
+      Decimals = #{decimals,jdbcType=DECIMAL},
+      Description = #{description,jdbcType=VARCHAR},
+      ContactInfo = #{contactinfo,jdbcType=VARCHAR},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      AuditFlag = #{auditflag,jdbcType=INTEGER},
+      UpdateTime = #{updatetime,jdbcType=TIMESTAMP}
+    where Contract = #{contract,jdbcType=VARCHAR}
+      and Name = #{name,jdbcType=VARCHAR}
+  </update>
+
+
+  <select id="selectAllKeyInfo" resultType="java.util.Map">
+    select Contract, Symbol, Decimals
+    from tbl_ont_oep4
+    where AuditFlag = 1
+  </select>
+
+
+</mapper>
