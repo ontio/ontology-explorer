@@ -136,8 +136,8 @@ public class OntologySDKService {
     public JSONArray getAddressOpe8Balance(String address, String codeHash) {
 
         JSONArray balanceArray = new JSONArray();
-        OntSdk ontSdk = getOep8OntSdk(codeHash);
         try {
+            OntSdk ontSdk = getOep8OntSdk(codeHash);
             String balance = ontSdk.neovm().oep8().balancesOf(address);
             balanceArray = JSON.parseArray(balance);
         } catch (Exception e) {
