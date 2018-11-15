@@ -78,9 +78,9 @@
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false"></table>
 
-        <table tableName="tbl_ont_oep4txn_detail" domainObjectName="Oep4TxnDetail" enableCountByExample="false"
+<!--        <table tableName="tbl_ont_oep4txn_detail" domainObjectName="Oep4TxnDetail" enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false"></table>
+               selectByExampleQueryId="false"></table>-->
 
 
     </context>
