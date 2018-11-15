@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.asyncService.BlockHandleService;
 import com.github.ontio.dao.CurrentMapper;
+import com.github.ontio.dao.Oep4Mapper;
 import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
 import com.github.ontio.network.exception.ConnectorException;
@@ -36,6 +37,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouq
@@ -61,6 +64,8 @@ public class BlockHandlerThread extends Thread {
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
     @Autowired
+    private Oep4Mapper oep4Mapper;
+    @Autowired
     private Environment env;
 
 
@@ -75,6 +80,16 @@ public class BlockHandlerThread extends Thread {
             initNodeRestfulList();
             //初始化sdk object
             initSdkService();
+
+            List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
+            for (Map map :
+                    oep4s) {
+                JSONObject obj = new JSONObject();
+                obj.put("Symbol", map.get("Symbol"));
+                obj.put("Decimals", map.get("Decimals"));
+                ConstantParam.OEP4MAP.put((String) map.get("Contract"), obj);
+            }
+            ConstantParam.OEP4CONTRACTS = ConstantParam.OEP4MAP.keySet();
 
             int oneBlockTryTime = 1;
             while (true) {
@@ -106,10 +121,10 @@ public class BlockHandlerThread extends Thread {
 
                 //每次删除当前current表height+1的交易，防止上次程序异常退出时，因为多线程事务插入了height+1的交易而current表height未更新
                 //本次同步再次插入会报主键重复异常
-                if(ontIdMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                if (ontIdMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
                     ontIdMapper.deleteByHeight(dbBlockHeight + 1);
                 }
-                if(transactionDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                if (transactionDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
                     transactionDetailMapper.deleteByHeight(dbBlockHeight + 1);
                 }
 

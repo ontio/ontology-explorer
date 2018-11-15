@@ -25,6 +25,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.DeployCode;
+import com.github.ontio.model.Oep4TxnDetail;
 import com.github.ontio.model.OntId;
 import com.github.ontio.model.TransactionDetail;
 import com.github.ontio.network.exception.ConnectorException;
@@ -56,6 +57,8 @@ public class TxnHandlerThread {
 
     private static final Logger logger = LoggerFactory.getLogger(TxnHandlerThread.class);
 
+    private static Boolean OEP4TXN = false;
+
     @Autowired
     private ConfigParam configParam;
 
@@ -77,6 +80,8 @@ public class TxnHandlerThread {
         int txnType = txnJson.getInteger("TxType");
         String txnHash = txnJson.getString("Hash");
         logger.info("####txnType:{}, txnHash:{}####", txnType, txnHash);
+
+        OEP4TXN = false;
 
         try {
             JSONObject eventObj = getEventObjByTxnHash(txnHash);
@@ -137,9 +142,17 @@ public class TxnHandlerThread {
                                 gasConsumed, i + 1, confirmFlag);
 
                     } else {
-                        //other transaction
-                        insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                gasConsumed, i + 1, 0);
+                        //OEP4交易
+                        if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)) {
+                            JSONObject oep4Obj = (JSONObject) ConstantParam.OEP4MAP.get(contractAddress);
+                            handleOep4TransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                                    gasConsumed, i + 1, confirmFlag, oep4Obj);
+
+                        } else {
+                            //other transaction
+                            insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+                                    gasConsumed, i + 1, 0);
+                        }
                     }
                 }
             } else {
@@ -300,6 +313,26 @@ public class TxnHandlerThread {
         transactionDetailDO.setEventtype(eventType);
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
 
+        //OEP4交易的手续费入库
+        if (configParam.ASSET_ONG_CODEHASH.equals(codeHash) && OEP4TXN) {
+            Oep4TxnDetail oep4TxnDetailDAO = new Oep4TxnDetail();
+            oep4TxnDetailDAO.setTxnhash(txnHash);
+            oep4TxnDetailDAO.setTxntype(txnType);
+            oep4TxnDetailDAO.setFromaddress(fromAddress);
+            oep4TxnDetailDAO.setToaddress(toAddress);
+            oep4TxnDetailDAO.setTxntime(blockTime);
+            oep4TxnDetailDAO.setHeight(blockHeight);
+            oep4TxnDetailDAO.setAmount(amount);
+            oep4TxnDetailDAO.setBlockindex(indexInBlock);
+            oep4TxnDetailDAO.setAssetname("ong");
+            oep4TxnDetailDAO.setConfirmflag(confirmFlag);
+            oep4TxnDetailDAO.setEventtype(1);
+            oep4TxnDetailDAO.setDescription("gasconsume");
+            oep4TxnDetailDAO.setTxnindex(indexInTxn);
+            oep4TxnDetailDAO.setFee(gasConsumed);
+            session.insert("com.github.ontio.dao.Oep4TxnDetailMapper.insertSelective", oep4TxnDetailDAO);
+        }
+
     }
 
     /**
@@ -411,6 +444,72 @@ public class TxnHandlerThread {
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
 
         // transactionDetailMapper.insertSelective(transactionDetailDO);
+    }
+
+
+    /**
+     * handle oep4 transfer transaction
+     *
+     * @param session
+     * @param stateArray
+     * @param txnType
+     * @param txnHash
+     * @param blockHeight
+     * @param blockTime
+     * @param indexInBlock
+     * @param gasConsumed
+     * @param indexInTxn
+     * @param confirmFlag
+     * @throws Exception
+     */
+    public void handleOep4TransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash,
+                                      int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed,
+                                      int indexInTxn, int confirmFlag, JSONObject oep4Obj) throws Exception {
+
+        String fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+        String toAddress = Address.parse((String) stateArray.get(2)).toBase58();
+        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+        logger.info("OEP4TransferTxn:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
+
+        String assetName = oep4Obj.getString("Symbol");
+        int decimals = oep4Obj.getInteger("Decimals");
+        BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, decimals)));
+
+        Oep4TxnDetail oep4TxnDetailDAO = new Oep4TxnDetail();
+        oep4TxnDetailDAO.setHeight(blockHeight);
+        oep4TxnDetailDAO.setTxntime(blockTime);
+        oep4TxnDetailDAO.setTxntype(txnType);
+        oep4TxnDetailDAO.setTxnhash(txnHash);
+        oep4TxnDetailDAO.setFromaddress(fromAddress);
+        oep4TxnDetailDAO.setToaddress(toAddress);
+        oep4TxnDetailDAO.setAssetname(assetName);
+        oep4TxnDetailDAO.setAmount(amount);
+        oep4TxnDetailDAO.setDescription("transfer");
+        oep4TxnDetailDAO.setFee(gasConsumed);
+        oep4TxnDetailDAO.setBlockindex(indexInBlock);
+        oep4TxnDetailDAO.setTxnindex(indexInTxn);
+        oep4TxnDetailDAO.setConfirmflag(confirmFlag);
+        oep4TxnDetailDAO.setEventtype(3);
+        session.insert("com.github.ontio.dao.Oep4TxnDetailMapper.insertSelective", oep4TxnDetailDAO);
+
+        TransactionDetail transactionDetailDO = new TransactionDetail();
+        transactionDetailDO.setFromaddress(fromAddress);
+        transactionDetailDO.setToaddress(toAddress);
+        transactionDetailDO.setAssetname(assetName);
+        transactionDetailDO.setDescription("transfer");
+        transactionDetailDO.setFee(gasConsumed);
+        transactionDetailDO.setHeight(blockHeight);
+        transactionDetailDO.setBlockindex(indexInBlock);
+        transactionDetailDO.setTxnhash(txnHash);
+        transactionDetailDO.setTxntype(txnType);
+        transactionDetailDO.setTxntime(blockTime);
+        transactionDetailDO.setAmount(amount);
+        transactionDetailDO.setTxnindex(indexInTxn);
+        transactionDetailDO.setConfirmflag(confirmFlag);
+        transactionDetailDO.setEventtype(3);
+        session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+
+        OEP4TXN = true;
     }
 
     /**
