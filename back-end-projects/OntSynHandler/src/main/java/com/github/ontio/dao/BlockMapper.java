@@ -21,11 +21,9 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.Block;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
-@Mapper
-@Component(value = "BlockMapper")
+@Component
 public interface BlockMapper {
     int deleteByPrimaryKey(Integer height);
 
