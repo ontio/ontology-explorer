@@ -1,12 +1,10 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.OntId;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
-@Mapper
-@Component(value = "OntIdMapper")
+@Component
 public interface OntIdMapper {
     int deleteByPrimaryKey(String txnhash);
 
