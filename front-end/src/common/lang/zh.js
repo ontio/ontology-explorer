@@ -59,15 +59,16 @@ module.exports = {
     Description: '操作描述',
     events: '在这个ONT ID上的事件',
     owner: '所属人',
+    failed: '没有找到数据。'
   },
   blockList: {
     name: '最新区块',
     Height: '区块高度',
-    TxnNum: '交易数量',
+    TxnNum: '交易',
     bookkeeper: '记账人',
-    BlockSize: '区块大小',
+    BlockSize: '大小',
     BlockTime: '出块时间',
-    bookkeeperCount: '记账人数量'
+    bookkeeperCount: '记账人'
   },
   addressList: {
     rank: '排名',
