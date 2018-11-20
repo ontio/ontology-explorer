@@ -1,56 +1,5 @@
 import axios from 'axios'
 import * as types from "../mutation-type"
-import Decimal from 'decimal.js';
-
-/**
- * 计算总共多少ONT和ONG，lyx。
- *
- * @param myAddress
- * @param trans
- * @return {*}
- */
-function getTransAmount(myAddress, trans) {
-  let txnLists = trans.TxnList
-
-  for (let val in txnLists) {
-    let txnList = txnLists[val].TransferList;
-    let ont = 0;
-    let ong = 0;
-    let pumpkin = 0; // OEP-8资产：2018年万圣节南瓜活动
-
-    // 计算各种资产的实际收入
-    for (let tx in txnList) {
-      // from地址和我一样，那就是支出
-      if (txnList[tx].FromAddress === myAddress) {
-        if (txnList[tx].AssetName === 'ont') {
-          ont = Decimal.sub(ont, Number(txnList[tx].Amount))
-        } else if (txnList[tx].AssetName === 'ong') {
-          ong = Decimal.sub(ong, Number(txnList[tx].Amount)).toFixed(9)
-        } else if (txnList[tx].AssetName.indexOf('pumpkin') > -1) { // OEP-8资产：2018年万圣节南瓜活动
-          pumpkin = Decimal.sub(pumpkin, Number(txnList[tx].Amount)).toFixed()
-        }
-      } else { // 否则都是我的收入~
-        if (txnList[tx].AssetName === 'ont') {
-          ont = Decimal.add(ont, Number(txnList[tx].Amount))
-        } else if (txnList[tx].AssetName === 'ong') {
-          ong = Decimal.add(ong, Number(txnList[tx].Amount)).toFixed(9)
-        } else if (txnList[tx].AssetName.indexOf('pumpkin') > -1) { // OEP-8资产：2018年万圣节南瓜活动
-          pumpkin = Decimal.add(pumpkin, Number(txnList[tx].Amount)).toFixed()
-        }
-      }
-    }
-
-    txnLists[val].amount = {
-      ont: ont,
-      ong: ong,
-      pumpkin: pumpkin
-    }
-  }
-
-  trans.TxnList = txnLists;
-
-  return trans
-}
 
 export default {
   state: {
@@ -86,7 +35,7 @@ export default {
         // }
 
         let info={
-          info: getTransAmount($param.address, msg.Result),
+          info: msg.Result,
           // allPage: allPageNum,
           firstPage: {
             pageSize: '20',
