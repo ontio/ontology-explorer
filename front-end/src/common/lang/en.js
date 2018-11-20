@@ -59,15 +59,16 @@ module.exports = {
     Description: 'Description',
     events: 'Events on this ONT ID',
     owner: 'Owner',
+    failed: 'FAIL, not found.'
   },
   blockList: {
     name: 'Block',
     Height: 'Height',
-    TxnNum: 'TxCount',
+    TxnNum: 'Txns',
     bookkeeper: 'Bookkeeper',
     BlockSize: 'Size',
     BlockTime: 'Time',
-    bookkeeperCount: 'Bookkeeper Count'
+    bookkeeperCount: 'Bookkeeper'
   },
   addressList: {
     rank: 'Rank',

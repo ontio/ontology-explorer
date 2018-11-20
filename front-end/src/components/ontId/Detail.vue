@@ -5,7 +5,7 @@
     <detail-title :name="$t('ontIdDetail.name')" :val="$route.params.ontid"></detail-title>
 
     <!-- Owners info -->
-    <div class="row" v-if="Ddo.Owners">
+    <div class="row" v-if="haveData && Ddo.Owners">
       <div class="col">
         <div class="detail-col">
           <p>{{ $t('ontIdDetail.owner') }}</p>
@@ -21,12 +21,12 @@
       </div>
     </div>
 
-    <div class="row" v-if="JSON.stringify(Ddo.Attributes) !== '[]'">
+    <div class="row" v-if="haveData && JSON.stringify(Ddo.Attributes) !== '[]'">
       <div class="col">
         <div class="detail-col">
           <p>Claim Metadata</p>
-          <div class="row" v-for="claim in Ddo.Attributes">
-            <div class="col">
+          <div class="row" v-for="(claim, key) in Ddo.Attributes">
+            <div class="col" v-if="claim.Claim">
               <div class="font-size14 font-Regular normal_color"><p>Claim Hash: {{claim.Claim.ClaimId}}</p></div>
               <div class="font-size14 font-Regular normal_color"><p>Claim Context: {{claim.Claim.ClaimContext}}</p></div>
               <div class="font-size14 font-Regular normal_color"><p>Context Desc: {{claim.Claim.ContextDesc}}</p></div>
@@ -37,8 +37,18 @@
                 <p class="font-size14 font-Regular normal_color">Claim SelfDefined: {{claim.SelfDefined}}</p>
               </div>
             </div>
+
+            <div class="col" v-if="claim.SelfDefined">
+              <p class="font-size14 font-Regular normal_color">{{ claim.SelfDefined }}</p>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="row" v-show="!haveData">
+      <div class="col">
+        <div class="detail-col">{{ $t('ontIdDetail.failed') }}</div>
       </div>
     </div>
 
@@ -91,7 +101,8 @@
         Ddo: {},
         claimflag: true,
         TxnList: {},
-        TxnTotal: ''
+        TxnTotal: '',
+        haveData: true
       }
     },
     created() {
@@ -100,9 +111,13 @@
     watch: {
       '$route': 'getOntIdDetailPage',
       'OntIdDetail.info': function () {
-        this.Ddo = this.OntIdDetail.info.Ddo
-        this.TxnList = this.OntIdDetail.info.TxnList
-        this.TxnTotal = this.OntIdDetail.info.TxnTotal
+        if (this.OntIdDetail.info === false) {
+          this.haveData = false
+        } else {
+          this.Ddo = this.OntIdDetail.info.Ddo
+          this.TxnList = this.OntIdDetail.info.TxnList
+          this.TxnTotal = this.OntIdDetail.info.TxnTotal
+        }
       }
     },
     computed: {
