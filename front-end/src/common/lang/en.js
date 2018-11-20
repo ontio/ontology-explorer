@@ -86,17 +86,20 @@ module.exports = {
     unbound: 'Unbound ONG: ',
     txOnAddr: 'Transactions on this Address:',
     txns: 'Transactions:',
-    oep8Assets: 'OEP-8 Assets:'
+    oep8Assets: 'OEP-8 Assets:',
+    oepOtherAssets: 'Other OEP Assets:'
   },
-  pumpkin: {
-    red: 'Red Pumpkin',
-    orange: 'Orange Pumpkin',
-    yellow: 'Yellow Pumpkin',
-    green: 'Green Pumpkin',
-    indigo: 'Indigo Pumpkin',
-    blue: 'Blue Pumpkin',
-    purple: 'Purple Pumpkin',
-    golden: 'Golden Pumpkin'
+  assetName: {
+    ont: 'ONT',
+    ong: 'ONG',
+    pumpkin01: 'Red Pumpkin',
+    pumpkin02: 'Orange Pumpkin',
+    pumpkin03: 'Yellow Pumpkin',
+    pumpkin04: 'Green Pumpkin',
+    pumpkin05: 'Indigo Pumpkin',
+    pumpkin06: 'Blue Pumpkin',
+    pumpkin07: 'Purple Pumpkin',
+    pumpkin08: 'Golden Pumpkin'
   },
   blockDetail: {
     nickname: 'BLOCK DETAILS',
