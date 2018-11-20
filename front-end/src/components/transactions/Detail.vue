@@ -298,21 +298,21 @@
           case 'ong':
             realname = 'ONG';
             break;
+          case 'ont':
+            realname = 'ONT';
+            break;
           default:
-            realname = 'ONT'
+            realname = name
         }
 
         return realname;
       },
       toMoney(txTmp) {
-        if (txTmp.AssetName === 'ong') {
-          return Number(txTmp.Amount)
-        } else if (txTmp.AssetName.indexOf('pumpkin') > -1) { // OEP-8资产：2018年万圣节南瓜活动
-          return Number(txTmp.Amount)
-        } else {
-          console.log(txTmp.Amount)
+        if (txTmp.AssetName === 'ont') {
           let num = txTmp.Amount;
           return num.split('').reverse().join('').substr(10, 10).split('').reverse().join('')
+        } else {
+          return Number(txTmp.Amount)
         }
       },
       getTxData() {
