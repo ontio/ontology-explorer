@@ -272,28 +272,28 @@
 
         switch (name) {
           case 'pumpkin01':
-            realname = this.$t('pumpkin.red');
+            realname = this.$t('assetName.pumpkin01');
             break;
           case 'pumpkin02':
-            realname = this.$t('pumpkin.orange');
+            realname = this.$t('assetName.pumpkin02');
             break;
           case 'pumpkin03':
-            realname = this.$t('pumpkin.yellow');
+            realname = this.$t('assetName.pumpkin03');
             break;
           case 'pumpkin04':
-            realname = this.$t('pumpkin.green');
+            realname = this.$t('assetName.pumpkin04');
             break;
           case 'pumpkin05':
-            realname = this.$t('pumpkin.indigo');
+            realname = this.$t('assetName.pumpkin05');
             break;
           case 'pumpkin06':
-            realname = this.$t('pumpkin.blue');
+            realname = this.$t('assetName.pumpkin06');
             break;
           case 'pumpkin07':
-            realname = this.$t('pumpkin.purple');
+            realname = this.$t('assetName.pumpkin07');
             break;
           case 'pumpkin08':
-            realname = this.$t('pumpkin.golden');
+            realname = this.$t('assetName.pumpkin08');
             break;
           case 'ong':
             realname = 'ONG';

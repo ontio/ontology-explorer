@@ -86,17 +86,20 @@ module.exports = {
     unbound: '未解绑的ONG： ',
     txOnAddr: '笔交易在这个地址上：',
     txns: '交易列表:',
-    oep8Assets: 'OEP-8 资产：'
+    oep8Assets: 'OEP-8 资产：',
+    oepOtherAssets: '其他的OEP资产:'
   },
-  pumpkin: {
-    red: '红南瓜',
-    orange: '橘南瓜',
-    yellow: '黄南瓜',
-    green: '绿南瓜',
-    indigo: '靛南瓜',
-    blue: '蓝南瓜',
-    purple: '紫南瓜',
-    golden: '金南瓜'
+  assetName: {
+    ont: 'ONT',
+    ong: 'ONG',
+    pumpkin01: '红南瓜',
+    pumpkin02: '橘南瓜',
+    pumpkin03: '黄南瓜',
+    pumpkin04: '绿南瓜',
+    pumpkin05: '靛南瓜',
+    pumpkin06: '蓝南瓜',
+    pumpkin07: '紫南瓜',
+    pumpkin08: '金南瓜'
   },
   blockDetail: {
     nickname: '区块详情',
