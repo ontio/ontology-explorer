@@ -2,13 +2,11 @@ package com.github.ontio.dao;
 
 import com.github.ontio.model.TransactionDetail;
 import com.github.ontio.model.TransactionDetailKey;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 
-@Mapper
-@Component(value = "TransactionDetailMapper")
+@Component
 public interface TransactionDetailMapper {
     int deleteByPrimaryKey(TransactionDetailKey key);
 

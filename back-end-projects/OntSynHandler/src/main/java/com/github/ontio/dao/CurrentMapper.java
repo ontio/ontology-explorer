@@ -1,13 +1,11 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.Current;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Mapper
-@Component(value = "CurrentMapper")
+@Component
 public interface CurrentMapper {
     int insert(Current record);
 
