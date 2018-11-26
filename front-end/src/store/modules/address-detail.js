@@ -1,48 +1,5 @@
 import axios from 'axios'
 import * as types from "../mutation-type"
-import Decimal from 'decimal.js';
-
-/**
- * 计算总共多少ONT和ONG，lyx。
- *
- * @param myAddress
- * @param trans
- * @return {*}
- */
-function getTransAmount(myAddress, trans) {
-  let txnLists = trans.TxnList
-
-  for (let val in txnLists) {
-    let txnList = txnLists[val].TransferList;
-    let ont = 0;
-    let ong = 0;
-
-    for (let tx in txnList) {
-      if (txnList[tx].FromAddress === myAddress) {
-        if (txnList[tx].AssetName === 'ont') {
-          ont = Decimal.sub(ont, Number(txnList[tx].Amount))
-        } else {
-          ong = Decimal.sub(ong, Number(txnList[tx].Amount)).toFixed(9)
-        }
-      } else {
-        if (txnList[tx].AssetName === 'ont') {
-          ont = Decimal.add(ont, Number(txnList[tx].Amount))
-        } else {
-          ong = Decimal.add(ong, Number(txnList[tx].Amount)).toFixed(9)
-        }
-      }
-    }
-
-    txnLists[val].amount = {
-      ont: ont,
-      ong: ong
-    }
-  }
-
-  trans.TxnList = txnLists;
-
-  return trans
-}
 
 export default {
   state: {
@@ -78,7 +35,7 @@ export default {
         // }
 
         let info={
-          info: getTransAmount($param.address, msg.Result),
+          info: msg.Result,
           // allPage: allPageNum,
           firstPage: {
             pageSize: '20',
