@@ -19,8 +19,12 @@
 
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.dao.CurrentMapper;
+import com.github.ontio.dao.Oep4Mapper;
 import com.github.ontio.dao.TransactionDetailMapper;
+import com.github.ontio.model.Oep4;
+import com.github.ontio.model.Oep4Key;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ICurrentService;
 import com.github.ontio.utils.ConfigParam;
@@ -33,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +59,8 @@ public class CurrentServiceImpl implements ICurrentService {
     private CurrentMapper currentMapper;
     @Autowired
     TransactionDetailMapper transactionDetailMapper;
+    @Autowired
+    private Oep4Mapper oep4Mapper;
     @Autowired
     private ConfigParam configParam;
 
@@ -82,5 +90,45 @@ public class CurrentServiceImpl implements ICurrentService {
        // rs.put("AddrCount", addrList.size());
 
         return Helper.result("QueryCurrentInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+    }
+
+
+
+
+    @Override
+    public Result registerOep4Info(JSONObject reqObj) {
+
+        initSDK();
+        //TODO 需要联系信息
+        String codeHash = reqObj.getString("contractHash");
+
+        JSONObject oep4Info = sdk.queryOep4Info(codeHash);
+
+        Oep4Key oep4KeyDAO = new Oep4Key();
+        oep4KeyDAO.setContract(codeHash);
+        oep4KeyDAO.setName(oep4Info.getString("Name"));
+
+        Oep4 oep4DAO = oep4Mapper.selectByPrimaryKey(oep4KeyDAO);
+
+        if(!Helper.isEmptyOrNull(oep4DAO)) {
+            return Helper.result("RegisterOep4", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "", false);
+        }
+
+        oep4DAO = new Oep4();
+        oep4DAO.setSymbol(oep4Info.getString("Symbol"));
+        oep4DAO.setName(oep4Info.getString("Name"));
+        oep4DAO.setDescription(oep4Info.getString("Name"));
+        oep4DAO.setTotalsupply(new BigDecimal(oep4Info.getString("TotalSupply")));
+        oep4DAO.setDecimals(new BigDecimal(oep4Info.getString("Decimal")));
+        oep4DAO.setAuditflag(1);
+        oep4DAO.setCreatetime(new Date());
+        oep4DAO.setContract(codeHash);
+        oep4DAO.setContactinfo("");
+        oep4Mapper.insertSelective(oep4DAO);
+
+        return Helper.result("RegisterOep4", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "", true);
+
+
+
     }
 }
