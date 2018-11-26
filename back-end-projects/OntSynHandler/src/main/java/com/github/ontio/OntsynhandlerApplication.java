@@ -1,6 +1,7 @@
 package com.github.ontio;
 
 import com.github.ontio.utils.ConfigParam;
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @SpringBootApplication
 @EnableAsync
 @EnableTransactionManagement
+@MapperScan(value = "com.github.ontio.dao")
 public class OntsynhandlerApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(OntsynhandlerApplication.class);
