@@ -74,25 +74,24 @@ public class BlockHandlerThread extends Thread {
 
         logger.info("========{}.run=======", CLASS_NAME);
         try {
-
             ConstantParam.MASTERNODE_RESTFULURL = configParam.MASTERNODE_RESTFUL_URL;
             //初始化node列表
             initNodeRestfulList();
             //初始化sdk object
             initSdkService();
 
-            List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
-            for (Map map :
-                    oep4s) {
-                JSONObject obj = new JSONObject();
-                obj.put("Symbol", map.get("Symbol"));
-                obj.put("Decimals", map.get("Decimals"));
-                ConstantParam.OEP4MAP.put((String) map.get("Contract"), obj);
-            }
-            ConstantParam.OEP4CONTRACTS = ConstantParam.OEP4MAP.keySet();
-
             int oneBlockTryTime = 1;
             while (true) {
+                //获取审核过的OEP4资产信息
+                List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
+                for (Map map :
+                        oep4s) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("Symbol", map.get("Symbol"));
+                    obj.put("Decimals", map.get("Decimals"));
+                    ConstantParam.OEP4MAP.put((String) map.get("Contract"), obj);
+                }
+                ConstantParam.OEP4CONTRACTS = ConstantParam.OEP4MAP.keySet();
 
                 int remoteBlockHieght = getRemoteBlockHeight();
                 logger.info("######remote blockheight:{}", remoteBlockHieght);
