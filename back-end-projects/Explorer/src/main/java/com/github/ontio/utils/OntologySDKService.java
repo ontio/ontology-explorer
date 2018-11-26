@@ -22,6 +22,7 @@ package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +162,30 @@ public class OntologySDKService {
         try {
             String unboundOng = ontSdk.nativevm().ong().unboundOng(address);
             return new BigDecimal(unboundOng).divide(ConstantParam.ONT_TOTAL).toPlainString();
+        } catch (Exception e) {
+            logger.error("getAddressBalance error...", e);
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+
+    public JSONObject queryOep4Info(String contractHash) {
+
+        try {
+            OntSdk ontSdk = getOep4OntSdk(contractHash);
+            String name = ontSdk.neovm().oep4().queryName();
+            String symbol = ontSdk.neovm().oep4().querySymbol();
+            String decimal = ontSdk.neovm().oep4().queryDecimals();
+            String total = ontSdk.neovm().oep4().queryTotalSupply();
+
+            JSONObject oep4Obj = new JSONObject();
+            oep4Obj.put("Name", name);
+            oep4Obj.put("Symbol", symbol);
+            oep4Obj.put("TotalSupply", total);
+            oep4Obj.put("Decimal",decimal);
+            return oep4Obj;
         } catch (Exception e) {
             logger.error("getAddressBalance error...", e);
             e.printStackTrace();
