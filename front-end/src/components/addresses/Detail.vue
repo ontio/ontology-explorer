@@ -48,43 +48,58 @@
     <div class="row" v-if="havePumpkin">
       <div class="col">
         <div class="detail-col">
-          <b>{{ $t('addressDetail.oep8Assets') }}</b>
+          {{ $t('addressDetail.oep8Assets') }}
           <div class="row pumpkin-color font-size14 text-center" style="margin-top: 20px">
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin08'">
-              <div>{{ $t('pumpkin.golden') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin01'">
-              <div>{{ $t('pumpkin.red') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin02'">
-              <div>{{ $t('pumpkin.orange') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin03'">
-              <div>{{ $t('pumpkin.yellow') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
           </div>
 
           <div class="row pumpkin-color font-size14 text-center" style="margin-top: 20px">
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin04'">
-              <div>{{ $t('pumpkin.green') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin05'">
-              <div>{{ $t('pumpkin.indigo') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin06'">
-              <div>{{ $t('pumpkin.blue') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
             <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin07'">
-              <div>{{ $t('pumpkin.purple') }}</div>
+              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
               <div class="font-size24">{{asset.Balance}}</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--有其他的OEP-4/5资产-->
+    <div class="row" v-if="haveOtherOep">
+      <div class="col">
+        <div class="detail-col">
+          {{ $t('addressDetail.oepOtherAssets') }}
+          <div v-for="(asset,index) in AssetBalance" v-if="index > 12" class="row font-size14" style="margin-top: 20px; padding: 0 15px;">
+            <p class="table1_item_title font-size24 font-Regular">
+              <span class="f-color">{{ asset.AssetName.toUpperCase() + ": " }}</span>
+              <span class="normal_color">{{parseFloat(asset.Balance)}}</span>
+            </p>
           </div>
         </div>
       </div>
@@ -116,27 +131,34 @@
                   <td class="font-size14 font-Regular f-color pointer" @click="toTransactionDetailPage(tx.TxnHash)">
                     {{tx.TxnHash.substr(0,16) + '...'}}
                   </td>
+
                   <td class="font-size14 font-Regular">
-                  <span v-if="tx.amount.ont > 0" style="color: #00AE1D">
-                    {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
-                  </span>
-                    <span v-else style="color: #32A4BE">
-                    {{ tx.amount.ont === 0 ? '' : tx.amount.ont + ' ONT' }}
-                  </span>
+                    <span v-for="(tl,index) in tx.TransferList">
+                      <!--支出-->
+                      <span class="expenditure-color" v-if="tl.FromAddress === $route.params.address">
+                        <span v-if="tl.AssetName.indexOf('pumpkin') > -1">
+                          {{ '-' + parseFloat(tl.Amount) + ' ' + $t('assetName.' + tl.AssetName ) }}
+                        </span>
+                        <span v-else>
+                          {{ '-' + parseFloat(tl.Amount) + ' ' + tl.AssetName.toUpperCase() }}
+                        </span>
+                      </span>
+                      <!--收入-->
+                      <span class="income-color" v-else>
+                        <span v-if="tl.AssetName.indexOf('pumpkin') > -1">
+                          {{ parseFloat(tl.Amount) + ' ' + $t('assetName.' + tl.AssetName ) }}
+                        </span>
+                        <span v-else>
+                          {{ parseFloat(tl.Amount) + ' ' + tl.AssetName.toUpperCase() }}
+                        </span>
+                      </span>
 
-                    <span v-if="tx.amount.ont > 0 | tx.amount.ong > 0" style="color: #00AE1D">
-                    {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
-                  </span>
-                    <span v-else style="color: #32A4BE">
-                    {{ (tx.amount.ont !== 0 & tx.amount.ong !== 0) ? ' , ' : '' }}
-                  </span>
-
-                    <span v-if="tx.amount.ong > 0" style="color: #00AE1D">
-                    {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
-                  </span>
-                    <span v-else style="color: #32A4BE">
-                    {{ tx.amount.ong === 0 ? '' : tx.amount.ong + ' ONG' }}
-                  </span>
+                      <!--逗号分隔符-->
+                      <span v-if="index !== tx.TransferList.length - 1"
+                            :class="tl.FromAddress === $route.params.address ? 'expenditure-color' : 'income-color'">
+                        {{ ', ' }}
+                      </span>
+                    </span>
                   </td>
                   <td class="font-size14 font-Regular s-color">{{ tx.ConfirmFlag === 1 ? 'Confirmed' : 'Failed' }}</td>
                   <td class="font-size14 font-Regular normal_color">{{$HelperTools.getTransDate(tx.TxnTime)}}</td>
@@ -176,6 +198,7 @@
         claimflag: true,
         AssetBalance: [],
         havePumpkin: false, // 标识是否显示2018年万圣节南瓜资产
+        haveOtherOep: false, // 标识是否显示OEP-4/5资产
         TxnList: [],
         info: [],
         haveNext: false // 标识是否显示下一页的导航按钮
@@ -191,12 +214,15 @@
     watch: {
       '$route': 'getAddressDetailData',
       'addressDetail.info.info': function () {
-        this.info = this.addressDetail.info.info
-        this.AssetBalance = this.info.AssetBalance
-        if(this.info.AssetBalance.length > 4) {
+        this.info = this.addressDetail.info.info;
+        this.AssetBalance = this.info.AssetBalance;
+        if(this.info.AssetBalance.length > 4) { // 有南瓜资产
           this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0 )
         }
-        this.TxnList = this.info.TxnList
+        if(this.info.AssetBalance.length > 13) { // 有OEP4、5的其他资产
+          this.haveOtherOep = true
+        }
+        this.TxnList = this.info.TxnList;
         this.haveNext = this.addressDetail.info.nextPage.pageNumber
       }
     },
@@ -254,5 +280,13 @@
 <style scoped>
   .no-margin-bottom {
     margin-bottom: 0 !important;
+  }
+
+  .income-color {
+    color: #00AE1D;
+  }
+
+  .expenditure-color {
+    color: #32A4BE;
   }
 </style>
