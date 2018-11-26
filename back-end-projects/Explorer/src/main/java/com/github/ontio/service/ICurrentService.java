@@ -19,6 +19,7 @@
 
 package com.github.ontio.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.paramBean.Result;
 
 /**
@@ -34,4 +35,10 @@ public interface ICurrentService {
      * @return
      */
     Result querySummaryInfo();
+
+
+
+
+    Result registerOep4Info(JSONObject reqObj);
+
 }
