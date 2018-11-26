@@ -19,6 +19,7 @@
 
 package com.github.ontio.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.CurrentServiceImpl;
 import com.github.ontio.utils.Helper;
@@ -26,10 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author zhouq
@@ -65,6 +63,7 @@ public class CurrentController {
     }
 
 
+
     /**
      * 负载均衡存活探测api
      *
@@ -79,5 +78,16 @@ public class CurrentController {
     }
 
 
+
+
+    @RequestMapping(value = "/oep4/info", method = RequestMethod.POST)
+    public Result registerOep4Info(@RequestBody JSONObject reqObj) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("####reqObj:{}", reqObj.toJSONString());
+
+        Result rs = currentService.registerOep4Info(reqObj);
+        return rs;
+    }
 
 }
