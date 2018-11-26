@@ -466,8 +466,14 @@ public class TxnHandlerThread {
                                       int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed,
                                       int indexInTxn, int confirmFlag, JSONObject oep4Obj) throws Exception {
 
-        String fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
-        String toAddress = Address.parse((String) stateArray.get(2)).toBase58();
+        String fromAddress = (String)stateArray.get(1);
+        if(!"00".equals(fromAddress)) {
+            fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+        }
+        String toAddress = (String) stateArray.get(2);
+        if(!"00".equals(toAddress)) {
+            toAddress = Address.parse((String) stateArray.get(2)).toBase58();
+        }
         BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
         logger.info("OEP4TransferTxn:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
 
