@@ -21,6 +21,7 @@ package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.github.ontio.dao.CurrentMapper;
+import com.github.ontio.dao.Oep4Mapper;
 import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
 import com.github.ontio.model.OntId;
@@ -51,6 +52,8 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
+    @Autowired
+    private Oep4Mapper oep4Mapper;
     @Autowired
     private OntIdMapper ontIdMapper;
     @Autowired
@@ -129,7 +132,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 if (ConstantParam.ONG.equals(assetName)) {
                     //ONG 精度格式化
                     map.put("Amount", amount.divide(ConstantParam.ONT_TOTAL).toPlainString());
-                } else if (ConstantParam.ONT.equals(assetName)) {
+                } else {
                     map.put("Amount", amount.toPlainString());
                 }
             }
@@ -481,6 +484,18 @@ public class TransactionServiceImpl implements ITransactionService {
         if (Helper.isEmptyOrNull(assetName) || assetName.startsWith("pumpkin")) {
             balanceList = getPumpkinBalance(sdk, balanceList, address, assetName);
         }
+        //OEP4余额
+        List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
+        for (Map map :
+                oep4s) {
+            String contract = (String) map.get("Contract");
+            String symbol = (String) map.get("Symbol");
+
+            Map<String, Object> oep4Map = new HashMap<>();
+            oep4Map.put("AssetName", symbol);
+            oep4Map.put("Balance", new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal)map.get("Decimals")).intValue()))));
+            balanceList.add(oep4Map);
+        }
 
         return balanceList;
     }
@@ -501,7 +516,7 @@ public class TransactionServiceImpl implements ITransactionService {
         int pumpkinTotal = 0;
         for (Object obj :
                 oep8Balance) {
-            pumpkinTotal = pumpkinTotal + (Integer) obj;
+            pumpkinTotal = pumpkinTotal + Integer.valueOf((String) obj);
         }
         Map<String, Object> pumpkinMap = new HashMap<>();
         switch (assetName) {
