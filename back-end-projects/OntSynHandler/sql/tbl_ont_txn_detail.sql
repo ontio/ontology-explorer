@@ -34,6 +34,7 @@ CREATE TABLE `tbl_ont_txn_detail` (
   `txnindex` int(10) NOT NULL,
   `confirmflag` int(1) NOT NULL,
   `eventtype` int(2) NOT NULL COMMENT '0:其他 1:手续费 2:部署合约 3:转账 4:ontid 5:存证 6:权限',
+  `contracthash` varchar(60) NOT NULL DEFAULT '',
   PRIMARY KEY (`txnhash`,`txnindex`),
   KEY `idx_fromaddr` (`fromaddress`),
   KEY `idx_toaddr` (`toaddress`),
