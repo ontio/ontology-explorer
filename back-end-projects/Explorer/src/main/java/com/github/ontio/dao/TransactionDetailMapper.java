@@ -25,8 +25,6 @@ public interface TransactionDetailMapper {
 
     int updateByPrimaryKey(TransactionDetail record);
 
-
-
     List<Map> selectTxnWithoutOntId(int start , int size);
 
     int selectTxnWithoutOntIdAmount();
@@ -38,7 +36,6 @@ public interface TransactionDetailMapper {
     Integer selectLastONTTransferTxnTime(String address);
 
     Integer selectSwapTransferTxnTime(String address);
-
 
 
     List<Map> selectTransferTxnDetailByHash(String txnHash);
@@ -60,8 +57,9 @@ public interface TransactionDetailMapper {
 
     List<String> selectAllAddress();
 
-
     int selectAddressRecordAmount(String address);
 
+    List<Map> selectContractTxs(Map<String, Object> param);
 
+    int selectContractTxsAmount(String contractHash);
 }

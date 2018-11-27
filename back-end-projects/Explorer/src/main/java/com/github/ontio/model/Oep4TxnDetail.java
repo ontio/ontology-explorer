@@ -27,6 +27,8 @@ public class Oep4TxnDetail extends Oep4TxnDetailKey {
 
     private Integer eventtype;
 
+    private String  contracthash;
+
     public Integer getTxntype() {
         return txntype;
     }
@@ -121,5 +123,13 @@ public class Oep4TxnDetail extends Oep4TxnDetailKey {
 
     public void setEventtype(Integer eventtype) {
         this.eventtype = eventtype;
+    }
+
+    public String getContracthash() {
+        return contracthash;
+    }
+
+    public void setContracthash(String contracthash) {
+        this.contracthash = contracthash;
     }
 }
