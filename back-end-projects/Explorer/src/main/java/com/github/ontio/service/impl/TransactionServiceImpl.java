@@ -107,7 +107,6 @@ public class TransactionServiceImpl implements ITransactionService {
         return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
 
-
     @Override
     public Result queryTxnDetailByHash(String txnHash) {
 
@@ -156,7 +155,6 @@ public class TransactionServiceImpl implements ITransactionService {
 
         return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, txnInfo);
     }
-
 
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize) {
@@ -267,7 +265,6 @@ public class TransactionServiceImpl implements ITransactionService {
         return returnTxnList;
     }
 
-
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName) {
 
@@ -356,7 +353,6 @@ public class TransactionServiceImpl implements ITransactionService {
 
     }
 
-
     @Override
     public Result queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime) {
 
@@ -381,7 +377,6 @@ public class TransactionServiceImpl implements ITransactionService {
 
     }
 
-
     @Override
     public Result queryAddressInfoByTime(String address, String assetName, int beginTime) {
 
@@ -405,14 +400,12 @@ public class TransactionServiceImpl implements ITransactionService {
 
     }
 
-
     @Override
     public Result queryAddressBalance(String address) {
 
         List balanceList = getAddressBalance(address, "");
         return Helper.result("QueryAddressBalance", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, balanceList);
     }
-
 
     @Override
     public Result queryAddressList() {
@@ -425,7 +418,6 @@ public class TransactionServiceImpl implements ITransactionService {
 
         return Helper.result("QueryAllAddress", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
     }
-
 
     /**
      * 获取账户余额，可提取的ong，待提取的ong
@@ -826,5 +818,31 @@ public class TransactionServiceImpl implements ITransactionService {
         }
 
         return formattedTxnList;
+    }
+
+    /**
+     * query txn by page
+     * @param contractHash   contractHash
+     * @param pageSize   the amount of each page
+     * @param pageNumber the start page
+     * @return
+     */
+    @Override
+    public Result queryContractTxsByPage(String contractHash, int pageSize, int pageNumber) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("contractHash", contractHash);
+        paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
+        paramMap.put("PageSize", pageNumber);
+        List<Map> txnList = transactionDetailMapper.selectContractTxs(paramMap);
+        for (Map map : txnList) {
+            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
+            map.put("Amount", ((BigDecimal) map.get("Amount")).toPlainString());
+        }
+
+        Map<String, Object> rs = new HashMap();
+        rs.put("TxnList", txnList);
+        rs.put("Total", transactionDetailMapper.selectContractTxsAmount(contractHash));
+
+        return Helper.result("QueryContractTxs", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
 }
