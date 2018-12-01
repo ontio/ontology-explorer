@@ -18,7 +18,7 @@
         </commentGenerator>
 
         <!--数据库链接信息-->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/explorer02" userId="root" password="zaq12wsx">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/explorer" userId="root" password="zaq12wsx">
         </jdbcConnection>
 
         <!-- 非必需，类型处理器，在数据库类型和java类型之间的转换控制-->
