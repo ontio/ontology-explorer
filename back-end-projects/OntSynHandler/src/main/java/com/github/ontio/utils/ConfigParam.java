@@ -92,6 +92,9 @@ public class ConfigParam {
     @Value("${oep8.pumpkin.codeHash}")
     public String OEP8_PUMPKIN_CODEHASH;
 
+    @Value("${dragon.codeHash}")
+    public String DRAGON_CODEHASH;
+
 
     /**
      * ontology blockchainauth smartcontract codehash
