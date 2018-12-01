@@ -23,10 +23,11 @@
     <result column="blockindex" jdbcType="INTEGER" property="blockindex" />
     <result column="confirmflag" jdbcType="INTEGER" property="confirmflag" />
     <result column="eventtype" jdbcType="INTEGER" property="eventtype" />
+    <result column="contracthash" jdbcType="VARCHAR" property="contracthash" />
   </resultMap>
   <sql id="Base_Column_List">
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
-    toaddress, description, blockindex, confirmflag, eventtype
+    toaddress, description, blockindex, confirmflag, eventtype, contracthash
   </sql>
   <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey" resultMap="BaseResultMap">
     select 
@@ -45,12 +46,12 @@
       txntime, height, amount, 
       fee, assetname, fromaddress, 
       toaddress, description, blockindex, 
-      confirmflag, eventtype)
+      confirmflag, eventtype, contracthash)
     values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
       #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
       #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
       #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
-      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER})
+      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail
@@ -97,6 +98,9 @@
       <if test="eventtype != null">
         eventtype,
       </if>
+      <if test="contracthash != null">
+        contracthash,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="txnhash != null">
@@ -141,6 +145,9 @@
       <if test="eventtype != null">
         #{eventtype,jdbcType=INTEGER},
       </if>
+      <if test="contracthash != null">
+        #{contracthash,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.TransactionDetail">
@@ -182,6 +189,9 @@
       <if test="eventtype != null">
         eventtype = #{eventtype,jdbcType=INTEGER},
       </if>
+      <if test="contracthash != null">
+        contracthash = #{contracthash,jdbcType=VARCHAR},
+      </if>
     </set>
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
@@ -199,7 +209,8 @@
       description = #{description,jdbcType=VARCHAR},
       blockindex = #{blockindex,jdbcType=INTEGER},
       confirmflag = #{confirmflag,jdbcType=INTEGER},
-      eventtype = #{eventtype,jdbcType=INTEGER}
+      eventtype = #{eventtype,jdbcType=INTEGER},
+      contracthash = #{contracthash,jdbcType=VARCHAR}
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
