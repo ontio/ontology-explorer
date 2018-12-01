@@ -1,4 +1,4 @@
-﻿/*
+/*
 Navicat MySQL Data Transfer
 
 Source Server         : localhost
@@ -43,3 +43,4 @@ CREATE TABLE `tbl_ont_txn_detail` (
 ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_fromaddr (fromaddress)
 ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_toaddr (toaddress)
 ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_height (height)
+ALTER TABLE tbl_ont_txn_detail ADD INDEX idx_eventtype (eventtype)
