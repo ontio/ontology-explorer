@@ -312,6 +312,26 @@
   </select>
 
 
+  <select id="selectTxnByAddressInfoAndTimePageDragon" parameterType="java.util.Map" resultType="java.util.Map">
+    select t2.* from (
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, TxnIndex
+    from tbl_ont_txn_detail
+    where toaddress = #{Address}
+    and assetname like #{AssetName}
+    and  eventtype = 3
+    union all
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, TxnIndex
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
+    and assetname like #{AssetName}
+    and  eventtype = 3
+    ) as t2
+    where <![CDATA[ t2.TxnTime < #{EndTime} ]]>
+    order by t2.TxnTime desc
+    limit #{PageSize}
+  </select>
+
+
   <select id="selectTxnByAddressInfoAndTime" parameterType="java.util.Map" resultType="java.util.Map">
     select t2.* from (
     select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, TxnIndex
@@ -328,6 +348,28 @@
     <if test="AssetName != '' and AssetName != null">
       and assetname = #{AssetName}
     </if>
+    and  eventtype = 3
+    ) as t2
+    where t2.TxnTime &gt;= #{BeginTime}
+    <if test="EndTime != null and EndTime != ''">
+      and  <![CDATA[ t2.TxnTime < #{EndTime} ]]>
+    </if>
+    order by t2.TxnTime desc
+  </select>
+
+
+  <select id="selectTxnByAddressInfoAndTimeDragon" parameterType="java.util.Map" resultType="java.util.Map">
+    select t2.* from (
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, TxnIndex
+    from tbl_ont_txn_detail
+    where toaddress = #{Address}
+    and assetname like #{AssetName}
+    and  eventtype = 3
+    union all
+    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, TxnIndex
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
+    and assetname like #{AssetName}
     and  eventtype = 3
     ) as t2
     where t2.TxnTime &gt;= #{BeginTime}
