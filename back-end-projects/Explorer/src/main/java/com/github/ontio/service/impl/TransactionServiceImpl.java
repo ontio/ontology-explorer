@@ -336,11 +336,18 @@ public class TransactionServiceImpl implements ITransactionService {
 
         Map<String, Object> parmMap = new HashMap<>();
         parmMap.put("Address", address);
-        parmMap.put("AssetName", assetName);
         parmMap.put("EndTime", endTime);
         parmMap.put("PageSize", pageSize);
 
-        List<Map> dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTimePage(parmMap);
+        List<Map> dbTxnList = new ArrayList<>();
+
+        if ("dragon".equals(assetName)) {
+            parmMap.put("AssetName", assetName+ "%");
+            dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTimePageDragon(parmMap);
+        } else {
+            parmMap.put("AssetName", assetName);
+            dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTimePage(parmMap);
+        }
 
         //格式化转账交易列表
         List<Map> rsList = formatTransferTxnList(dbTxnList);
@@ -366,7 +373,16 @@ public class TransactionServiceImpl implements ITransactionService {
         parmMap.put("BeginTime", beginTime);
         parmMap.put("EndTime", endTime);
 
-        List<Map> dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTime(parmMap);
+
+        List<Map> dbTxnList = new ArrayList<>();
+        if ("dragon".equals(assetName)) {
+            parmMap.put("AssetName", assetName+ "%");
+            dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTimeDragon(parmMap);
+        } else {
+            parmMap.put("AssetName", assetName);
+            dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTime(parmMap);
+        }
+
 
         //格式化转账交易列表
         List<Map> rsList = formatTransferTxnList(dbTxnList);
@@ -493,7 +509,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             Map<String, Object> oep4Map = new HashMap<>();
             oep4Map.put("AssetName", symbol);
-            oep4Map.put("Balance", new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal)map.get("Decimals")).intValue()))));
+            oep4Map.put("Balance", new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal) map.get("Decimals")).intValue()))));
             balanceList.add(oep4Map);
         }
 
