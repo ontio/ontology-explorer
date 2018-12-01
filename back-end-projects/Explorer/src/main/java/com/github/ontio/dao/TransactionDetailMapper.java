@@ -50,9 +50,16 @@ public interface TransactionDetailMapper {
     List<Map> selectTxnByFromAddressInfo(Map<String, Object> param);
 
 
+
+    List<Map> selectTxnByAddressInfoAndTimePageDragon(Map<String, Object> param);
+
+
     List<Map> selectTxnByAddressInfoAndTimePage(Map<String, Object> param);
 
     List<Map> selectTxnByAddressInfoAndTime(Map<String, Object> param);
+
+    List<Map> selectTxnByAddressInfoAndTimeDragon(Map<String, Object> param);
+
 
     int selectTxnAmountByAddressInfo(Map<String, Object> param);
 
