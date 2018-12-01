@@ -152,4 +152,10 @@
   </update>
 
 
+  <select id="selectAllKeyInfo" resultType="java.util.Map">
+    select Contract, Symbol, Decimals
+    from tbl_ont_oep4
+    where auditflag = 1
+  </select>
+
 </mapper>
