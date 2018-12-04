@@ -2,12 +2,21 @@
   <div class="row">
     <div class="col detail-tit-name font-size24 font-blod important_color">
       <span>{{name}}</span>
-      <span :class="fontSizeVal">{{val}}</span>
+      <span id="detailVal" :class="fontSizeVal">{{val}}</span>
+      <span class="pointer font-size14">
+        <i @click="copyDetailVal"
+           data-clipboard-target="#detailVal"
+           class="copy-success l-25px fa fa-clone"
+           aria-hidden="true"></i>
+      </span>
+      <span class="font-size14 font-ExtraLight" v-show="showCopied">Copied!</span>
     </div>
   </div>
 </template>
 
 <script>
+  import Clipboard from 'clipboard';
+
 	export default {
     name: "DetailTitle",
     props: ['name', 'val'],
@@ -15,10 +24,28 @@
       fontSizeVal: function () {
         return (typeof(this.val) !== 'undefined' && this.val.length > 16) ? 'font-size14' : ''
       }
+    },
+    data() {
+      return {
+        showCopied: false
+      }
+    },
+    methods: {
+      copyDetailVal() {
+        let clipboard = new Clipboard('.copy-success');
+
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        });
+
+        this.showCopied = true
+      }
     }
   }
 </script>
 
 <style scoped>
-
+  .l-25px {
+    margin-left: 25px;
+  }
 </style>
