@@ -65,8 +65,8 @@
 		<!--ontology-javasdk -->
 		<dependency>
 			<groupId>com.github.ontio</groupId>
-			<artifactId>javasdk</artifactId>
-			<version>v1.1</version>
+			<artifactId>ontology-sdk-java</artifactId>
+			<version>1.0.8</version>
 		</dependency>
 
 

@@ -25,9 +25,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.DeployCode;
-import com.github.ontio.model.Oep4TxnDetail;
-import com.github.ontio.model.OntId;
-import com.github.ontio.model.TransactionDetail;
+import com.github.ontio.model.*;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.utils.ConfigParam;
@@ -97,11 +95,15 @@ public class TxnHandlerThread {
             //deploy smart contract transaction
             if (208 == txnType) {
                 JSONObject contractObj = getSmartContractInfo(txnHash);
-                String contractAddress = contractObj.getString("contractAddress");
-                //description.remove("codeHash");
+                String contractAddress = getNativeContractHash(contractObj.getString("contractAddress"));
+
+                contractObj.remove("contractAddress");
                 insertTxnBasicInfo(session, txnType, txnHash, blockHeight,
                         blockTime, indexInBlock, confirmFlag, contractObj.toString(),
                         gasConsumed, 0, 2, contractAddress);
+
+                // 部署合约，将合约信息保存到合约列表
+                insertContratInfo(session, contractAddress, blockTime, contractObj.getString("Name"), txnJson.getString("Payer"));
             }
 
             JSONArray notifyList = eventObj.getJSONArray("Notify");
@@ -515,10 +517,41 @@ public class TxnHandlerThread {
         transactionDetailDO.setEventtype(eventType);
         transactionDetailDO.setContracthash(contractAddress);
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
-
-        // transactionDetailMapper.insertSelective(transactionDetailDO);
     }
 
+    private void insertContratInfo(SqlSession session, String contractAddress, int blockTime, String name, String playAddress){
+        Contracts contracts = new Contracts();
+        contracts.setContract(contractAddress);
+        contracts.setName(name);
+        contracts.setTxcount(0);
+        contracts.setCreatetime(blockTime);
+        contracts.setUpdatetime(blockTime);
+        contracts.setAuditflag(0);
+        contracts.setCreator(playAddress);
+        session.insert("com.github.ontio.dao.ContractsMapper.insertSelective", contracts);
+    }
+
+    private String getNativeContractHash(String contractAddress){
+        String contractHash = "";
+        switch (contractAddress){
+            case "0239dcf9b4a46f15c5f23f20d52fac916a0bac0d":
+                contractHash = configParam.ASSET_ONT_CODEHASH;
+                break;
+            case "08b6dcfed2aace9190a44ae34a320e42c04b46ac":
+                contractHash = configParam.ASSET_ONG_CODEHASH;
+                break;
+            case "6815cbe7b4dbad4d2d09ae035141b5254a002f79":
+                contractHash = configParam.ONTID_CODEHASH;
+                break;
+            case "24a15c6aed092dfaa711c4974caf1e9d307bf4b5":
+                contractHash = configParam.AUTH_CODEHASH;
+                break;
+            default:
+                contractHash = contractAddress;
+        }
+
+        return contractHash;
+    }
 
     /**
      * handle oep4 transfer transaction

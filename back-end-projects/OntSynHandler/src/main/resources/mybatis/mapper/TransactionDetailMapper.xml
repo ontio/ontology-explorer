@@ -228,5 +228,9 @@
     where height = #{height}
   </select>
 
-
+  <select id="selectContractTxCountByHeight" resultType="java.util.Map" parameterType="Integer">
+    SELECT contracthash as contract, COUNT(DISTINCT txnhash) as txcount
+        from tbl_ont_txn_detail where height = #{blockHeight} and contracthash != ""
+        GROUP BY contracthash
+  </select>
 </mapper>

@@ -20,4 +20,10 @@ public interface Oep4Mapper {
     int updateByPrimaryKey(Oep4 record);
 
     List<Map> selectAllKeyInfo();
+
+    List<Map> queryOEPContracts(Map<String, Object> param);
+
+    Oep4 queryOEPContract(String contractHash);
+
+    int queryOEPContractCount();
 }
