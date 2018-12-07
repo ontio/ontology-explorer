@@ -22,6 +22,7 @@ package com.github.ontio.dao;
 
 import com.github.ontio.model.Block;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -52,6 +53,6 @@ public interface BlockMapper {
 
     List<Map> selectHeightAndTime(int amount);
 
-    int selectBlockCountInOneDay(int startTime,int endTime);
+    int selectBlockCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
 
 }

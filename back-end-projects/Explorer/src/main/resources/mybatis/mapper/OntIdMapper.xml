@@ -149,4 +149,13 @@
     where ontid = #{ontId}
   </select>
 
+
+  <select id="selectOntIdCountInOneDay" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT (txnhash))
+    from tbl_ont_ontid_detail
+    where description like #{Description}
+    and txntime >= #{StartTime}
+    and <![CDATA[ txntime < #{EndTime} ]]>
+  </select>
+
 </mapper>

@@ -472,4 +472,11 @@
             and ( toaddress = #{address} OR fromaddress = #{address} )
   </select>
 
+  <select id="selectTxnCountInOneDay" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT (txnhash))
+    from tbl_ont_txn_detail
+    where txntime >= #{StartTime}
+    and <![CDATA[ txntime < #{EndTime} ]]>
+  </select>
+
 </mapper>
