@@ -30,5 +30,6 @@ CREATE TABLE `tbl_ont_oep4` (
   `createtime` datetime NOT NULL,
   `auditflag` int(1) NOT NULL,
   `updatetime` datetime DEFAULT NULL,
+  `logo` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`contract`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

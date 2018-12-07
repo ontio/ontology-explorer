@@ -38,14 +38,12 @@ import org.springframework.web.bind.annotation.*;
 @EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer")
 public class CurrentController {
-
     private static final Logger logger = LoggerFactory.getLogger(CurrentController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
     @Autowired
     private CurrentServiceImpl currentService;
-
 
     /**
      * query current summary information
@@ -62,8 +60,6 @@ public class CurrentController {
         return rs;
     }
 
-
-
     /**
      * 负载均衡存活探测api
      *
@@ -77,9 +73,6 @@ public class CurrentController {
         return "success";
     }
 
-
-
-
     @RequestMapping(value = "/oep4/info", method = RequestMethod.POST)
     public Result registerOep4Info(@RequestBody JSONObject reqObj) {
 
@@ -89,5 +82,4 @@ public class CurrentController {
         Result rs = currentService.registerOep4Info(reqObj);
         return rs;
     }
-
 }

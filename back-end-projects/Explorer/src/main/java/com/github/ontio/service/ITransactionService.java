@@ -104,13 +104,4 @@ public interface ITransactionService {
      * @return
      */
     Result queryAddressList();
-
-    /**
-     * query txn by page
-     * @param contractHash   contractHash
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    Result queryContractTxsByPage(String contractHash, int pageSize, int pageNumber);
 }

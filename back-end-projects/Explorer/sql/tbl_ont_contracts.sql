@@ -18,18 +18,20 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 -- Table structure for tbl_ont_oep4
 -- ----------------------------
-DROP TABLE IF EXISTS `tbl_ont_oep4`;
-CREATE TABLE `tbl_ont_oep4` (
+DROP TABLE IF EXISTS `tbl_ont_contracts`;
+CREATE TABLE `tbl_ont_contracts` (
   `contract` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL DEFAULT '',
-  `totalsupply` decimal(30,0) NOT NULL,
-  `symbol` varchar(255) NOT NULL DEFAULT '',
-  `decimals` decimal(20,0) NOT NULL,
-  `description` varchar(255) NOT NULL DEFAULT '',
-  `contactinfo` varchar(2000) NOT NULL DEFAULT '',
-  `createtime` datetime NOT NULL,
+  `txcount` int(10) NOT NULL,
+  `abi` varchar(2000) NOT NULL DEFAULT '',
+  `code` varchar(2000) NOT NULL DEFAULT '',
+  `createtime` int(11) NOT NULL,
   `auditflag` int(1) NOT NULL,
-  `updatetime` datetime DEFAULT NULL,
+  `updatetime` int(11) DEFAULT NULL,
+  `contactinfo` varchar(2000) NOT NULL DEFAULT '',
+	`type` varchar(55) NOT NULL DEFAULT '',
+  `description` varchar(1500) NOT NULL DEFAULT '',
   `logo` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`contract`,`name`)
+	`creator` varchar(1000) NOT NULL DEFAULT '',
+  PRIMARY KEY (`Contract`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

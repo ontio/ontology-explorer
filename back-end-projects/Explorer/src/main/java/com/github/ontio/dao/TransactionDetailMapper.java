@@ -66,7 +66,9 @@ public interface TransactionDetailMapper {
 
     int selectAddressRecordAmount(String address);
 
-    List<Map> selectContractTxs(Map<String, Object> param);
+    List<Map> selectContractByHash(Map<String, Object> param);
 
-    int selectContractTxsAmount(String contractHash);
+    int selectContractByHashAmount(String contractHash);
+
+    String selectContractAssetCountByHeight(Map<String, Object> paramMap);
 }

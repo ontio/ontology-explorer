@@ -24,6 +24,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
+import com.github.ontio.dao.ContractsMapper;
+import com.github.ontio.dao.TransactionDetailMapper;
+import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Current;
 import com.github.ontio.thread.TxnHandlerThread;
 import com.github.ontio.utils.ConstantParam;
@@ -37,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 /**
@@ -54,6 +57,10 @@ public class BlockHandleService {
     private BlockMapper blockMapper;
     @Autowired
     private CurrentMapper currentMapper;
+    @Autowired
+    private ContractsMapper contractsMapper;
+    @Autowired
+    private TransactionDetailMapper transactionDetailMapper;
     @Autowired
     private TxnHandlerThread txnHandlerThread;
     @Autowired
@@ -94,6 +101,9 @@ public class BlockHandleService {
             // 清理缓存，防止溢出
             session.clearCache();
             logger.info("###batch insert success!!");
+
+            // 更新合约列表涉及的交易量
+            updateContractTxCount(blockHeight);
         } catch (Exception e) {
             logger.error("error...session.rollback", e);
             session.rollback();
@@ -165,5 +175,22 @@ public class BlockHandleService {
         currentMapper.update(currentDO);
     }
 
+    private void updateContractTxCount(Integer blockHeight){
+        List<Map> contractsList = transactionDetailMapper.selectContractTxCountByHeight(blockHeight);
+        if (contractsList.size() > 0){
+            List contracts = new ArrayList();
 
+            for (Map map: contractsList) {
+                Contracts contract = new Contracts();
+                contract.setTxcount(Integer.valueOf(map.get("txcount").toString()));
+                contract.setContract((String) map.get("contract"));
+                contract.setUpdatetime(Integer.valueOf(String.valueOf(System.currentTimeMillis() / 1000)));
+
+                contracts.add(contract);
+            }
+
+        boolean result = contractsMapper.updateContractTxCount(contracts);
+        logger.info("{} update contracts count: {}",  Helper.currentMethod(), result);
+        }
+    }
 }

@@ -196,4 +196,18 @@
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
+
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map">
+    select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
+    from tbl_ont_txn_detail
+    where contracthash = #{contractHash}
+    order by height DESC
+    limit #{Start}, #{PageSize}
+  </select>
+
+  <select id="selectContractByHashAmount" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(DISTINCT(txnhash))
+    from tbl_ont_txn_detail
+    where contracthash = #{param1}
+  </select>
 </mapper>
