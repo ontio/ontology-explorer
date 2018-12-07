@@ -3,6 +3,7 @@ package com.github.ontio.dao;
 import com.github.ontio.model.TransactionDetail;
 import com.github.ontio.model.TransactionDetailKey;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -69,4 +70,8 @@ public interface TransactionDetailMapper {
     List<Map> selectContractTxs(Map<String, Object> param);
 
     int selectContractTxsAmount(String contractHash);
+
+    int selectTxnCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
+
+
 }
