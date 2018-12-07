@@ -184,9 +184,10 @@
     limit 0, #{param1}
   </select>
 
-  <select id="selectBlockCountInOneDay" resultType="java.lang.Integer">
+  <select id="selectBlockCountInOneDay" resultType="java.lang.Integer" useCache="false">
     select count(*) as nums
     from tbl_ont_block
-    where blocktime between #{startTime} and #{endTime}
+    where blocktime >= #{StartTime}
+    and <![CDATA[ blocktime < #{EndTime} ]]>
   </select>
 </mapper>
