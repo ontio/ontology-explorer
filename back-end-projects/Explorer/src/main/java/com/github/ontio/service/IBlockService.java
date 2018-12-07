@@ -67,5 +67,5 @@ public interface IBlockService {
      * @param time
      * @return
      */
-    Result blockCountInTwoWeeks(int time);
+    Result blockCountInTwoWeeks(long time);
 }
