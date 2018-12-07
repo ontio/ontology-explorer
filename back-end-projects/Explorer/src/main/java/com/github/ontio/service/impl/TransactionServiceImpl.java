@@ -835,30 +835,4 @@ public class TransactionServiceImpl implements ITransactionService {
 
         return formattedTxnList;
     }
-
-    /**
-     * query txn by page
-     * @param contractHash   contractHash
-     * @param pageSize   the amount of each page
-     * @param pageNumber the start page
-     * @return
-     */
-    @Override
-    public Result queryContractTxsByPage(String contractHash, int pageSize, int pageNumber) {
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("contractHash", contractHash);
-        paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
-        paramMap.put("PageSize", pageNumber);
-        List<Map> txnList = transactionDetailMapper.selectContractTxs(paramMap);
-        for (Map map : txnList) {
-            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
-            map.put("Amount", ((BigDecimal) map.get("Amount")).toPlainString());
-        }
-
-        Map<String, Object> rs = new HashMap();
-        rs.put("TxnList", txnList);
-        rs.put("Total", transactionDetailMapper.selectContractTxsAmount(contractHash));
-
-        return Helper.result("QueryContractTxs", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
-    }
 }
