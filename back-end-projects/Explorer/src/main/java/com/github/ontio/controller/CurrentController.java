@@ -90,4 +90,16 @@ public class CurrentController {
         return rs;
     }
 
+
+
+    @RequestMapping(value = "/daily/info/{starttime}/{endtime}", method = RequestMethod.GET)
+    public Result queryDailyInfo(@PathVariable("starttime") long startTime, @PathVariable("endtime") long endTime) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("####startTime:{}, endTime:{}", startTime, endTime);
+
+        Result rs = currentService.queryDailyInfo(startTime, endTime);
+        return rs;
+    }
+
 }
