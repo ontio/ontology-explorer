@@ -140,7 +140,7 @@ public class BlockController {
      */
     @RequestMapping(value = "/blockCountInTwoWeeks/{time}", method = RequestMethod.GET)
     @ResponseBody
-    public Result blockCountInTwoWeeks(@PathVariable("time") int time) {
+    public Result blockCountInTwoWeeks(@PathVariable("time") long time) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("time:{}", time);
