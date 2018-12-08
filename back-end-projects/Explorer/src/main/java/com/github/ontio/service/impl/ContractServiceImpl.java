@@ -125,6 +125,14 @@ public class ContractServiceImpl implements IContractService {
         rs.put("TxnList", txnList);
         rs.put("Total", contractTxsCount);
         rs.put("Creator", contract.getCreator());
+        rs.put("Name", contract.getName());
+        rs.put("TxCount", contract.getTxcount());
+        rs.put("ABI", contract.getAbi());
+        rs.put("Code", contract.getCode());
+        rs.put("CreateTime", contract.getCreatetime());
+        rs.put("UpdateTime", contract.getUpdatetime());
+        rs.put("ContactInfo", contract.getContactinfo());
+        rs.put("Logo", contract.getLogo());
         rs.put("OntCount", ontCount == null ? 0 : ontCount);
         rs.put("OngCount", ongCount == null ? 0 : new BigDecimal(ongCount).divide(new BigDecimal(1000000000)));
 
