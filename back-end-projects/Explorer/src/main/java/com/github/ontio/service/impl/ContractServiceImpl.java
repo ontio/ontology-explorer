@@ -126,12 +126,12 @@ public class ContractServiceImpl implements IContractService {
         rs.put("Total", contractTxsCount);
         rs.put("Creator", contract.getCreator());
         rs.put("Name", contract.getName());
-        rs.put("TxCount", contract.getTxcount());
         rs.put("ABI", contract.getAbi());
         rs.put("Code", contract.getCode());
         rs.put("CreateTime", contract.getCreatetime());
         rs.put("UpdateTime", contract.getUpdatetime());
         rs.put("ContactInfo", contract.getContactinfo());
+        rs.put("Description", contract.getDescription());
         rs.put("Logo", contract.getLogo());
         rs.put("OntCount", ontCount == null ? 0 : ontCount);
         rs.put("OngCount", ongCount == null ? 0 : new BigDecimal(ongCount).divide(new BigDecimal(1000000000)));
@@ -197,13 +197,13 @@ public class ContractServiceImpl implements IContractService {
                 Oep4 oep4 = oep4Mapper.queryOEPContract(contractHash);
                 rs.put("TotalSupply", oep4 == null ? 0 : oep4.getTotalsupply());
                 rs.put("Decimals", oep4 == null ? 0 : oep4.getDecimals());
-                rs.put("CreateTime", oep4 == null ? 0 : oep4.getCreatetime());
+                rs.put("Symbol", oep4 == null ? 0 : oep4.getSymbol());
                 break;
             case "oep8":
                 Oep4 oep41 = oep4Mapper.queryOEPContract(contractHash);
                 rs.put("TotalSupply", oep41 == null ? 0 : oep41.getTotalsupply());
                 rs.put("Decimals", oep41 == null ? 0 : oep41.getDecimals());
-                rs.put("CreateTime", oep41 == null ? 0 : oep41.getCreatetime());
+                rs.put("Symbol", oep41 == null ? 0 : oep41.getSymbol());
                 break;
             default:
                 break;

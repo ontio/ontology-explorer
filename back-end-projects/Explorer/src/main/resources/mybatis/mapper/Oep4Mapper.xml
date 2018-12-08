@@ -158,7 +158,7 @@
   </select>
 
   <select id="queryOEPContracts" parameterType="java.util.Map" resultType="java.util.Map">
-    select a.contract as ContractHash, a.Name, a.TotalSupply, a.Symbol, a.Decimals, b.Description, b.ContactInfo,
+    select a.contract as ContractHash, b.Name, a.TotalSupply, a.Symbol, a.Decimals, b.Description, b.ContactInfo,
             b.CreateTime, b.UpdateTime, b.Logo, b.ABI, b.Code, b.TxCount, b.Creator
     from tbl_ont_oep4 a, tbl_ont_contracts b
 		where b.auditflag = 1 and a.Contract = b.contract
