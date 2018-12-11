@@ -29,18 +29,7 @@
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
     toaddress, description, blockindex, confirmflag, eventtype
   </sql>
-  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey">
-    delete from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
