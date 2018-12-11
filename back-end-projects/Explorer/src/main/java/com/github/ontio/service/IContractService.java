@@ -36,11 +36,13 @@ public interface IContractService {
     Result queryOEPContract(String type, int pageSize, int pageNumber);
 
     /**
-     * query txn by page
+     *  依据合约hash查询Token合约
+     * @param contractHash   contractHash
      * @param type   type
-     * @param pageNumber the start page
+     * @param tokenName   tokenName
      * @param pageSize   the amount of each page
+     * @param pageNumber the start page
      * @return
      */
-    Result queryOEPContractByHash(String contractHash, String type, int pageSize, int pageNumber);
+     Result queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber);
 }

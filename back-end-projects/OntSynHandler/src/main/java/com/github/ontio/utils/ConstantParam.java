@@ -126,4 +126,7 @@ public final class ConstantParam {
 
     public static Set<String> OEP4CONTRACTS = new HashSet<>();
 
+    public static Map<String,Object> OEP8MAP = new HashMap<>();
+
+    public static Set<String> OEP8CONTRACTS = new HashSet<>();
 }
