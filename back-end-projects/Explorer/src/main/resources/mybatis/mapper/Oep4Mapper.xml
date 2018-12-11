@@ -17,18 +17,14 @@
     contract, name, totalsupply, symbol, decimals, description, contactinfo, createtime, 
     auditflag, updatetime
   </sql>
-  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.Oep4" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from tbl_ont_oep4
     where contract = #{contract,jdbcType=VARCHAR}
       and name = #{name,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key">
-    delete from tbl_ont_oep4
-    where contract = #{contract,jdbcType=VARCHAR}
-      and name = #{name,jdbcType=VARCHAR}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.Oep4">
     insert into tbl_ont_oep4 (contract, name, totalsupply, 
       symbol, decimals, description, 
@@ -159,7 +155,7 @@
 
   <select id="queryOEPContracts" parameterType="java.util.Map" resultType="java.util.Map">
     select a.contract as ContractHash, b.Name, a.TotalSupply, a.Symbol, a.Decimals, b.Description, b.ContactInfo,
-            b.CreateTime, b.UpdateTime, b.Logo, b.ABI, b.Code, b.TxCount, b.Creator
+            b.CreateTime, b.UpdateTime, b.Logo, b.ABI, b.Code, b.TxCount, b.Creator, b.Addresscount, b.OntCount, b.OngCount
     from tbl_ont_oep4 a, tbl_ont_contracts b
 		where b.auditflag = 1 and a.Contract = b.contract
     order by Createtime asc

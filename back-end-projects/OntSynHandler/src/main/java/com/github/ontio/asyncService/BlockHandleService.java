@@ -127,7 +127,6 @@ public class BlockHandleService {
         logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }
 
-
     @Transactional(rollbackFor = Exception.class)
     public void insertBlock(JSONObject blockJson) throws Exception {
 

@@ -17,18 +17,7 @@
     contract, name, totalsupply, symbol, decimals, description, contactinfo, createtime, 
     auditflag, updatetime
   </sql>
-  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_oep4
-    where contract = #{contract,jdbcType=VARCHAR}
-      and name = #{name,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key">
-    delete from tbl_ont_oep4
-    where contract = #{contract,jdbcType=VARCHAR}
-      and name = #{name,jdbcType=VARCHAR}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.Oep4">
     insert into tbl_ont_oep4 (contract, name, totalsupply, 
       symbol, decimals, description, 

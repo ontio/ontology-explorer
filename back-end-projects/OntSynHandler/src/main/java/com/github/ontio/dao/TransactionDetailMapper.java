@@ -1,8 +1,6 @@
 package com.github.ontio.dao;
 
-import com.github.ontio.model.Contracts;
 import com.github.ontio.model.TransactionDetail;
-import com.github.ontio.model.TransactionDetailKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +10,9 @@ import java.util.Map;
 
 @Component
 public interface TransactionDetailMapper {
-    int deleteByPrimaryKey(TransactionDetailKey key);
-
     int insert(TransactionDetail record);
 
     int insertSelective(TransactionDetail record);
-
-    TransactionDetail selectByPrimaryKey(TransactionDetailKey key);
 
     int updateByPrimaryKeySelective(TransactionDetail record);
 

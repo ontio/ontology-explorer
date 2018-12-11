@@ -1,12 +1,11 @@
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.ontio.common.Address;
-import com.github.ontio.dao.ContractsMapper;
-import com.github.ontio.dao.Oep4Mapper;
-import com.github.ontio.dao.Oep4TxnDetailMapper;
-import com.github.ontio.dao.TransactionDetailMapper;
+import com.github.ontio.dao.*;
 import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Oep4;
+import com.github.ontio.model.Oep8;
 import com.github.ontio.utils.Helper;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.IContractService;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +40,13 @@ public class ContractServiceImpl implements IContractService {
     private Oep4Mapper oep4Mapper;
 
     @Autowired
+    private Oep8Mapper oep8Mapper;
+
+    @Autowired
     private Oep4TxnDetailMapper oep4TxnDetailMapper;
+
+    @Autowired
+    private Oep8TxnDetailMapper oep8TxnDetailMapper;
 
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
@@ -53,6 +57,12 @@ public class ContractServiceImpl implements IContractService {
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
         List<Map> list = contractsMapper.selectContractByPage(paramMap);
+        if(!list.isEmpty()){
+            for (Map map : list) {
+                map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
+                map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
+            }
+        }
 
         Map<String, Object> rs = new HashMap();
         rs.put("Total", contractsMapper.selectContractCount());
@@ -70,12 +80,12 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryContractByHash(String contractHash, int pageSize, int pageNumber) {
-        Map<String, Object> rs = getResultMap(contractHash, "", pageSize, pageNumber);
+        Map<String, Object> rs = getResultMap(contractHash, "", "", pageSize, pageNumber);
 
         return Helper.result("QueryContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
 
-    private Map<String, Object> getResultMap(String contractHash, String type, int pageSize, int pageNumber){
+    private Map<String, Object> getResultMap(String contractHash, String type, String tokenId, int pageSize, int pageNumber){
         Contracts contract = contractsMapper.selectContractByContractHash(contractHash);
         if (contract == null)
         {
@@ -85,14 +95,6 @@ public class ContractServiceImpl implements IContractService {
         if (type.isEmpty()){
             type = contract.getType();
         }
-
-        Map<String, Object> paramMap1 = new HashMap<>();
-        paramMap1.put("address", Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58());
-        paramMap1.put("assetname", "ont");
-        String ontCount = transactionDetailMapper.selectContractAssetCountByHeight(paramMap1);
-
-        paramMap1.put("assetname", "ong");
-        String ongCount = transactionDetailMapper.selectContractAssetCountByHeight(paramMap1);
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("contractHash", contractHash);
@@ -106,8 +108,12 @@ public class ContractServiceImpl implements IContractService {
                 contractTxsCount = oep4TxnDetailMapper.selectContractByHashAmount(contractHash);
                 break;
             case "oep8":
-                txnList = oep4TxnDetailMapper.selectContractByHash(paramMap);
-                contractTxsCount = oep4TxnDetailMapper.selectContractByHashAmount(contractHash);
+                if (!tokenId.isEmpty()){
+                    paramMap.put("tokenId", tokenId);
+                }
+
+                txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
+                contractTxsCount = oep8TxnDetailMapper.selectContractByHashAmount(paramMap);
                 break;
             default:
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
@@ -133,8 +139,9 @@ public class ContractServiceImpl implements IContractService {
         rs.put("ContactInfo", contract.getContactinfo());
         rs.put("Description", contract.getDescription());
         rs.put("Logo", contract.getLogo());
-        rs.put("OntCount", ontCount == null ? 0 : ontCount);
-        rs.put("OngCount", ongCount == null ? 0 : new BigDecimal(ongCount).divide(new BigDecimal(1000000000)));
+        rs.put("AddressCount", contract.getAddresscount());
+        rs.put("OntCount", (contract.getOntcount()).toPlainString());
+        rs.put("OngCount", (contract.getOngcount()).toPlainString());
 
         return rs;
     }
@@ -152,15 +159,46 @@ public class ContractServiceImpl implements IContractService {
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
         List<Map> contractList = null;
-        int totalNum = 0;
+        Integer totalNum = 0;
         switch (type.toLowerCase()){
             case "oep4":
                 contractList = oep4Mapper.queryOEPContracts(paramMap);
+                if(!contractList.isEmpty()){
+                    for (Map map : contractList) {
+                        map.put("OngCount", ((BigDecimal) map.get("OngCount")).toPlainString());
+                        map.put("OntCount", ((BigDecimal) map.get("OntCount")).toPlainString());
+                    }
+                }
                 totalNum = oep4Mapper.queryOEPContractCount();
                 break;
             case "oep8":
-                contractList = oep4Mapper.queryOEPContracts(paramMap);
-                totalNum = oep4Mapper.queryOEPContractCount();
+                contractList = oep8Mapper.queryOEPContracts(paramMap);
+                if (!contractList.isEmpty()){
+                    for (Map map : contractList) {
+                        String[] tokenIds = ((String) map.get("TokenId")).split(",");
+                        String[] totalSupplys = ((String) map.get("TotalSupply")).split(",");
+                        String[] symbols = ((String) map.get("Symbol")).split(",");
+                        String[] tokenNames = ((String) map.get("TokenName")).split(",");
+                        Map tokenIdMap = new HashMap();
+                        Map totalSupplyMap = new HashMap();
+                        Map symbolMap = new HashMap();
+                        Map tokenNameMap = new HashMap();
+                        for(int i =0; i < tokenIds.length; i++){
+                            tokenIdMap.put(tokenIds[i], tokenIds[i]);
+                            totalSupplyMap.put(tokenIds[i], totalSupplys[i]);
+                            symbolMap.put(tokenIds[i], symbols[i]);
+                            tokenNameMap.put(tokenIds[i], tokenNames[i]);
+                        }
+
+                        map.put("TokenId", JSON.toJSON(tokenIdMap));
+                        map.put("TotalSupply", JSON.toJSON(totalSupplyMap));
+                        map.put("Symbol", JSON.toJSON(symbolMap));
+                        map.put("TokenName", JSON.toJSON(tokenNameMap));
+                        map.put("OngCount", ((BigDecimal) map.get("OngCount")).toPlainString());
+                        map.put("OntCount", ((BigDecimal) map.get("OntCount")).toPlainString());
+                    }
+                }
+                totalNum = oep8Mapper.queryOEPContractCount();
                 break;
             default:
                 break;
@@ -168,7 +206,7 @@ public class ContractServiceImpl implements IContractService {
 
         Map<String, Object> rs = new HashMap();
         rs.put("ContractList", contractList);
-        rs.put("Total", totalNum);
+        rs.put("Total", totalNum == null ? 0 : totalNum);
 
         return Helper.result("QueryOEPContracts", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
@@ -177,18 +215,19 @@ public class ContractServiceImpl implements IContractService {
      *  依据合约hash查询Token合约
      * @param contractHash   contractHash
      * @param type   type
+     * @param tokenId   tokenId
      * @param pageSize   the amount of each page
      * @param pageNumber the start page
      * @return
      */
     @Override
-    public Result queryOEPContractByHash(String contractHash, String type, int pageSize, int pageNumber){
+    public Result queryOEPContractByHashAndTokenId(String contractHash, String type, String tokenId, int pageSize, int pageNumber){
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("contract", contractHash);
         paramMap.put("PageSize", pageSize);
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
 
-        Map<String, Object> rs = getResultMap(contractHash, type, pageSize, pageNumber);
+        Map<String, Object> rs = getResultMap(contractHash, type, tokenId, pageSize, pageNumber);
         if(rs == null){
             return Helper.result("QueryOEPContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
         }
@@ -197,13 +236,20 @@ public class ContractServiceImpl implements IContractService {
                 Oep4 oep4 = oep4Mapper.queryOEPContract(contractHash);
                 rs.put("TotalSupply", oep4 == null ? 0 : oep4.getTotalsupply());
                 rs.put("Decimals", oep4 == null ? 0 : oep4.getDecimals());
-                rs.put("Symbol", oep4 == null ? 0 : oep4.getSymbol());
+                rs.put("Symbol", oep4 == null ? "" : oep4.getSymbol());
                 break;
             case "oep8":
-                Oep4 oep41 = oep4Mapper.queryOEPContract(contractHash);
-                rs.put("TotalSupply", oep41 == null ? 0 : oep41.getTotalsupply());
-                rs.put("Decimals", oep41 == null ? 0 : oep41.getDecimals());
-                rs.put("Symbol", oep41 == null ? 0 : oep41.getSymbol());
+                Oep8 oep8 = null;
+                if (tokenId.isEmpty()){
+                    oep8 = oep8Mapper.queryOEPContract(contractHash);
+                    rs.put("TotalSupply", oep8 == null ? 0 : oep8.getDescription());
+                }
+                else{
+                    oep8 = oep8Mapper.queryOEPContractByHashAndTokenId(contractHash, tokenId);
+                    rs.put("TotalSupply", oep8 == null ? "0" : oep8.getTotalsupply().toString());
+                }
+
+                rs.put("Symbol", oep8 == null ? "" : oep8.getSymbol());
                 break;
             default:
                 break;
