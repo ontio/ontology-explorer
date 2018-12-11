@@ -235,7 +235,7 @@
   <select id="selectContractByPage" parameterType="java.util.Map" resultType="java.util.Map">
     select contract as ContractHash, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount
     from tbl_ont_contracts where auditflag = 1
-    order by txcount DESC
+    order by createtime DESC
     limit #{Start}, #{PageSize}
   </select>
 </mapper>
