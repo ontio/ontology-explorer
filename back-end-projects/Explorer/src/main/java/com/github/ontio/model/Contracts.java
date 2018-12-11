@@ -136,31 +136,7 @@ public class Contracts {
     }
 
     public void setCreator(String creator) {
-        this.creator = creator == null ? null : creator.trim();
-    }
-
-    public Integer getAddresscount() {
-        return addresscount;
-    }
-
-    public void setAddresscount(Integer addresscount) {
-        this.addresscount = addresscount;
-    }
-
-    public BigDecimal getOntcount() {
-        return ontcount;
-    }
-
-    public void setOntcount(BigDecimal ontcount) {
-        this.ontcount = ontcount;
-    }
-
-    public BigDecimal getOngcount() {
-        return ongcount;
-    }
-
-    public void setOngcount(BigDecimal ongcount) {
-        this.ongcount = ongcount;
+        this.creator = creator;
     }
 
 
