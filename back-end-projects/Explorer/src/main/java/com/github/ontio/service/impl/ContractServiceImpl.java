@@ -85,7 +85,7 @@ public class ContractServiceImpl implements IContractService {
         return Helper.result("QueryContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
 
-    private Map<String, Object> getResultMap(String contractHash, String type, String tokenId, int pageSize, int pageNumber){
+    private Map<String, Object> getResultMap(String contractHash, String type, String tokenName, int pageSize, int pageNumber){
         Contracts contract = contractsMapper.selectContractByContractHash(contractHash);
         if (contract == null)
         {
@@ -108,8 +108,8 @@ public class ContractServiceImpl implements IContractService {
                 contractTxsCount = oep4TxnDetailMapper.selectContractByHashAmount(contractHash);
                 break;
             case "oep8":
-                if (!tokenId.isEmpty()){
-                    paramMap.put("tokenId", tokenId);
+                if (!tokenName.isEmpty()){
+                    paramMap.put("tokenName", tokenName);
                 }
 
                 txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
@@ -175,27 +175,7 @@ public class ContractServiceImpl implements IContractService {
                 contractList = oep8Mapper.queryOEPContracts(paramMap);
                 if (!contractList.isEmpty()){
                     for (Map map : contractList) {
-                        String[] tokenIds = ((String) map.get("TokenId")).split(",");
-                        String[] totalSupplys = ((String) map.get("TotalSupply")).split(",");
-                        String[] symbols = ((String) map.get("Symbol")).split(",");
-                        String[] tokenNames = ((String) map.get("TokenName")).split(",");
-                        Map tokenIdMap = new HashMap();
-                        Map totalSupplyMap = new HashMap();
-                        Map symbolMap = new HashMap();
-                        Map tokenNameMap = new HashMap();
-                        for(int i =0; i < tokenIds.length; i++){
-                            tokenIdMap.put(tokenIds[i], tokenIds[i]);
-                            totalSupplyMap.put(tokenIds[i], totalSupplys[i]);
-                            symbolMap.put(tokenIds[i], symbols[i]);
-                            tokenNameMap.put(tokenIds[i], tokenNames[i]);
-                        }
-
-                        map.put("TokenId", JSON.toJSON(tokenIdMap));
-                        map.put("TotalSupply", JSON.toJSON(totalSupplyMap));
-                        map.put("Symbol", JSON.toJSON(symbolMap));
-                        map.put("TokenName", JSON.toJSON(tokenNameMap));
-                        map.put("OngCount", ((BigDecimal) map.get("OngCount")).toPlainString());
-                        map.put("OntCount", ((BigDecimal) map.get("OntCount")).toPlainString());
+                        getKeyAndValue(map);
                     }
                 }
                 totalNum = oep8Mapper.queryOEPContractCount();
@@ -215,19 +195,19 @@ public class ContractServiceImpl implements IContractService {
      *  依据合约hash查询Token合约
      * @param contractHash   contractHash
      * @param type   type
-     * @param tokenId   tokenId
+     * @param tokenName   tokenName
      * @param pageSize   the amount of each page
      * @param pageNumber the start page
      * @return
      */
     @Override
-    public Result queryOEPContractByHashAndTokenId(String contractHash, String type, String tokenId, int pageSize, int pageNumber){
+    public Result queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber){
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("contract", contractHash);
         paramMap.put("PageSize", pageSize);
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
 
-        Map<String, Object> rs = getResultMap(contractHash, type, tokenId, pageSize, pageNumber);
+        Map<String, Object> rs = getResultMap(contractHash, type, tokenName, pageSize, pageNumber);
         if(rs == null){
             return Helper.result("QueryOEPContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
         }
@@ -240,22 +220,51 @@ public class ContractServiceImpl implements IContractService {
                 break;
             case "oep8":
                 Oep8 oep8 = null;
-                if (tokenId.isEmpty()){
+                if (tokenName.isEmpty()){
                     oep8 = oep8Mapper.queryOEPContract(contractHash);
                     rs.put("TotalSupply", oep8 == null ? 0 : oep8.getDescription());
+                    rs.put("Symbol", oep8 == null ? "" : oep8.getSymbol());
+                    rs.put("TokenName", oep8 == null ? "" : oep8.getName());
+                    rs.put("TokenId", oep8 == null ? "" : oep8.getTokenid());
+
+                    getKeyAndValue(rs);
                 }
                 else{
-                    oep8 = oep8Mapper.queryOEPContractByHashAndTokenId(contractHash, tokenId);
+                    oep8 = oep8Mapper.queryOEPContractByHashAndTokenName(contractHash, tokenName);
                     rs.put("TotalSupply", oep8 == null ? "0" : oep8.getTotalsupply().toString());
+                    rs.put("Symbol", oep8 == null ? "" : oep8.getSymbol());
+                    rs.put("TokenName", oep8 == null ? "" : oep8.getName());
+                    rs.put("TokenId", oep8 == null ? "" : oep8.getTokenid());
                 }
-
-                rs.put("Symbol", oep8 == null ? "" : oep8.getSymbol());
-                rs.put("TokenName", oep8 == null ? "" : oep8.getName());
                 break;
             default:
                 break;
         }
 
         return Helper.result("QueryOEPContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+    }
+
+    private void getKeyAndValue(Map map){
+        String[] tokenIds = ((String) map.get("TokenId")).split(",");
+        String[] totalSupplys = ((String) map.get("TotalSupply")).split(",");
+        String[] symbols = ((String) map.get("Symbol")).split(",");
+        String[] tokenNames = ((String) map.get("TokenName")).split(",");
+        Map tokenIdMap = new HashMap();
+        Map totalSupplyMap = new HashMap();
+        Map symbolMap = new HashMap();
+        Map tokenNameMap = new HashMap();
+        for(int i =0; i < tokenIds.length; i++){
+            tokenIdMap.put(tokenIds[i], tokenIds[i]);
+            totalSupplyMap.put(tokenIds[i], totalSupplys[i]);
+            symbolMap.put(tokenIds[i], symbols[i]);
+            tokenNameMap.put(tokenIds[i], tokenNames[i]);
+        }
+
+        map.put("TokenId", JSON.toJSON(tokenIdMap));
+        map.put("TotalSupply", JSON.toJSON(totalSupplyMap));
+        map.put("Symbol", JSON.toJSON(symbolMap));
+        map.put("TokenName", JSON.toJSON(tokenNameMap));
+        map.put("OngCount", map.get("OngCount").toString());
+        map.put("OntCount", map.get("OntCount").toString());
     }
 }

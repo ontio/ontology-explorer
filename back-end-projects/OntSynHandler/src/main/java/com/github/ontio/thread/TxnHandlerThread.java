@@ -397,7 +397,7 @@ public class TxnHandlerThread {
         // OEP交易的手续费入库
         if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) && (OEP4TXN || OEP8TXN)){
             if (OEP8TXN){
-                transactionDetailDO.setTokenid("00");
+                transactionDetailDO.setTokenname("");
                 session.insert("com.github.ontio.dao.Oep8TxnDetailMapper.insertSelective", transactionDetailDO);
             }
             else {
@@ -648,7 +648,7 @@ public class TxnHandlerThread {
             oep8.setContract(contractHash);
             oep8.setTokenid((String) stateArray.get(3));
             ConstantParam.ONT_SDKSERVICE.neovm().oep8().setContractAddress(contractHash);
-            oep8.setTotalsupply(new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)) + Integer.valueOf((String)stateArray.get(4),16)));
+            oep8.setTotalsupply(new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId))));
 
             oep8Mapper.updateTotalSupply(oep8);
         }
@@ -670,7 +670,7 @@ public class TxnHandlerThread {
         oep8TxnDetailDAO.setTxnhash(txnHash);
         oep8TxnDetailDAO.setFromaddress(fromAddress);
         oep8TxnDetailDAO.setToaddress(toAddress);
-        oep8TxnDetailDAO.setTokenid(oep8Obj.getString("Name"));
+        oep8TxnDetailDAO.setTokenname(oep8Obj.getString("Name"));
         oep8TxnDetailDAO.setAssetname(oep8Obj.getString("Symbol"));
         oep8TxnDetailDAO.setAmount(eventAmount);
         oep8TxnDetailDAO.setDescription("transfer");
