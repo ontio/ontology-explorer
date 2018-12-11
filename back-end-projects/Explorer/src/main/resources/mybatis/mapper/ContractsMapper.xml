@@ -15,10 +15,13 @@
     <result column="description" property="description" jdbcType="VARCHAR" />
     <result column="logo" property="logo" jdbcType="VARCHAR" />
     <result column="creator" property="creator" jdbcType="VARCHAR" />
+    <result column="addresscount" property="addresscount" jdbcType="INTEGER" />
+    <result column="ontcount" property="ontcount" jdbcType="DECIMAL" />
+    <result column="ongcount" property="ongcount" jdbcType="DECIMAL" />
   </resultMap>
   <sql id="Base_Column_List" >
     contract, name, txcount, abi, code, createtime, auditflag, updatetime, contactinfo, 
-    type, description, logo, creator
+    type, description, logo, creator, addresscount, ontcount, ongcount
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select 
@@ -34,12 +37,13 @@
     insert into tbl_ont_contracts (contract, name, txcount, 
       abi, code, createtime, 
       auditflag, updatetime, contactinfo, 
-      type, description, logo, creator
+      type, description, logo, creator, addresscount, ontcount, ongcount
       )
     values (#{contract,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{txcount,jdbcType=INTEGER}, 
       #{abi,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{createtime,jdbcType=INTEGER}, 
       #{auditflag,jdbcType=INTEGER}, #{updatetime,jdbcType=INTEGER}, #{contactinfo,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}
+      , #{addresscount,jdbcType=INTEGER}, #{ontcount,jdbcType=DECIMAL}, #{ongcount,jdbcType=DECIMAL}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.Contracts" >
@@ -84,6 +88,15 @@
       <if test="creator != null" >
           creator,
       </if>
+      <if test="addresscount != null" >
+        addresscount,
+      </if>
+      <if test="ontcount != null" >
+        ontcount,
+      </if>
+      <if test="ongcount != null" >
+        ongcount,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="contract != null" >
@@ -124,6 +137,15 @@
       </if>
       <if test="creator != null" >
         #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addresscount != null" >
+        #{addresscount,jdbcType=INTEGER},
+      </if>
+      <if test="ontcount != null" >
+        #{ontcount,jdbcType=DECIMAL},
+      </if>
+      <if test="ongcount != null" >
+        #{ongcount,jdbcType=DECIMAL},
       </if>
     </trim>
   </insert>
@@ -166,6 +188,15 @@
       <if test="creator != null" >
         creator = #{creator,jdbcType=VARCHAR},
       </if>
+      <if test="addresscount != null" >
+        addresscount = #{addresscount,jdbcType=INTEGER},
+      </if>
+      <if test="ontcount != null" >
+        ontcount = #{ontcount,jdbcType=DECIMAL},
+      </if>
+      <if test="ongcount != null" >
+        ongcount = #{ongcount,jdbcType=DECIMAL},
+      </if>
     </set>
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
@@ -182,7 +213,10 @@
       type = #{type,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       logo = #{logo,jdbcType=VARCHAR},
-      creator = #{creator,jdbcType=VARCHAR}
+      creator = #{creator,jdbcType=VARCHAR},
+      addresscount = #{addresscount,jdbcType=INTEGER},
+      ontcount = #{creator,jdbcType=DECIMAL},
+      ongcount = #{creator,jdbcType=DECIMAL}
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
 
@@ -199,7 +233,7 @@
   </select>
 
   <select id="selectContractByPage" parameterType="java.util.Map" resultType="java.util.Map">
-    select contract as ContractHash, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description
+    select contract as ContractHash, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount
     from tbl_ont_contracts where auditflag = 1
     order by txcount DESC
     limit #{Start}, #{PageSize}
