@@ -24,7 +24,6 @@ import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.Oep4Mapper;
 import com.github.ontio.dao.TransactionDetailMapper;
 import com.github.ontio.model.Oep4;
-import com.github.ontio.model.Oep4Key;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ICurrentService;
 import com.github.ontio.utils.ConfigParam;
@@ -93,18 +92,15 @@ public class CurrentServiceImpl implements ICurrentService {
     }
 
 
-
-
     @Override
     public Result registerOep4Info(JSONObject reqObj) {
-
         initSDK();
         //TODO 需要联系信息
         String codeHash = reqObj.getString("contractHash");
 
         JSONObject oep4Info = sdk.queryOep4Info(codeHash);
 
-        Oep4Key oep4KeyDAO = new Oep4Key();
+        Oep4 oep4KeyDAO = new Oep4();
         oep4KeyDAO.setContract(codeHash);
         oep4KeyDAO.setName(oep4Info.getString("Name"));
 
@@ -127,8 +123,5 @@ public class CurrentServiceImpl implements ICurrentService {
         oep4Mapper.insertSelective(oep4DAO);
 
         return Helper.result("RegisterOep4", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "", true);
-
-
-
     }
 }

@@ -86,6 +86,7 @@ public class ContractController {
 
     /**
      * query OEP by type(oep4\oep8)
+     * @param contracthash contracthash
      * @param type type
      * @param pageNumber the start page
      * @param pageSize   the amount of each page
@@ -103,7 +104,33 @@ public class ContractController {
             return null;
         }
 
-        Result rs = contractService.queryOEPContractByHash(contracthash, type, pageSize, pageNumber);
+        Result rs = contractService.queryOEPContractByHashAndTokenId(contracthash, type, "", pageSize, pageNumber);
+        return rs;
+    }
+
+    /**
+     * query OEP by type(oep4\oep8)
+     * @param contracthash contracthash
+     * @param type type
+     * @param tokenid tokenid
+     * @param pageNumber the start page
+     * @param pageSize   the amount of each page
+     * @return
+     */
+    @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{tokenid}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
+    public Result queryOEPContractByHashAndSymbol(@PathVariable("contracthash") String contracthash,
+                                                   @PathVariable("type") String type,
+                                                   @PathVariable("tokenid") String tokenid,
+                                                   @PathVariable("pagenumber") Integer pageNumber,
+                                                   @PathVariable("pagesize") Integer pageSize){
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
+        if (type.isEmpty() || contracthash.isEmpty()){
+            return null;
+        }
+
+        Result rs = contractService.queryOEPContractByHashAndTokenId(contracthash, type, tokenid, pageSize, pageNumber);
         return rs;
     }
 }
