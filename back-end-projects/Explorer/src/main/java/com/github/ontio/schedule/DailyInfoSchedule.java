@@ -82,7 +82,7 @@ public class DailyInfoSchedule {
     /**
      * 记录合约统计数据
      */
-    @Scheduled(cron = "0/20 * * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     public void UpdateContractInfo() {
 
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
@@ -107,8 +107,8 @@ public class DailyInfoSchedule {
                 paramMap1.put("assetname", "ong");
                 BigDecimal ongCount = transactionDetailMapper.selectContractAssetSum(paramMap1);
 
-                List<String> fromAddrList = transactionDetailMapper.selectAllFromAddress(address);
-                List<String> toAddrList = transactionDetailMapper.selectAllToAddress(address);
+                List<String> fromAddrList = transactionDetailMapper.selectAllFromAddress(contractHash);
+                List<String> toAddrList = transactionDetailMapper.selectAllToAddress(contractHash);
                 Set<String> addrSet = new HashSet<>();
                 for (String str :
                         fromAddrList) {
@@ -124,8 +124,8 @@ public class DailyInfoSchedule {
                 Contracts contractsDAO = new Contracts();
                 contractsDAO.setContract(contractHash);
                 contractsDAO.setTxcount(txnCount);
-                contractsDAO.setOngcount(ongCount);
-                contractsDAO.setOntcount(ontCount);
+                contractsDAO.setOngcount(ongCount == null ? new BigDecimal("0") : ongCount.divide(new BigDecimal("1000000000")));
+                contractsDAO.setOntcount(ontCount == null ? new BigDecimal("0") : ontCount);
                 contractsDAO.setAddresscount(addrSet.size());
                 contractsMapper.updateByPrimaryKeySelective(contractsDAO);
             } catch (Exception e) {
