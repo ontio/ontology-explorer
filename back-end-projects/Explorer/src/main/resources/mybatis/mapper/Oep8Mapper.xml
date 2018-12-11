@@ -194,7 +194,7 @@
           from tbl_ont_oep8 where contract = #{contractHash} GROUP BY contract
   </select>
 
-  <select id="queryOEPContractByHashAndTokenId" parameterType="String" resultType="com.github.ontio.model.Oep8">
+  <select id="queryOEPContractByHashAndTokenName" parameterType="String" resultType="com.github.ontio.model.Oep8">
     select * from tbl_ont_oep8 where contract = #{param1} and name = #{param2}
   </select>
 </mapper>

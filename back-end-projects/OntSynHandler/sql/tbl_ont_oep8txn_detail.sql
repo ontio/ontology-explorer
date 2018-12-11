@@ -24,7 +24,7 @@ CREATE TABLE `tbl_ont_oep8txn_detail` (
   `txntype` int(4) NOT NULL,
   `txntime` int(11) NOT NULL,
   `height` int(12) NOT NULL,
-  `tokenid` varchar(64) NOT NULL,
+  `tokenname` varchar(64) NOT NULL,
   `amount` decimal(40,9) NOT NULL,
   `fee` decimal(25,9) NOT NULL DEFAULT '0.000000000',
   `assetname` varchar(255) NOT NULL DEFAULT '',

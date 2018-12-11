@@ -1,13 +1,14 @@
 package com.github.ontio.model;
 
 public class Oep8TxnDetail extends TransactionDetail {
-    private String tokenid;
+    private String tokenname;
 
-    public String getTokenid() {
-        return tokenid;
+    public String getTokenname() {
+        return tokenname;
     }
 
-    public void setTokenid(String tokenid) {
-        this.tokenid = tokenid == null ? null : tokenid.trim();
+    public void setTokenname(String tokenname) {
+        this.tokenname = tokenname == null ? null : tokenname.trim();
     }
+
 }
