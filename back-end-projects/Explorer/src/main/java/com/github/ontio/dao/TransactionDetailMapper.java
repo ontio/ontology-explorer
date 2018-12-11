@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,6 @@ public interface TransactionDetailMapper {
 
     List<String> selectTxnAmountByAddressInfo2(Map<String, Object> param);
 
-    List<String> selectAllAddress();
 
     int selectAddressRecordAmount(String address);
 
@@ -66,11 +66,18 @@ public interface TransactionDetailMapper {
 
     int selectContractByHashAmount(String contractHash);
 
-    String selectContractAssetCountByHeight(Map<String, Object> paramMap);
+    int selectContractAddrAmount(String contractHash);
 
-    int selectContractTxsAmount(String contractHash);
+    BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
 
     int selectTxnCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
+
+    List<Map<String, String>> selectAllAddress();
+
+
+    List<String> selectAllFromAddress(String toAddress);
+
+    List<String> selectAllToAddress(String fromAddress);
 
 
 }

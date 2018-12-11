@@ -29,18 +29,7 @@
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
     toaddress, description, blockindex, confirmflag, eventtype
   </sql>
-  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey">
-    delete from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
@@ -433,12 +422,12 @@
     limit 1
   </select>
 
-  <select id="selectAllAddress" resultType="java.lang.String">
+  <select id="selectAllAddress" resultType="java.util.Map" useCache="false">
     SELECT
-	DISTINCT(toaddress)
+	fromaddress, toaddress
     FROM
 	tbl_ont_txn_detail
-    where eventtype in (1,3)
+    where eventtype = 3
   </select>
 
 
@@ -459,17 +448,17 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectContractByHashAmount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
     where contracthash = #{param1}
   </select>
 
-  <select id="selectContractAssetCountByHeight" resultType="String" parameterType="java.util.Map">
+  <select id="selectContractAssetSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
         SELECT SUM(amount)
         from tbl_ont_txn_detail
         where confirmflag = 1 and assetname = #{assetname}
-            and ( toaddress = #{address} OR fromaddress = #{address} )
+        and ( toaddress = #{address} OR fromaddress = #{address} )
   </select>
 
   <select id="selectTxnCountInOneDay" resultType="java.lang.Integer" useCache="false">
@@ -478,5 +467,20 @@
     where txntime >= #{StartTime}
     and <![CDATA[ txntime < #{EndTime} ]]>
   </select>
+
+
+  <select id="selectAllFromAddress" resultType="java.lang.String" useCache="false">
+    select fromaddress
+    from tbl_ont_txn_detail
+    where contracthash = #{param1}
+  </select>
+
+
+  <select id="selectAllToAddress" resultType="java.lang.String" useCache="false">
+    select toaddress
+    from tbl_ont_txn_detail
+    where contracthash = #{param1}
+  </select>
+
 
 </mapper>
