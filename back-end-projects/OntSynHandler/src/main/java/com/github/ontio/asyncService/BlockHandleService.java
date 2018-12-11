@@ -103,7 +103,7 @@ public class BlockHandleService {
             logger.info("###batch insert success!!");
 
             // 更新合约列表涉及的交易量
-            updateContractTxCount(blockHeight);
+            //updateContractTxCount(blockHeight);
         } catch (Exception e) {
             logger.error("error...session.rollback", e);
             session.rollback();
