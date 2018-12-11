@@ -1,24 +1,20 @@
 package com.github.ontio.service.impl;
 
-import com.github.ontio.common.Address;
 import com.github.ontio.dao.ContractsMapper;
 import com.github.ontio.dao.Oep4Mapper;
 import com.github.ontio.dao.Oep4TxnDetailMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
-import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Oep4;
-import com.github.ontio.utils.Helper;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.utils.ErrorInfo;
+import com.github.ontio.utils.Helper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +72,7 @@ public class ContractServiceImpl implements IContractService {
     }
 
     private Map<String, Object> getResultMap(String contractHash, String type, int pageSize, int pageNumber){
-        Contracts contract = contractsMapper.selectContractByContractHash(contractHash);
+/*        Contracts contract = contractsMapper.selectContractByContractHash(contractHash);
         if (contract == null)
         {
             return null;
@@ -89,10 +85,10 @@ public class ContractServiceImpl implements IContractService {
         Map<String, Object> paramMap1 = new HashMap<>();
         paramMap1.put("address", Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58());
         paramMap1.put("assetname", "ont");
-        String ontCount = transactionDetailMapper.selectContractAssetCountByHeight(paramMap1);
+        String ontCount = transactionDetailMapper.selectContractAssetSum(paramMap1);
 
         paramMap1.put("assetname", "ong");
-        String ongCount = transactionDetailMapper.selectContractAssetCountByHeight(paramMap1);
+        String ongCount = transactionDetailMapper.selectContractAssetSum(paramMap1);
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("contractHash", contractHash);
@@ -119,10 +115,10 @@ public class ContractServiceImpl implements IContractService {
             for (Map map : txnList) {
                 map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
             }
-        }
+        }*/
 
         Map<String, Object> rs = new HashMap();
-        rs.put("TxnList", txnList);
+/*        rs.put("TxnList", txnList);
         rs.put("Total", contractTxsCount);
         rs.put("Creator", contract.getCreator());
         rs.put("Name", contract.getName());
@@ -132,9 +128,10 @@ public class ContractServiceImpl implements IContractService {
         rs.put("CreateTime", contract.getCreatetime());
         rs.put("UpdateTime", contract.getUpdatetime());
         rs.put("ContactInfo", contract.getContactinfo());
+        rs.put("Description", contract.getDescription());
         rs.put("Logo", contract.getLogo());
         rs.put("OntCount", ontCount == null ? 0 : ontCount);
-        rs.put("OngCount", ongCount == null ? 0 : new BigDecimal(ongCount).divide(new BigDecimal(1000000000)));
+        rs.put("OngCount", ongCount == null ? 0 : new BigDecimal(ongCount).divide(new BigDecimal(1000000000)));*/
 
         return rs;
     }
