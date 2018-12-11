@@ -102,7 +102,7 @@ public class BlockHandleService {
             session.clearCache();
             logger.info("###batch insert success!!");
 
-            // 更新合约列表涉及的交易量
+            // 更新合约列表涉及的交易量，由Explorer 批量更新
             //updateContractTxCount(blockHeight);
         } catch (Exception e) {
             logger.error("error...session.rollback", e);
