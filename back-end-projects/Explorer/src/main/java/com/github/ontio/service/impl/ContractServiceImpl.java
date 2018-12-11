@@ -105,17 +105,18 @@ public class ContractServiceImpl implements IContractService {
 
         switch (type.toLowerCase()){
             case "oep4":
-                //TODO 考虑复兴积分，暂时从txn_detail表查询。等重新同步到oep_txn_detail表，再更新回来
+                //TODO 考虑复兴积分，暂时从txn_detail表查询。等重新同步到oep4_txn_detail表，再更新回来
                 //txnList = oep4TxnDetailMapper.selectContractByHash(paramMap);
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
                 break;
             case "oep8":
+                //TODO 考虑南瓜oep8，暂时从txn_detail表查询。等重新同步到oep8_txn_detail表，再更新回来
                 if (!tokenName.isEmpty()){
                     paramMap.put("tokenName", tokenName);
-                    txnCount = oep8TxnDetailMapper.selectContractByHashAmount(paramMap);
+                    //txnCount = oep8TxnDetailMapper.selectContractByHashAmount(paramMap);
                 }
-
-                txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
+                //txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
+                txnList = transactionDetailMapper.selectContractByHash(paramMap);
                 break;
             default:
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
