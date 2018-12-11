@@ -22,5 +22,4 @@ public interface DailyMapper {
 
 
     List<Map> selectDailyInfo(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
-
 }
