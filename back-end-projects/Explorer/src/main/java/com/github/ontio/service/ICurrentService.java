@@ -44,4 +44,7 @@ public interface ICurrentService {
 
     Result queryDailyInfo(long startTime, long endTime);
 
+
+    Result queryMarketingInfo();
+
 }
