@@ -472,14 +472,14 @@
   <select id="selectAllFromAddress" resultType="java.lang.String" useCache="false">
     select fromaddress
     from tbl_ont_txn_detail
-    where toaddress = #{param1}
+    where contracthash = #{param1}
   </select>
 
 
   <select id="selectAllToAddress" resultType="java.lang.String" useCache="false">
     select toaddress
     from tbl_ont_txn_detail
-    where fromaddress = #{param1}
+    where contracthash = #{param1}
   </select>
 
 
