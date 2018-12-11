@@ -25,7 +25,6 @@ import com.github.ontio.dao.DailyMapper;
 import com.github.ontio.dao.Oep4Mapper;
 import com.github.ontio.dao.TransactionDetailMapper;
 import com.github.ontio.model.Oep4;
-import com.github.ontio.model.Oep4Key;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ICurrentService;
 import com.github.ontio.utils.ConfigParam;
@@ -80,7 +79,7 @@ public class CurrentServiceImpl implements ICurrentService {
     public Result querySummaryInfo() {
 
         Map summary = currentMapper.selectSummaryInfo();
-        // List<String> addrList = transactionDetailMapper.selectAllAddress();
+       // List<String> addrList = transactionDetailMapper.selectAllAddress();
 
         //initSDK();
         //int nodeCount = sdk.getNodeCount();
@@ -91,10 +90,12 @@ public class CurrentServiceImpl implements ICurrentService {
         rs.put("CurrentHeight", summary.get("Height"));
         rs.put("TxnCount", summary.get("TxnCount"));
         rs.put("OntIdCount", summary.get("OntIdCount"));
-        // rs.put("AddrCount", addrList.size());
+       // rs.put("AddrCount", addrList.size());
 
         return Helper.result("QueryCurrentInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
+
+
 
 
     @Override
@@ -106,7 +107,7 @@ public class CurrentServiceImpl implements ICurrentService {
 
         JSONObject oep4Info = sdk.queryOep4Info(codeHash);
 
-        Oep4Key oep4KeyDAO = new Oep4Key();
+        Oep4 oep4KeyDAO = new Oep4();
         oep4KeyDAO.setContract(codeHash);
         oep4KeyDAO.setName(oep4Info.getString("Name"));
 
