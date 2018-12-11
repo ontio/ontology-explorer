@@ -6,9 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
 
 
 @Mapper
@@ -26,11 +26,11 @@ public interface TransactionDetailMapper {
 
     int updateByPrimaryKey(TransactionDetail record);
 
-    List<Map> selectTxnWithoutOntId(int start , int size);
+    List<Map> selectTxnWithoutOntId(int start, int size);
 
     int selectTxnWithoutOntIdAmount();
 
-    Map<String,Object> selectTxnByHash(String txnHash);
+    Map<String, Object> selectTxnByHash(String txnHash);
 
     List<Map> selectTxnByBlockHeight(int height);
 
@@ -48,7 +48,6 @@ public interface TransactionDetailMapper {
     List<Map> selectTxnByFromAddressInfo(Map<String, Object> param);
 
 
-
     List<Map> selectTxnByAddressInfoAndTimePageDragon(Map<String, Object> param);
 
 
@@ -63,19 +62,23 @@ public interface TransactionDetailMapper {
 
     List<String> selectTxnAmountByAddressInfo2(Map<String, Object> param);
 
-    List<String> selectAllAddress();
 
     int selectAddressRecordAmount(String address);
 
     List<Map> selectContractByHash(Map<String, Object> param);
 
-    int selectContractByHashAmount(String contractHash);
+    int selectContractAddrAmount(String contractHash);
 
-    String selectContractAssetCountByHeight(Map<String, Object> paramMap);
-
-    int selectContractTxsAmount(String contractHash);
+    BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
 
     int selectTxnCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
+
+    List<Map<String, String>> selectAllAddress();
+
+
+    List<String> selectAllFromAddress(String toAddress);
+
+    List<String> selectAllToAddress(String fromAddress);
 
 
 }
