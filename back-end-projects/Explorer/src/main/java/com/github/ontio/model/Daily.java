@@ -11,6 +11,8 @@ public class Daily {
 
     private Integer blockcount;
 
+    private Integer addresscount;
+
     public Date getTime() {
         return time;
     }
@@ -41,5 +43,13 @@ public class Daily {
 
     public void setBlockcount(Integer blockcount) {
         this.blockcount = blockcount;
+    }
+
+    public Integer getAddresscount() {
+        return addresscount;
+    }
+
+    public void setAddresscount(Integer addresscount) {
+        this.addresscount = addresscount;
     }
 }
