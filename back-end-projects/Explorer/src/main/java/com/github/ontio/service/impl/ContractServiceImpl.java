@@ -250,6 +250,7 @@ public class ContractServiceImpl implements IContractService {
                 }
 
                 rs.put("Symbol", oep8 == null ? "" : oep8.getSymbol());
+                rs.put("TokenName", oep8 == null ? "" : oep8.getName());
                 break;
             default:
                 break;
