@@ -423,17 +423,6 @@ public class TransactionServiceImpl implements ITransactionService {
         return Helper.result("QueryAddressBalance", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, balanceList);
     }
 
-    @Override
-    public Result queryAddressList() {
-
-        List<String> addrList = transactionDetailMapper.selectAllAddress();
-
-        Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("Total", addrList.size());
-        rsMap.put("AddrList", addrList);
-
-        return Helper.result("QueryAllAddress", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
-    }
 
     /**
      * 获取账户余额，可提取的ong，待提取的ong
@@ -501,7 +490,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             Map<String, Object> oep4Map = new HashMap<>();
             oep4Map.put("AssetName", symbol);
-            oep4Map.put("Balance", new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal) map.get("Decimals")).intValue()))));
+            oep4Map.put("Balance", new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal) map.get("Decimals")).intValue()))).toPlainString());
             balanceList.add(oep4Map);
         }
 
