@@ -186,7 +186,7 @@
   </select>
 
   <select id="queryOEPContractCount" resultType="Integer">
-    select count(*) from tbl_ont_oep8 a,tbl_ont_contracts b where b.auditflag = 1 and a.Contract = b.contract	GROUP BY a.contract
+    select count(distinct a.contract) from tbl_ont_oep8 a,tbl_ont_contracts b where b.auditflag = 1 and a.contract = b.contract	GROUP BY a.contract
   </select>
 
   <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep8">
