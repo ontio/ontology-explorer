@@ -99,9 +99,4 @@ public interface ITransactionService {
      */
     Result queryAddressBalance(String address);
 
-    /**
-     * 查询地址列表
-     * @return
-     */
-    Result queryAddressList();
 }
