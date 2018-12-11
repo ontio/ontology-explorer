@@ -7,7 +7,7 @@
     <result column="txntype" property="txntype" jdbcType="INTEGER" />
     <result column="txntime" property="txntime" jdbcType="INTEGER" />
     <result column="height" property="height" jdbcType="INTEGER" />
-    <result column="tokenid" property="tokenid" jdbcType="VARCHAR" />
+    <result column="tokenname" property="tokenname" jdbcType="VARCHAR" />
     <result column="amount" property="amount" jdbcType="DECIMAL" />
     <result column="fee" property="fee" jdbcType="DECIMAL" />
     <result column="assetname" property="assetname" jdbcType="VARCHAR" />
@@ -20,19 +20,19 @@
     <result column="contracthash" property="contracthash" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    txnhash, txnindex, txntype, txntime, height, tokenid, amount, fee, assetname, fromaddress, 
+    txnhash, txnindex, txntype, txntime, height, tokenname, amount, fee, assetname, fromaddress,
     toaddress, description, blockindex, confirmflag, eventtype, contracthash
   </sql>
   
   <insert id="insert" parameterType="com.github.ontio.model.Oep8TxnDetail" >
     insert into tbl_ont_oep8txn_detail (txnhash, txnindex, txntype, 
-      txntime, height, tokenid, 
+      txntime, height, tokenname,
       amount, fee, assetname, 
       fromaddress, toaddress, description, 
       blockindex, confirmflag, eventtype, 
       contracthash)
     values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
-      #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{tokenid,jdbcType=VARCHAR}, 
+      #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{tokenname,jdbcType=VARCHAR},
       #{amount,jdbcType=DECIMAL}, #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, 
       #{fromaddress,jdbcType=VARCHAR}, #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{blockindex,jdbcType=INTEGER}, #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, 
@@ -56,8 +56,8 @@
       <if test="height != null" >
         height,
       </if>
-      <if test="tokenid != null" >
-        tokenid,
+      <if test="tokenname != null" >
+        tokenname,
       </if>
       <if test="amount != null" >
         amount,
@@ -106,8 +106,8 @@
       <if test="height != null" >
         #{height,jdbcType=INTEGER},
       </if>
-      <if test="tokenid != null" >
-        #{tokenid,jdbcType=VARCHAR},
+      <if test="tokenname != null" >
+        #{tokenname,jdbcType=VARCHAR},
       </if>
       <if test="amount != null" >
         #{amount,jdbcType=DECIMAL},
@@ -153,8 +153,8 @@
       <if test="height != null" >
         height = #{height,jdbcType=INTEGER},
       </if>
-      <if test="tokenid != null" >
-        tokenid = #{tokenid,jdbcType=VARCHAR},
+      <if test="tokenname != null" >
+        tokenname = #{tokenname,jdbcType=VARCHAR},
       </if>
       <if test="amount != null" >
         amount = #{amount,jdbcType=DECIMAL},
@@ -195,7 +195,7 @@
     set txntype = #{txntype,jdbcType=INTEGER},
       txntime = #{txntime,jdbcType=INTEGER},
       height = #{height,jdbcType=INTEGER},
-      tokenid = #{tokenid,jdbcType=VARCHAR},
+      tokenname = #{tokenname,jdbcType=VARCHAR},
       amount = #{amount,jdbcType=DECIMAL},
       fee = #{fee,jdbcType=DECIMAL},
       assetname = #{assetname,jdbcType=VARCHAR},
