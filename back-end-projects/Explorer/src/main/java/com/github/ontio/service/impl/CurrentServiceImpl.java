@@ -81,12 +81,12 @@ public class CurrentServiceImpl implements ICurrentService {
         Map summary = currentMapper.selectSummaryInfo();
        // List<String> addrList = transactionDetailMapper.selectAllAddress();
 
-        initSDK();
-        int nodeCount = sdk.getNodeCount();
+        //initSDK();
+        //int nodeCount = sdk.getNodeCount();
 
         Map<String, Object> rs = new HashMap();
 
-        rs.put("NodeCount", nodeCount);
+        rs.put("NodeCount", 33);
         rs.put("CurrentHeight", summary.get("Height"));
         rs.put("TxnCount", summary.get("TxnCount"));
         rs.put("OntIdCount", summary.get("OntIdCount"));
@@ -136,7 +136,33 @@ public class CurrentServiceImpl implements ICurrentService {
     @Override
     public Result queryDailyInfo(long startTime, long endTime) {
 
-        List<Map> dailyList = dailyMapper.selectDailyInfo(startTime, endTime);
+        long time = startTime - 24 * 60 * 60;
+
+        List<Map> dailyList = dailyMapper.selectDailyInfo(time, endTime);
+
+        if (dailyList.size() >= 2) {
+            for (int i = 1; i < dailyList.size(); i++) {
+                Map map = dailyList.get(i);
+                int addrCount = (int) dailyList.get(i).get("AddressCount") - (int) dailyList.get(i - 1).get("AddressCount");
+                map.put("AddressCount", addrCount);
+            }
+            dailyList.remove(0);
+        }
+
         return Helper.result("QueryDailyInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, dailyList);
+    }
+
+
+    @Override
+    public Result queryMarketingInfo() {
+
+        Map summary = currentMapper.selectSummaryInfo();
+        int height = (Integer) summary.get("Height");
+
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("CurrentHeight", height);
+        rsMap.put("CurrentSupply", "59.75%");
+
+        return Helper.result("QueryMarketingInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
     }
 }
