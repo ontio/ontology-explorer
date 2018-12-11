@@ -100,23 +100,21 @@ public class ContractServiceImpl implements IContractService {
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
         List<Map> txnList = null;
-        int contractTxsCount = 0;
+
         switch (type.toLowerCase()){
             case "oep4":
                 txnList = oep4TxnDetailMapper.selectContractByHash(paramMap);
-                contractTxsCount = oep4TxnDetailMapper.selectContractByHashAmount(contractHash);
                 break;
             case "oep8":
                 if (!tokenName.isEmpty()){
                     paramMap.put("tokenName", tokenName);
+                    contract.setTxcount(oep8TxnDetailMapper.selectContractByHashAmount(paramMap));
                 }
 
                 txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
-                contractTxsCount = oep8TxnDetailMapper.selectContractByHashAmount(paramMap);
                 break;
             default:
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
-                contractTxsCount = transactionDetailMapper.selectContractByHashAmount(contractHash);
                 break;
         }
 
@@ -128,7 +126,7 @@ public class ContractServiceImpl implements IContractService {
 
         Map<String, Object> rs = new HashMap();
         rs.put("TxnList", txnList);
-        rs.put("Total", contractTxsCount);
+        rs.put("Total", contract.getTxcount());
         rs.put("Creator", contract.getCreator());
         rs.put("Name", contract.getName());
         rs.put("ABI", contract.getAbi());
