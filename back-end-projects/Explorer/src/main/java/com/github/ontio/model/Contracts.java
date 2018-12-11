@@ -1,5 +1,7 @@
 package com.github.ontio.model;
 
+import java.math.BigDecimal;
+
 public class Contracts {
     private String contract;
 
@@ -26,6 +28,12 @@ public class Contracts {
     private String logo;
 
     private String creator;
+
+    private Integer addresscount;
+
+    private BigDecimal ontcount;
+
+    private BigDecimal ongcount;
 
     public String getContract() {
         return contract;
@@ -128,6 +136,30 @@ public class Contracts {
     }
 
     public void setCreator(String creator) {
-        this.creator = creator;
+        this.creator = creator == null ? null : creator.trim();
+    }
+
+    public Integer getAddresscount() {
+        return addresscount;
+    }
+
+    public void setAddresscount(Integer addresscount) {
+        this.addresscount = addresscount;
+    }
+
+    public BigDecimal getOntcount() {
+        return ontcount;
+    }
+
+    public void setOntcount(BigDecimal ontcount) {
+        this.ontcount = ontcount;
+    }
+
+    public BigDecimal getOngcount() {
+        return ongcount;
+    }
+
+    public void setOngcount(BigDecimal ongcount) {
+        this.ongcount = ongcount;
     }
 }
