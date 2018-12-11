@@ -21,18 +21,7 @@
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
     toaddress, description, blockindex, confirmflag, eventtype
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.github.ontio.model.Oep4TxnDetailKey" >
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_oep4txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.Oep4TxnDetailKey" >
-    delete from tbl_ont_oep4txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.Oep4TxnDetail" >
     insert into tbl_ont_oep4txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
@@ -199,7 +188,7 @@
 
   <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map">
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
-    from tbl_ont_txn_detail
+    from tbl_ont_oep4txn_detail
     where contracthash = #{contractHash}
     order by height DESC
     limit #{Start}, #{PageSize}
@@ -207,7 +196,7 @@
 
   <select id="selectContractByHashAmount" parameterType="java.lang.String" resultType="java.lang.Integer">
     select count(DISTINCT(txnhash))
-    from tbl_ont_txn_detail
+    from tbl_ont_oep4txn_detail
     where contracthash = #{param1}
   </select>
 </mapper>

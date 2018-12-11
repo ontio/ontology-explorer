@@ -162,4 +162,29 @@ public class Contracts {
     public void setOngcount(BigDecimal ongcount) {
         this.ongcount = ongcount;
     }
+
+
+    public Integer getAddresscount() {
+        return addresscount;
+    }
+
+    public void setAddresscount(Integer addresscount) {
+        this.addresscount = addresscount;
+    }
+
+    public BigDecimal getOntcount() {
+        return ontcount;
+    }
+
+    public void setOntcount(BigDecimal ontcount) {
+        this.ontcount = ontcount;
+    }
+
+    public BigDecimal getOngcount() {
+        return ongcount;
+    }
+
+    public void setOngcount(BigDecimal ongcount) {
+        this.ongcount = ongcount;
+    }
 }

@@ -103,7 +103,7 @@ public class BlockHandleService {
             logger.info("###batch insert success!!");
 
             // 更新合约列表涉及的交易量
-            updateContractTxCount(blockHeight);
+            //updateContractTxCount(blockHeight);
         } catch (Exception e) {
             logger.error("error...session.rollback", e);
             session.rollback();
@@ -126,7 +126,6 @@ public class BlockHandleService {
 
         logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }
-
 
     @Transactional(rollbackFor = Exception.class)
     public void insertBlock(JSONObject blockJson) throws Exception {
