@@ -101,14 +101,18 @@ public class ContractServiceImpl implements IContractService {
         paramMap.put("PageSize", pageSize);
         List<Map> txnList = null;
 
+        int txnCount = contract.getTxcount();
+
         switch (type.toLowerCase()){
             case "oep4":
-                txnList = oep4TxnDetailMapper.selectContractByHash(paramMap);
+                //TODO 考虑复兴积分，暂时从txn_detail表查询。等重新同步到oep_txn_detail表，再更新回来
+                //txnList = oep4TxnDetailMapper.selectContractByHash(paramMap);
+                txnList = transactionDetailMapper.selectContractByHash(paramMap);
                 break;
             case "oep8":
                 if (!tokenName.isEmpty()){
                     paramMap.put("tokenName", tokenName);
-                    contract.setTxcount(oep8TxnDetailMapper.selectContractByHashAmount(paramMap));
+                    txnCount = oep8TxnDetailMapper.selectContractByHashAmount(paramMap);
                 }
 
                 txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
@@ -126,7 +130,7 @@ public class ContractServiceImpl implements IContractService {
 
         Map<String, Object> rs = new HashMap();
         rs.put("TxnList", txnList);
-        rs.put("Total", contract.getTxcount());
+        rs.put("Total", txnCount);
         rs.put("Creator", contract.getCreator());
         rs.put("Name", contract.getName());
         rs.put("ABI", contract.getAbi());
