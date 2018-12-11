@@ -190,7 +190,7 @@
   </select>
 
   <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep8">
-    select contract, GROUP_CONCAT(tokenid) as tokenid, GROUP_CONCAT(totalsupply) as description, GROUP_CONCAT(symbol) as symbol
+    select contract, GROUP_CONCAT(tokenid) as tokenid, GROUP_CONCAT(totalsupply) as description, GROUP_CONCAT(symbol) as symbol, GROUP_CONCAT(name) as name
           from tbl_ont_oep8 where contract = #{contractHash} GROUP BY contract
   </select>
 
