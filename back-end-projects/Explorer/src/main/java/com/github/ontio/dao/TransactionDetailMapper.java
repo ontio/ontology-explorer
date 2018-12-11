@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 
+
 @Mapper
 @Component(value = "TransactionDetailMapper")
 public interface TransactionDetailMapper {
@@ -21,11 +22,11 @@ public interface TransactionDetailMapper {
 
     int updateByPrimaryKey(TransactionDetail record);
 
-    List<Map> selectTxnWithoutOntId(int start, int size);
+    List<Map> selectTxnWithoutOntId(int start , int size);
 
     int selectTxnWithoutOntIdAmount();
 
-    Map<String, Object> selectTxnByHash(String txnHash);
+    Map<String,Object> selectTxnByHash(String txnHash);
 
     List<Map> selectTxnByBlockHeight(int height);
 
@@ -41,6 +42,7 @@ public interface TransactionDetailMapper {
     List<Map> selectTxnByToAddressInfo(Map<String, Object> param);
 
     List<Map> selectTxnByFromAddressInfo(Map<String, Object> param);
+
 
 
     List<Map> selectTxnByAddressInfoAndTimePageDragon(Map<String, Object> param);
@@ -61,6 +63,8 @@ public interface TransactionDetailMapper {
     int selectAddressRecordAmount(String address);
 
     List<Map> selectContractByHash(Map<String, Object> param);
+
+    int selectContractByHashAmount(String contractHash);
 
     int selectContractAddrAmount(String contractHash);
 
