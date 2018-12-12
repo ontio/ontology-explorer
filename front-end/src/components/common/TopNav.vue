@@ -1,50 +1,49 @@
 <template>
-  <nav v-if="routeDisplay" class="navbar nav-background navbar-expand fixed-top">
-    <div class="container fix-no-row-col">
-      <router-link class="navbar-brand" :to="{path: $route.params.net === 'testnet'?'/testnet':'/'}">
-        <img class="navbar-logo" src="../../assets/logos/logo.png" alt="">
-      </router-link>
-
-      <!-- 只有sm屏幕隐藏的 -->
-      <div class="d-none d-sm-block">
-        <ul class="navbar-nav mr-auto mr-fix">
-          <li class="nav-item nav-search-fix">
-            <div class="input-group-top">
-              <input type="text" class="form-control-top search-input-txt search-input"
-                     v-model="searchContent" @keyup.13="submitSearch" :placeholder="'On the ' + net">
-              <div class="input-group-addon-top input-submit-search search-input-txt search-btn text-center font-blod"
-                   @click="submitSearch">
-                <i class="searchfa fa fa-search" aria-hidden="true"></i>
-              </div>
-            </div>
-          </li>
-          <li class="nav-item">
-            <span class="pointer nav-lang-fix" @click="chooseLanguage()">{{ $t('language.name') }}</span>
-          </li>
-        </ul>
+  <div v-if="routeDisplay" class="container">
+    <div class="row">
+      <div class="col">
+        <router-link class="navbar-brand" :to="{path: $route.params.net === 'testnet'?'/testnet':'/'}">
+          <img class="navbar-logo" src="../../assets/logos/logo.png" alt="">
+        </router-link>
       </div>
 
-      <!-- 只有sm屏幕展示的 -->
-      <div class="d-block d-sm-none">
-        <!--<nav class="navbar navbar-expand-sm">-->
-        <ul class="nav navbar-nav">
-          <li class="dropdown ul-li-a-2">
-            <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-              <i class="fa fa-bars ul-li-a-i-2" aria-hidden="true"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-2">
-              <a @click="chooseLanguage"><li>{{ $t('language.name') }}</li></a>
-              <a @click="toBlockListPage"><li>{{ $t('navbar.blocks') }}</li></a>
-              <!--<a @click="chooseLanguage"><li>{{ $t('navbar.addrs') }}</li></a>-->
-              <a @click="toTransactionListPage"><li>{{ $t('navbar.tarns') }}</li></a>
-              <a @click="toOntIdListPage"><li>{{ $t('navbar.ontIds') }}</li></a>
-            </ul>
-          </li>
-        </ul>
+      <div class="pull-right">
+
+        <!-- 只有sm屏幕隐藏的 -->
+        <!--<nav class="d-none d-sm-block navbar nav-background navbar-expand-md fixed-top">-->
+          <!--<div class="container fix-no-row-col">-->
+            <!--<router-link class="navbar-brand" :to="{path: $route.params.net === 'testnet'?'/testnet':'/'}">-->
+              <!--<img class="navbar-logo" src="../../assets/logos/logo.png" alt="">-->
+            <!--</router-link>-->
+
+            <!--<div>-->
+              <!--<ul class="navbar-nav mr-auto mr-fix">-->
+                <!--<li class="nav-item nav-search-fix">-->
+                  <!--<div class="input-group-top">-->
+                    <!--<input type="text" class="form-control-top search-input-txt search-input"-->
+                           <!--v-model="searchContent" @keyup.13="submitSearch" :placeholder="'On the ' + net">-->
+                    <!--<div class="input-group-addon-top input-submit-search search-input-txt search-btn text-center font-blod"-->
+                         <!--@click="submitSearch">-->
+                      <!--<i class="searchfa fa fa-search" aria-hidden="true"></i>-->
+                    <!--</div>-->
+                  <!--</div>-->
+                <!--</li>-->
+                <!--<li class="nav-item">-->
+                  <!--<span class="pointer nav-lang-fix" @click="chooseLanguage()">{{ $t('language.name') }}</span>-->
+                <!--</li>-->
+              <!--</ul>-->
+            <!--</div>-->
+          <!--</div>-->
         <!--</nav>-->
+
+        <nav-bar></nav-bar>
+        <!-- 只有sm屏幕显示的 -->
+        <!--<div class="d-block d-sm-none">-->
+          <!--<nav-bar></nav-bar>-->
+        <!--</div>-->
       </div>
     </div>
-  </nav>
+  </div>
 </template>
 
 <script>
@@ -67,7 +66,7 @@
       } else {
         this.routeDisplay = true
       }
-      this.net = this.$route.params.net === 'testnet' ? 'Polaris 1.0.0' : 'MainNet'
+      this.net = this.$route.params.net === 'testnet' ? 'TestNet' : 'MainNet'
     },
     watch: {
       '$route': function () {
@@ -147,6 +146,20 @@
                 this.$router.push({
                   name: 'AddressDetailTest',
                   params: {address: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
+                })
+              }
+              break;
+            /* contract hash */
+            case 40:
+              if (this.$route.params.net == undefined) {
+                this.$router.push({
+                  name: 'ContractDetail',
+                  params: {contractHash: this.searchContent, pageSize: 20, pageNumber: 1}
+                })
+              } else {
+                this.$router.push({
+                  name: 'ContractDetailTest',
+                  params: {contractHash: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
                 })
               }
               break;
@@ -268,6 +281,11 @@
   .mr-fix {
     margin-top: 10px;
   }
+
+  /*.search-input {*/
+    /*padding: 0.5rem 2.1rem 0.5rem 1.1rem;*/
+    /*min-width: 300px;*/
+  /*}*/
 
   .search-input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color: #cacaca;

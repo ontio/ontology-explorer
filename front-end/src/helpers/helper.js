@@ -12,7 +12,7 @@ const HelperTools = {
     return parseInt(showtime);
   },
 
-  getshowDate(inputTime) {
+  getShowDate(inputTime) {
     if (inputTime <= 60) {
       return inputTime + "s"
     }
@@ -30,7 +30,7 @@ const HelperTools = {
   getTransDate(inputTime) {
     inputTime = inputTime * 1000;
 
-    if(window.localStorage.getItem('user_lang') === 'zh') {
+    if (window.localStorage.getItem('user_lang') === 'zh') {
       return this.getPRCTime(inputTime)
     } else {
       return this.getUTCTime(inputTime)
@@ -120,7 +120,7 @@ const HelperTools = {
     return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
   },
 
-  getDayfunction(second_time) {
+  getDayFunc(second_time) {
     let time = parseInt(second_time);
 
     if (parseInt(second_time) > 60) {
@@ -143,13 +143,73 @@ const HelperTools = {
     return time;
   },
 
-  getNormalgas(gas) {
-    return gas * 0.000000001
+  /**
+   * 金融化数值显示
+   *
+   * @param value
+   * @return {*}
+   */
+  toFinancialVal(value) {
+    if (typeof(value) !== 'undefined') {
+      value = parseFloat(value).toString();
+
+      if (value == 0) return parseFloat(value).toString();
+
+      let dotIndex = value.indexOf('.');
+      let valueLast = '';
+
+      // 没有小数点的处理
+      if (dotIndex !== -1) {
+        valueLast = value.substr(dotIndex);
+        value = value.substr(0, dotIndex);
+      }
+
+      let tmpVal = value.split('').reverse();
+      let retStr = '';
+
+      for (let i = 0; i < tmpVal.length; i++) {
+        if ((i + 1) % 4 === 0) {
+          tmpVal.splice(i, 0, ',');
+        }
+      }
+      tmpVal.reverse();
+
+      for (let i = 0; i < tmpVal.length; i++) {
+        retStr += tmpVal[i]
+      }
+
+      return retStr + valueLast;
+    } else {
+      return 0
+    }
+  },
+
+  /**
+   * 处理string to json
+   *
+   * @param data
+   * @return {any}
+   */
+  strToJson(data) {
+    if (typeof(data) !== 'object' && typeof(data) !== 'undefined' && data !== null && data !== '') {
+      if (data.substr(0, 1) === '"') {
+        data = data.substr(1, data.length() - 1)
+      }
+
+      try {
+        data = JSON.parse(data);
+      } catch (e) {
+
+      }
+    }
+
+    return data
   }
 };
 
 export default {
   install: function (Vue) {
     Vue.prototype.$HelperTools = HelperTools
-  }
+  },
+  HelperTools
 }

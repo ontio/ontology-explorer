@@ -89,7 +89,7 @@
       },
       getShowDate($time) {
         var time = this.$HelperTools.getDateTime($time)
-        return this.$HelperTools.getshowDate(time)
+        return this.$HelperTools.getShowDate(time)
       },
       countDownTime: function () {
         for (var i = 0; i < this.info.length; i++) {

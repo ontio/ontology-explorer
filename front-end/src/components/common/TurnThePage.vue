@@ -21,21 +21,34 @@
 
 <script>
 	export default {
+    /**
+     * 绘制页数导航
+     *
+     * pagesInfo： 传递store里构造的页面数据，firstPage/lastPage等等
+     * pagesName： 跳转的路由名称
+     * who： 可选；标识特殊参数名称
+     * paramVal： 可选；特殊参数的值
+     */
     name: "TurnThePage",
-    props: ['pagesInfo', 'pagesName', 'who', 'params'],
+    props: ['pagesInfo', 'pagesName', 'who', 'paramVal'],
     methods: {
       goToPage($Page) {
+        let name = this.pagesName;
+        let params = {pageSize: $Page.pageSize.toString(), pageNumber: $Page.pageNumber};
+
+        // 判断网络
         if (this.$route.params.net === 'testnet') {
-          this.$router.push({
-            name: this.pagesName + 'Test',
-            params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber, net: 'testnet'}
-          })
-        } else {
-          this.$router.push({
-            name: this.pagesName,
-            params: {pageSize: $Page.pageSize, pageNumber: $Page.pageNumber}
-          })
+          name = name + 'Test';
+          params['net'] = 'testnet'
         }
+
+        // 判断是否有其他参数
+        if (this.who !== undefined) {
+          params[this.who] = this.paramVal;
+        }
+
+        // 注意在view组件中需要用watch触发数据刷新！！
+        this.$router.push({name: name, params: params})
       }
     }
   }

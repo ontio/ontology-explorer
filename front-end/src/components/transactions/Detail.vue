@@ -1,7 +1,6 @@
 <template>
-  <div class="container margin-top-60">
+  <div class="container margin-top-15">
     <div class="pc-display">
-      <return-home></return-home>
       <list-title :name="$t('txDetail.name')"></list-title>
       <detail-title :name="$t('txDetail.txHash')" :val="txData.TxnHash"></detail-title>
 

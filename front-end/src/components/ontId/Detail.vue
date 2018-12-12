@@ -1,6 +1,5 @@
 <template>
   <div class="container container-margin-top">
-    <return-home></return-home>
     <list-title :name="$t('ontIdDetail.nickname')"></list-title>
     <detail-title :name="$t('ontIdDetail.name')" :val="$route.params.ontid"></detail-title>
 
