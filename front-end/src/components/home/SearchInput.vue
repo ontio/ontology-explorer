@@ -92,6 +92,20 @@
                 })
               }
               break;
+            /* contract hash */
+            case 40:
+              if (this.$route.params.net == undefined) {
+                this.$router.push({
+                  name: 'ContractDetail',
+                  params: {contractHash: this.searchContent, pageSize: 20, pageNumber: 1}
+                })
+              } else {
+                this.$router.push({
+                  name: 'ContractDetailTest',
+                  params: {contractHash: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
+                })
+              }
+              break;
             /* ontid */
             case 42:
               if (this.$route.params.net == undefined) {

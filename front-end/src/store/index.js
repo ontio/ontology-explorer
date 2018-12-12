@@ -14,7 +14,9 @@ import TransactionDetailPage from './modules/transaction-detail-page'
 import AddressDetailPage from './modules/address-detail'
 import AddressListPage from './modules/address-list'
 import ClaimDetailPage from './modules/claim-verify-page'
-import NodeAuthorization from './modules/node-authorization.js'
+import NodeAuthorization from './modules/node-authorization'
+import ContractData from './modules/contracts'
+import TokenData from './modules/tokens'
 
 Vue.use(Vuex)
 
@@ -33,6 +35,8 @@ export default new Vuex.Store({
     AddressDetailPage,
     AddressListPage,
     ClaimDetailPage,
-    NodeAuthorization
+    NodeAuthorization,
+    ContractData,
+    TokenData
   }
 })

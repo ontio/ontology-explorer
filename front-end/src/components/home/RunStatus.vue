@@ -4,28 +4,38 @@
       <div class="col col-click" @click="toBlockListPage">
         <span class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</span>
         <span class="view-go-to">>></span>
-        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.CurrentHeight}}</span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">
+          <span>{{blockStatus.info.CurrentHeight}}</span>
+        </span>
       </div>
       <div class="col col-click" @click="toTransactionListPage">
         <span class="run-status-label">{{ $t('runStatus.TxnCount') }}</span>
         <span class="view-go-to">>></span>
-        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.TxnCount}}</span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">
+          <span>{{blockStatus.info.TxnCount}}</span>
+        </span>
       </div>
       <div class="col col-click" @click="toOnlineNodes" v-if="$route.params.net !== 'testnet'">
         <span class="run-status-label">{{ $t('runStatus.NodeCount') }}</span>
         <span class="view-go-to">>></span>
-        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.NodeCount}}</span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">
+          <span>{{blockStatus.info.NodeCount}}</span>
+        </span>
       </div>
       <!--<div class="col col-click" @click="toAddressListPage">-->
       <div class="col col-no-click-fix">
         <span class="run-status-label">{{ $t('runStatus.addressCount') }}</span>
         <!--<span class="view-go-to">>></span>-->
-        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.AddressCount}}</span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">
+          <span>{{blockStatus.info.AddressCount}}</span>
+        </span>
       </div>
       <div class="col col-click" @click="toOntIdListPage">
         <span class="run-status-label">{{ $t('runStatus.ontid') }}</span>
         <span class="view-go-to">>></span>
-        <span class="d-block run-status-p font-ExtraLight font-size48">{{blockStatus.info.OntIdCount}}</span>
+        <span class="d-block run-status-p font-ExtraLight font-size48">
+          <span>{{blockStatus.info.OntIdCount}}</span>
+        </span>
       </div>
     </div>
 
@@ -138,7 +148,8 @@
         }
       },
       toOnlineNodes() {
-        window.location.href = 'https://monitor.ont.io/'
+        this.$router.push({ name: 'NodeStakeList'})
+        // window.location.href = 'https://monitor.ont.io/'
       },
       getRunStatus() {
         this.$store.dispatch('getRunStatus', this.$route.params).then()
@@ -148,7 +159,7 @@
         this.$store.dispatch('generateTime', this.$route.params).then()
       },
       getDay($time) {
-        return Helper.getDayfunction($time)
+        return Helper.getDayFunc($time)
       },
       createAChart: function () {
         var ctx = document.getElementById("myChart");
@@ -383,11 +394,19 @@
     color: #32A4BE;
   }
 
+  .col-click:hover .run-status-p > span {
+    border-bottom: 2px solid #32A4BE;
+  }
+
   .col-click:hover > .run-status-label {
     color: #32A4BE;
   }
 
   .col-click:hover > .view-go-to {
+    color: #32A4BE;
+  }
+
+  .col-click:hover > .d-block {
     color: #32A4BE;
   }
 
@@ -413,7 +432,7 @@
 
   /*数字滚动插件的CSS可调整样式*/
   .mt-number-animate {
-    font-family: '微软雅黑';
+    font-family: '微软雅黑', sans-serif;
     width: 140px;
     line-height: 40px;
     height: 40px; /*设置数字显示高度*/;

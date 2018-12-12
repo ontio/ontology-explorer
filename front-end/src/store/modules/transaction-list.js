@@ -17,8 +17,7 @@ export default {
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
 
       return axios.get(apiUrl + '/transactionlist/5').then(response => {
-        var msg = JSON.parse(response.request.response)
-        //console.log(msg.Result.TxnList)
+        let msg = JSON.parse(response.request.response);
 
         commit({
           type: types.SET_TRANSACTION_LIST,

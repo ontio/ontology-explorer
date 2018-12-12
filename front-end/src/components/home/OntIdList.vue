@@ -83,7 +83,7 @@
       },
       getShowDate($time) {
         let time = this.$HelperTools.getDateTime($time)
-        return this.$HelperTools.getshowDate(time)
+        return this.$HelperTools.getShowDate(time)
       },
       getTransactionType($case) {
         return GetTransactionType.getTransactionType($case)

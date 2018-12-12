@@ -1,6 +1,5 @@
 <template>
   <div class="container container-margin-top">
-    <return-home></return-home>
     <list-title :name="$t('blockDetail.nickname')"></list-title>
     <detail-title :name="$t('blockDetail.name')" :val="blockData.Height"></detail-title>
 
