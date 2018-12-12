@@ -1,0 +1,31 @@
+/**
+ * 各种detail页面中有tab切换的样式
+ *
+ * 统一class头：explorer-detail-tab
+ */
+
+.explorer-detail-tab > ul {
+  background-color: white;
+  font-size: 18px;
+  font-family: "SourceSansPro-Regular", "Helvetica Neue", "Arial", sans-serif;
+}
+
+.explorer-detail-tab > ul > li {
+}
+
+.explorer-detail-tab > .nav-tabs {
+  border-bottom: 0;
+  padding: 10px;
+}
+
+.explorer-detail-tab > .nav-tabs .nav-link {
+  padding: 4px;
+  margin: 0 10px;
+  border: 0;
+  border-radius: 0;
+  color: #AFACAC;
+}
+
+.explorer-detail-tab > .nav-tabs .nav-link.active {
+  border-bottom: #32a4be solid 3px;
+}

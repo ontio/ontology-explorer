@@ -8,11 +8,29 @@ module.exports = {
     blocks: 'Blocks',
     addrs: 'Addresses',
     tarns: 'Transactions',
-    ontIds: 'ONT ID List'
+    ontIds: 'ONT ID List',
+    top: {
+      blockchain: 'Blockchain',
+      contracts: 'Contracts',
+      tokens: 'Tokens',
+      ontId: 'ONT ID',
+      apis: 'APIs',
+      mainNet: 'MainNet',
+      testNet: 'TestNet',
+      nodes: 'Nodes',
+      stake: 'Stake Authorizations',
+      nodeMap: 'Node Map',
+      blocks: 'Blocks',
+      txns: 'Transactions',
+      accounts: 'Accounts',
+      oep4: 'OEP-4 Overview',
+      oep8: 'OEP-8 Overview',
+    }
   },
   all: {
     more: '>>',
     return: '  Back',
+    block: 'Block',
     hash: 'Hash',
     status: 'Status',
     time: 'Time',
@@ -26,11 +44,14 @@ module.exports = {
     content: 'Content',
     confirmed: 'Confirmed',
     failed: 'Failed',
-    description: 'Description'
+    description: 'Description',
+    token: 'Token',
+    txn: 'Transaction',
+    txns: 'Transactions',
   },
   searchInput: {
     search: 'SEARCH',
-    placeholder: 'Enter ONT ID, block height, transaction hash, or asset address query',
+    placeholder: 'ONT ID, Block Height, TX Hash, Contract Hash, Address',
     slogan: 'Blockchain Explorer & Trust Verifier'
   },
   runStatus: {
@@ -62,7 +83,7 @@ module.exports = {
     failed: 'FAIL, not found.'
   },
   blockList: {
-    name: 'Block',
+    name: 'BLOCKS',
     Height: 'Height',
     TxnNum: 'Txns',
     bookkeeper: 'Bookkeeper',
@@ -176,5 +197,73 @@ module.exports = {
     guideTxt: 'To participate stake authorization, find the step-by-step guide ',
     here: 'here.',
     tooltipTit: 'Reward proportion in next round (Node / User)'
+  },
+  contracts: {
+    list: {
+      name: 'Contracts',
+      tit: {
+        currently: 'There are currently',
+        contracts: 'contracts',
+        checkIn: 'Check in'
+      },
+      tab: {
+        hash: 'Hash',
+        name: 'Name',
+        time: 'Created Time',
+        txns: 'Transactions',
+        desc: 'Description',
+        logo: 'Logo'
+      }
+    },
+    detail: {
+      name:'Contract Detail',
+      hash: 'HASH:',
+      overview:'Contract Overview',
+      desc: 'Description',
+      txOn: 'Number Of Transactions In The Contract:',
+      creator: 'Creator: ',
+      createdTime: 'Created Time: ',
+      contractInfo: 'Info',
+      logo: 'Logo',
+      ontFlow: 'ONT Flow: ',
+      ongFlow: 'ONG Flow: ',
+      amount: 'Total Flow: '
+    }
+  },
+  tokens: {
+    list: {
+      name: 'Token List',
+      tab: {
+        hash: 'Hash',
+        name: 'Name',
+        time: 'Created Time',
+        txns: 'Transactions',
+        desc: 'Description',
+        logo: 'Logo',
+        symbol: 'Symbol',
+        creator: 'Creator',
+        totalSupply: 'Total Supply',
+        decimals: 'Decimals',
+        addressCount: 'Addresses'
+      }
+    },
+    detail: {
+      name: 'Token Detail',
+      hash: 'HASH:',
+      overview:'Contract Overview',
+      desc: 'Description',
+      txOn: 'Number Of Transactions In The Contract:',
+      creator: 'Creator: ',
+      createdTime: 'Created Time: ',
+      contractInfo: 'Info',
+      logo: 'Logo',
+      ontFlow: 'ONT Flow: ',
+      ongFlow: 'ONG Flow: ',
+      amount: 'Total Flow: ',
+      txn: 'Transactions',
+      volume: 'Volume',
+      code: 'Code Byte',
+      abi: 'ABI'
+    }
   }
 }

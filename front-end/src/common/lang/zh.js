@@ -8,11 +8,29 @@ module.exports = {
     blocks: '区块列表',
     addrs: '地址列表',
     tarns: '交易列表',
-    ontIds: 'ONT ID列表'
+    ontIds: 'ONT ID列表',
+    top: {
+      blockchain: '区块链',
+      contracts: '合约',
+      tokens: '通证',
+      ontId: 'ONT ID',
+      apis: '文档',
+      mainNet: '主网',
+      testNet: '测试网',
+      nodes: '节点',
+      stake: '质押授权',
+      nodeMap: '节点地图',
+      blocks: '区块',
+      txns: '交易',
+      accounts: '账户',
+      oep4: 'OEP-4概述',
+      oep8: 'OEP-8概述',
+    }
   },
   all: {
     more: '>>',
     return: '返回',
+    block: '区块',
     hash: '哈希',
     status: '状态',
     time: '时间',
@@ -26,11 +44,14 @@ module.exports = {
     content: '内容',
     confirmed: '已确认',
     failed: '失败',
-    description: '描述信息'
+    description: '描述信息',
+    token: 'Token',
+    txn: '交易',
+    txns: '交易',
   },
   searchInput: {
     search: '查询',
-    placeholder: '输入Ont ID，区块高度，交易哈希，资产地址查询',
+    placeholder: 'Ont ID，区块高度，交易哈希，合约哈希，资产地址',
     slogan: '区块链浏览器 & 可信验证器'
   },
   runStatus: {
@@ -176,5 +197,73 @@ module.exports = {
     guideTxt: '要参与质押授权，请找到分步指南：',
     here: '点击这里。',
     tooltipTit: '下一轮奖励比例(节点/用户)'
+  },
+  contracts: {
+    list: {
+      name: '合约',
+      tit: {
+        currently: '当前共有',
+        contracts: '条合约',
+        checkIn: '申请录入'
+      },
+      tab: {
+        hash: '合约哈希',
+        name: '合约名称',
+        time: '创建时间',
+        txns: '交易数量',
+        desc: '合约描述',
+        logo: 'Logo'
+      }
+    },
+    detail: {
+      name:'合约详情',
+      hash: '哈希：',
+      overview:'合约概览',
+      desc: '合约描述',
+      txOn: '条交易记录在这个合约：',
+      creator: '创建者：',
+      createdTime: '创建时间：',
+      contractInfo: '信息',
+      logo: 'Logo',
+      ontFlow: 'ONT流水总量：',
+      ongFlow: 'ONG流水总量：',
+      amount: '流水总量：'
+    }
+  },
+  tokens: {
+    list: {
+      name: '通证列表',
+      tab: {
+        hash: '合约哈希',
+        name: '合约名称',
+        time: '创建时间',
+        txns: '交易数量',
+        desc: '合约描述',
+        logo: 'Logo',
+        symbol: '通证',
+        creator: '创建者',
+        totalSupply: '总量',
+        decimals: '精度',
+        addressCount: '持币地址'
+      }
+    },
+    detail: {
+      name: '通证详情',
+      hash: '哈希：',
+      overview:'合约概览',
+      desc: '合约描述',
+      txOn: '条交易记录在这个合约：',
+      creator: '创建者：',
+      createdTime: '创建时间：',
+      contractInfo: '信息',
+      logo: 'Logo',
+      ontFlow: 'ONT流水总量：',
+      ongFlow: 'ONG流水总量：',
+      amount: '流水总量：',
+      txn: '交易总数',
+      volume: '流水总量',
+      code: '字节代码',
+      abi: 'ABI'
+    }
   }
 }

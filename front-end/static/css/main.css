@@ -23,16 +23,17 @@ table {
 
 .font-ExtraLight {
   font-family: "SourceSansPro-ExtraLight", "Helvetica Neue", "Arial", sans-serif;
-  font-weight: 100;
+  font-weight: 300;
 }
 
 .font-Regular {
   font-family: "SourceSansPro-Regular", "Helvetica Neue", "Arial", sans-serif;
-  font-weight: 100;
+  font-weight: 400;
 }
 
 .font-blod {
   font-family: "SourceSansPro-Bold", "Helvetica Neue", "Arial", sans-serif;
+  font-weight: 700;
 }
 
 .font700 {
@@ -301,15 +302,11 @@ th {
 
 /* blocklist page & blockdetail */
 .container-margin-top {
-  margin-top: 60px;
+  margin-top: 45px;
 }
 
 .margin-top-15 {
-  margin-top: 15px;
-}
-
-.margin-top-60 {
-  margin-top: 60px;
+  margin-top: 45px;
 }
 
 .div-block-detail-page {
