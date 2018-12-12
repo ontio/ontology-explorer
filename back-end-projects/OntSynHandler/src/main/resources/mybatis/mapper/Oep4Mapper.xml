@@ -12,21 +12,22 @@
     <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
     <result column="auditflag" jdbcType="INTEGER" property="auditflag" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
   </resultMap>
   <sql id="Base_Column_List">
     contract, name, totalsupply, symbol, decimals, description, contactinfo, createtime, 
-    auditflag, updatetime
+    auditflag, updatetime, logo
   </sql>
 
   <insert id="insert" parameterType="com.github.ontio.model.Oep4">
     insert into tbl_ont_oep4 (contract, name, totalsupply, 
       symbol, decimals, description, 
       contactinfo, createtime, auditflag, 
-      updatetime)
+      updatetime, logo)
     values (#{contract,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{totalsupply,jdbcType=DECIMAL}, 
       #{symbol,jdbcType=VARCHAR}, #{decimals,jdbcType=DECIMAL}, #{description,jdbcType=VARCHAR}, 
       #{contactinfo,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{auditflag,jdbcType=INTEGER}, 
-      #{updatetime,jdbcType=TIMESTAMP})
+      #{updatetime,jdbcType=TIMESTAMP}, #{logo,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.Oep4">
     insert into tbl_ont_oep4
@@ -61,6 +62,9 @@
       <if test="updatetime != null">
         updatetime,
       </if>
+      <if test="logo != null">
+        logo,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="contract != null">
@@ -93,6 +97,9 @@
       <if test="updatetime != null">
         #{updatetime,jdbcType=TIMESTAMP},
       </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Oep4">
@@ -122,6 +129,9 @@
       <if test="updatetime != null">
         updatetime = #{updatetime,jdbcType=TIMESTAMP},
       </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
     </set>
     where contract = #{contract,jdbcType=VARCHAR}
       and name = #{name,jdbcType=VARCHAR}
@@ -135,18 +145,14 @@
       contactinfo = #{contactinfo,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=TIMESTAMP},
       auditflag = #{auditflag,jdbcType=INTEGER},
-      updatetime = #{updatetime,jdbcType=TIMESTAMP}
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      logo = #{logo,jdbcType=VARCHAR}
     where contract = #{contract,jdbcType=VARCHAR}
-      and name = #{name,jdbcType=VARCHAR}
   </update>
-
-
 
   <select id="selectAllKeyInfo" resultType="java.util.Map">
     select Contract, Symbol, Decimals
     from tbl_ont_oep4
     where auditflag = 1
   </select>
-
-
 </mapper>

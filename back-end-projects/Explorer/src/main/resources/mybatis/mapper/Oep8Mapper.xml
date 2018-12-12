@@ -20,7 +20,7 @@
     auditflag, updatetime, logo
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from tbl_ont_oep8
     where id = #{id,jdbcType=BIGINT}
@@ -41,6 +41,23 @@
       #{auditflag,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, #{logo,jdbcType=VARCHAR}
       )
   </insert>
+
+  <insert id="banchInsertSelective" parameterType="java.util.List">
+    insert into tbl_ont_oep8 (contract, tokenid,
+    name, totalsupply, symbol,
+    description, contactinfo, createtime,
+    auditflag, updatetime, logo
+    )
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.contract,jdbcType=VARCHAR}, #{item.tokenid,jdbcType=VARCHAR},
+      #{item.name,jdbcType=VARCHAR}, #{item.totalsupply,jdbcType=DECIMAL}, #{item.symbol,jdbcType=VARCHAR},
+      #{item.description,jdbcType=VARCHAR}, #{item.contactinfo,jdbcType=VARCHAR}, #{item.createtime,jdbcType=TIMESTAMP},
+      #{item.auditflag,jdbcType=INTEGER}, #{item.updatetime,jdbcType=TIMESTAMP}, #{item.logo,jdbcType=VARCHAR}
+      )
+    </foreach>
+  </insert>
+
   <insert id="insertSelective" parameterType="com.github.ontio.model.Oep8" >
     insert into tbl_ont_oep8
     <trim prefix="(" suffix=")" suffixOverrides="," >
