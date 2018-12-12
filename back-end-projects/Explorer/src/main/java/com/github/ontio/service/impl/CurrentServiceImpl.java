@@ -110,7 +110,7 @@ public class CurrentServiceImpl implements ICurrentService {
         String contractHash = reqObj.getString("contractHash");
         Contracts contract = contractsMapper.selectContractByContractHash(contractHash);
         if(Helper.isEmptyOrNull(contract)) {
-            return Helper.result("RegisterContractInfo", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "", false);
+            return Helper.result("RegisterContractInfo", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "1.0", false);
         }
 
         contract.setCode(reqObj.getString("code"));
@@ -136,7 +136,7 @@ public class CurrentServiceImpl implements ICurrentService {
                 oep4.setContract(contractHash);
                 Oep4 oep4DAO = oep4Mapper.selectByPrimaryKey(oep4);
                 if(!Helper.isEmptyOrNull(oep4DAO)) {
-                    return Helper.result("RegisterOep4", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "", false);
+                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", false);
                 }
 
                 JSONObject oep4Info = sdk.queryOep4Info(contractHash);
@@ -158,7 +158,7 @@ public class CurrentServiceImpl implements ICurrentService {
             case "oep8":
                 Oep8 oep8Contract = oep8Mapper.queryOEPContract(contractHash);
                 if(!Helper.isEmptyOrNull(oep8Contract)) {
-                    return Helper.result("RegisterOep4", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "", false);
+                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", false);
                 }
 
                 // 要求tokenId内容为：01，02，03，04，05
@@ -192,7 +192,7 @@ public class CurrentServiceImpl implements ICurrentService {
                 break;
         }
 
-        return Helper.result("RegisterOep4", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "", true);
+        return Helper.result("RegisterContractInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "1.0", true);
     }
 
     /**
