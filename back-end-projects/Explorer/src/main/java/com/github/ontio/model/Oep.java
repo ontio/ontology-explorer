@@ -22,6 +22,8 @@ public class Oep {
 
     private String name;
 
+    private String logo;
+
     public String getContract() {
         return contract;
     }
@@ -92,5 +94,13 @@ public class Oep {
 
     public void setUpdatetime(Date updatetime) {
         this.updatetime = updatetime;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
     }
 }
