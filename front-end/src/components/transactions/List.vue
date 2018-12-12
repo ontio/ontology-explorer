@@ -1,6 +1,5 @@
 <template>
   <div class="container container-margin-top">
-    <return-home></return-home>
     <list-title :name="$t('transList.name')"></list-title>
 
     <div class="row justify-content-center">

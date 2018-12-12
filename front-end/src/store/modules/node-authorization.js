@@ -10,12 +10,6 @@ import numeral from 'numeral'
 function nodeDetailData() {
   return [
     {
-      "nodename": "FUM",
-      "publickey": "02563a99ce7218ee3200667d2569e7948045337604039e69ca7a70f432e5f00a59",
-      "address": "AMhqi3dYZATkn2TFQX3fJs4w54gd2mhy9r",
-      "ontid": "did:ont:AKCKX9YvnGDdHzoWuePNZ4SVH2TNGWrJoM",
-    },
-    {
       "nodename": "Trio Bravo",
       "publickey": "0287fe995c6f27ad0c1a7640f9cc6c2537ed47126cc430e738d96f0390583ac2d2",
       "address": "AQE2zwXxhUV1BX6arPcv2oD4AgpWQfGGdM",
@@ -25,43 +19,43 @@ function nodeDetailData() {
       "nodename": "Dubhe",
       "publickey": "02bcdd278a27e4969d48de95d6b7b086b65b8d1d4ff6509e7a9eab364a76115af7",
       "address": "AGqzuKoEeDfMHPEBPJVs2h2fapxDGoGtK1",
-      "ontid": "did:ont:AWWChRewNcQ5nZuh8LzF8ksqPaCW8EXPBU",
+      "ontid": "did:ont:AGqzuKoEeDfMHPEBPJVs2h2fapxDGoGtK1",
     },
     {
       "nodename": "Merak",
       "publickey": "0251f06bc247b1da94ec7d9fe25f5f913cedaecba8524140353b826cf9b1cbd9f4",
       "address": "AGEdeZu965DFFFwsAWcThgL6uduJf4U7ci",
-      "ontid": "did:ont:AJEAVCJpa7JmpDZsJ9vPA1r9fPZAvjec8D",
+      "ontid": "did:ont:AGEdeZu965DFFFwsAWcThgL6uduJf4U7ci",
     },
     {
       "nodename": "Phecda",
       "publickey": "022e911fb5a20b4b2e4f917f10eb92f27d17cad16b916bce8fd2dd8c11ac2878c0",
       "address": "AJEAVCJpa7JmpDZsJ9vPA1r9fPZAvjec8D",
-      "ontid": "did:ont:APSFBEbQzMUjuCtSVwHcRjiqCrDe56jAHJ",
+      "ontid": "did:ont:AJEAVCJpa7JmpDZsJ9vPA1r9fPZAvjec8D",
     },
     {
       "nodename": "Megrez",
       "publickey": "0253719ac66d7cafa1fe49a64f73bd864a346da92d908c19577a003a8a4160b7fa",
       "address": "AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq",
-      "ontid": "did:ont:AGqzuKoEeDfMHPEBPJVs2h2fapxDGoGtK1",
+      "ontid": "did:ont:AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq",
     },
     {
       "nodename": "Alioth",
       "publickey": "022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb",
       "address": "APSFBEbQzMUjuCtSVwHcRjiqCrDe56jAHJ",
-      "ontid": "did:ont:AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq",
+      "ontid": "did:ont:APSFBEbQzMUjuCtSVwHcRjiqCrDe56jAHJ",
     },
     {
       "nodename": "Mixar",
       "publickey": "02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444",
       "address": "AWWChRewNcQ5nZuh8LzF8ksqPaCW8EXPBU",
-      "ontid": "did:ont:AXNxyP2HEKW7GoSqYfeqcYfCSE7XaaVVu4",
+      "ontid": "did:ont:AWWChRewNcQ5nZuh8LzF8ksqPaCW8EXPBU",
     },
     {
       "nodename": "Alkaid",
       "publickey": "03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53",
       "address": "AXNxyP2HEKW7GoSqYfeqcYfCSE7XaaVVu4",
-      "ontid": "did:ont:AGEdeZu965DFFFwsAWcThgL6uduJf4U7ci",
+      "ontid": "did:ont:AXNxyP2HEKW7GoSqYfeqcYfCSE7XaaVVu4",
     },
     {
       "nodename": "Jumple Foundation",

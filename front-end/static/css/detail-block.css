@@ -4,11 +4,18 @@
 
 /* 基础白色块属性 */
 .detail-col {
+  padding: 16px 24px !important;
+  margin-top: 4px;
+  color: #595757;
+  background: white;
+  font-size: 18px;
+}
+
+.detail-col-no-font-size {
   padding: 24px !important;
   margin-top: 4px;
   color: #595757;
   background: white;
-  font-size: 24px;
 }
 
 /* 基础白色块属性 - 超出部分省略 */

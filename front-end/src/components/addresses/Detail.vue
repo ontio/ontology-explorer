@@ -1,6 +1,5 @@
 <template>
   <div class="container container-margin-top">
-    <return-home></return-home>
     <list-title :name="$t('addressDetail.name')"></list-title>
     <detail-title :name="$t('addressDetail.address')" :val="$route.params.address"></detail-title>
 
@@ -243,7 +242,7 @@
       },
       downloadExcel() {
         this.$store.dispatch('getAddressDetailAllData', this.$route.params).then(res => {
-          console.log(res)
+          // console.log(res)
           // this.generatingExcelData(res)
         })
       },

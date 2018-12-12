@@ -1,19 +1,36 @@
 <template>
   <div class="row font-Regular normal_color">
-    <div class="col">
+    <!-- PC Styles -->
+    <div class="d-none d-sm-block col">
       <div class="detail-col detail-col-left">
         <span class="f-color">{{name1}}</span>
-        <span class="normal_color word-break" :class="classObject1" @click="doAction(params1)">{{val1}}</span>
+        <span class="word-break" :class="classObject1" @click="doAction(params1)">{{val1}}</span>
       </div>
     </div>
-    <div class="col">
+    <div class="d-none d-sm-block col">
       <div class="detail-col detail-col-right">
         <span class="f-color">{{name2}}</span>
-        <span class=" word-break" :class="classObject2" @click="doAction(params2)">{{val2}}</span>
+        <span class="word-break" :class="classObject2" @click="doAction(params2)">{{val2}}</span>
 
         <a v-if="tip === 'true'" href="#" data-toggle="tooltip" :title="tipTit" class="common-tooltip-style">
           <i class="fa fa-info-circle" aria-hidden="true"></i>
         </a>
+      </div>
+    </div>
+
+    <!-- Mobile Styles -->
+    <div class="d-block d-sm-none col">
+      <div class="row">
+        <div class="col">
+          <div class="detail-col-no-font-size font-size16 normal_color" @click="doAction(params1)">
+            {{name1}}<span class="important_color">{{val1}}</span>
+          </div>
+        </div>
+        <div class="col">
+          <div class="detail-col-no-font-size font-size16 normal_color" @click="doAction(params2)">
+            {{name2}}<span class="s-color">{{val2}}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -60,7 +77,7 @@
       classObject2: function () {
         return {
           'd-block': this.rows2 === '2',
-          'font-size14': this.rows2 === '2',
+          'font-size14': this.rows2 === '2' || this.rows2 === '1.2',
           's_color': this.rows2 === '1.1',
           'important_color': this.params2 !== undefined,
           pointer: this.params2 !== undefined

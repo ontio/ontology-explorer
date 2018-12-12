@@ -1,6 +1,5 @@
 <template>
   <div class="container container-margin-top">
-    <return-home></return-home>
     <list-title :name="$t('nodes.stakeListTit')"></list-title>
 
     <!--To next round-->

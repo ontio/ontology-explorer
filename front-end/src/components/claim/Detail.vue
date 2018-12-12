@@ -1,6 +1,5 @@
 <template>
   <div class="container container-margin-top">
-    <return-home></return-home>
     <list-title :name="$t('claimDetail.name')"></list-title>
 
     <div class="background-body" style="margin-top:60px;">

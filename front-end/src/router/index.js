@@ -14,8 +14,13 @@ import ClaimDetailPage from '@/components/claim/Detail'
 import ClaimVerifyPage from '@/components/claim/Verify'
 import NodeStakeAuthorization from '@/components/nodes/List'
 import NodeTeamDetail from '@/components/nodes/Detail'
+import ContractList from '@/components/contracts/List'
+import ContractDetail from '@/components/contracts/Detail'
+import TokenList from '@/components/tokens/List'
+import TokenDetail from '@/components/tokens/Detail'
 
-Vue.use(Router)
+Vue.use(Router);
+
 let routes = [
   {
     path: '/',
@@ -151,12 +156,52 @@ let routes = [
     path: '/nodes/list/:net',
     name: 'NodeStakeListTestNet',
     component: NodeStakeAuthorization
+  },
+  {
+    path: '/contract/list/:pageSize/:pageNumber',
+    name: 'ContractList',
+    component: ContractList
+  },
+  {
+    path: '/contract/list/:pageSize/:pageNumber/:net',
+    name: 'ContractListTest',
+    component: ContractList
+  },
+  {
+    path: '/contract/:contractHash/:pageSize/:pageNumber',
+    name: 'ContractDetail',
+    component: ContractDetail
+  },
+  {
+    path: '/contract/:contractHash/:pageSize/:pageNumber/:net',
+    name: 'ContractDetailTest',
+    component: ContractDetail
+  },
+  {
+    path: '/token/list/:type/:pageSize/:pageNumber',
+    name: 'TokenList',
+    component: TokenList
+  },
+  {
+    path: '/token/list/:type/:pageSize/:pageNumber/:net',
+    name: 'TokenListTest',
+    component: TokenList
+  },
+  {
+    path: '/token/detail/:type/:contractHash/:pageSize/:pageNumber',
+    name: 'TokenDetail',
+    component: TokenDetail
+  },
+  {
+    path: '/token/detail/:type/:contractHash/:pageSize/:pageNumber/:net',
+    name: 'TokenDetailTest',
+    component: TokenDetail
   }
-]
+];
 
 const router = new Router({
   mode: 'history',
   routes: routes
-})
+});
 
 export default router

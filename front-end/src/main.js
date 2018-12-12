@@ -17,8 +17,8 @@ Vue.use(Helper);
 /**
  * 全局组件注册
  */
+import NavBar from './components/common/NavBar'
 import ListTitle from './components/common/ListTitle'
-import ReturnHome from './components/common/ReturnHome'
 import TurnThePage from './components/common/TurnThePage'
 import DetailTitle from './components/common/DetailTitle'
 import DetailTitle2 from './components/common/DetailTitle2'
@@ -26,8 +26,8 @@ import DetailBlock from './components/common/DetailBlock'
 import DetailBlock2 from './components/common/DetailBlock2'
 import LineChart from './components/common/LineChart'
 
+Vue.component('nav-bar', NavBar);
 Vue.component('list-title', ListTitle);
-Vue.component('return-home', ReturnHome);
 Vue.component('turn-the-page', TurnThePage);
 Vue.component('detail-title', DetailTitle);
 Vue.component('detail-title-2', DetailTitle2);
