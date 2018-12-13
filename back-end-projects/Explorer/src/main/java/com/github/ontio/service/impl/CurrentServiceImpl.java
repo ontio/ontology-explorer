@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.dao.*;
 import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Oep4;
+import com.github.ontio.model.Oep5;
 import com.github.ontio.model.Oep8;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ICurrentService;
@@ -59,6 +60,9 @@ public class CurrentServiceImpl implements ICurrentService {
 
     @Autowired
     private Oep4Mapper oep4Mapper;
+
+    @Autowired
+    private Oep5Mapper oep5Mapper;
 
     @Autowired
     private Oep8Mapper oep8Mapper;
@@ -155,6 +159,27 @@ public class CurrentServiceImpl implements ICurrentService {
                 oep4Mapper.insertSelective(oep4DAO);
 
                 break;
+            case "oep5":
+                if(!Helper.isEmptyOrNull(oep5Mapper.selectByPrimaryKey(contractHash))) {
+                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", false);
+                }
+
+                JSONObject oep5Info = sdk.queryOep5Info(contractHash);
+                Oep5 oep5DAO = new Oep5();
+                oep5DAO.setSymbol(oep5Info.getString("Symbol"));
+                oep5DAO.setName(oep5Info.getString("Name"));
+                oep5DAO.setTotalsupply(new BigDecimal(oep5Info.getString("TotalSupply")));
+                oep5DAO.setDescription(reqObj.getString("description"));
+                oep5DAO.setContactinfo(reqObj.getString("contactinfo"));
+                oep5DAO.setLogo(reqObj.getString("logo"));
+                oep5DAO.setContract(contractHash);
+                oep5DAO.setAuditflag(1);
+                oep5DAO.setCreatetime(new Date());
+                oep5DAO.setUpdatetime(new Date());
+                oep5Mapper.insertSelective(oep5DAO);
+
+                break;
+
             case "oep8":
                 Oep8 oep8Contract = oep8Mapper.queryOEPContract(contractHash);
                 if(!Helper.isEmptyOrNull(oep8Contract)) {

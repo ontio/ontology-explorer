@@ -171,7 +171,7 @@
   </select>
 
   <select id="queryOEPContractCount" resultType="Integer">
-    select count(*) from tbl_ont_oep4 a,tbl_ont_contracts b where b.auditflag = 1 and a.Contract = b.contract
+    select count(*) from tbl_ont_oep4 a,tbl_ont_contracts b where b.auditflag = 1 and a.contract = b.contract
   </select>
 
   <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep4">
