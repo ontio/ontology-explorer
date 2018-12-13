@@ -79,5 +79,9 @@ public interface TransactionDetailMapper {
 
     List<String> selectAllToAddress(String fromAddress);
 
+    List<String> selectAllFromAddressByAddr(String contractHash);
+
+    List<String> selectAllToAddressByAddr(String contractHash);
+
 
 }
