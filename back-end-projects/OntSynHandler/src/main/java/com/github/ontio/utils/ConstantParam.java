@@ -30,7 +30,6 @@ import java.util.*;
  * @date 2018/2/27
  */
 public final class ConstantParam {
-
     /**
      * 节点restfulurl列表
      */
@@ -62,7 +61,6 @@ public final class ConstantParam {
      */
     public static int TXN_INIT_AMOUNT = 0;
 
-
     /**
      * the number of ontid transactions of one block
      *
@@ -88,19 +86,19 @@ public final class ConstantParam {
     public static final String CLAIMRECORD_OPE = "claimRecord-";
 
     /**
-     * registerCandidate
+     * auth
      */
     public static final String AUTH_OPE_PREFIX = "auth";
 
     /**
-     * registerCandidate
+     * Push
      */
     public static final String CLAIMRECORD_OPE_PREFIX = "Push";
 
-
-
+    /**
+     * registerCandidate
+     */
     public static final String REGISTER = "Register";
-
 
     /**
      * add action
@@ -108,12 +106,9 @@ public final class ConstantParam {
      */
     public static final String ADD = "add";
 
-
     public static final BigDecimal ZERO = new BigDecimal("0");
 
-
     public static final BigDecimal ONG_DECIMAL = new BigDecimal("1000000000");
-
 
     //ontid operation description separator
     public static final String ONTID_SEPARATOR = "||";
@@ -121,10 +116,13 @@ public final class ConstantParam {
     //ontid operation description separator
     public static final String ONTID_SEPARATOR2 = "&";
 
-
     public static Map<String,Object> OEP4MAP = new HashMap<>();
 
     public static Set<String> OEP4CONTRACTS = new HashSet<>();
+
+    public static Map<String,Object> OEP5MAP = new HashMap<>();
+
+    public static Set<String> OEP5CONTRACTS = new HashSet<>();
 
     public static Map<String,Object> OEP8MAP = new HashMap<>();
 

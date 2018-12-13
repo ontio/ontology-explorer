@@ -183,6 +183,26 @@ public class OntologySDKService {
         }
     }
 
+    public JSONObject queryOep5Info(String contractHash) {
+        try {
+            OntSdk ontSdk = getOep5OntSdk(contractHash);
+            String name = ontSdk.neovm().oep5().queryName();
+            String symbol = ontSdk.neovm().oep5().querySymbol();
+            String total = ontSdk.neovm().oep5().queryTotalSupply();
+
+            JSONObject oep5Obj = new JSONObject();
+            oep5Obj.put("Name", name);
+            oep5Obj.put("Symbol", symbol);
+            oep5Obj.put("TotalSupply", total);
+
+            return oep5Obj;
+        } catch (Exception e) {
+            logger.error("getAddressBalance error...", e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private OntSdk getOntSdk() {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
@@ -200,6 +220,13 @@ public class OntologySDKService {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
         wm.neovm().oep4().setContractAddress(codeHash);
+        return wm;
+    }
+
+    private OntSdk getOep5OntSdk(String codeHash) {
+        OntSdk wm = OntSdk.getInstance();
+        wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
+        wm.neovm().oep5().setContractAddress(codeHash);
         return wm;
     }
 
