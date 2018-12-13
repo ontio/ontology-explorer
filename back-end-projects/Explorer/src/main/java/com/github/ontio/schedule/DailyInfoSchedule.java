@@ -82,7 +82,7 @@ public class DailyInfoSchedule {
     /**
      * 记录合约统计数据
      */
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     public void UpdateContractInfo() {
 
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
@@ -116,6 +116,17 @@ public class DailyInfoSchedule {
                 }
                 for (String str :
                         toAddrList) {
+                    addrSet.add(str);
+                }
+
+                List<String> fromAddrList1 = transactionDetailMapper.selectAllFromAddressByAddr(address);
+                List<String> toAddrList1 = transactionDetailMapper.selectAllToAddressByAddr(address);
+                for (String str :
+                        fromAddrList1) {
+                    addrSet.add(str);
+                }
+                for (String str :
+                        toAddrList1) {
                     addrSet.add(str);
                 }
 
