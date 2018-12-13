@@ -1,7 +1,9 @@
 <template>
   <div id="app" class="container-fluid container-bg-color">
-    <top-nav></top-nav>
+    <nav-bar v-if="!inHomePage"></nav-bar>
+
     <router-view/>
+
     <the-footer></the-footer>
   </div>
 </template>
@@ -10,15 +12,27 @@
   import 'bootstrap/dist/css/bootstrap.min.css'
   import 'bootstrap/dist/js/bootstrap.min.js'
   import 'chart.js'
-  import TopNav from './common/TopNav'
   import TheFooter from './common/TheFooter'
 
   export default {
     name: 'App',
-    components: {
-      TopNav,
-      TheFooter
-    }
+    data() {
+      return {
+        inHomePage: true
+      }
+    },
+    created() {
+      this.isDisplay();
+    },
+    watch: {
+      '$route': 'isDisplay'
+    },
+    methods: {
+      isDisplay() {
+        this.inHomePage = (this.$route.path === '/' || this.$route.path === '/testnet');
+      }
+    },
+    components: {TheFooter}
   }
 </script>
 
