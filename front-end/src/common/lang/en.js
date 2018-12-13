@@ -262,7 +262,7 @@ module.exports = {
       amount: 'Total Flow: ',
       txn: 'Transactions',
       volume: 'Volume',
-      code: 'Code Byte',
+      code: 'ByteCode',
       abi: 'ABI'
     }
   }
