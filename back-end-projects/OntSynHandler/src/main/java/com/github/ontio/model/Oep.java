@@ -101,6 +101,6 @@ public class Oep {
     }
 
     public void setLogo(String logo) {
-        this.logo = logo;
+        this.logo = logo == null ? null : logo.trim();
     }
 }
