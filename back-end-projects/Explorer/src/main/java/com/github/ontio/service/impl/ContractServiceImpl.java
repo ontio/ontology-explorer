@@ -200,6 +200,9 @@ public class ContractServiceImpl implements IContractService {
                 if (!contractList.isEmpty()){
                     for (Map map : contractList) {
                         getKeyAndValue(map);
+
+                        map.put("OngCount", ((BigDecimal) map.get("OngCount")).toPlainString());
+                        map.put("OntCount", ((BigDecimal) map.get("OntCount")).toPlainString());
                     }
                 }
                 totalNum = oep8Mapper.queryOEPContractCount();
@@ -293,7 +296,5 @@ public class ContractServiceImpl implements IContractService {
         map.put("TotalSupply", JSON.toJSON(totalSupplyMap));
         map.put("Symbol", JSON.toJSON(symbolMap));
         map.put("TokenName", JSON.toJSON(tokenNameMap));
-        map.put("OngCount", map.get("OngCount").toString());
-        map.put("OntCount", map.get("OntCount").toString());
     }
 }

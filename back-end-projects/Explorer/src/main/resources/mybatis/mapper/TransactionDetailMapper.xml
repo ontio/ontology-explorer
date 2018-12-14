@@ -520,12 +520,12 @@
 
   <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map">
     select t2.* from (
-    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, TxnIndex
+    select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
     where toaddress = #{Address}
     and  eventtype = 3
     union all
-    select TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Fee, AssetName, Amount, ToAddress, FromAddress, TxnIndex
+    select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
     where fromaddress = #{Address}
     and  eventtype = 3
