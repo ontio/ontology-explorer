@@ -38,14 +38,12 @@ import org.springframework.web.bind.annotation.*;
 @EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer")
 public class CurrentController {
-
     private static final Logger logger = LoggerFactory.getLogger(CurrentController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
     @Autowired
     private CurrentServiceImpl currentService;
-
 
     /**
      * query current summary information
@@ -62,8 +60,6 @@ public class CurrentController {
         return rs;
     }
 
-
-
     /**
      * 负载均衡存活探测api
      *
@@ -77,20 +73,15 @@ public class CurrentController {
         return "success";
     }
 
-
-
-
-    @RequestMapping(value = "/oep4/info", method = RequestMethod.POST)
-    public Result registerOep4Info(@RequestBody JSONObject reqObj) {
+    @RequestMapping(value = "/contract/registerContractInfo", method = RequestMethod.POST)
+    public Result registerContractInfo(@RequestBody JSONObject reqObj) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("####reqObj:{}", reqObj.toJSONString());
 
-        Result rs = currentService.registerOep4Info(reqObj);
+        Result rs = currentService.registerContractInfo(reqObj);
         return rs;
     }
-
-
 
     @RequestMapping(value = "/daily/info/{starttime}/{endtime}", method = RequestMethod.GET)
     public Result queryDailyInfo(@PathVariable("starttime") long startTime, @PathVariable("endtime") long endTime) {
@@ -101,7 +92,6 @@ public class CurrentController {
         Result rs = currentService.queryDailyInfo(startTime, endTime);
         return rs;
     }
-
 
     /**
      * query current summary information
@@ -116,5 +106,4 @@ public class CurrentController {
         Result rs = currentService.queryMarketingInfo();
         return rs;
     }
-
 }
