@@ -13,7 +13,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouq
@@ -56,6 +59,7 @@ public class DailyInfoSchedule {
         String ontIdDes = "Register%";
         int ontidCount = ontIdMapper.selectOntIdCountInOneDay(startTime, endTime, ontIdDes);
 
+/*
         Set<String> addressSet = new HashSet<>();
 
         List<Map<String, String>> recordList = transactionDetailMapper.selectAllAddress();
@@ -67,13 +71,15 @@ public class DailyInfoSchedule {
                 addressSet.add(addressMap.get(key));
             }
         }
+*/
 
+        int addrCount = transactionDetailMapper.selectAllAddressCount();
 
         Daily dailyDAO = new Daily();
         dailyDAO.setBlockcount(blockCount);
         dailyDAO.setTxncount(txnCount);
         dailyDAO.setOntidcount(ontidCount);
-        dailyDAO.setAddresscount(addressSet.size());
+        dailyDAO.setAddresscount(addrCount);
         dailyDAO.setTime(new Date(startTime * 1000L));
         dailyMapper.insert(dailyDAO);
     }
@@ -95,6 +101,7 @@ public class DailyInfoSchedule {
         for (Map map :
                 contractList) {
             try {
+                String type = (String) map.get("Type");
                 String contractHash = (String) map.get("ContractHash");
                 String address = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
                 logger.info("contractHash:{},address:{}", contractHash, address);
@@ -107,37 +114,28 @@ public class DailyInfoSchedule {
                 paramMap1.put("assetname", "ong");
                 BigDecimal ongCount = transactionDetailMapper.selectContractAssetSum(paramMap1);
 
-                List<String> fromAddrList = transactionDetailMapper.selectAllFromAddress(contractHash);
-                List<String> toAddrList = transactionDetailMapper.selectAllToAddress(contractHash);
-                Set<String> addrSet = new HashSet<>();
-                for (String str :
-                        fromAddrList) {
-                    addrSet.add(str);
-                }
-                for (String str :
-                        toAddrList) {
-                    addrSet.add(str);
-                }
-
-                List<String> fromAddrList1 = transactionDetailMapper.selectAllFromAddressByAddr(address);
-                List<String> toAddrList1 = transactionDetailMapper.selectAllToAddressByAddr(address);
-                for (String str :
-                        fromAddrList1) {
-                    addrSet.add(str);
-                }
-                for (String str :
-                        toAddrList1) {
-                    addrSet.add(str);
-                }
-
                 int txnCount = transactionDetailMapper.selectContractAddrAmount(contractHash);
+
+                int addrCount = 0;
+                int fromAddrCount = 0;
+                int toAddrCount = 0;
+
+                if ("oep4".equals(type) || "oep8".equals(type)) {
+                    fromAddrCount = transactionDetailMapper.selectAllFromAddressCountByContract(contractHash);
+                    toAddrCount = transactionDetailMapper.selectAllToAddressCountByContract(contractHash);
+                } else {
+                    fromAddrCount = transactionDetailMapper.selectAllFromAddressCountByAddr(address);
+                    toAddrCount = transactionDetailMapper.selectAllToAddressCountByAddr(address);
+                }
+
+                addrCount = fromAddrCount + toAddrCount;
 
                 Contracts contractsDAO = new Contracts();
                 contractsDAO.setContract(contractHash);
                 contractsDAO.setTxcount(txnCount);
                 contractsDAO.setOngcount(ongCount == null ? new BigDecimal("0") : ongCount.divide(new BigDecimal("1000000000")));
                 contractsDAO.setOntcount(ontCount == null ? new BigDecimal("0") : ontCount);
-                contractsDAO.setAddresscount(addrSet.size());
+                contractsDAO.setAddresscount(addrCount);
                 contractsMapper.updateByPrimaryKeySelective(contractsDAO);
             } catch (Exception e) {
                 logger.error("error...", e);
