@@ -655,6 +655,7 @@ public class TxnHandlerThread {
         return eventObj;
     }
 
+
     /**
      * switch to another node and initialize ONT_SDKSERVICE object
      * when the master node have an exception
@@ -685,12 +686,20 @@ public class TxnHandlerThread {
         DeployCode deployCodeObj = (DeployCode) ConstantParam.ONT_SDKSERVICE.getConnect().getTransaction(txnHash);
         String code = Helper.toHexString(deployCodeObj.code);
         String contractAddress = Address.AddressFromVmCode(code).toHexString();
-        // logger.info("smartcontract codehash:{}",codeHash);
-        JSONObject contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractAddress);
-        logger.info("smartcontract obj:{}", contractObj.toJSONString());
-        contractObj.remove("Code");
+        logger.info("smartcontract codehash:{}",contractAddress);
+        JSONObject contractObj = new JSONObject();
         contractObj.put("contractAddress", contractAddress);
-
+        contractObj.put("Name","");
+        contractObj.put("Description","");
+        //catch底层报错，根据合约hash查不到合约信息
+        try {
+            contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractAddress);
+            contractObj.put("contractAddress", contractAddress);
+            logger.info("smartcontract obj:{}", contractObj.toJSONString());
+            contractObj.remove("Code");
+        } catch (Exception e) {
+            logger.error("error...", e);
+        }
         return contractObj;
     }
 }
