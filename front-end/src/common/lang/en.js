@@ -196,7 +196,8 @@ module.exports = {
     website: 'Website:',
     guideTxt: 'To participate stake authorization, find the step-by-step guide ',
     here: 'here.',
-    tooltipTit: 'This is the portion of rewards received the node has chosen to share with users who have authorized stakes with them in the next consensus round.'
+    tooltipTit: 'This is the portion of rewards received the node has chosen to share with users who have authorized stakes with them in the next consensus round.',
+    processTip: 'Calculating real-time data. Please wait: '
   },
   contracts: {
     list: {

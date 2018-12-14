@@ -196,7 +196,8 @@ module.exports = {
     website: '官网：',
     guideTxt: '要参与质押授权，请找到分步指南：',
     here: '点击这里。',
-    tooltipTit: '这是在下一轮共识中，节点选择与他们授权质押的用户，共享的奖励部分。'
+    tooltipTit: '这是在下一轮共识中，节点选择与他们授权质押的用户，共享的奖励部分。',
+    processTip: '正在计算实时数据中。 请等待一会： '
   },
   contracts: {
     list: {
