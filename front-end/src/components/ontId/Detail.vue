@@ -7,13 +7,21 @@
     <div class="row" v-if="haveData && Ddo.Owners">
       <div class="col">
         <div class="detail-col">
-          <p>{{ $t('ontIdDetail.owner') }}</p>
+          <p class="font-blod">{{ $t('ontIdDetail.owner') }}</p>
           <div class="row" v-for="owner in Ddo.Owners">
             <div class="col">
-              <div class="font-size14 font-Regular normal_color"><p>Type: {{owner.Type}}</p></div>
-              <div class="font-size14 font-Regular normal_color"><p>Curve: {{owner.Curve}}</p></div>
-              <div class="font-size14 font-Regular normal_color"><p>Value: {{owner.Value}}</p></div>
-              <div class="font-size14 font-Regular normal_color"><p>PublicKeyId: {{owner.PubKeyId}}</p></div>
+              <div class="font-size14 font-Regular normal_color txt-overflow">
+                <p><span class="font-blod">Type: </span>{{owner.Type}}</p>
+              </div>
+              <div class="font-size14 font-Regular normal_color txt-overflow">
+                <p><span class="font-blod">Curve: </span>{{owner.Curve}}</p>
+              </div>
+              <div class="font-size14 font-Regular normal_color txt-overflow">
+                <p><span class="font-blod">Value: </span>{{owner.Value}}</p>
+              </div>
+              <div class="font-size14 font-Regular normal_color txt-overflow">
+                <p><span class="font-blod">PublicKeyId: </span>{{owner.PubKeyId}}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -55,7 +63,7 @@
     <div class="row" v-if="TxnTotal">
       <div class="col">
         <div class="detail-col">
-          {{ $t('ontIdDetail.events') }}
+          <span class="font-blod">{{ $t('ontIdDetail.events') }}</span>
           <div class="table-responsive">
             <table class="table ">
               <thead>

@@ -1,12 +1,12 @@
 <template>
   <div class="row">
-    <div class="col">
+    <div class="d-none d-sm-block col">
       <p class="float-left return-home-css" @click="goBack"><< {{ $t('all.return') }}</p>
     </div>
     <div class="col">
       <p class="text-center list-title-css">{{name}}</p>
     </div>
-    <div class="col"></div>
+    <div class="d-none d-sm-block col"></div>
   </div>
 </template>
 
@@ -40,5 +40,12 @@
     margin-right: 0;
     margin-bottom: 0;
     cursor: pointer;
+  }
+
+  @media screen and (max-width: 768px) {
+    .list-title-css,
+    .return-home-css {
+      font-size: 16px;
+    }
   }
 </style>

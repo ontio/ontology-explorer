@@ -72,16 +72,8 @@ table {
   color: black;
 }
 
-.important_color {
-  color: #32A4BE;
-}
-
 .s_color {
   color: #00AE1D;
-}
-
-.f-color {
-  color: #AFACAC;
 }
 
 .font-size16 {
@@ -153,6 +145,12 @@ th {
   100% {
     box-shadow: 0 0 0 transparent;
   }
+}
+
+.txt-overflow {
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow: hidden;
 }
 
 .input-group-top {
