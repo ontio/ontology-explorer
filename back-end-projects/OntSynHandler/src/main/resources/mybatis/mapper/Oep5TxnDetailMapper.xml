@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.ontio.dao.Oep5TxnDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.Oep5TxnDetail" >
+    <id column="txnhash" property="txnhash" jdbcType="VARCHAR" />
+    <id column="txnindex" property="txnindex" jdbcType="INTEGER" />
+    <result column="txntype" property="txntype" jdbcType="INTEGER" />
+    <result column="txntime" property="txntime" jdbcType="INTEGER" />
+    <result column="height" property="height" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="fee" property="fee" jdbcType="DECIMAL" />
+    <result column="assetname" property="assetname" jdbcType="VARCHAR" />
+    <result column="fromaddress" property="fromaddress" jdbcType="VARCHAR" />
+    <result column="toaddress" property="toaddress" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="blockindex" property="blockindex" jdbcType="INTEGER" />
+    <result column="confirmflag" property="confirmflag" jdbcType="INTEGER" />
+    <result column="eventtype" property="eventtype" jdbcType="INTEGER" />
+    <result column="contracthash" property="contracthash" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
+    toaddress, description, blockindex, confirmflag, eventtype, contracthash
+  </sql>
+
+  <insert id="insert" parameterType="com.github.ontio.model.Oep5TxnDetail" >
+    insert into tbl_ont_oep5txn_detail (txnhash, txnindex, txntype, 
+      txntime, height, amount, 
+      fee, assetname, fromaddress, 
+      toaddress, description, blockindex, 
+      confirmflag, eventtype, contracthash
+      )
+    values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
+      #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
+      #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
+      #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
+      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.github.ontio.model.Oep5TxnDetail" >
+    insert into tbl_ont_oep5txn_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="txnhash != null" >
+        txnhash,
+      </if>
+      <if test="txnindex != null" >
+        txnindex,
+      </if>
+      <if test="txntype != null" >
+        txntype,
+      </if>
+      <if test="txntime != null" >
+        txntime,
+      </if>
+      <if test="height != null" >
+        height,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="fee != null" >
+        fee,
+      </if>
+      <if test="assetname != null" >
+        assetname,
+      </if>
+      <if test="fromaddress != null" >
+        fromaddress,
+      </if>
+      <if test="toaddress != null" >
+        toaddress,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="blockindex != null" >
+        blockindex,
+      </if>
+      <if test="confirmflag != null" >
+        confirmflag,
+      </if>
+      <if test="eventtype != null" >
+        eventtype,
+      </if>
+      <if test="contracthash != null" >
+        contracthash,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="txnhash != null" >
+        #{txnhash,jdbcType=VARCHAR},
+      </if>
+      <if test="txnindex != null" >
+        #{txnindex,jdbcType=INTEGER},
+      </if>
+      <if test="txntype != null" >
+        #{txntype,jdbcType=INTEGER},
+      </if>
+      <if test="txntime != null" >
+        #{txntime,jdbcType=INTEGER},
+      </if>
+      <if test="height != null" >
+        #{height,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null" >
+        #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="assetname != null" >
+        #{assetname,jdbcType=VARCHAR},
+      </if>
+      <if test="fromaddress != null" >
+        #{fromaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="toaddress != null" >
+        #{toaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="blockindex != null" >
+        #{blockindex,jdbcType=INTEGER},
+      </if>
+      <if test="confirmflag != null" >
+        #{confirmflag,jdbcType=INTEGER},
+      </if>
+      <if test="eventtype != null" >
+        #{eventtype,jdbcType=INTEGER},
+      </if>
+      <if test="contracthash != null" >
+        #{contracthash,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Oep5TxnDetail" >
+    update tbl_ont_oep5txn_detail
+    <set >
+      <if test="txntype != null" >
+        txntype = #{txntype,jdbcType=INTEGER},
+      </if>
+      <if test="txntime != null" >
+        txntime = #{txntime,jdbcType=INTEGER},
+      </if>
+      <if test="height != null" >
+        height = #{height,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null" >
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="assetname != null" >
+        assetname = #{assetname,jdbcType=VARCHAR},
+      </if>
+      <if test="fromaddress != null" >
+        fromaddress = #{fromaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="toaddress != null" >
+        toaddress = #{toaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="blockindex != null" >
+        blockindex = #{blockindex,jdbcType=INTEGER},
+      </if>
+      <if test="confirmflag != null" >
+        confirmflag = #{confirmflag,jdbcType=INTEGER},
+      </if>
+      <if test="eventtype != null" >
+        eventtype = #{eventtype,jdbcType=INTEGER},
+      </if>
+      <if test="contracthash != null" >
+        contracthash = #{contracthash,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+      and txnindex = #{txnindex,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.Oep5TxnDetail" >
+    update tbl_ont_oep5txn_detail
+    set txntype = #{txntype,jdbcType=INTEGER},
+      txntime = #{txntime,jdbcType=INTEGER},
+      height = #{height,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=DECIMAL},
+      fee = #{fee,jdbcType=DECIMAL},
+      assetname = #{assetname,jdbcType=VARCHAR},
+      fromaddress = #{fromaddress,jdbcType=VARCHAR},
+      toaddress = #{toaddress,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      blockindex = #{blockindex,jdbcType=INTEGER},
+      confirmflag = #{confirmflag,jdbcType=INTEGER},
+      eventtype = #{eventtype,jdbcType=INTEGER},
+      contracthash = #{contracthash,jdbcType=VARCHAR}
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+      and txnindex = #{txnindex,jdbcType=INTEGER}
+  </update>
+</mapper>
