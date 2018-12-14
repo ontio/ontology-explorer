@@ -196,7 +196,7 @@ module.exports = {
     website: 'Website:',
     guideTxt: 'To participate stake authorization, find the step-by-step guide ',
     here: 'here.',
-    tooltipTit: 'Reward proportion in next round (Node / User)'
+    tooltipTit: 'This is the portion of rewards received the node has chosen to share with users who have authorized stakes with them in the next consensus round.'
   },
   contracts: {
     list: {
@@ -263,7 +263,9 @@ module.exports = {
       txn: 'Transactions',
       volume: 'Volume',
       code: 'ByteCode',
-      abi: 'ABI'
+      abi: 'ABI',
+      totalSupply: 'Total Supply: ',
+      decimals: 'Decimals: '
     }
   }
 }

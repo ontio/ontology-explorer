@@ -12,7 +12,7 @@
       </div>
 
       <!--  Nav-Bar 点击区域  -->
-      <nav class="navbar navbar-expand-md navbar-dark" :class="isHome ? '' : 'navbar-no-home'">
+      <nav class="navbar navbar-expand-lg navbar-dark" :class="isHome ? '' : 'navbar-no-home'">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
           <i class="fas fa-bars"></i>
         </button>

@@ -196,7 +196,7 @@ module.exports = {
     website: '官网：',
     guideTxt: '要参与质押授权，请找到分步指南：',
     here: '点击这里。',
-    tooltipTit: '下一轮奖励比例(节点/用户)'
+    tooltipTit: '这是在下一轮共识中，节点选择与他们授权质押的用户，共享的奖励部分。'
   },
   contracts: {
     list: {
@@ -263,7 +263,9 @@ module.exports = {
       txn: '交易总数',
       volume: '流水总量',
       code: '字节代码',
-      abi: 'ABI'
+      abi: 'ABI',
+      totalSupply: '发行总量：',
+      decimals: '精度位数：'
     }
   }
 }

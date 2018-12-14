@@ -9,7 +9,9 @@
         {{ $t('contracts.list.tit.contracts') }}
       </div>
       <div class="col text-right">
-        <a :href="applyForUrl" target="_blank" class="font-size18 important_color pointer2">{{ $t('contracts.list.tit.checkIn') }} →</a>
+        <a :href="applyForUrl" target="_blank" class="font-size18 font-blod important_color pointer2">
+          <i class="far fa-hand-point-right"></i>&nbsp;&nbsp;{{ $t('contracts.list.tit.checkIn') }}
+        </a>
       </div>
     </div>
 
