@@ -56,6 +56,16 @@
       </div>
     </div>
 
+    <!--TotalSupply & Decimals-->
+    <detail-block-2 :name1="$t('tokens.detail.totalSupply')"
+                    :val1="$HelperTools.toFinancialVal(tokenData.info.TotalSupply)"
+                    :rows1="'1.3'"
+                    :name2="$t('tokens.detail.decimals')"
+                    :val2="tokenData.info.Decimals"
+                    :rows2="'1.3'">
+    </detail-block-2>
+
+    <!--addresses & transactions & volume-->
     <div class="row">
       <div class="col">
         <div class="detail-col detail-col-left">

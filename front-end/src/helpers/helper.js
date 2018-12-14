@@ -2,6 +2,7 @@
  * 一些工具函数，自定义名称为：$HelperTools。
  * 在main.js import和use可全局使用。
  */
+import DecimalMath from 'decimal.js';
 
 const HelperTools = {
   getDateTime(inputTime) {
@@ -151,9 +152,9 @@ const HelperTools = {
    */
   toFinancialVal(value) {
     if (typeof(value) !== 'undefined') {
-      value = parseFloat(value).toString();
+      value = new DecimalMath(value).toString();
 
-      if (value == 0) return parseFloat(value).toString();
+      if (value === '0') return value;
 
       let dotIndex = value.indexOf('.');
       let valueLast = '';
