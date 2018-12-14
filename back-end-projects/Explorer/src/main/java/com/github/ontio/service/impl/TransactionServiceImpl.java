@@ -824,4 +824,21 @@ public class TransactionServiceImpl implements ITransactionService {
 
         return formattedTxnList;
     }
+
+    /**
+     * 查询地址所有交易
+     * @param address
+     * @return
+     */
+    @Override
+    public Result queryAddressInfoForExcel(String address) {
+        Map paramMap = new HashMap();
+        paramMap.put("Address", address);
+        List<Map> list = transactionDetailMapper.selectTxnByAddress(paramMap);
+
+        Map<String, Object> rs = new HashMap<>();
+        rs.put("TxnList", list);
+
+        return Helper.result("QueryAddressInfoForExcel", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+    }
 }
