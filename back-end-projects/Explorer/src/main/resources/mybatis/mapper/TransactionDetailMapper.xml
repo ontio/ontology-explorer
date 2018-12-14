@@ -469,29 +469,53 @@
   </select>
 
 
+
+
   <select id="selectAllFromAddress" resultType="java.lang.String" useCache="false">
     select DISTINCT (fromaddress)
     from tbl_ont_txn_detail
-    where contracthash = #{param1}
   </select>
+
+
+
 
 
   <select id="selectAllToAddress" resultType="java.lang.String" useCache="false">
-    select DISTINCT(toaddress)
+    select DISTINCT (toaddress)
     from tbl_ont_txn_detail
-    where contracthash = #{param1}
   </select>
 
-  <select id="selectAllFromAddressByAddr" resultType="java.lang.String" useCache="false">
-    select DISTINCT(fromaddress)
+
+
+  <select id="selectAllFromAddressCountByAddr" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT(fromaddress))
     from tbl_ont_txn_detail
     where toaddress = #{param1}
   </select>
 
-  <select id="selectAllToAddressByAddr" resultType="java.lang.String" useCache="false">
-    select toaddress
+  <select id="selectAllToAddressCountByAddr" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT(toaddress))
     from tbl_ont_txn_detail
     where fromaddress = #{param1}
+  </select>
+
+  <select id="selectAllFromAddressCountByContract" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT (fromaddress))
+    from tbl_ont_txn_detail
+    where contracthash = #{param1}
+  </select>
+
+  <select id="selectAllToAddressCountByContract" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT(toaddress))
+    from tbl_ont_txn_detail
+    where contracthash = #{param1}
+  </select>
+
+  <select id="selectAllAddressCount" resultType="java.lang.Integer" useCache="false">
+    SELECT
+    count(DISTINCT(toaddress))
+    FROM
+    tbl_ont_txn_detail
   </select>
 
 
