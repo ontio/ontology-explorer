@@ -1,6 +1,5 @@
 package com.github.ontio.dao;
 
-import com.github.ontio.model.Oep4;
 import com.github.ontio.model.Oep8;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +13,8 @@ public interface Oep8Mapper {
     int insert(Oep8 record);
 
     int insertSelective(Oep8 record);
+
+    int banchInsertSelective(List<Oep8> list);
 
     Oep8 selectByPrimaryKey(Long id);
 
