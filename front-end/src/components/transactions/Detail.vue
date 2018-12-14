@@ -1,15 +1,16 @@
 <template>
   <div class="container margin-top-15">
-    <div class="pc-display">
-      <list-title :name="$t('txDetail.name')"></list-title>
-      <detail-title :name="$t('txDetail.txHash')" :val="txData.TxnHash"></detail-title>
+    <list-title :name="$t('txDetail.name')"></list-title>
+    <detail-title :name="$t('txDetail.txHash')" :val="txData.TxnHash"></detail-title>
 
-      <!-- Transaction Detail Basic Info: -->
-      <detail-block
-        :params="[{name:$t('txDetail.time'), val:$HelperTools.getTransDate(txData.TxnTime)}]"></detail-block>
-      <detail-block
-        :params="[{name:$t('txDetail.type'), val:txData.TxnType === 209 ? $t('txDetail.sc') : $t('txDetail.deploySC')}]"></detail-block>
+    <!-- Transaction Detail Basic Info: -->
+    <detail-block
+      :params="[{name:$t('txDetail.time'), val:$HelperTools.getTransDate(txData.TxnTime)}]"></detail-block>
+    <detail-block
+      :params="[{name:$t('txDetail.type'), val:txData.TxnType === 209 ? $t('txDetail.sc') : $t('txDetail.deploySC')}]"></detail-block>
 
+    <!--PC style-->
+    <div class="d-none d-sm-block">
       <div class="row">
         <div class="col" @click="toBlockDetailPage(txData.Height)">
           <div class="detail-col detail-col-left">
@@ -27,11 +28,42 @@
         <div class="col">
           <div class="detail-col detail-col-right">
             <span class="f-color">{{ $t('txDetail.status') }}</span>
-            <span v-if="txData.ConfirmFlag === 1" style="color:#00AE1D">{{ $t('all.confirmed') }}</span>
-            <span v-else style="color:#AFACAC">{{ $t('all.failed') }}</span>
+            <span v-if="txData.ConfirmFlag === 1" class="s-color">{{ $t('all.confirmed') }}</span>
+            <span v-else class="f-color">{{ $t('all.failed') }}</span>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="d-block d-sm-none">
+      <div class="detail-col font-size14">
+        <div class="row">
+          <div class="col">
+            <div class="f-color">{{ $t('txDetail.height') }}</div>
+            <div class="important_color" @click="toBlockDetailPage(txData.Height)">{{txData.Height}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-col font-size14">
+        <div class="row">
+          <div class="col">
+            <div class="f-color">{{ $t('txDetail.fee') }}</div>
+            <div class="important_color">{{ Number(txData.Fee) + ' ONG'}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-col font-size14">
+        <div class="row">
+          <div class="col">
+            <div class="f-color">{{ $t('txDetail.status') }}</div>
+            <div v-if="txData.ConfirmFlag === 1" class="s-color">{{ $t('all.confirmed') }}</div>
+            <div v-else class="normal_color">{{ $t('all.failed') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pc-display">
 
       <!-- Transaction Detail Data Info: -->
       <table v-if="authflag" class="table table-hover">
@@ -88,58 +120,6 @@
 
     <!-- mobile -->
     <div class="mobile-display">
-      <div class="row">
-        <div class="col-lg-12">
-          <p class="text-center font-size28 font-ExtraLight p_margin_bottom_L normal_color">TRANSACTION DETAILS</p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-12">
-          <p class="wordbreak font-size18 color32a4be font-blod important_color">Transaction Hash: <span
-            style="font-size:14px;">{{  txData.TxnHash }}</span></p>
-        </div>
-      </div>
-      <table class="table table-hover">
-        <thead>
-        <tr>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="td11 table1_item_title font-size16 normal_color">
-            Transaction Time: {{$HelperTools.getTransDate(txData.TxnTime)}}
-          </td>
-        </tr>
-        <tr>
-          <td class="td11 table1_item_title font-size16 normal_color"
-              v-if="txData.TxnType != 209">
-            Type: Deploy Smart Contract
-          </td>
-          <td class="td11 table1_item_title font-size16 normal_color" v-else>
-            Type: Smart Contract
-          </td>
-        </tr>
-        <tr>
-          <td class="td11 table1_item_title font-size16 normal_color">
-            Block Height: <span class=" important_color">{{txData.Height}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td class="td11 table1_item_title font-size16 normal_color">
-            Fee: {{txData.Fee}}
-          </td>
-        </tr>
-        <tr>
-          <td class="td11 table1_item_title font-size16 normal_color"
-              v-if="txData.ConfirmFlag == 1">
-            Status: <span style="color:#00AE1D">Confirmed</span>
-          </td>
-          <td class="td11 table1_item_title font-size16 normal_color" v-else>
-            Status: <span style="color:#AFACAC">Failed</span>
-          </td>
-        </tr>
-        </tbody>
-      </table>
 
       <!--展示Issuer OntId和Description的数据块-->
       <detail-block v-if="recordflag" :params="issuerData"></detail-block>
@@ -184,11 +164,11 @@
         <tr v-for="tx in Detail.TransferList">
           <td class="td11" style="background-color:#32A4BE;color:white;padding: 34px 24px;">
             <div class="row ">
-              <div class="col-lg-4 padding0-right pointer">{{tx.FromAddress}}</div>
+              <div class="col-lg-4 padding0-right" @click="toAddressDetailPage(tx.FromAddress)">{{tx.FromAddress}}</div>
               <div class="col-lg-1 ">>></div>
               <div class="col-lg-2 ">{{toMoney(tx)}} {{getAssetName(tx.AssetName)}}</div>
               <div class="col-lg-1 ">>></div>
-              <div class="col-lg-4 padding0-left pointer ">{{tx.ToAddress}}</div>
+              <div class="col-lg-4 padding0-left" @click="toAddressDetailPage(tx.ToAddress)">{{tx.ToAddress}}</div>
             </div>
           </td>
         </tr>

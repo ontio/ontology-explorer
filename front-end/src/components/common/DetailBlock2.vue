@@ -20,15 +20,22 @@
 
     <!-- Mobile Styles -->
     <div class="d-block d-sm-none col">
-      <div class="row">
-        <div class="col">
-          <div class="detail-col-no-font-size font-size16 normal_color" @click="doAction(params1)">
-            {{name1}}<span class="important_color">{{val1}}</span>
+      <div class="detail-col font-size14">
+        <div class="row">
+          <div class="col normal_color" @click="doAction(params1)">
+            <div class="font-blod">{{ name1 }}</div>
+            <div :class="classObject1">{{ val1 }}</div>
           </div>
         </div>
-        <div class="col">
-          <div class="detail-col-no-font-size font-size16 normal_color" @click="doAction(params2)">
-            {{name2}}<span class="s-color">{{val2}}</span>
+      </div>
+
+      <div class="detail-col font-size14">
+        <div class="row">
+          <div class="col">
+            <div class="normal_color" @click="doAction(params2)">
+              <div class="font-blod">{{ name2 }}</div>
+              <div :class="classObject2">{{ val2 }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -55,9 +62,13 @@
      *
      * rows:
      * 1    代表一行内字体默认；
-     * 1.1  代表一行内字体颜色是划重点；
+     * 1.1  代表一行内字体颜色是划重点；#00AE1D 浅绿色；
      * 1.2  代表一行内可跳转，小字体
-     * 2    代表2行内容点击可跳转；
+     * 1.3  代表一行内字体颜色是划重点；本体蓝；
+     * 2    代表2行内容点击可跳转；14号字体；
+     *
+     * params：
+     * 本体蓝字体，一般可跳转
      */
     name: "DetailBlock2",
     props: ['name1', 'val1', 'rows1', 'params1', 'name2', 'val2', 'rows2', 'params2', 'tip', 'tipTit'],
@@ -70,7 +81,7 @@
           'd-block': this.rows1 === '2',
           'font-size14': this.rows1 === '2' || this.rows1 === '1.2',
           's_color': this.rows1 === '1.1',
-          'important_color': this.params1 !== undefined,
+          'important_color': this.params1 !== undefined ||  this.rows1 === '1.3',
           pointer: this.params1 !== undefined
         }
       },
@@ -79,7 +90,7 @@
           'd-block': this.rows2 === '2',
           'font-size14': this.rows2 === '2' || this.rows2 === '1.2',
           's_color': this.rows2 === '1.1',
-          'important_color': this.params2 !== undefined,
+          'important_color': this.params2 !== undefined ||  this.rows1 === '1.3',
           pointer: this.params2 !== undefined
         }
       }

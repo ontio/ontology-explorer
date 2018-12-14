@@ -348,9 +348,10 @@ export default {
           item.maxAuthorize = attr.maxAuthorize;
           item.maxAuthorizeStr = numeral(item.maxAuthorize).format('0,0');
           item.totalPosStr = numeral(item.totalPos).format('0,0');
-          const nodeProportion = attr.newPeerCost + '%';
-          const userProportion = (100 - attr.newPeerCost) + '%';
-          item.nodeProportion = nodeProportion + ' / ' + userProportion;
+          // const nodeProportion = attr.newPeerCost + '%';
+          // const userProportion = (100 - attr.newPeerCost) + '%';
+          // item.nodeProportion = nodeProportion + ' / ' + userProportion;
+          item.nodeProportion = (100 - attr.newPeerCost) + '%';
 
           // 只有1和2显示
           if (item.status === 1 || item.status === 2) {

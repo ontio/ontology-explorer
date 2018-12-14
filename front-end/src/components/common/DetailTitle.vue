@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col detail-tit-name font-size24 font-blod important_color">
       <span>{{name}}</span>
-      <span id="detailVal" :class="fontSizeVal">{{val}}</span>
+      <span id="detailVal" :class="fontSizeVal" class="txt-overflow">{{val}}</span>
       <span class="pointer font-size14">
         <i @click="copyDetailVal"
            data-clipboard-target="#detailVal"
@@ -47,5 +47,12 @@
 <style scoped>
   .l-25px {
     margin-left: 25px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .detail-tit-name > span,
+    .return-home-css {
+      font-size: 16px;
+    }
   }
 </style>

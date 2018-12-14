@@ -1,6 +1,8 @@
 <template>
   <div class="row">
-    <div class="col">
+
+    <!-- PC Styles -->
+    <div class="d-none d-sm-block col">
       <!-- styleVal === new时为新样式 -->
       <div v-if="(typeof(styleVal) !== 'undefined')" class="detail-col font-Regular detail-col-fix">
         <div v-for="(item,index) in params">
@@ -25,6 +27,44 @@
             <div v-if="typeof(item.val) === 'object'" class="height-100" v-html="calcVal(item.val)"></div>
             <span v-else>{{item.val}}</span>
           </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Styles -->
+    <div class="d-block d-sm-none col">
+      <div v-if="(typeof(styleVal) !== 'undefined')" class="detail-col font-Regular detail-col-fix">
+        <div v-for="(item,index) in params" class="font-size14">
+          <div v-if="index > 0" class="b-detail-divider-line"></div>
+          <div class="row">
+            <div class="col">
+              <div class="normal_color font-blod font-size14">{{item.name}}</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col f-color word-break" :class="(item.rows === 2) ? 'd-block height-100 font-size14' :''">
+              <div v-if="typeof(item.val) === 'object'" class="height-100" v-html="calcVal(item.val)"></div>
+              <span v-else>{{item.val}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="font-Regular">
+        <div v-for="(item,index) in params" class="detail-col font-size14">
+          <p v-if="index > 0"></p>
+          <div class="row">
+            <div class="col f-color font-blod">
+              {{ item.name }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s-color word-break"
+                 :class="(item.rows === 2) ? 'd-block height-100 font-size14' :''">
+              <div v-if="typeof(item.val) === 'object'" class="height-100" v-html="calcVal(item.val)"></div>
+              <span v-else>{{item.val}}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -7,8 +7,8 @@
     <!--<detail-block :params="detailParams"></detail-block>-->
 
     <!--区块时间和大小-->
-    <detail-block-2 :name1="$t('blockDetail.BlockTime')" :val1="$HelperTools.getTransDate(blockData.BlockTime)"
-                    :name2="$t('blockDetail.BlockSize')" :val2="blockData.BlockSize + ' bytes'">
+    <detail-block-2 :name1="$t('blockDetail.BlockTime')" :val1="$HelperTools.getTransDate(blockData.BlockTime)" :rows1="'1.1'"
+                    :name2="$t('blockDetail.BlockSize')" :val2="blockData.BlockSize + ' bytes'" :rows2="'1.1'">
     </detail-block-2>
 
     <!--<detail-block :params="[{name:$t('blockDetail.keeper'), val:blockData.BookKeeper, rows:2}]"></detail-block>-->

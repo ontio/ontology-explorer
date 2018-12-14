@@ -4,41 +4,22 @@
     <detail-title :name="$t('addressDetail.address')" :val="$route.params.address"></detail-title>
 
     <!--主要余额显示-->
-    <div class="row">
-      <div class="col">
-        <div class="detail-col detail-col-left">
-          <span class="table1_item_title font-size24 font-Regular"
-                v-for="asset in AssetBalance" v-if="asset.AssetName === 'ont'">
-            <span class="f-color">{{ $t('addressDetail.ontBalance') }}</span>
-            <span class="important_color">{{asset.Balance}}</span>
-          </span>
-        </div>
-      </div>
-      <div class="col">
-        <div class="detail-col detail-col-right">
-          <span class="table1_item_title font-size24 font-Regular"
-                v-for="asset in AssetBalance" v-if="asset.AssetName === 'ong'">
-            <span class="f-color">{{ $t('addressDetail.ongBalance') }}</span>
-            <span class="important_color">{{asset.Balance}}</span>
-          </span>
-        </div>
-      </div>
-    </div>
+    <detail-block-2 :name1="$t('addressDetail.ontBalance')" :val1="$HelperTools.toFinancialVal(assetsVal.ont)" :rows1="'1.3'"
+                    :name2="$t('addressDetail.ongBalance')" :val2="$HelperTools.toFinancialVal(assetsVal.ong)" :rows2="'1.3'">
+    </detail-block-2>
 
     <!--可领取和未领取的ONG显示-->
-    <div class="row">
-      <div class="col">
-        <div class="detail-col">
-          <p class="table1_item_title font-size24 font-Regular"
-             v-for="asset in AssetBalance" v-if="asset.AssetName === 'unboundong'">
-            <span class="f-color">{{ $t('addressDetail.claimable') }}</span>
-            <span class="normal_color">{{asset.Balance}}</span>
-          </p>
-          <p class="table1_item_title font-size24 font-Regular no-margin-bottom"
-             v-for="asset in AssetBalance" v-if="asset.AssetName === 'waitboundong'">
-            <span class="f-color">{{ $t('addressDetail.unbound') }}</span>
-            <span class="normal_color">{{asset.Balance}}</span>
-          </p>
+    <div class="detail-col">
+      <div class="row">
+        <div class="col table1_item_title">
+          <span class="f-color">{{ $t('addressDetail.claimable') }}</span>
+          <span class="important_color">{{assetsVal.unboundong}}</span>
+        </div>
+      </div>
+      <div class="row table1_item_title">
+        <div class="col">
+          <span class="f-color">{{ $t('addressDetail.unbound') }}</span>
+          <span class="important_color">{{assetsVal.waitboundong}}</span>
         </div>
       </div>
     </div>
@@ -49,40 +30,40 @@
         <div class="detail-col">
           {{ $t('addressDetail.oep8Assets') }}
           <div class="row pumpkin-color font-size14 text-center" style="margin-top: 20px">
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin08'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin08' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin08}}</div>
             </div>
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin01'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin01' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin01}}</div>
             </div>
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin02'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin02' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin02}}</div>
             </div>
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin03'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin03' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin03}}</div>
             </div>
           </div>
 
           <div class="row pumpkin-color font-size14 text-center" style="margin-top: 20px">
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin04'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin04' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin04}}</div>
             </div>
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin05'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin05' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin05}}</div>
             </div>
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin06'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin06' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin06}}</div>
             </div>
-            <div class="col" v-for="asset in AssetBalance" v-if="asset.AssetName === 'pumpkin07'">
-              <div>{{ $t('assetName.' + asset.AssetName ) }}</div>
-              <div class="font-size24">{{asset.Balance}}</div>
+            <div class="col">
+              <div>{{ $t('assetName.pumpkin07' ) }}</div>
+              <div class="font-size24">{{assetsVal.pumpkin07}}</div>
             </div>
           </div>
         </div>
@@ -93,12 +74,12 @@
     <div class="row" v-if="haveOtherOep">
       <div class="col">
         <div class="detail-col">
-          {{ $t('addressDetail.oepOtherAssets') }}
-          <div v-for="(asset,index) in AssetBalance" v-if="index > 12" class="row font-size14" style="margin-top: 20px; padding: 0 15px;">
-            <p class="table1_item_title font-size24 font-Regular">
+          <span class="font-blod table1_item_title">{{ $t('addressDetail.oepOtherAssets') }}</span>
+          <div v-for="(asset,index) in AssetBalance" v-if="index > 12" class="row font-size14 oep-4-5-div">
+            <div class="table1_item_title font-Regular">
               <span class="f-color">{{ asset.AssetName.toUpperCase() + ": " }}</span>
-              <span class="normal_color">{{parseFloat(asset.Balance)}}</span>
-            </p>
+              <span class="important_color">{{parseFloat(asset.Balance)}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -108,7 +89,7 @@
     <div class="row">
       <div class="col">
         <div class="detail-col">
-          <div class="row font-size24 font-blod normal_color">
+          <div class="row font-size18 font-blod normal_color">
             <div class="col">
               <!--{{ addressDetail.info.allPage }} {{ $t('addressDetail.txOnAddr') }}-->
               {{ $t('addressDetail.txns') }}
@@ -234,7 +215,19 @@
     computed: {
       ...mapState({
         addressDetail: state => state.AddressDetailPage.AddressDetail,
-      })
+      }),
+      /**
+       * 取出全部资产名称和值
+       */
+      assetsVal: function () {
+        let retAssets = {};
+
+        for(let index in this.AssetBalance) {
+          retAssets[this.AssetBalance[index].AssetName] = this.AssetBalance[index].Balance
+        }
+
+        return retAssets
+      }
     },
     methods: {
       getAddressDetailData() {
@@ -358,5 +351,20 @@
 
   .expenditure-color {
     color: #32A4BE;
+  }
+
+  .oep-4-5-div {
+    margin-top: 15px;
+    padding: 0 15px;
+  }
+
+  .table1_item_title {
+    font-size: 18px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .table1_item_title {
+      font-size: 14px;
+    }
   }
 </style>
