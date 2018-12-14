@@ -75,13 +75,18 @@ public interface TransactionDetailMapper {
     List<Map<String, String>> selectAllAddress();
 
 
-    List<String> selectAllFromAddress(String toAddress);
 
-    List<String> selectAllToAddress(String fromAddress);
 
-    List<String> selectAllFromAddressByAddr(String contractHash);
+    Integer selectAllFromAddressCountByContract(String contractHash);
 
-    List<String> selectAllToAddressByAddr(String contractHash);
+    Integer selectAllToAddressCountByContract(String contractHash);
+
+    Integer selectAllFromAddressCountByAddr(String toAddress);
+
+    Integer selectAllToAddressCountByAddr(String fromAddress);
+
+
+    int selectAllAddressCount();
 
 
 }
