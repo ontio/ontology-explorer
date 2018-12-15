@@ -217,9 +217,9 @@ module.exports = {
       }
     },
     detail: {
-      name:'Contract Detail',
+      name: 'Contract Detail',
       hash: 'HASH:',
-      overview:'Contract Overview',
+      overview: 'Contract Overview',
       desc: 'Description',
       txOn: 'Number Of Transactions In The Contract:',
       creator: 'Creator: ',
@@ -251,7 +251,7 @@ module.exports = {
     detail: {
       name: 'Token Detail',
       hash: 'HASH:',
-      overview:'Contract Overview',
+      overview: 'Contract Overview',
       desc: 'Description',
       txOn: 'Number Of Transactions In The Contract:',
       creator: 'Creator: ',
@@ -268,5 +268,12 @@ module.exports = {
       totalSupply: 'Total Supply: ',
       decimals: 'Decimals: '
     }
+  },
+  statistics: {
+    name: 'History Statistics',
+    addressLbl: '14 Days Address Count',
+    blockLbl: '14 Days Block Count',
+    ontIdLbl: '14 Days ONT-ID Count',
+    txnLbl: '14 Days Txn Count'
   }
-}
+};

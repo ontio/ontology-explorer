@@ -4,35 +4,27 @@
   export default {
     name: "LineChart",
     extends: Line,
-    props: ['title', 'data', 'options'],
+    props: ['labels', 'label', 'data', 'options'],
     mounted() {
+      // 使用本体蓝做渐变色
+      this.gradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
+      this.gradient.addColorStop(0, 'rgba(54, 163 ,188, 0.6)');
+      this.gradient.addColorStop(0.5, 'rgba(54, 163, 188, 0.3)');
+      this.gradient.addColorStop(1, 'rgba(54, 163, 188, 0)');
+
       this.renderChart({
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        labels: this.labels,
         datasets: [
           {
-            label: 'tx counts',
-            // label: this.title,
-            data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11],
-            // data: this.data,
+            label: this.label,
+            data: this.data,
             borderColor: '#36a3bc',
-            borderWidth: 1,
-            backgroundColor: 'transparent', //线性图的渐变颜色
-            pointBackgroundColor: '#000', //x轴 Y轴对应圆点的颜色
+            borderWidth: 2,
+            backgroundColor: this.gradient, //线性图的渐变颜色
+            pointBackgroundColor: '#36a3bc', //x轴 Y轴对应圆点的颜色
             pointBorderColor: 'white', //x轴 Y轴对应圆点的圆点border的颜色
             fontSize: 12, //字体的大小
-            radius: '3' //圆点的半径
-          }, {
-            label: 'address counts',
-            // label: this.title,
-            data: [1, 6, 12, 42, 10, 34, 14, 5, 40, 4, 12, 40],
-            // data: this.data,
-            borderColor: '#a7fe35',
-            borderWidth: 1,
-            backgroundColor: 'transparent', //线性图的渐变颜色
-            pointBackgroundColor: '#32A4BE', //x轴 Y轴对应圆点的颜色
-            pointBorderColor: 'white', //x轴 Y轴对应圆点的圆点border的颜色
-            fontSize: 12, //字体的大小
-            radius: '3' //圆点的半径
+            radius: '4' //圆点的半径
           }
         ]
       }, {

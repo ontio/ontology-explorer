@@ -17,6 +17,7 @@ import ClaimDetailPage from './modules/claim-verify-page'
 import NodeAuthorization from './modules/node-authorization'
 import ContractData from './modules/contracts'
 import TokenData from './modules/tokens'
+import Statistics from './modules/statistics'
 
 Vue.use(Vuex)
 
@@ -37,6 +38,7 @@ export default new Vuex.Store({
     ClaimDetailPage,
     NodeAuthorization,
     ContractData,
-    TokenData
+    TokenData,
+    Statistics
   }
 })
