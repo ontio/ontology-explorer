@@ -94,10 +94,9 @@
               <!--{{ addressDetail.info.allPage }} {{ $t('addressDetail.txOnAddr') }}-->
               {{ $t('addressDetail.txns') }}
             </div>
-            <!--<div class="col">-->
-              <!--<button @click="downloadExcel()">导出</button>-->
-              <!--<a href="" :download="'AllTxData-' + $route.params.address + '.xlsx'" id="hf"></a>-->
-            <!--</div>-->
+            <div class="col">
+              <to-excel :address="$route.params.address"></to-excel>
+            </div>
           </div>
           <div class="row table-responsive">
             <div class="col">
@@ -173,7 +172,7 @@
 
 <script>
   import {mapState} from 'vuex'
-  import XLSX from 'xlsx'
+  import ToExcel from './../common/DownloadExcel'
 
   export default {
     name: "address-detail-page",
@@ -202,10 +201,10 @@
       'addressDetail.info.info': function () {
         this.info = this.addressDetail.info.info;
         this.AssetBalance = this.info.AssetBalance;
-        if(this.info.AssetBalance.length > 4) { // 有南瓜资产
-          this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0 )
+        if (this.info.AssetBalance.length > 4) { // 有南瓜资产
+          this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0)
         }
-        if(this.info.AssetBalance.length > 13) { // 有OEP4、5的其他资产
+        if (this.info.AssetBalance.length > 13) { // 有OEP4、5的其他资产
           this.haveOtherOep = true
         }
         this.TxnList = this.info.TxnList;
@@ -222,7 +221,7 @@
       assetsVal: function () {
         let retAssets = {};
 
-        for(let index in this.AssetBalance) {
+        for (let index in this.AssetBalance) {
           retAssets[this.AssetBalance[index].AssetName] = this.AssetBalance[index].Balance
         }
 
@@ -232,74 +231,6 @@
     methods: {
       getAddressDetailData() {
         this.$store.dispatch('getAddressDetailPage', this.$route.params).then()
-      },
-      downloadExcel() {
-        this.$store.dispatch('getAddressDetailAllData', this.$route.params).then(res => {
-          // console.log(res)
-          // this.generatingExcelData(res)
-        })
-      },
-      generatingExcelData(json) {
-        let tmpJson = json[0];
-        let keyMap = []; // 获取keys
-        let saveJson = []; // 用来保存转换好的json
-
-        // 解构Json数据
-        json.unshift({});
-        for (let k in tmpJson) {
-          keyMap.push(k);
-          json[0][k] = k;
-        }
-        json.map((v, i) => keyMap.map((k, j) => Object.assign({}, {
-          v: v[k],
-          position: (j > 25 ? this.getCharCol(j) : String.fromCharCode(65 + j)) + (i + 1)
-        }))).reduce((prev, next) => prev.concat(next)).forEach((v, i) => saveJson[v.position] = {v: v.v});
-
-        // 设置区域,比如表格从A1到D10
-        let outputPos = Object.keys(saveJson);
-
-        // 保存表标题、设置填充区域
-        let tmpWB = {
-          SheetNames: ['mySheet'],
-          Sheets: {
-            'mySheet': Object.assign(
-              {},
-              saveJson,
-              {'!ref': outputPos[0] + ':' + outputPos[outputPos.length - 1]}
-            )
-          }
-        };
-
-        // 创建二进制对象写入转换好的字节流
-        this.tmpDown = new Blob([this.s2ab(XLSX.write(tmpWB, {
-          bookType: 'xlsx',
-          bookSST: false,
-          type: 'binary'
-        }))], {type: ""});
-
-        let href = URL.createObjectURL(this.tmpDown); // 创建对象超链接
-        let hfCTX = document.getElementById('hf');
-        hfCTX.href = href; // 绑定a标签
-        hfCTX.click(); // 模拟点击实现下载
-        setTimeout(function () { //延时释放
-          URL.revokeObjectURL(this.tmpDown); // 用URL.revokeObjectURL()来释放这个object URL
-        }, 100);
-      },
-      // 字符串转字符流
-      s2ab(s) {
-        let buf = new ArrayBuffer(s.length);
-        let view = new Uint8Array(buf);
-        for (let i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-        return buf;
-      },
-      getCharCol(n) {
-        let s = '', m = 0;
-        while (n > 0) {
-          m = n % 26 + 1;
-          s = String.fromCharCode(m + 64) + s;
-          n = (n - m) / 26
-        }
-        return s
       },
       toReturn() {
         this.$router.go(-1)
@@ -336,15 +267,12 @@
         }
         this.getAddressDetailData()
       }
-    }
+    },
+    components: {ToExcel}
   }
 </script>
 
 <style scoped>
-  .no-margin-bottom {
-    margin-bottom: 0 !important;
-  }
-
   .income-color {
     color: #00AE1D;
   }

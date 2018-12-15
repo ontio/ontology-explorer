@@ -196,7 +196,8 @@ module.exports = {
     website: 'Website:',
     guideTxt: 'To participate stake authorization, find the step-by-step guide ',
     here: 'here.',
-    tooltipTit: 'This is the portion of rewards received the node has chosen to share with users who have authorized stakes with them in the next consensus round.'
+    tooltipTit: 'This is the portion of rewards received the node has chosen to share with users who have authorized stakes with them in the next consensus round.',
+    processTip: 'Calculating real-time data. Please wait: '
   },
   contracts: {
     list: {
@@ -216,9 +217,9 @@ module.exports = {
       }
     },
     detail: {
-      name:'Contract Detail',
+      name: 'Contract Detail',
       hash: 'HASH:',
-      overview:'Contract Overview',
+      overview: 'Contract Overview',
       desc: 'Description',
       txOn: 'Number Of Transactions In The Contract:',
       creator: 'Creator: ',
@@ -250,7 +251,7 @@ module.exports = {
     detail: {
       name: 'Token Detail',
       hash: 'HASH:',
-      overview:'Contract Overview',
+      overview: 'Contract Overview',
       desc: 'Description',
       txOn: 'Number Of Transactions In The Contract:',
       creator: 'Creator: ',
@@ -267,5 +268,12 @@ module.exports = {
       totalSupply: 'Total Supply: ',
       decimals: 'Decimals: '
     }
+  },
+  statistics: {
+    name: 'History Statistics',
+    addressLbl: '14 Days Address Count',
+    blockLbl: '14 Days Block Count',
+    ontIdLbl: '14 Days ONT-ID Count',
+    txnLbl: '14 Days Txn Count'
   }
-}
+};

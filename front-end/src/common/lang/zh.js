@@ -196,7 +196,8 @@ module.exports = {
     website: '官网：',
     guideTxt: '要参与质押授权，请找到分步指南：',
     here: '点击这里。',
-    tooltipTit: '这是在下一轮共识中，节点选择与他们授权质押的用户，共享的奖励部分。'
+    tooltipTit: '这是在下一轮共识中，节点选择与他们授权质押的用户，共享的奖励部分。',
+    processTip: '正在计算实时数据中。 请等待一会： '
   },
   contracts: {
     list: {
@@ -216,9 +217,9 @@ module.exports = {
       }
     },
     detail: {
-      name:'合约详情',
+      name: '合约详情',
       hash: '哈希：',
-      overview:'合约概览',
+      overview: '合约概览',
       desc: '合约描述',
       txOn: '条交易记录在这个合约：',
       creator: '创建者：',
@@ -250,7 +251,7 @@ module.exports = {
     detail: {
       name: '通证详情',
       hash: '哈希：',
-      overview:'合约概览',
+      overview: '合约概览',
       desc: '合约描述',
       txOn: '条交易记录在这个合约：',
       creator: '创建者：',
@@ -267,5 +268,12 @@ module.exports = {
       totalSupply: '发行总量：',
       decimals: '精度位数：'
     }
+  },
+  statistics: {
+    name: '历史统计',
+    addressLbl: '过去14天的地址数量',
+    blockLbl: '过去14天的区块数量',
+    ontIdLbl: '过去14天的ONT-ID数量',
+    txnLbl: '过去14天的交易数量'
   }
-}
+};
