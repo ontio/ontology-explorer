@@ -18,6 +18,7 @@ import ContractList from '@/components/contracts/List'
 import ContractDetail from '@/components/contracts/Detail'
 import TokenList from '@/components/tokens/List'
 import TokenDetail from '@/components/tokens/Detail'
+import StatisticsTable from '@/components/statistics/Table'
 
 Vue.use(Router);
 
@@ -196,6 +197,11 @@ let routes = [
     path: '/token/detail/:type/:contractHash/:pageSize/:pageNumber/:net',
     name: 'TokenDetailTest',
     component: TokenDetail
+  },
+  {
+    path: '/statistics/table/',
+    name: 'StatisticsTable',
+    component: StatisticsTable
   }
 ];
 

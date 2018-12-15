@@ -23,8 +23,25 @@
       </div>
     </div>
 
+    <!--Node authorization data process bar-->
+    <div v-show="fetchProcess !== 100" class="node-progress-row">
+      <div class="row">
+        <div class="col text-center">
+          <div class="important_color"><p>{{ $t('nodes.processTip') }}</p></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                 :style="'width:' + fetchProcess + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!--The node list-->
-    <div class="row justify-content-center">
+    <div v-show="fetchProcess === 100" class="row justify-content-center">
       <div class="col">
         <div class="table-responsive">
           <table class="table table-hover">
@@ -78,7 +95,8 @@
     computed: {
       ...mapState({
         nodeList: state => state.NodeAuthorization.AuthorizationList,
-        countdown: state => state.NodeAuthorization.Countdown
+        countdown: state => state.NodeAuthorization.Countdown,
+        fetchProcess: state => state.NodeAuthorization.fetchProcess
       })
     },
     methods: {
@@ -140,6 +158,14 @@
     padding-left: 6px;
     color: #AAB3B4;
     font-size: 16px;
+  }
+
+  .node-progress-row {
+    margin: 30px 0;
+  }
+
+  .progress-bar {
+    background-color: #32a4be;
   }
 
   .rank-style {
