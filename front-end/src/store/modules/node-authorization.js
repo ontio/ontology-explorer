@@ -321,7 +321,8 @@ export default {
   state: {
     AuthorizationList: {},
     NodeInfo: {},
-    Countdown: 0
+    Countdown: 0,
+    fetchProcess: 0
   },
   mutations: {
     [types.UPDATE_NODE_LIST](state, payload) {
@@ -332,6 +333,9 @@ export default {
     },
     [types.UPDATE_NODE_INFO](state, payload) {
       state.NodeInfo = payload.info;
+    },
+    [types.UPDATE_FETCH_PROCESS](state, payload) {
+      state.fetchProcess = payload.info;
     }
   },
   actions: {
@@ -341,6 +345,10 @@ export default {
       try {
         const peerMap = await Ont.GovernanceTxBuilder.getPeerPoolMap(url);
         const list = [];
+
+        let processNum = 0;
+        let processLength = Object.keys(peerMap);
+        processLength = processLength.length;
 
         for (let k in peerMap) {
           let item = peerMap[k];
@@ -357,6 +365,12 @@ export default {
           if (item.status === 1 || item.status === 2) {
             list.push(item)
           }
+
+          commit({
+            type: types.UPDATE_FETCH_PROCESS,
+            info: ((processNum + 1) / processLength) * 100
+          });
+          processNum = processNum + 1;
         }
 
         list.sort((v1, v2) => {
