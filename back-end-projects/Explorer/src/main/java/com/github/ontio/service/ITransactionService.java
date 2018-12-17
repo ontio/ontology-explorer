@@ -99,4 +99,10 @@ public interface ITransactionService {
      */
     Result queryAddressBalance(String address);
 
+    /**
+     * 查询地址所有交易
+     * @param address
+     * @return
+     */
+    Result queryAddressInfoForExcel(String address);
 }

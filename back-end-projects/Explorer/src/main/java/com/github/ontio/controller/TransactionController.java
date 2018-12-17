@@ -218,4 +218,19 @@ public class TransactionController {
         Result rs = transactionService.queryAddressList();
         return rs;
     }*/
+
+    /**
+     * query all address information
+     *
+     * @return
+     */
+    @RequestMapping(value = "/address/queryaddressinfo/{address}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryAddressInfo(@PathVariable("address") String address) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = transactionService.queryAddressInfoForExcel(address);
+        return rs;
+    }
 }

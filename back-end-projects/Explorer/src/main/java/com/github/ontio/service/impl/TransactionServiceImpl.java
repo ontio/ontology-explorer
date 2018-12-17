@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -823,5 +824,41 @@ public class TransactionServiceImpl implements ITransactionService {
         }
 
         return formattedTxnList;
+    }
+
+    /**
+     * 查询地址所有交易
+     * @param address
+     * @return
+     */
+    @Override
+    public Result queryAddressInfoForExcel(String address) {
+
+        Map<String, Object> rs = new HashMap<>();
+        try {
+            Map paramMap = new HashMap();
+            paramMap.put("Address", address);
+            List<Map> list = transactionDetailMapper.selectTxnByAddress(paramMap);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (Map map : list) {
+                map.put("TxnTime", simpleDateFormat.format(new Date(Long.valueOf(map.get("TxnTime").toString()) * 1000)));
+                map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
+
+                if (ConstantParam.ONG.equals(map.get("AssetName"))) {
+                    map.put("Amount", ((BigDecimal) map.get("Amount")).divide(ConstantParam.ONT_TOTAL).toPlainString());
+                }
+                else{
+                    map.put("Amount", ((BigDecimal) map.get("Amount")).toPlainString());
+                }
+            }
+
+            rs.put("TxnList", list);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return Helper.result("QueryAddressInfoForExcel", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
 }
