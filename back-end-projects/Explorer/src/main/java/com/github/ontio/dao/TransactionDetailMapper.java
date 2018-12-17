@@ -88,5 +88,5 @@ public interface TransactionDetailMapper {
 
     int selectAllAddressCount();
 
-
+    List<Map> selectTxnByAddress(Map<String, Object> param);
 }

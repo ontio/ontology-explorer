@@ -518,5 +518,18 @@
     tbl_ont_txn_detail
   </select>
 
-
+  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map">
+    select t2.* from (
+    select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
+    from tbl_ont_txn_detail
+    where toaddress = #{Address}
+    and  eventtype = 3
+    union all
+    select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
+    and  eventtype = 3
+    ) as t2
+    order by t2.TxnTime desc
+  </select>
 </mapper>
