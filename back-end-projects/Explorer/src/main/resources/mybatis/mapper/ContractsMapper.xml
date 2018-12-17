@@ -232,10 +232,16 @@
       select * from tbl_ont_contracts where contract = #{param1}
   </select>
 
-  <select id="selectContractByPage" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="selectApprovedContractByPage" parameterType="java.util.Map" resultType="java.util.Map">
     select contract as ContractHash, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount,Type
     from tbl_ont_contracts where auditflag = 1
     order by createtime DESC
     limit #{Start}, #{PageSize}
+  </select>
+
+  <select id="selectContract" resultType="java.util.Map">
+    select contract as ContractHash, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount,Type
+    from tbl_ont_contracts
+    order by createtime DESC
   </select>
 </mapper>
