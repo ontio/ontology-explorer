@@ -62,7 +62,7 @@ public class ContractServiceImpl implements IContractService {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
-        List<Map> list = contractsMapper.selectContractByPage(paramMap);
+        List<Map> list = contractsMapper.selectApprovedContractByPage(paramMap);
         if(!list.isEmpty()){
             for (Map map : list) {
                 map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
@@ -86,6 +86,7 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryContractByHash(String contractHash, int pageSize, int pageNumber) {
+
         Map<String, Object> rs = getResultMap(contractHash, "", "", pageSize, pageNumber);
 
         return Helper.result("QueryContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
