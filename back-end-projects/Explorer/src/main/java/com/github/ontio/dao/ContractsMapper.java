@@ -20,7 +20,9 @@ public interface ContractsMapper {
 
     int selectContractCount();
 
-    List<Map> selectContractByPage(Map<String, Object> paramMap);
+    List<Map> selectApprovedContractByPage(Map<String, Object> paramMap);
+
+    List<Map> selectContract();
 
     String selectCreatorByContractHash(String contract);
 
