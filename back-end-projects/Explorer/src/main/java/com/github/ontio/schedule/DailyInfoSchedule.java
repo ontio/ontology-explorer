@@ -92,11 +92,8 @@ public class DailyInfoSchedule {
     public void UpdateContractInfo() {
 
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("Start", 0);
-        paramMap.put("PageSize", 40);
-        List<Map> contractList = contractsMapper.selectContractByPage(paramMap);
+        //查询所有contract
+        List<Map> contractList = contractsMapper.selectContract();
 
         for (Map map :
                 contractList) {
@@ -119,15 +116,14 @@ public class DailyInfoSchedule {
                 int addrCount = 0;
                 int fromAddrCount = 0;
                 int toAddrCount = 0;
-
+                //OEP4,8其实只用统计toaddress，即参与的所有地址
                 if ("oep4".equals(type) || "oep8".equals(type)) {
-                    fromAddrCount = transactionDetailMapper.selectAllFromAddressCountByContract(contractHash);
+                   // fromAddrCount = transactionDetailMapper.selectAllFromAddressCountByContract(contractHash);
                     toAddrCount = transactionDetailMapper.selectAllToAddressCountByContract(contractHash);
                 } else {
                     fromAddrCount = transactionDetailMapper.selectAllFromAddressCountByAddr(address);
                     toAddrCount = transactionDetailMapper.selectAllToAddressCountByAddr(address);
                 }
-
                 addrCount = fromAddrCount + toAddrCount;
 
                 Contracts contractsDAO = new Contracts();
