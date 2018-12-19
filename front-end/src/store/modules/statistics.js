@@ -17,41 +17,61 @@ export default {
       let startTimestamp = timestamp - 1209600; // 14days ago
 
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
-      let url = apiUrl + '/daily/info/' + startTimestamp + '/' + timestamp;
+      let url = apiUrl + '/summary/daily/' + startTimestamp + '/' + timestamp;
 
       return axios.get(url).then(response => {
-        let list = response.data.Result;
+        let list = response.data.Result.SummaryList;
 
         // 表格数据格式构造
         let chartData = {
           labels:[],
           data: {
-            address: {
-              label: 'addressLbl',
-              list: []
-            },
             block: {
               label: 'blockLbl',
-              list: []
-            },
-            ontId: {
-              label: 'ontIdLbl',
               list: []
             },
             txn: {
               label: 'txnLbl',
               list: []
             },
+            newAddress: {
+              label: 'newAddressLbl',
+              list: []
+            },
+            activeAddress: {
+              label: 'activeAddressLbl',
+              list: []
+            },
+            newOntId: {
+              label: 'newOntIdLbl',
+              list: []
+            },
+            activeOntId: {
+              label: 'activeOntIdLbl',
+              list: []
+            },
+            ont: {
+              label: 'ontLbl',
+              list: []
+            },
+            ong: {
+              label: 'ongLbl',
+              list: []
+            }
           }
         };
 
         // 表格数据填充
         for(let listKey in list) {
           chartData.labels.push(list[listKey].Time);
-          chartData.data.address.list.push(list[listKey].AddressCount);
           chartData.data.block.list.push(list[listKey].BlockCount);
-          chartData.data.ontId.list.push(list[listKey].OntIdCount);
-          chartData.data.txn.list.push(list[listKey].TxnCount)
+          chartData.data.txn.list.push(list[listKey].TxnCount);
+          chartData.data.newAddress.list.push(list[listKey].ActiveAddress);
+          chartData.data.activeAddress.list.push(list[listKey].NewAddress);
+          chartData.data.newOntId.list.push(list[listKey].OntIdNewCount);
+          chartData.data.activeOntId.list.push(list[listKey].OntIdActiveCount);
+          chartData.data.ont.list.push(list[listKey].OntCount)
+          chartData.data.ong.list.push(list[listKey].OngCount)
         }
 
         commit({
