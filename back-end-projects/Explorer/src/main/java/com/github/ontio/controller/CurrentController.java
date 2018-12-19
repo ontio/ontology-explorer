@@ -22,6 +22,7 @@ package com.github.ontio.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.CurrentServiceImpl;
+import com.github.ontio.service.impl.SummaryServiceImpl;
 import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,9 @@ public class CurrentController {
 
     @Autowired
     private CurrentServiceImpl currentService;
+
+    @Autowired
+    private SummaryServiceImpl summaryService;
 
     /**
      * query current summary information
@@ -80,16 +84,6 @@ public class CurrentController {
         logger.info("####reqObj:{}", reqObj.toJSONString());
 
         Result rs = currentService.registerContractInfo(reqObj);
-        return rs;
-    }
-
-    @RequestMapping(value = "/daily/info/{starttime}/{endtime}", method = RequestMethod.GET)
-    public Result queryDailyInfo(@PathVariable("starttime") long startTime, @PathVariable("endtime") long endTime) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("####startTime:{}, endTime:{}", startTime, endTime);
-
-        Result rs = currentService.queryDailyInfo(startTime, endTime);
         return rs;
     }
 

@@ -1,0 +1,41 @@
+package com.github.ontio.dao;
+
+import com.github.ontio.model.TransactionDetail;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+@Mapper
+@Component(value = "TransactionDetailTmpMapper")
+public interface TransactionDetailTmpMapper {
+    int insert(TransactionDetail record);
+
+    int banchInsertSelective(List<TransactionDetail> records);
+
+    int InsertSelective(Map paramMap);
+
+    int selectTxnCountInOneDay();
+
+    BigDecimal selectOntCountInOneDay();
+
+    BigDecimal selectOngCountInOneDay();
+
+    List selectAddressInOneDay();
+
+    int deleteAll();
+
+    BigDecimal selectContractAssetSumByAddress(Map<String, Object> paramMap);
+
+    BigDecimal selectContractAssetSumByContract(Map<String, Object> paramMap);
+
+    Integer selectTxnAmountByContractHash(String contractHash);
+
+    Integer selectTxnAmountByAddress(String address);
+
+    List<String> selectAllAddressByContract(String contractHash);
+
+    List<String> selectAllAddressByAddress(String toAddress);
+}

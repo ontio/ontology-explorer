@@ -173,23 +173,4 @@ public class BlockHandleService {
 
         currentMapper.update(currentDO);
     }
-
-    private void updateContractTxCount(Integer blockHeight){
-        List<Map> contractsList = transactionDetailMapper.selectContractTxCountByHeight(blockHeight);
-        if (contractsList.size() > 0){
-            List contracts = new ArrayList();
-
-            for (Map map: contractsList) {
-                Contracts contract = new Contracts();
-                contract.setTxcount(Integer.valueOf(map.get("txcount").toString()));
-                contract.setContract((String) map.get("contract"));
-                contract.setUpdatetime(Integer.valueOf(String.valueOf(System.currentTimeMillis() / 1000)));
-
-                contracts.add(contract);
-            }
-
-        boolean result = contractsMapper.updateContractTxCount(contracts);
-        logger.info("{} update contracts count: {}",  Helper.currentMethod(), result);
-        }
-    }
 }

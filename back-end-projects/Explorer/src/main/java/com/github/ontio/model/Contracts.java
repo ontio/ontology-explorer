@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 public class Contracts {
     private String contract;
 
+    private String project;
+
     private String name;
 
     private Integer txcount;
@@ -41,6 +43,14 @@ public class Contracts {
 
     public void setContract(String contract) {
         this.contract = contract == null ? null : contract.trim();
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
     }
 
     public String getName() {

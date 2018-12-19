@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Contracts" >
     <id column="contract" property="contract" jdbcType="VARCHAR" />
     <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="project" property="project" jdbcType="VARCHAR" />
     <result column="txcount" property="txcount" jdbcType="INTEGER" />
     <result column="abi" property="abi" jdbcType="VARCHAR" />
     <result column="code" property="code" jdbcType="VARCHAR" />
@@ -20,7 +21,7 @@
     <result column="ongcount" property="ongcount" jdbcType="DECIMAL" />
   </resultMap>
   <sql id="Base_Column_List" >
-    contract, name, txcount, abi, code, createtime, auditflag, updatetime, contactinfo, 
+    contract, project, name, txcount, abi, code, createtime, auditflag, updatetime, contactinfo,
     type, description, logo, creator, addresscount, ontcount, ongcount
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -34,12 +35,12 @@
     where contract = #{contract,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.github.ontio.model.Contracts" >
-    insert into tbl_ont_contracts (contract, name, txcount, 
+    insert into tbl_ont_contracts (contract, project, name, txcount,
       abi, code, createtime, 
       auditflag, updatetime, contactinfo, 
       type, description, logo, creator, addresscount, ontcount, ongcount
       )
-    values (#{contract,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{txcount,jdbcType=INTEGER}, 
+    values (#{contract,jdbcType=VARCHAR}, #{project,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{txcount,jdbcType=INTEGER},
       #{abi,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{createtime,jdbcType=INTEGER}, 
       #{auditflag,jdbcType=INTEGER}, #{updatetime,jdbcType=INTEGER}, #{contactinfo,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}
@@ -54,6 +55,9 @@
       </if>
       <if test="name != null" >
         name,
+      </if>
+      <if test="project != null" >
+        project,
       </if>
       <if test="txcount != null" >
         txcount,
@@ -105,6 +109,9 @@
       <if test="name != null" >
         #{name,jdbcType=VARCHAR},
       </if>
+      <if test="project != null" >
+        #{project,jdbcType=VARCHAR},
+      </if>
       <if test="txcount != null" >
         #{txcount,jdbcType=INTEGER},
       </if>
@@ -155,6 +162,9 @@
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
       </if>
+      <if test="project != null" >
+        project = #{project,jdbcType=VARCHAR},
+      </if>
       <if test="txcount != null" >
         txcount = #{txcount,jdbcType=INTEGER},
       </if>
@@ -202,7 +212,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.Contracts" >
     update tbl_ont_contracts
-    set name = #{name,jdbcType=VARCHAR},
+    set name = #{name,jdbcType=VARCHAR},project = #{project,jdbcType=VARCHAR},
       txcount = #{txcount,jdbcType=INTEGER},
       abi = #{abi,jdbcType=VARCHAR},
       code = #{code,jdbcType=VARCHAR},
@@ -230,6 +240,54 @@
 
   <select id="selectContractByContractHash" parameterType="java.lang.String" resultType="com.github.ontio.model.Contracts">
       select * from tbl_ont_contracts where contract = #{param1}
+  </select>
+
+  <select id="selectContractByPage" parameterType="java.util.Map" resultType="java.util.Map">
+    select contract as ContractHash, Project, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount,Type
+    from tbl_ont_contracts where auditflag = 1
+    order by createtime DESC
+    limit #{Start}, #{PageSize}
+  </select>
+
+  <select id="selectAllContract"  resultType="com.github.ontio.model.Contracts">
+    select * from tbl_ont_contracts where auditflag = 1
+    order by createtime DESC
+  </select>
+
+  <update id="banchUpdateByPrimaryKeySelective" parameterType="java.util.List" >
+    update tbl_ont_contracts
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="txcount =case" suffix="end,">
+        <foreach collection="list" item="item" index="index">
+            when contract=#{item.contract} then #{item.txcount}
+        </foreach>
+      </trim>
+      <trim prefix="addresscount =case" suffix="end,">
+        <foreach collection="list" item="item" index="index">
+            when contract=#{item.contract} then #{item.addresscount}
+        </foreach>
+      </trim>
+      <trim prefix="ontcount =case" suffix="end,">
+        <foreach collection="list" item="item" index="index">
+            when contract=#{item.contract} then #{item.ontcount}
+        </foreach>
+      </trim>
+      <trim prefix="ongcount =case" suffix="end,">
+        <foreach collection="list" item="item" index="index">
+            when contract=#{item.contract} then #{item.ongcount}
+        </foreach>
+      </trim>
+    </trim>
+    where contract in
+    <foreach collection="list" index="index" item="item"
+             separator="," open="(" close=")">
+      #{item.contract}
+    </foreach>
+  </update>
+
+  <select id="selectAllContractByProject"  resultType="com.github.ontio.model.Contracts" parameterType="String">
+    select * from tbl_ont_contracts where auditflag = 1 and project = #{project}
+    order by createtime DESC
   </select>
 
   <select id="selectApprovedContractByPage" parameterType="java.util.Map" resultType="java.util.Map">

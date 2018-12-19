@@ -70,12 +70,7 @@ public interface TransactionDetailMapper {
 
     BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
 
-    int selectTxnCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
-
     List<Map<String, String>> selectAllAddress();
-
-
-
 
     Integer selectAllFromAddressCountByContract(String contractHash);
 
@@ -85,8 +80,11 @@ public interface TransactionDetailMapper {
 
     Integer selectAllToAddressCountByAddr(String fromAddress);
 
-
     int selectAllAddressCount();
 
     List<Map> selectTxnByAddress(Map<String, Object> param);
+
+    List<TransactionDetail> selectTransactionDetail();
+
+    Integer queryTransactionCount(Map<String, Object> param);
 }
