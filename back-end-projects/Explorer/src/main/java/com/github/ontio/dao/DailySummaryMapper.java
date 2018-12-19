@@ -21,4 +21,6 @@ public interface DailySummaryMapper {
     Integer selectMaxTime();
 
     List<Map> selectDailyInfo(Map<String, Object> paramMap);
+
+    Map selectAddressAndOntIdCount(Integer startTime);
 }
