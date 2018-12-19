@@ -149,6 +149,11 @@
     from tbl_ont_daily_summary
     where time &gt;= #{startTime}
     and <![CDATA[ time <= #{endTime} ]]>
-    order by time desc
+    order by time
+  </select>
+
+  <select id="selectAddressAndOntIdCount" parameterType="java.lang.Integer" resultType="java.util.Map">
+    select SUM(newaddress) as addressSum, SUM(ontidnewcount) as ontIdSum
+    from tbl_ont_daily_summary where <![CDATA[  time < #{startTime} ]]>
   </select>
 </mapper>
