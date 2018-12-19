@@ -29,4 +29,6 @@ public interface Oep8Mapper {
     Oep8 queryOEPContract(String contractHash);
 
     Oep8 queryOEPContractByHashAndTokenName(String contractHash, String tokenName);
+
+    int deletContractByHash(String contractHash);
 }

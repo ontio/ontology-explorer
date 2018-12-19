@@ -141,7 +141,7 @@ public class CurrentServiceImpl implements ICurrentService {
                 oep4.setContract(contractHash);
                 Oep4 oep4DAO = oep4Mapper.selectByPrimaryKey(oep4);
                 if(!Helper.isEmptyOrNull(oep4DAO)) {
-                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", true);
+                    oep4Mapper.deletContractByHash(contractHash);
                 }
 
                 JSONObject oep4Info = sdk.queryOep4Info(contractHash);
@@ -162,7 +162,7 @@ public class CurrentServiceImpl implements ICurrentService {
                 break;
             case "oep5":
                 if(!Helper.isEmptyOrNull(oep5Mapper.selectByPrimaryKey(contractHash))) {
-                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", true);
+                    oep5Mapper.deletContractByHash(contractHash);
                 }
 
                 JSONObject oep5Info = sdk.queryOep5Info(contractHash);
@@ -184,7 +184,7 @@ public class CurrentServiceImpl implements ICurrentService {
             case "oep8":
                 Oep8 oep8Contract = oep8Mapper.queryOEPContract(contractHash);
                 if(!Helper.isEmptyOrNull(oep8Contract)) {
-                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", true);
+                    oep8Mapper.deletContractByHash(contractHash);
                 }
 
                 // 要求tokenId内容为：01，02，03，04，05

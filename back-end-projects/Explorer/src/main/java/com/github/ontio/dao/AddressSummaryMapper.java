@@ -24,4 +24,6 @@ public interface AddressSummaryMapper {
     List<String> selectDistinctAddress();
 
     List<String> selectDistinctAddressByContract(String contractHash);
+
+    Integer selectAllAddressCount();
 }
