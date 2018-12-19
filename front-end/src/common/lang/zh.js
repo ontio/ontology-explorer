@@ -1,6 +1,9 @@
 module.exports = {
   language: {
-    name: 'EN'
+    zhName: '简体中文',
+    enName: 'English',
+    zh: 'ZH',
+    en: 'EN',
   },
   navbar: {
     blockHeight: '区块高度',
@@ -24,7 +27,7 @@ module.exports = {
       txns: '交易',
       accounts: '账户',
       oep4: 'OEP-4概述',
-      oep8: 'OEP-8概述',
+      oep8: 'OEP-8概述'
     }
   },
   all: {
@@ -271,9 +274,13 @@ module.exports = {
   },
   statistics: {
     name: '历史统计',
-    addressLbl: '过去14天的地址数量',
-    blockLbl: '过去14天的区块数量',
-    ontIdLbl: '过去14天的ONT-ID数量',
-    txnLbl: '过去14天的交易数量'
+    newAddressLbl: '14天新增地址数',
+    activeAddressLbl: '14天活动地址数',
+    blockLbl: '14天新增区块数',
+    newOntIdLbl: '14天新增ONT-ID数',
+    activeOntIdLbl: '14天活动ONT-ID数',
+    txnLbl: '14天交易数',
+    ontLbl: '14天ONT交易总额',
+    ongLbl: '14天ONG交易总额'
   }
 };

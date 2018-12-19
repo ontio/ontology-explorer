@@ -73,17 +73,40 @@
               <a class="nav-link" :href="apiDocUrl" target="_blank"><i class="fas fa-book"></i>&nbsp;&nbsp;{{ $t('navbar.top.apis') }}</a>
             </li>
 
-            <li v-if="$route.params.net === 'testnet'" class="nav-item">
-              <a class="nav-link" href="#" @click="changeNet()"><i class="fas fa-home"></i>&nbsp;&nbsp;{{ $t('navbar.top.mainNet') }}</a>
-            </li>
-            <li v-else class="nav-item">
-              <a class="nav-link" href="#" @click="changeNet()"><i class="fas fa-vial"></i>&nbsp;&nbsp;{{ $t('navbar.top.testNet') }}</a>
+            <li class="nav-item dropdown">
+              <a v-if="$route.params.net === 'testnet'" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fas fa-tools"></i>&nbsp;&nbsp;{{ $t('navbar.top.testNet') }}
+              </a>
+              <a v-else class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fas fa-home"></i>&nbsp;&nbsp;{{ $t('navbar.top.mainNet') }}
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item"
+                   :class="$route.params.net === 'testnet' ? '' : 'pointer-events'" href="#"
+                   @click="changeNet()"><i class="fas fa-home"></i>&nbsp;&nbsp;{{ $t('navbar.top.mainNet') }}</a>
+                <hr style="margin: 4px 1rem">
+                <a class="dropdown-item"
+                   :class="$route.params.net === 'testnet' ? 'pointer-events' : ''" href="#"
+                   @click="changeNet()"><i class="fas fa-vial"></i>&nbsp;&nbsp;{{ $t('navbar.top.testNet') }}</a>
+              </div>
             </li>
 
-            <li class="nav-item">
-              <a class="nav-link" href="#" @click="chooseLanguage()">
-                <i class="fas fa-globe"></i>&nbsp;&nbsp;{{ $t('language.name') }}
+            <li class="nav-item dropdown">
+              <a v-if="language === 'zh'" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fas fa-globe"></i>&nbsp;&nbsp;{{ $t('language.zh') }}
               </a>
+              <a v-else class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fas fa-globe"></i>&nbsp;&nbsp;{{ $t('language.en') }}
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item"
+                   :class="language === 'zh' ? '' : 'pointer-events'" href="#"
+                   @click="chooseLanguage('en')">{{ $t('language.enName') }}</a>
+                <hr style="margin: 4px 1rem">
+                <a class="dropdown-item"
+                   :class="language === 'zh' ? 'pointer-events' : ''" href="#"
+                   @click="chooseLanguage('zh')">{{ $t('language.zhName') }}</a>
+              </div>
             </li>
           </ul>
 
@@ -102,11 +125,13 @@
       return {
         isHome: true,
         monitor: 'https://monitor.ont.io/',
-        apiDocUrl: 'https://dev-docs.ont.io/#/docs-en/explorer/overview'
+        apiDocUrl: 'https://dev-docs.ont.io/#/docs-en/explorer/overview',
+        language: 'en'
       }
     },
     created() {
-      this.changeView()
+      this.changeView();
+      this.language = this.$i18n.locale
     },
     watch: {
       '$route': 'changeView'
@@ -123,10 +148,11 @@
         }
         location.reload();
       },
-      chooseLanguage() {
-        let locale = this.$i18n.locale
-        locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
-        locale === 'zh' ? this.$validator.localize('en') : this.$validator.localize('zh')
+      chooseLanguage($lang) {
+        this.language = $lang;
+        this.$i18n.locale = $lang;
+        this.$validator.localize($lang);
+
         LangStorage.setLang(this.$i18n.locale)
       },
       toContractList() {
@@ -295,5 +321,10 @@
     -moz-opacity: 0.7;
     opacity: .70;
     filter: alpha(opacity=70);
+  }
+
+  .pointer-events{
+    pointer-events: none;
+    color: #e4e4e4 !important;
   }
 </style>
