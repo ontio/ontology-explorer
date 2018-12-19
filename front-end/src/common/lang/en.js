@@ -1,6 +1,9 @@
 module.exports = {
   language: {
-    name: 'CN'
+    zhName: '简体中文',
+    enName: 'English',
+    zh: 'ZH',
+    en: 'EN',
   },
   navbar: {
     blockHeight: 'block height',
@@ -24,7 +27,7 @@ module.exports = {
       txns: 'Transactions',
       accounts: 'Accounts',
       oep4: 'OEP-4 Overview',
-      oep8: 'OEP-8 Overview',
+      oep8: 'OEP-8 Overview'
     }
   },
   all: {
@@ -271,9 +274,13 @@ module.exports = {
   },
   statistics: {
     name: 'History Statistics',
-    addressLbl: '14 Days Address Count',
-    blockLbl: '14 Days Block Count',
-    ontIdLbl: '14 Days ONT-ID Count',
-    txnLbl: '14 Days Txn Count'
+    newAddressLbl: '14 Day New Address',
+    activeAddressLbl: '14 Day Active Address',
+    blockLbl: '14 Day New Block',
+    newOntIdLbl: '14 Day New ONT-ID',
+    activeOntIdLbl: '14 Day Active ONT-ID',
+    txnLbl: '14 Day Transaction History',
+    ontLbl: '14 Day ONT Amount',
+    ongLbl: '14 Day ONG Amount'
   }
 };
