@@ -158,4 +158,10 @@
     and <![CDATA[ txntime < #{EndTime} ]]>
   </select>
 
+  <select id="selectActiveOntIdCountInOneDay" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT (txnhash))
+    from tbl_ont_ontid_detail
+    where txntime >= #{StartTime}
+    and <![CDATA[ txntime < #{EndTime} ]]>
+  </select>
 </mapper>

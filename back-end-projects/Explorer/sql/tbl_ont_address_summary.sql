@@ -16,13 +16,14 @@ Date: 2018-12-06 17:43:19
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for tbl_ont_daily
+-- Table structure for tbl_ont_address_summary
 -- ----------------------------
-DROP TABLE IF EXISTS `tbl_ont_daily`;
-CREATE TABLE `tbl_ont_daily` (
-  `txncount` int(10) NOT NULL,
-  `ontidcount` int(10) NOT NULL,
-  `blockcount` int(10) NOT NULL,
-  `time` date NOT NULL,
-  PRIMARY KEY (`time`)
+DROP TABLE IF EXISTS `tbl_ont_address_summary`;
+CREATE TABLE `tbl_ont_address_summary` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `time` int(11) NOT NULL,
+  `contract` varchar(64) NOT NULL COMMENT 'common:普通转账 contracthash：合约地址',
+  `address` varchar(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_time` (`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

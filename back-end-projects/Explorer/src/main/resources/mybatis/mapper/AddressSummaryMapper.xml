@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.ontio.dao.AddressSummaryMapper" >
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.AddressSummary" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="time" property="time" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, time, type, address
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_ont_address_summary
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from tbl_ont_address_summary
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.github.ontio.model.AddressSummary" >
+    insert into tbl_ont_address_summary (id, time, type, 
+      address)
+    values (#{id,jdbcType=BIGINT}, #{time,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="banchInsertSelective" parameterType="java.util.List" >
+    insert into tbl_ont_address_summary (time, type, address)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+    (#{item.time,jdbcType=INTEGER}, #{item.type,jdbcType=VARCHAR},
+      #{item.address,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.AddressSummary" >
+    update tbl_ont_address_summary
+    <set >
+      <if test="time != null" >
+        time = #{time,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.AddressSummary" >
+    update tbl_ont_address_summary
+    set time = #{time,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectDistinctAddress" resultType="String">
+    SELECT DISTINCT(address)
+        from tbl_ont_address_summary
+        where type = 'common'
+        ORDER BY address
+  </select>
+
+  <select id="selectDistinctAddressByContract" resultType="String" parameterType="String" >
+    SELECT DISTINCT(address)
+        from tbl_ont_address_summary
+        where type = #{param1}
+        ORDER BY address
+  </select>
+</mapper>

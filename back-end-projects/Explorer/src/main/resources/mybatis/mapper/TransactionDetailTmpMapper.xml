@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.ontio.dao.TransactionDetailTmpMapper" >
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.TransactionDetail" >
+    <id column="txnhash" property="txnhash" jdbcType="VARCHAR" />
+    <id column="txnindex" property="txnindex" jdbcType="INTEGER" />
+    <result column="txntype" property="txntype" jdbcType="INTEGER" />
+    <result column="txntime" property="txntime" jdbcType="INTEGER" />
+    <result column="height" property="height" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="fee" property="fee" jdbcType="DECIMAL" />
+    <result column="assetname" property="assetname" jdbcType="VARCHAR" />
+    <result column="fromaddress" property="fromaddress" jdbcType="VARCHAR" />
+    <result column="toaddress" property="toaddress" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="blockindex" property="blockindex" jdbcType="INTEGER" />
+    <result column="confirmflag" property="confirmflag" jdbcType="INTEGER" />
+    <result column="eventtype" property="eventtype" jdbcType="INTEGER" />
+    <result column="contracthash" property="contracthash" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
+    toaddress, description, blockindex, confirmflag, eventtype, contracthash
+  </sql>
+
+  <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail" >
+    insert into tbl_ont_txn_detail_tmp (txnhash, txnindex, txntype, 
+      txntime, height, amount, 
+      fee, assetname, fromaddress, 
+      toaddress, description, blockindex, 
+      confirmflag, eventtype, contracthash
+      )
+    values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
+      #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
+      #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
+      #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
+      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="banchInsertSelective" parameterType="java.util.List">
+    insert into tbl_ont_txn_detail_tmp (txnhash, txnindex, txntype,
+      txntime, height, amount,
+      fee, assetname, fromaddress,
+      toaddress, description, blockindex,
+      confirmflag, eventtype, contracthash
+      )
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.txnhash,jdbcType=VARCHAR}, #{item.txnindex,jdbcType=INTEGER}, #{item.txntype,jdbcType=INTEGER},
+      #{item.txntime,jdbcType=INTEGER}, #{item.height,jdbcType=INTEGER}, #{item.amount,jdbcType=DECIMAL},
+      #{item.fee,jdbcType=DECIMAL}, #{item.assetname,jdbcType=VARCHAR}, #{item.fromaddress,jdbcType=VARCHAR},
+      #{item.toaddress,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.blockindex,jdbcType=INTEGER},
+      #{item.confirmflag,jdbcType=INTEGER}, #{item.eventtype,jdbcType=INTEGER}, #{item.contracthash,jdbcType=VARCHAR}
+      )
+    </foreach>
+  </insert>
+
+  <insert id="InsertSelective" parameterType="java.util.Map">
+    INSERT into tbl_ont_txn_detail_tmp SELECT * from tbl_ont_txn_detail WHERE  txntime >= #{startTime}
+            and <![CDATA[ txntime < #{endTime} ]]>
+  </insert>
+
+  <select id="selectTxnCountInOneDay" resultType="java.lang.Integer">
+    select count(DISTINCT (txnhash))
+    from tbl_ont_txn_detail_tmp
+  </select>
+
+  <select id="selectAddressInOneDay" resultType="String">
+    SELECT DISTINCT(address) from (
+      select DISTINCT(fromaddress) as address
+          from tbl_ont_txn_detail_tmp
+      UNION
+      select DISTINCT(toaddress) as address
+          from tbl_ont_txn_detail_tmp
+    ) a ORDER BY address
+  </select>
+
+  <select id="selectOntCountInOneDay" resultType="DECIMAL">
+    select SUM(amount)
+      from tbl_ont_txn_detail_tmp
+         where assetname = 'ont'
+  </select>
+
+  <select id="selectOngCountInOneDay" resultType="DECIMAL">
+    select SUM(amount)
+      from tbl_ont_txn_detail_tmp
+         where assetname = 'ong'
+  </select>
+
+  <delete id="deleteAll" >
+    delete from tbl_ont_txn_detail_tmp
+  </delete>
+
+  <select id="selectContractAssetSumByAddress" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+        SELECT SUM(amount)
+        from tbl_ont_txn_detail_tmp
+        where confirmflag = 1 and assetname = #{assetname}
+        and ( toaddress = #{address} OR fromaddress = #{address} )
+  </select>
+
+  <select id="selectContractAssetSumByContract" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+        SELECT SUM(amount)
+        from tbl_ont_txn_detail_tmp
+        where contracthash = #{address} and confirmflag = 1 and assetname = #{assetname}
+  </select>
+
+  <select id="selectTxnAmountByContractHash" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(DISTINCT(txnhash))
+    from tbl_ont_txn_detail_tmp
+    where contracthash = #{param1}
+  </select>
+
+  <select id="selectTxnAmountByAddress" parameterType="java.lang.String" resultType="java.lang.Integer">
+    SELECT COUNT(DISTINCT(txnhash))
+        from tbl_ont_txn_detail_tmp
+        where confirmflag = 1
+        and ( toaddress = #{address} OR fromaddress = #{address} )
+  </select>
+
+  <select id="selectAllAddressByContract" resultType="String" parameterType="java.lang.String">
+    SELECT DISTINCT(address) FROM (
+        select DISTINCT (fromaddress) as address
+        from tbl_ont_txn_detail_tmp
+        where contracthash = #{param1}
+    UNION
+        select DISTINCT(toaddress) as address
+        from tbl_ont_txn_detail_tmp
+        where contracthash = #{param1}
+    ) a ORDER BY address
+  </select>
+
+  <select id="selectAllAddressByAddress" resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT DISTINCT(address) FROM (
+        select DISTINCT (fromaddress) as address
+        from tbl_ont_txn_detail_tmp
+        where toaddress = #{param1}
+    UNION
+        select DISTINCT(toaddress) as address
+        from tbl_ont_txn_detail_tmp
+        where fromaddress = #{param1}
+    ) a ORDER BY address
+  </select>
+</mapper>

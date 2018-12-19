@@ -20,6 +20,7 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `tbl_ont_contracts`;
 CREATE TABLE `tbl_ont_contracts` (
+  `project` varchar(255) NOT NULL DEFAULT '',
   `contract` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL DEFAULT '',
   `txcount` int(10) NOT NULL,

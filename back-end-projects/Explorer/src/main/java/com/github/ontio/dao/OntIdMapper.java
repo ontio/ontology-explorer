@@ -33,7 +33,7 @@ public interface OntIdMapper {
 
     int selectCountByOntId(String ontId);
 
-
     int selectOntIdCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime, @Param("Description") String description);
 
+    int selectActiveOntIdCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
 }

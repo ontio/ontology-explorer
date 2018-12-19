@@ -3,6 +3,8 @@ package com.github.ontio.model;
 import java.math.BigDecimal;
 
 public class Contracts {
+    private String project;
+
     private String contract;
 
     private String name;
@@ -34,6 +36,14 @@ public class Contracts {
     private BigDecimal ontcount;
 
     private BigDecimal ongcount;
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
 
     public String getContract() {
         return contract;

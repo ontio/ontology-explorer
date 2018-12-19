@@ -18,6 +18,4 @@ public interface ContractsMapper {
     int updateByPrimaryKeySelective(Contracts record);
 
     int updateByPrimaryKey(Contracts record);
-
-    boolean updateContractTxCount(List<Contracts> contractsList);
 }
