@@ -21,10 +21,7 @@ package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.dao.*;
-import com.github.ontio.model.Contracts;
-import com.github.ontio.model.Oep4;
-import com.github.ontio.model.Oep5;
-import com.github.ontio.model.Oep8;
+import com.github.ontio.model.*;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ICurrentService;
 import com.github.ontio.utils.ConfigParam;
@@ -38,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -71,7 +69,10 @@ public class CurrentServiceImpl implements ICurrentService {
     private ContractsMapper contractsMapper;
 
     @Autowired
-    private DailyMapper dailyMapper;
+    private DailySummaryMapper dailySummaryMapper;
+
+    @Autowired
+    private ContractSummaryMapper contractSummaryMapper;
 
     @Autowired
     private ConfigParam configParam;
@@ -117,6 +118,7 @@ public class CurrentServiceImpl implements ICurrentService {
             return Helper.result("RegisterContractInfo", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "1.0", false);
         }
 
+        contract.setProject(reqObj.getString("project"));
         contract.setCode(reqObj.getString("code"));
         contract.setAbi(reqObj.getString("abi"));
         contract.setName(reqObj.getString("name"));
@@ -140,7 +142,7 @@ public class CurrentServiceImpl implements ICurrentService {
                 oep4.setContract(contractHash);
                 Oep4 oep4DAO = oep4Mapper.selectByPrimaryKey(oep4);
                 if(!Helper.isEmptyOrNull(oep4DAO)) {
-                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", false);
+                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", true);
                 }
 
                 JSONObject oep4Info = sdk.queryOep4Info(contractHash);
@@ -161,7 +163,7 @@ public class CurrentServiceImpl implements ICurrentService {
                 break;
             case "oep5":
                 if(!Helper.isEmptyOrNull(oep5Mapper.selectByPrimaryKey(contractHash))) {
-                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", false);
+                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", true);
                 }
 
                 JSONObject oep5Info = sdk.queryOep5Info(contractHash);
@@ -183,7 +185,7 @@ public class CurrentServiceImpl implements ICurrentService {
             case "oep8":
                 Oep8 oep8Contract = oep8Mapper.queryOEPContract(contractHash);
                 if(!Helper.isEmptyOrNull(oep8Contract)) {
-                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", false);
+                    return Helper.result("RegisterContractInfo", ErrorInfo.ALREADY_EXIST.code(), ErrorInfo.ALREADY_EXIST.desc(), "1.0", true);
                 }
 
                 // 要求tokenId内容为：01，02，03，04，05
@@ -218,30 +220,6 @@ public class CurrentServiceImpl implements ICurrentService {
         }
 
         return Helper.result("RegisterContractInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "1.0", true);
-    }
-
-    /**
-     * Daily Info
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    @Override
-    public Result queryDailyInfo(long startTime, long endTime) {
-        long time = startTime - 24 * 60 * 60;
-
-        List<Map> dailyList = dailyMapper.selectDailyInfo(time, endTime);
-
-        if (dailyList.size() >= 2) {
-            for (int i = 1; i < dailyList.size(); i++) {
-                Map map = dailyList.get(i);
-                int addrCount = (int) dailyList.get(i).get("AddressCount") - (int) dailyList.get(i - 1).get("AddressCount");
-                map.put("AddressCount", addrCount);
-            }
-            dailyList.remove(0);
-        }
-
-        return Helper.result("QueryDailyInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, dailyList);
     }
 
     /**

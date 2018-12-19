@@ -61,6 +61,8 @@ public class TxnHandlerThread {
 
     private static Boolean OEP4TXN = false;
 
+    private static Boolean OEP5TXN = false;
+
     private static Boolean OEP8TXN = false;
 
     @Autowired
@@ -98,6 +100,8 @@ public class TxnHandlerThread {
         logger.info("####txnType:{}, txnHash:{}####", txnType, txnHash);
 
         OEP4TXN = false;
+        OEP5TXN = false;
+        OEP8TXN = false;
         try {
             JSONObject eventObj = getEventObjByTxnHash(txnHash);
             logger.info("eventObj:{}", eventObj.toJSONString());
@@ -109,92 +113,86 @@ public class TxnHandlerThread {
             }
             BigDecimal gasConsumed = new BigDecimal(eventObj.getLongValue("GasConsumed")).divide(ConstantParam.ONG_DECIMAL);
 
-            //deploy smart contract transaction
             if (208 == txnType) {
-                JSONObject contractObj = getSmartContractInfo(txnHash);
-                String contractAddress = getNativeContractHash(contractObj.getString("contractAddress"));
-
-                contractObj.remove("contractAddress");
-                insertTxnBasicInfo(session, txnType, txnHash, blockHeight,
-                        blockTime, indexInBlock, confirmFlag, contractObj.toString(),
-                        gasConsumed, 0, 2, contractAddress);
-
-                // 部署合约，将合约信息保存到合约列表
-                if(com.github.ontio.utils.Helper.isEmptyOrNull(contractsMapper.selectByPrimaryKey(contractAddress))){
-                    insertContratInfo(session, contractAddress, blockTime, contractObj, txnJson.getString("Payer"));
-                }
+                //deploy smart contract transaction
+                deployContractHandle(session, txnJson, blockHeight, blockTime, indexInBlock, confirmFlag, gasConsumed);
             }
 
             JSONArray notifyList = eventObj.getJSONArray("Notify");
-            if (notifyList.size() > 0) {
-                JSONArray stateArray = null;
-                for (int i = 0, len = notifyList.size(); i < len; i++) {
-                    JSONObject notifyObj = (JSONObject) notifyList.get(i);
-                    String contractAddress = notifyObj.getString("ContractAddress");
-
-                    Object object = notifyObj.get("States");
-                    if (object instanceof JSONArray) {
-                        stateArray = (JSONArray) object;
-                    } else {
-                        continue;
-                    }
-
-                    // 存在只有一个元素的notify,比如打日志这种，应该忽略
-                    if(stateArray.size() < 3){
-                        continue;
-                    }
-
-                    if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) || configParam.ASSET_ONT_CODEHASH.equals(contractAddress)) {
-                        //transfer transaction
-                        handleTransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
-                                contractAddress, gasConsumed, i + 1, notifyList.size(), confirmFlag);
-
-                    } else if (configParam.ONTID_CODEHASH.equals(contractAddress)) {
-                        //ontId operation transaction
-                        handleOntIdTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
-                                gasConsumed, i + 1, contractAddress);
-                        addOneBlockOntIdTxnCount();
-
-                    } else if (configParam.CLAIMRECORD_CODEHASH.equals(contractAddress)) {
-                        //claimrecord transaction
-                        handleClaimRecordTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
-                                gasConsumed, i + 1, contractAddress);
-
-                    } else if (configParam.AUTH_CODEHASH.equals(contractAddress)) {
-                        //auth transaction
-                        insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, ConstantParam.AUTH_OPE_PREFIX,
-                                gasConsumed, i + 1, 6, contractAddress);
-
-                    } else if (configParam.OEP8_PUMPKIN_CODEHASH.equals(contractAddress)) {
-                        handlePumpkinTransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
-                                gasConsumed, i + 1, confirmFlag, contractAddress);
-
-                    } else if (configParam.DRAGON_CODEHASH.equals(contractAddress) || ConstantParam.OEP5CONTRACTS.contains(contractAddress)) {
-                        //云斗龙 或者 OEP5交易
-                        handleDragonTransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
-                                gasConsumed, i + 1, confirmFlag, contractAddress, ConstantParam.OEP5MAP.get(contractAddress));
-
-                    } else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)) {
-                        //OEP4交易
-                        JSONObject oep4Obj = (JSONObject) ConstantParam.OEP4MAP.get(contractAddress);
-                        handleOep4TransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
-                                gasConsumed, i + 1, confirmFlag, oep4Obj, contractAddress);
-
-                    } else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)) {
-                        //OEP8交易
-                        handleOep8TransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
-                                gasConsumed, i + 1, confirmFlag, contractAddress, notifyList.size());
-
-                    }else {
-                        //other transaction
-                        insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                    gasConsumed, i + 1, 0, contractAddress);
-                    }
-                }
-            } else {
+            if(notifyList.size() == 0){
                 //no event transaction
                 insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
                         gasConsumed, 1, 0, "");
+                return;
+            }
+
+            // 判断是否为OEP合约交易,用于将属于OEP交易的数据存储在各自OEP详情表中
+            judgeIsOepTransaction(notifyList);
+
+            JSONArray stateArray = null;
+            for (int i = 0, len = notifyList.size(); i < len; i++) {
+                JSONObject notifyObj = (JSONObject) notifyList.get(i);
+                String contractAddress = notifyObj.getString("ContractAddress");
+
+                Object object = notifyObj.get("States");
+                if (object instanceof JSONArray) {
+                    stateArray = (JSONArray) object;
+                }
+                else {
+                    continue;
+                }
+
+                // 存在只有一个元素的notify,比如打日志这种，应该忽略
+                if (stateArray.size() < 3) {
+                    continue;
+                }
+
+                if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) || configParam.ASSET_ONT_CODEHASH.equals(contractAddress)) {
+                    //transfer transaction
+                    handleTransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                            contractAddress, gasConsumed, i + 1, notifyList.size(), confirmFlag);
+
+                } else if (configParam.ONTID_CODEHASH.equals(contractAddress)) {
+                    //ontId operation transaction
+                    handleOntIdTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                            gasConsumed, i + 1, contractAddress);
+                    addOneBlockOntIdTxnCount();
+
+                } else if (configParam.CLAIMRECORD_CODEHASH.equals(contractAddress)) {
+                    //claimrecord transaction
+                    handleClaimRecordTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                            gasConsumed, i + 1, contractAddress);
+
+                } else if (configParam.AUTH_CODEHASH.equals(contractAddress)) {
+                    //auth transaction
+                    insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, ConstantParam.AUTH_OPE_PREFIX,
+                            gasConsumed, i + 1, 6, contractAddress);
+
+                } else if (configParam.OEP8_PUMPKIN_CODEHASH.equals(contractAddress)) {
+                    handlePumpkinTransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                            gasConsumed, i + 1, confirmFlag, contractAddress);
+
+                } else if (configParam.DRAGON_CODEHASH.equals(contractAddress) || ConstantParam.OEP5CONTRACTS.contains(contractAddress)) {
+                    //云斗龙 或者 OEP5交易
+                    handleDragonTransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                            gasConsumed, i + 1, confirmFlag, contractAddress, ConstantParam.OEP5MAP.get(contractAddress));
+
+                } else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)) {
+                    //OEP4交易
+                    JSONObject oep4Obj = (JSONObject) ConstantParam.OEP4MAP.get(contractAddress);
+                    handleOep4TransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                            gasConsumed, i + 1, confirmFlag, oep4Obj, contractAddress);
+
+                } else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)) {
+                    //OEP8交易
+                    handleOep8TransferTxn(session, stateArray, txnType, txnHash, blockHeight, blockTime, indexInBlock,
+                            gasConsumed, i + 1, confirmFlag, contractAddress, notifyList.size());
+
+                } else {
+                    //other transaction
+                    insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+                            gasConsumed, i + 1, 0, contractAddress);
+                }
             }
         } catch (RestfulException e) {
             logger.error("handleOneTxn RestfulException...{}", e);
@@ -204,6 +202,39 @@ public class TxnHandlerThread {
             logger.error("handleOneTxn error...", e);
             e.printStackTrace();
             throw e;
+        }
+    }
+
+    private void deployContractHandle(SqlSession session, JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, BigDecimal gasConsumed) throws Exception{
+
+        String txnHash = txnJson.getString("Hash");
+        int txnType = txnJson.getInteger("TxType");
+        JSONObject contractObj = getSmartContractInfo(txnHash);
+        String contractAddress = getNativeContractHash(contractObj.getString("contractAddress"));
+
+        contractObj.remove("contractAddress");
+        insertTxnBasicInfo(session, txnType, txnHash, blockHeight,
+                blockTime, indexInBlock, confirmFlag, contractObj.toString(),
+                gasConsumed, 0, 2, contractAddress);
+
+        // 部署合约，将合约信息保存到合约列表
+        if (com.github.ontio.utils.Helper.isEmptyOrNull(contractsMapper.selectByPrimaryKey(contractAddress))) {
+            insertContratInfo(session, contractAddress, blockTime, contractObj, txnJson.getString("Payer"));
+        }
+    }
+
+    private void judgeIsOepTransaction(JSONArray notifyList){
+        for (int i = 0, len = notifyList.size(); i < len; i++) {
+            JSONObject notifyObj = (JSONObject) notifyList.get(i);
+            String contractAddress = notifyObj.getString("ContractAddress");
+
+            if(configParam.DRAGON_CODEHASH.equals(contractAddress) || ConstantParam.OEP5CONTRACTS.contains(contractAddress)){
+                OEP5TXN = true;
+            }else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)){
+                OEP4TXN = true;
+            }else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)){
+                OEP8TXN = true;
+            }
         }
     }
 
@@ -306,6 +337,8 @@ public class TxnHandlerThread {
             oep5.setTotalsupply(oep5.getTotalsupply().add(new BigDecimal(1)));
             oep5Mapper.updateByPrimaryKeySelective(oep5);
         }
+
+        OEP4TXN = true;
     }
 
     private void handleTransferTxn(SqlSession session, JSONArray stateList, int txnType, String txnHash,
@@ -338,7 +371,7 @@ public class TxnHandlerThread {
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", (TransactionDetail)transactionDetailDO);
 
         // OEP交易的手续费入库
-        if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) && (OEP4TXN || OEP8TXN)){
+        if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) && (OEP4TXN || OEP5TXN || OEP8TXN)){
             if (OEP8TXN){
                 transactionDetailDO.setTokenname("");
                 session.insert("com.github.ontio.dao.Oep8TxnDetailMapper.insertSelective", transactionDetailDO);
@@ -437,6 +470,7 @@ public class TxnHandlerThread {
 
     private void insertContratInfo(SqlSession session, String contractAddress, int blockTime, JSONObject contractObj, String playAddress) throws Exception{
         Contracts contracts = new Contracts();
+        contracts.setProject("");
         contracts.setContract(contractAddress);
         contracts.setName(contractObj.getString("Name"));
         contracts.setDescription(contractObj.getString("Description"));

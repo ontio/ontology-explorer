@@ -16,6 +16,8 @@ public interface ContractsMapper {
 
     int updateByPrimaryKeySelective(Contracts record);
 
+    int banchUpdateByPrimaryKeySelective(List<Contracts> records);
+
     int updateByPrimaryKey(Contracts record);
 
     int selectContractCount();
@@ -27,4 +29,8 @@ public interface ContractsMapper {
     String selectCreatorByContractHash(String contract);
 
     Contracts selectContractByContractHash(String contract);
+
+    List<Contracts> selectAllContract();
+
+    List<Contracts> selectAllContractByProject(String project);
 }

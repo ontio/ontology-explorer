@@ -461,24 +461,10 @@
         and ( toaddress = #{address} OR fromaddress = #{address} )
   </select>
 
-  <select id="selectTxnCountInOneDay" resultType="java.lang.Integer" useCache="false">
-    select count(DISTINCT (txnhash))
-    from tbl_ont_txn_detail
-    where txntime >= #{StartTime}
-    and <![CDATA[ txntime < #{EndTime} ]]>
-  </select>
-
-
-
-
   <select id="selectAllFromAddress" resultType="java.lang.String" useCache="false">
     select DISTINCT (fromaddress)
     from tbl_ont_txn_detail
   </select>
-
-
-
-
 
   <select id="selectAllToAddress" resultType="java.lang.String" useCache="false">
     select DISTINCT (toaddress)
@@ -531,5 +517,19 @@
     and  eventtype = 3
     ) as t2
     order by t2.TxnTime desc
+  </select>
+
+  <select id="selectTransactionDetail" resultType="com.github.ontio.model.TransactionDetail" useCache="false">
+    select *
+    from tbl_ont_txn_detail
+    where txntime >= #{startTime}
+    and <![CDATA[ txntime < #{endTime} ]]>
+  </select>
+
+  <select id="queryTransactionCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    select count(DISTINCT(txnhash))
+    from tbl_ont_txn_detail
+    where txntime >= #{startTime}
+    and <![CDATA[ txntime < #{endTime} ]]>
   </select>
 </mapper>

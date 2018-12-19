@@ -90,7 +90,7 @@ public class BlockHandlerThread extends Thread {
                 int remoteBlockHieght = getRemoteBlockHeight();
                 logger.info("######remote blockheight:{}", remoteBlockHieght);
 
-                int dbBlockHeight = currentMapper.selectDBHeight();
+                Integer dbBlockHeight = currentMapper.selectDBHeight();
                 logger.info("######db blockheight:{}", dbBlockHeight);
 
                 //wait for generating block

@@ -43,17 +43,8 @@ public interface ICurrentService {
     Result registerContractInfo(JSONObject reqObj);
 
     /**
-     * 每天定时任务
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    Result queryDailyInfo(long startTime, long endTime);
-
-    /**
      * Market info
      * @return
      */
     Result queryMarketingInfo();
-
 }
