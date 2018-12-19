@@ -218,7 +218,8 @@ public class TxnHandlerThread {
                 gasConsumed, 0, 2, contractAddress);
 
         // 部署合约，将合约信息保存到合约列表
-        if (com.github.ontio.utils.Helper.isEmptyOrNull(contractsMapper.selectByPrimaryKey(contractAddress))) {
+        Contracts contracts = contractsMapper.selectContractByContractHash(contractAddress);
+        if (contracts == null) {
             insertContratInfo(session, contractAddress, blockTime, contractObj, txnJson.getString("Payer"));
         }
     }
@@ -484,7 +485,7 @@ public class TxnHandlerThread {
         contracts.setAddresscount(0);
         contracts.setOntcount(new BigDecimal(0));
         contracts.setOngcount(new BigDecimal(0));
-        session.insert("com.github.ontio.dao.ContractsMapper.insertSelective", contracts);
+        contractsMapper.insertSelective(contracts);
     }
 
     private String getNativeContractHash(String contractAddress){

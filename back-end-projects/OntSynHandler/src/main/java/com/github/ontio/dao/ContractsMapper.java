@@ -7,13 +7,11 @@ import java.util.List;
 
 @Component
 public interface ContractsMapper {
-    int deleteByPrimaryKey(String contract);
-
     int insert(Contracts record);
 
     int insertSelective(Contracts record);
 
-    Contracts selectByPrimaryKey(String contract);
+    Contracts selectContractByContractHash(String contract);
 
     int updateByPrimaryKeySelective(Contracts record);
 
