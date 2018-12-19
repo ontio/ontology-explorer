@@ -24,16 +24,7 @@
     contract, project, name, txcount, abi, code, createtime, auditflag, updatetime, contactinfo,
     type, description, logo, creator, addresscount, ontcount, ongcount
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_contracts
-    where contract = #{contract,jdbcType=VARCHAR}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
-    delete from tbl_ont_contracts
-    where contract = #{contract,jdbcType=VARCHAR}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.Contracts" >
     insert into tbl_ont_contracts (contract, project, name, txcount,
       abi, code, createtime, 
@@ -229,4 +220,9 @@
       ongcount = #{creator,jdbcType=DECIMAL}
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectContractByContractHash" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select * from tbl_ont_contracts
+    where contract = #{contract}
+  </select>
 </mapper>

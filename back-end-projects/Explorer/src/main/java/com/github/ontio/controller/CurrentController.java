@@ -46,9 +46,6 @@ public class CurrentController {
     @Autowired
     private CurrentServiceImpl currentService;
 
-    @Autowired
-    private SummaryServiceImpl summaryService;
-
     /**
      * query current summary information
      *

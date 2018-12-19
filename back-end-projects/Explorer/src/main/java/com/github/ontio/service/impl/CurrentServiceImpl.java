@@ -89,15 +89,14 @@ public class CurrentServiceImpl implements ICurrentService {
     public Result querySummaryInfo() {
         Map summary = currentMapper.selectSummaryInfo();
        // List<String> addrList = transactionDetailMapper.selectAllAddress();
-        //initSDK();
-        //int nodeCount = sdk.getNodeCount();
+        initSDK();
+        int nodeCount = sdk.getNodeCount();
         Map<String, Object> rs = new HashMap();
 
-        rs.put("NodeCount", 33);
+        rs.put("NodeCount", nodeCount);
         rs.put("CurrentHeight", summary.get("Height"));
         rs.put("TxnCount", summary.get("TxnCount"));
         rs.put("OntIdCount", summary.get("OntIdCount"));
-       // rs.put("AddrCount", addrList.size());
 
         return Helper.result("QueryCurrentInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
