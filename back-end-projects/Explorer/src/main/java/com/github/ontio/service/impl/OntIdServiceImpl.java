@@ -72,8 +72,7 @@ public class OntIdServiceImpl implements IOntIdService {
 
         List<Map> ontIdList = ontIdMapper.selectOntIdByPage(0, amount);
 
-        for (Map map :
-                ontIdList) {
+        for (Map map : ontIdList) {
             map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
             map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
         }

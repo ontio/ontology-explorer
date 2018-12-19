@@ -23,4 +23,6 @@ public interface Oep4Mapper {
     Oep4 queryOEPContract(String contractHash);
 
     Integer queryOEPContractCount();
+
+    int deletContractByHash(String contractHash);
 }

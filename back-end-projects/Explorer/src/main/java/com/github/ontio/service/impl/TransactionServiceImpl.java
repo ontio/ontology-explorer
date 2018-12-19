@@ -159,6 +159,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize) {
+        if (address.length() != 34){
+            return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
+        }
 
         if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
             return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
@@ -219,7 +222,6 @@ public class TransactionServiceImpl implements ITransactionService {
         rs.put("TxnList", returnTxnList);
 
         return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
-
     }
 
     /**

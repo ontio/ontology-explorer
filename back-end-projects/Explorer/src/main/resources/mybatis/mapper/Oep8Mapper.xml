@@ -214,4 +214,8 @@
   <select id="queryOEPContractByHashAndTokenName" parameterType="String" resultType="com.github.ontio.model.Oep8">
     select * from tbl_ont_oep8 where contract = #{param1} and name = #{param2}
   </select>
+
+  <delete id="deletContractByHash" parameterType="String">
+    DELETE FROM tbl_ont_oep8 WHERE contract = #{contractHash}
+  </delete>
 </mapper>
