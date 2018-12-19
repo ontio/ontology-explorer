@@ -41,6 +41,21 @@ public class SummaryController {
     }
 
     /**
+     * query current summary information
+     *
+     * @return
+     */
+    @RequestMapping(value = "/summary/{amount}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result querySummary(@PathVariable("amount") int amount) {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = summaryService.querySummary(amount);
+        return rs;
+    }
+
+    /**
      * 统计 TPS
      * @return
      */

@@ -63,13 +63,17 @@
     SELECT DISTINCT(address)
         from tbl_ont_address_summary
         where type = 'common'
-        ORDER BY address
   </select>
 
   <select id="selectDistinctAddressByContract" resultType="String" parameterType="String" >
     SELECT DISTINCT(address)
         from tbl_ont_address_summary
         where type = #{param1}
-        ORDER BY address
+  </select>
+
+  <select id="selectAllAddressCount" resultType="Integer" parameterType="String" >
+    SELECT count(DISTINCT(address))
+        from tbl_ont_address_summary
+        where type = 'common'
   </select>
 </mapper>

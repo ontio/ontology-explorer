@@ -6,8 +6,10 @@ import com.github.ontio.model.*;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.schedule.DailyInfoSchedule;
 import com.github.ontio.service.ISummaryService;
+import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ErrorInfo;
 import com.github.ontio.utils.Helper;
+import com.github.ontio.utils.OntologySDKService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +62,71 @@ public class SummaryServiceImpl implements ISummaryService {
 
     @Autowired
     private ContractSummaryMapper contractSummaryMapper;
+
+    @Autowired
+    private CurrentMapper currentMapper;
+
+    @Autowired
+    private ConfigParam configParam;
+
+    private OntologySDKService sdk;
+
+    private synchronized void initSDK() {
+        if (sdk == null) {
+            sdk = OntologySDKService.getInstance(configParam);
+        }
+    }
+
+    /**
+     * 查询所有
+     *
+     * @param amount
+     * @return
+     */
+    @Override
+    public Result querySummary(int amount) {
+        Map<String, Object> resultMap = new HashMap();
+
+        // 节点数
+        initSDK();
+        int nodeCount = sdk.getNodeCount();
+        resultMap.put("NodeCount", nodeCount);
+
+        // 区块高度、交易总数、OntId总数
+        Map summary = currentMapper.selectSummaryInfo();
+        resultMap.put("CurrentHeight", summary.get("Height"));
+        resultMap.put("TxnCount", summary.get("TxnCount"));
+        resultMap.put("OntIdCount", summary.get("OntIdCount"));
+
+        // 地址总数
+        Integer addressCount = addressSummaryMapper.selectAllAddressCount();
+        resultMap.put("AddressCount", addressCount);
+
+        // 最新的5个区块
+        List<Map> blockList = blockMapper.selectBlockByPage(0, amount);
+        resultMap.put("BlockList", blockList);
+
+        // 最新的5个OntId
+        List<Map> ontIdList = ontIdMapper.selectOntIdByPage(0, amount);
+        for (Map map : ontIdList) {
+            map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
+            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
+        }
+        resultMap.put("OntIdList", ontIdList);
+
+        // 最新的5笔交易
+        List<Map> txnList = transactionDetailMapper.selectTxnWithoutOntId(0, amount);
+        for (Map map : txnList) {
+            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
+        }
+        resultMap.put("TxnList", txnList);
+
+        // TPS
+        resultMap.put("CurrentTps", queryCurrentTps());
+        resultMap.put("MaxTps", 10000);
+
+        return Helper.result("QuerySummary", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
+    }
 
     /**
      * Marketing Info
@@ -270,7 +337,7 @@ public class SummaryServiceImpl implements ISummaryService {
             return Helper.result("QueryProject", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
         }
 
-        // 每天的
+        // 每天的统计
         Map<Integer, Map<String, Object>> projectMap = new HashMap<>();
         for (Contracts contract: contractsList) {
             Map<String, Object> paramMap = new HashMap();
@@ -314,7 +381,7 @@ public class SummaryServiceImpl implements ISummaryService {
                 break;
         }
 
-        // 总量的
+        // 总量的统计
         int txCountSum = 0;
         int addressSum = 0;
         BigDecimal ontCountSum = new BigDecimal(0);
@@ -342,6 +409,14 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result queryTps() {
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("CurrentTps", queryCurrentTps());
+        resultMap.put("MaxTps", 10000);
+
+        return Helper.result("QueryTps", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
+    }
+
+    private String queryCurrentTps(){
         int nowTime = (int)(System.currentTimeMillis() / 1000);
 
         Map<String, Object> paramMap = new HashMap();
@@ -350,11 +425,7 @@ public class SummaryServiceImpl implements ISummaryService {
         Integer tpsPerMin = transactionDetailMapper.queryTransactionCount(paramMap);
 
         DecimalFormat df = new DecimalFormat("0.00");
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("currentTps",df.format((double)(tpsPerMin + 600) / 60));
-        resultMap.put("maxTps", 10000);
-
-        return Helper.result("QueryTps", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
+        return df.format((double)(tpsPerMin + 600) / 60);
     }
 
     /**

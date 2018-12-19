@@ -16,6 +16,14 @@ public interface ISummaryService {
     Result summaryAllInfo();
 
     /**
+     * query current information
+     *
+     * @param amount
+     * @return
+     */
+    Result querySummary(int amount);
+
+    /**
      * TPS查询
      * @return
      */
