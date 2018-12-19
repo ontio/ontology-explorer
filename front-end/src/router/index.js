@@ -202,6 +202,11 @@ let routes = [
     path: '/statistics/table/',
     name: 'StatisticsTable',
     component: StatisticsTable
+  },
+  {
+    path: '/statistics/table/:net',
+    name: 'StatisticsTableTest',
+    component: StatisticsTable
   }
 ];
 
