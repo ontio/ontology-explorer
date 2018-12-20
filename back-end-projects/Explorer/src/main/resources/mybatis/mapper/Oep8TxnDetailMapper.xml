@@ -217,7 +217,7 @@
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
 
-  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map">
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, TokenName
     from tbl_ont_oep8txn_detail
     where contracthash = #{contractHash}
@@ -228,7 +228,7 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectContractByHashAmount" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+  <select id="selectContractByHashAmount" parameterType="java.util.Map" resultType="java.lang.Integer">
     select count(DISTINCT(txnhash))
     from tbl_ont_oep8txn_detail
     where contracthash = #{contractHash}

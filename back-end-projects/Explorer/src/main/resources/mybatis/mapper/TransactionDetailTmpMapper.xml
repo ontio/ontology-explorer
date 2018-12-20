@@ -68,12 +68,12 @@
             and <![CDATA[ txntime < #{endTime} ]]>
   </insert>
 
-  <select id="selectTxnCountInOneDay" resultType="java.lang.Integer" useCache="false">
+  <select id="selectTxnCountInOneDay" resultType="java.lang.Integer" >
     select count(DISTINCT (txnhash))
     from tbl_ont_txn_detail_tmp
   </select>
 
-  <select id="selectAddressInOneDay" resultType="String" useCache="false">
+  <select id="selectAddressInOneDay" resultType="String" >
     SELECT DISTINCT(address) from (
       select DISTINCT(fromaddress) as address
           from tbl_ont_txn_detail_tmp
@@ -83,13 +83,13 @@
     ) a ORDER BY address
   </select>
 
-  <select id="selectOntCountInOneDay" resultType="DECIMAL" useCache="false">
+  <select id="selectOntCountInOneDay" resultType="DECIMAL" >
     select SUM(amount)
       from tbl_ont_txn_detail_tmp
          where assetname = 'ont'
   </select>
 
-  <select id="selectOngCountInOneDay" resultType="DECIMAL" useCache="false">
+  <select id="selectOngCountInOneDay" resultType="DECIMAL" >
     select SUM(amount)
       from tbl_ont_txn_detail_tmp
          where assetname = 'ong'
@@ -99,33 +99,33 @@
     delete from tbl_ont_txn_detail_tmp
   </delete>
 
-  <select id="selectContractAssetSumByAddress" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+  <select id="selectContractAssetSumByAddress" resultType="java.math.BigDecimal" parameterType="java.util.Map" >
         SELECT SUM(amount)
         from tbl_ont_txn_detail_tmp
         where confirmflag = 1 and assetname = #{assetname}
         and ( toaddress = #{address} OR fromaddress = #{address} )
   </select>
 
-  <select id="selectContractAssetSumByContract" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+  <select id="selectContractAssetSumByContract" resultType="java.math.BigDecimal" parameterType="java.util.Map" >
         SELECT SUM(amount)
         from tbl_ont_txn_detail_tmp
         where contracthash = #{address} and confirmflag = 1 and assetname = #{assetname}
   </select>
 
-  <select id="selectTxnAmountByContractHash" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
+  <select id="selectTxnAmountByContractHash" parameterType="java.lang.String" resultType="java.lang.Integer" >
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail_tmp
     where contracthash = #{param1}
   </select>
 
-  <select id="selectTxnAmountByAddress" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
+  <select id="selectTxnAmountByAddress" parameterType="java.lang.String" resultType="java.lang.Integer" >
     SELECT COUNT(DISTINCT(txnhash))
         from tbl_ont_txn_detail_tmp
         where confirmflag = 1
         and ( toaddress = #{address} OR fromaddress = #{address} )
   </select>
 
-  <select id="selectAllAddressByContract" resultType="String" parameterType="java.lang.String" useCache="false">
+  <select id="selectAllAddressByContract" resultType="String" parameterType="java.lang.String" >
     SELECT DISTINCT(address) FROM (
         select DISTINCT (fromaddress) as address
         from tbl_ont_txn_detail_tmp
@@ -137,7 +137,7 @@
     ) a ORDER BY address
   </select>
 
-  <select id="selectAllAddressByAddress" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
+  <select id="selectAllAddressByAddress" resultType="java.lang.String" parameterType="java.lang.String" >
     SELECT DISTINCT(address) FROM (
         select DISTINCT (fromaddress) as address
         from tbl_ont_txn_detail_tmp
