@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.github.ontio.dao.ContractSummaryMapper" >
+  <cache type="com.github.ontio.ExplorerRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="flushInterval" value="6000" />
+    <property name="readOnly" value="false" />
+  </cache>
+
   <resultMap id="BaseResultMap" type="com.github.ontio.model.ContractSummary" >
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="time" property="time" jdbcType="INTEGER" />
@@ -139,7 +146,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="selectDailySummaryByContractHash" resultType="java.util.Map" parameterType="java.util.Map">
+  <select id="selectDailySummaryByContractHash" resultType="java.util.Map" parameterType="java.util.Map" useCache="false">
     select TxnCount, OntCount, OngCount, ActiveAddress, NewAddress, Time
     from tbl_ont_contract_summary
     where contracthash = #{contractHash} and time >= #{startTime}

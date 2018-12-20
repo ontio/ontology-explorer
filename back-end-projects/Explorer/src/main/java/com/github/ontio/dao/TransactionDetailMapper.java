@@ -32,9 +32,6 @@ public interface TransactionDetailMapper {
 
     Integer selectLastONTTransferTxnTime(String address);
 
-    Integer selectSwapTransferTxnTime(String address);
-
-
     List<Map> selectTransferTxnDetailByHash(String txnHash);
 
     List<Map> selectTxnByAddressInfo(Map<String, Object> param);
