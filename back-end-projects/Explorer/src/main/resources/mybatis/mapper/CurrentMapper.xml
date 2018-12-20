@@ -53,7 +53,7 @@
   </insert>
 
 
-  <select id="selectSummaryInfo" resultType="java.util.Map" useCache="false">
+  <select id="selectSummaryInfo" resultType="java.util.Map">
     select TxnCount, Height, OntIdCount, NonOntIdTxnCount
     from tbl_ont_current
   </select>

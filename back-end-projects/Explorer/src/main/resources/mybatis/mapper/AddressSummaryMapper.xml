@@ -66,19 +66,19 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="selectDistinctAddress" resultType="String" useCache="false">
+  <select id="selectDistinctAddress" resultType="String">
     SELECT DISTINCT(address)
         from tbl_ont_address_summary
         where type = 'common'
   </select>
 
-  <select id="selectDistinctAddressByContract" resultType="String" parameterType="String" useCache="false">
+  <select id="selectDistinctAddressByContract" resultType="String" parameterType="String">
     SELECT DISTINCT(address)
         from tbl_ont_address_summary
         where type = #{param1}
   </select>
 
-  <select id="selectAllAddressCount" resultType="Integer" parameterType="String" useCache="false">
+  <select id="selectAllAddressCount" resultType="Integer" parameterType="String">
     SELECT count(DISTINCT(address))
         from tbl_ont_address_summary
         where type = 'common'

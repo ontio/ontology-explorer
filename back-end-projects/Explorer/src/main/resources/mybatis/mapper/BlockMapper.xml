@@ -158,33 +158,33 @@
     where height = #{height,jdbcType=INTEGER}
   </update>
 
-  <select id="selectBlockByPage" resultType="java.util.Map" useCache="false">
+  <select id="selectBlockByPage" resultType="java.util.Map">
     select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
     from tbl_ont_block
     order by height DESC
     limit #{param1}, #{param2}
   </select>
 
-  <select id="selectBlockByHeight" resultType="java.util.Map" useCache="false">
+  <select id="selectBlockByHeight" resultType="java.util.Map">
     select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
     from tbl_ont_block
     where height = #{height}
   </select>
 
-  <select id="selectBlockByHash" resultType="java.util.Map" useCache="false">
+  <select id="selectBlockByHash" resultType="java.util.Map">
     select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
     from tbl_ont_block
     where hash = #{hash}
   </select>
 
-  <select id="selectHeightAndTime" resultType="java.util.Map" useCache="false">
+  <select id="selectHeightAndTime" resultType="java.util.Map">
     select Height, BlockTime
     from tbl_ont_block
     order by height DESC
     limit 0, #{param1}
   </select>
 
-  <select id="selectBlockCountInOneDay" resultType="java.lang.Integer" useCache="false">
+  <select id="selectBlockCountInOneDay" resultType="java.lang.Integer">
     select count(*) as nums
     from tbl_ont_block
     where blocktime >= #{StartTime}

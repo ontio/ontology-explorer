@@ -411,7 +411,7 @@
     limit 1
   </select>
 
-  <select id="selectAllAddress" resultType="java.util.Map" useCache="false">
+  <select id="selectAllAddress" resultType="java.util.Map" >
     SELECT
 	fromaddress, toaddress
     FROM
@@ -429,7 +429,7 @@
 	OR toaddress = #{param1}
   </select>
 
-  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" >
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
     from tbl_ont_txn_detail
     where contracthash = #{contractHash}
@@ -437,63 +437,63 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
+  <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer" >
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
     where contracthash = #{param1}
   </select>
 
-  <select id="selectContractAssetSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+  <select id="selectContractAssetSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" >
         SELECT SUM(amount)
         from tbl_ont_txn_detail
         where confirmflag = 1 and assetname = #{assetname}
         and ( toaddress = #{address} OR fromaddress = #{address} )
   </select>
 
-  <select id="selectAllFromAddress" resultType="java.lang.String" useCache="false">
+  <select id="selectAllFromAddress" resultType="java.lang.String" >
     select DISTINCT (fromaddress)
     from tbl_ont_txn_detail
   </select>
 
-  <select id="selectAllToAddress" resultType="java.lang.String" useCache="false">
+  <select id="selectAllToAddress" resultType="java.lang.String" >
     select DISTINCT (toaddress)
     from tbl_ont_txn_detail
   </select>
 
 
 
-  <select id="selectAllFromAddressCountByAddr" resultType="java.lang.Integer" useCache="false">
+  <select id="selectAllFromAddressCountByAddr" resultType="java.lang.Integer" >
     select count(DISTINCT(fromaddress))
     from tbl_ont_txn_detail
     where toaddress = #{param1}
   </select>
 
-  <select id="selectAllToAddressCountByAddr" resultType="java.lang.Integer" useCache="false">
+  <select id="selectAllToAddressCountByAddr" resultType="java.lang.Integer" >
     select count(DISTINCT(toaddress))
     from tbl_ont_txn_detail
     where fromaddress = #{param1}
   </select>
 
-  <select id="selectAllFromAddressCountByContract" resultType="java.lang.Integer" useCache="false">
+  <select id="selectAllFromAddressCountByContract" resultType="java.lang.Integer" >
     select count(DISTINCT (fromaddress))
     from tbl_ont_txn_detail
     where contracthash = #{param1}
   </select>
 
-  <select id="selectAllToAddressCountByContract" resultType="java.lang.Integer" useCache="false">
+  <select id="selectAllToAddressCountByContract" resultType="java.lang.Integer" >
     select count(DISTINCT(toaddress))
     from tbl_ont_txn_detail
     where contracthash = #{param1}
   </select>
 
-  <select id="selectAllAddressCount" resultType="java.lang.Integer" useCache="false">
+  <select id="selectAllAddressCount" resultType="java.lang.Integer" >
     SELECT
     count(DISTINCT(toaddress))
     FROM
     tbl_ont_txn_detail
   </select>
 
-  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map" >
     select t2.* from (
     select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
@@ -508,14 +508,14 @@
     order by t2.TxnTime desc
   </select>
 
-  <select id="selectTransactionDetail" resultType="com.github.ontio.model.TransactionDetail" useCache="false">
+  <select id="selectTransactionDetail" resultType="com.github.ontio.model.TransactionDetail" >
     select *
     from tbl_ont_txn_detail
     where txntime >= #{startTime}
     and <![CDATA[ txntime < #{endTime} ]]>
   </select>
 
-  <select id="queryTransactionCount" resultType="java.lang.Integer" parameterType="java.util.Map" useCache="false">
+  <select id="queryTransactionCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
     where txntime >= #{startTime}
