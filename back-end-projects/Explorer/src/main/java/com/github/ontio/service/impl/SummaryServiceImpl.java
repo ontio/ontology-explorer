@@ -445,11 +445,14 @@ public class SummaryServiceImpl implements ISummaryService {
         switch (type){
             case "weekly":
                 dailyList = querySummaryInfo(dailyList, NUM_7);
+                Collections.reverse(dailyList);
                 break;
             case "monthly":
                 dailyList = querySummaryInfo(dailyList, NUM_30);
+                Collections.reverse(dailyList);
                 break;
             default:
+                Collections.reverse(dailyList);
                 dailyList = querySummaryInfo(dailyList, addressAndOntIdCount);
                 break;
         }
@@ -481,10 +484,12 @@ public class SummaryServiceImpl implements ISummaryService {
                 result.put("OntIdNewCount", (Integer)result.get("OntIdNewCount") + (Integer)perMap.get("OntIdNewCount"));
                 result.put("OntIdActiveCount", (Integer)result.get("OntIdActiveCount") + (Integer)perMap.get("OntIdActiveCount"));
                 result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
-                result.put("OntCount", (((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount"))).toPlainString());
-                result.put("OngCount", (((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount"))).toPlainString());
+                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
+                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
             }
 
+            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
+            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
             resultMapList.add(result);
         }
 
@@ -597,9 +602,11 @@ public class SummaryServiceImpl implements ISummaryService {
                 result.put("TxnCount", (Integer)result.get("TxnCount") + (Integer)perMap.get("TxnCount"));
                 result.put("ActiveAddress", (Integer)result.get("ActiveAddress") + (Integer)perMap.get("ActiveAddress"));
                 result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
-                result.put("OntCount", (((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount"))).toPlainString());
-                result.put("OngCount", (((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount"))).toPlainString());
+                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
+                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
             }
+            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
+            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
 
             resultMapList.add(result);
         }
