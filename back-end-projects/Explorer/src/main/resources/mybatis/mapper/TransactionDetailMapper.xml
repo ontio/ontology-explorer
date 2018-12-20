@@ -411,17 +411,6 @@
     limit 1
   </select>
 
-
-  <select id="selectSwapTransferTxnTime" parameterType="java.lang.String" resultType="java.lang.Integer">
-    select TxnTime
-    from tbl_ont_txn_detail
-    where fromaddress in ('AcsptRGJ3ijThLqjwJAgbnhzihTmAefMDZ','AWyEMxiLUVr5MeVJe3Fw5Xsij7iZUmfYyk')
-    and toaddress = #{param1}
-    and assetname = 'ont'
-    order by height DESC
-    limit 1
-  </select>
-
   <select id="selectAllAddress" resultType="java.util.Map" useCache="false">
     SELECT
 	fromaddress, toaddress
@@ -440,7 +429,7 @@
 	OR toaddress = #{param1}
   </select>
 
-  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
     from tbl_ont_txn_detail
     where contracthash = #{contractHash}
@@ -504,7 +493,7 @@
     tbl_ont_txn_detail
   </select>
 
-  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select t2.* from (
     select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
@@ -526,7 +515,7 @@
     and <![CDATA[ txntime < #{endTime} ]]>
   </select>
 
-  <select id="queryTransactionCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+  <select id="queryTransactionCount" resultType="java.lang.Integer" parameterType="java.util.Map" useCache="false">
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
     where txntime >= #{startTime}
