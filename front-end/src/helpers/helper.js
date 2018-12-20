@@ -151,7 +151,7 @@ const HelperTools = {
    * @return {*}
    */
   toFinancialVal(value) {
-    if (typeof(value) !== 'undefined') {
+    if (typeof(value) !== 'undefined' && !isNaN(value)) {
       value = new DecimalMath(value).toString();
 
       if (value === '0') return value;
