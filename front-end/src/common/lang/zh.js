@@ -279,6 +279,8 @@ module.exports = {
     blockLbl: '14天新增区块数',
     newOntIdLbl: '14天新增ONT-ID数',
     activeOntIdLbl: '14天活动ONT-ID数',
+    sumAddressLbl: '14天地址增长',
+    sumOntIdLbl: '14天ONT-ID增长',
     txnLbl: '14天交易数',
     ontLbl: '14天ONT交易总额',
     ongLbl: '14天ONG交易总额'
