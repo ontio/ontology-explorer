@@ -256,7 +256,7 @@
   </select>
 
   <select id="selectAllContract"  resultType="com.github.ontio.model.Contracts">
-    select * from tbl_ont_contracts where auditflag = 1
+    select * from tbl_ont_contracts
     order by createtime DESC
   </select>
 

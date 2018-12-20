@@ -271,6 +271,10 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName) {
 
+        if (address.length() != 34){
+            return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
+        }
+
         if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
             return Helper.result("QueryAddressInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
         }
@@ -334,6 +338,10 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public Result queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int endTime) {
 
+        if (address.length() != 34){
+            return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
+        }
+
         Map<String, Object> parmMap = new HashMap<>();
         parmMap.put("Address", address);
         parmMap.put("EndTime", endTime);
@@ -365,6 +373,10 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public Result queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime) {
+
+        if (address.length() != 34){
+            return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
+        }
 
         Map<String, Object> parmMap = new HashMap<>();
         parmMap.put("Address", address);
@@ -399,6 +411,10 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public Result queryAddressInfoByTime(String address, String assetName, int beginTime) {
 
+        if (address.length() != 34){
+            return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
+        }
+
         Map<String, Object> parmMap = new HashMap<>();
         parmMap.put("Address", address);
         parmMap.put("AssetName", assetName);
@@ -421,6 +437,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public Result queryAddressBalance(String address) {
+        if (address.length() != 34){
+            return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
+        }
 
         List balanceList = getAddressBalance(address, "");
         return Helper.result("QueryAddressBalance", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, balanceList);
@@ -436,9 +455,11 @@ public class TransactionServiceImpl implements ITransactionService {
     private List getAddressBalance(String address, String assetName) {
 
         List<Object> balanceList = new ArrayList<>();
+        if (address.length() != 34){
+            return balanceList;
+        }
 
         initSDK();
-
         Map<String, Object> balanceMap = sdk.getAddressBalance(address);
 
         if (Helper.isEmptyOrNull(assetName) || ConstantParam.ONG.equals(assetName)) {
