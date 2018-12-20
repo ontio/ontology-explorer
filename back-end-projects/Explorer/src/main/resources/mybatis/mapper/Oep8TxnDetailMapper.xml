@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.github.ontio.dao.Oep8TxnDetailMapper" >
+  <cache type="com.github.ontio.ExplorerRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="flushInterval" value="6000" />
+    <property name="readOnly" value="false" />
+  </cache>
+
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Oep8TxnDetail" >
     <id column="txnhash" property="txnhash" jdbcType="VARCHAR" />
     <id column="txnindex" property="txnindex" jdbcType="INTEGER" />
@@ -210,7 +217,7 @@
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
 
-  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, TokenName
     from tbl_ont_oep8txn_detail
     where contracthash = #{contractHash}
@@ -221,7 +228,7 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectContractByHashAmount" parameterType="java.util.Map" resultType="java.lang.Integer">
+  <select id="selectContractByHashAmount" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT(txnhash))
     from tbl_ont_oep8txn_detail
     where contracthash = #{contractHash}

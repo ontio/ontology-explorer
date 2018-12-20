@@ -158,26 +158,26 @@
     where height = #{height,jdbcType=INTEGER}
   </update>
 
-  <select id="selectBlockByPage" resultType="java.util.Map">
+  <select id="selectBlockByPage" resultType="java.util.Map" useCache="false">
     select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
     from tbl_ont_block
     order by height DESC
     limit #{param1}, #{param2}
   </select>
 
-  <select id="selectBlockByHeight" resultType="java.util.Map">
+  <select id="selectBlockByHeight" resultType="java.util.Map" useCache="false">
     select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
     from tbl_ont_block
     where height = #{height}
   </select>
 
-  <select id="selectBlockByHash" resultType="java.util.Map">
+  <select id="selectBlockByHash" resultType="java.util.Map" useCache="false">
     select Height, Hash, PrevBlock, NextBlock, TxnsRoot, BlockTime, ConsensusData, BookKeeper, TxnNum, BlockSize
     from tbl_ont_block
     where hash = #{hash}
   </select>
 
-  <select id="selectHeightAndTime" resultType="java.util.Map">
+  <select id="selectHeightAndTime" resultType="java.util.Map" useCache="false">
     select Height, BlockTime
     from tbl_ont_block
     order by height DESC

@@ -123,19 +123,19 @@
   </update>
 
 
-  <select id="selectOntIdByPage" parameterType="java.lang.Integer" resultType="java.util.Map">
+  <select id="selectOntIdByPage" parameterType="java.lang.Integer" resultType="java.util.Map" useCache="false">
     select TxnHash, TxnType, OntId, TxnTime, Height, Description, Fee
     from tbl_ont_ontid_detail
     order by height DESC
     limit #{param1}, #{param2}
   </select>
 
-  <select id="selectOntIdTxnCount" resultType="java.lang.Integer">
+  <select id="selectOntIdTxnCount" resultType="java.lang.Integer" useCache="false">
     select count(1)
     from tbl_ont_ontid_detail
   </select>
 
-  <select id="selectOntId" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="selectOntId" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select TxnHash, TxnType, OntId, TxnTime, Height, Description, Fee
     from tbl_ont_ontid_detail
     where ontid = #{OntId}
@@ -143,7 +143,7 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectCountByOntId" parameterType="java.lang.String" resultType="java.lang.Integer">
+  <select id="selectCountByOntId" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
     select count(1)
     from tbl_ont_ontid_detail
     where ontid = #{ontId}
