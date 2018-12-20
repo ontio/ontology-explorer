@@ -315,6 +315,224 @@ public class SummaryServiceImpl implements ISummaryService {
     }
 
     /**
+     * Tps Info
+     * @return
+     */
+    @Override
+    public Result queryTps() {
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("CurrentTps", queryCurrentTps());
+        resultMap.put("MaxTps", 10000);
+
+        return Helper.result("QueryTps", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
+    }
+
+    private String queryCurrentTps(){
+        int nowTime = (int)(System.currentTimeMillis() / 1000);
+
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("startTime", nowTime - 60);
+        paramMap.put("endTime", nowTime);
+        Integer tpsPerMin = transactionDetailMapper.queryTransactionCount(paramMap);
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        return df.format((double)(tpsPerMin) / 60);
+    }
+
+    /**
+     * Daily Info
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @Override
+    public Result querySummary(String type, int startTime, int endTime) {
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("startTime", startTime);
+        paramMap.put("endTime", endTime);
+        List<Map> dailyList = dailySummaryMapper.selectDailyInfo(paramMap);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        Map<String, Object> addressAndOntIdCount = dailySummaryMapper.selectAddressAndOntIdCount(startTime);
+        switch (type){
+            case "weekly":
+                dailyList = querySummaryInfo(dailyList, simpleDateFormat, NUM_7);
+                Collections.reverse(dailyList);
+                break;
+            case "monthly":
+                dailyList = querySummaryInfo(dailyList, simpleDateFormat, NUM_30);
+                Collections.reverse(dailyList);
+                break;
+            default:
+                Collections.reverse(dailyList);
+                dailyList = querySummaryInfo(dailyList, simpleDateFormat, addressAndOntIdCount);
+                break;
+        }
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("SummaryList", dailyList);
+        resultMap.put("Total", dailyList.size());
+
+        return Helper.result("QuerySummary", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
+    }
+
+    private List<Map> querySummaryInfo(List<Map> dailyList, SimpleDateFormat simpleDateFormat, Integer count) {
+        List<Map> resultMapList = new ArrayList<>();
+        if(dailyList.size() < count){
+            return resultMapList;
+        }
+
+        int weekCount = dailyList.size() / count;
+        for (int i = 0; i < weekCount; i++){
+            Map<String, Object> result = dailyList.get(i * count);
+            int time = (Integer) result.get("Time");
+            result.put("Time", simpleDateFormat.format((long)time * 1000));
+            for(int j = 1; j < count; j++){
+                Map<String, Object> perMap = dailyList.get(i * count + j);
+                result.put("TxnCount", (Integer)result.get("TxnCount") + (Integer)perMap.get("TxnCount"));
+                result.put("ActiveAddress", (Integer)result.get("ActiveAddress") + (Integer)perMap.get("ActiveAddress"));
+                result.put("BlockCount", (Integer)result.get("BlockCount") + (Integer)perMap.get("BlockCount"));
+                result.put("OntIdNewCount", (Integer)result.get("OntIdNewCount") + (Integer)perMap.get("OntIdNewCount"));
+                result.put("OntIdActiveCount", (Integer)result.get("OntIdActiveCount") + (Integer)perMap.get("OntIdActiveCount"));
+                result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
+                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
+                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
+            }
+
+            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
+            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
+            resultMapList.add(result);
+        }
+
+        return resultMapList;
+    }
+
+    private List<Map> querySummaryInfo(List<Map> dailyList, SimpleDateFormat simpleDateFormat, Map<String, Object> addressAndOntIdCount) {
+        int addressCount = 0;
+        int ontIdCount = 0;
+        if(addressAndOntIdCount != null && addressAndOntIdCount.get("addressSum") != null){
+            addressCount = Integer.parseInt( addressAndOntIdCount.get("addressSum").toString());
+        }
+        if(addressAndOntIdCount != null && addressAndOntIdCount.get("ontIdSum") != null){
+            ontIdCount = Integer.parseInt( addressAndOntIdCount.get("ontIdSum").toString());
+        }
+
+        for (Map map: dailyList) {
+            int time = (Integer) map.get("Time");
+            map.put("Time", simpleDateFormat.format((long)time * 1000));
+            map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
+            map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
+            addressCount += (Integer) map.get("NewAddress");
+            ontIdCount += (Integer) map.get("OntIdNewCount");
+            map.put("AddressSum", addressCount);
+            map.put("OntIdSum", ontIdCount);
+
+        }
+
+        return dailyList;
+    }
+
+    /**
+     * Contract Info
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @Override
+    public Result queryContract(String contractHash, String type, int startTime, int endTime) {
+        Map<String, Object> resultMap = new HashMap();
+        resultMap.put("SummaryList", new ArrayList<>());
+        resultMap.put("TxCountSum", 0);
+        resultMap.put("AddressSum", 0);
+        resultMap.put("OntCountSum", new BigDecimal(0).toPlainString());
+        resultMap.put("OngCountSum", new BigDecimal(0).toPlainString());
+        resultMap.put("Total", 0);
+
+        Contracts contracts = contractsMapper.selectContractByContractHash(contractHash);
+        if(contracts == null){
+            return Helper.result("QueryContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
+        }
+
+        Map<String, Object> paramMap = new HashMap();
+        paramMap.put("contractHash", contractHash);
+        paramMap.put("startTime", startTime);
+        paramMap.put("endTime", endTime);
+        List<Map> dailyList = contractSummaryMapper.selectDailySummaryByContractHash(paramMap);
+
+        // 按照type进行统计
+        dailyList = getContractListMap(dailyList, type);
+
+        resultMap.put("TxCountSum", contracts.getTxcount());
+        resultMap.put("AddressSum", contracts.getAddresscount());
+        resultMap.put("OntCountSum", contracts.getOntcount().toPlainString());
+        resultMap.put("OngCountSum", contracts.getOngcount().toPlainString());
+        resultMap.put("SummaryList", dailyList);
+        resultMap.put("Total", dailyList.size());
+
+        return Helper.result("QueryContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
+    }
+
+    private List<Map> queryContract(List<Map> dailyList, SimpleDateFormat simpleDateFormat) {
+        for (Map map: dailyList) {
+            int time = (Integer) map.get("Time");
+            map.put("Time", simpleDateFormat.format((long)time * 1000));
+            map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
+            map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
+
+        }
+
+        return dailyList;
+    }
+
+    private List<Map> queryContract(List<Map> dailyList, SimpleDateFormat simpleDateFormat, int count) {
+        List<Map> resultMapList = new ArrayList<>();
+        if(dailyList.size() < count){
+            return resultMapList;
+        }
+
+        int weekCount = dailyList.size() / count;
+        for (int i = 0; i < weekCount; i++){
+            Map<String, Object> result = dailyList.get(i * count);
+            int time = (Integer) result.get("Time");
+            result.put("Time", simpleDateFormat.format((long)time * 1000));
+            for(int j = 1; j < count; j++){
+                Map<String, Object> perMap = dailyList.get(i * count + j);
+                result.put("TxnCount", (Integer)result.get("TxnCount") + (Integer)perMap.get("TxnCount"));
+                result.put("ActiveAddress", (Integer)result.get("ActiveAddress") + (Integer)perMap.get("ActiveAddress"));
+                result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
+                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
+                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
+            }
+            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
+            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
+
+            resultMapList.add(result);
+        }
+
+        return resultMapList;
+    }
+
+    private List<Map> getContractListMap(List<Map> dailyList, String type){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        switch (type){
+            case "weekly":
+                dailyList = queryContract(dailyList, simpleDateFormat, NUM_7);
+                break;
+            case "monthly":
+                dailyList = queryContract(dailyList, simpleDateFormat, NUM_30);
+                break;
+            default:
+                dailyList = queryContract(dailyList, simpleDateFormat);
+                break;
+        }
+        Collections.reverse(dailyList);
+
+        return dailyList;
+    }
+
+    /**
      * project Info
      * @param project
      * @param type
@@ -369,17 +587,8 @@ public class SummaryServiceImpl implements ISummaryService {
             projectSummaryList.add(entry.getValue());
         }
 
-        switch (type){
-            case "weekly":
-                projectSummaryList = queryContract(projectSummaryList, NUM_7);
-                break;
-            case "monthly":
-                projectSummaryList = queryContract(projectSummaryList, NUM_30);
-                break;
-            default:
-                projectSummaryList = queryContract(projectSummaryList);
-                break;
-        }
+        // 按照type进行统计
+        projectSummaryList = getContractListMap(projectSummaryList, type);
 
         // 总量的统计
         int txCountSum = 0;
@@ -401,216 +610,5 @@ public class SummaryServiceImpl implements ISummaryService {
 
 
         return Helper.result("QueryProject", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
-    }
-
-    /**
-     * Tps Info
-     * @return
-     */
-    @Override
-    public Result queryTps() {
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("CurrentTps", queryCurrentTps());
-        resultMap.put("MaxTps", 10000);
-
-        return Helper.result("QueryTps", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
-    }
-
-    private String queryCurrentTps(){
-        int nowTime = (int)(System.currentTimeMillis() / 1000);
-
-        Map<String, Object> paramMap = new HashMap();
-        paramMap.put("startTime", nowTime - 60);
-        paramMap.put("endTime", nowTime);
-        Integer tpsPerMin = transactionDetailMapper.queryTransactionCount(paramMap);
-
-        DecimalFormat df = new DecimalFormat("0.00");
-        return df.format((double)(tpsPerMin) / 60);
-    }
-
-    /**
-     * Daily Info
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    @Override
-    public Result querySummary(String type, int startTime, int endTime) {
-        Map<String, Object> paramMap = new HashMap();
-        paramMap.put("startTime", startTime);
-        paramMap.put("endTime", endTime);
-        List<Map> dailyList = dailySummaryMapper.selectDailyInfo(paramMap);
-
-        Map<String, Object> addressAndOntIdCount = dailySummaryMapper.selectAddressAndOntIdCount(startTime);
-        switch (type){
-            case "weekly":
-                dailyList = querySummaryInfo(dailyList, NUM_7);
-                Collections.reverse(dailyList);
-                break;
-            case "monthly":
-                dailyList = querySummaryInfo(dailyList, NUM_30);
-                Collections.reverse(dailyList);
-                break;
-            default:
-                Collections.reverse(dailyList);
-                dailyList = querySummaryInfo(dailyList, addressAndOntIdCount);
-                break;
-        }
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("SummaryList", dailyList);
-        resultMap.put("Total", dailyList.size());
-
-        return Helper.result("QuerySummary", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
-    }
-
-    private List<Map> querySummaryInfo(List<Map> dailyList, Integer count) {
-        List<Map> resultMapList = new ArrayList<>();
-        if(dailyList.size() < count){
-            return resultMapList;
-        }
-
-        int weekCount = dailyList.size() / count;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        for (int i = 0; i < weekCount; i++){
-            Map<String, Object> result = dailyList.get(i * count);
-            int time = (Integer) result.get("Time");
-            result.put("Time", simpleDateFormat.format((long)time * 1000));
-            for(int j = 1; j < count; j++){
-                Map<String, Object> perMap = dailyList.get(i * count + j);
-                result.put("TxnCount", (Integer)result.get("TxnCount") + (Integer)perMap.get("TxnCount"));
-                result.put("ActiveAddress", (Integer)result.get("ActiveAddress") + (Integer)perMap.get("ActiveAddress"));
-                result.put("BlockCount", (Integer)result.get("BlockCount") + (Integer)perMap.get("BlockCount"));
-                result.put("OntIdNewCount", (Integer)result.get("OntIdNewCount") + (Integer)perMap.get("OntIdNewCount"));
-                result.put("OntIdActiveCount", (Integer)result.get("OntIdActiveCount") + (Integer)perMap.get("OntIdActiveCount"));
-                result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
-                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
-                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
-            }
-
-            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
-            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
-            resultMapList.add(result);
-        }
-
-        return resultMapList;
-    }
-
-    /**
-     * Contract Info
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    @Override
-    public Result queryContract(String contractHash, String type, int startTime, int endTime) {
-        Map<String, Object> resultMap = new HashMap();
-        resultMap.put("SummaryList", new ArrayList<>());
-        resultMap.put("TxCountSum", 0);
-        resultMap.put("AddressSum", 0);
-        resultMap.put("OntCountSum", new BigDecimal(0).toPlainString());
-        resultMap.put("OngCountSum", new BigDecimal(0).toPlainString());
-        resultMap.put("Total", 0);
-
-        Contracts contracts = contractsMapper.selectContractByContractHash(contractHash);
-        if(contracts == null){
-            return Helper.result("QueryContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
-        }
-
-        Map<String, Object> paramMap = new HashMap();
-        paramMap.put("contractHash", contractHash);
-        paramMap.put("startTime", startTime);
-        paramMap.put("endTime", endTime);
-        List<Map> dailyList = contractSummaryMapper.selectDailySummaryByContractHash(paramMap);
-
-        switch (type){
-            case "weekly":
-                dailyList = queryContract(dailyList, NUM_7);
-                break;
-            case "monthly":
-                dailyList = queryContract(dailyList, NUM_30);
-                break;
-            default:
-                dailyList = queryContract(dailyList);
-                break;
-        }
-
-        resultMap.put("TxCountSum", contracts.getTxcount());
-        resultMap.put("AddressSum", contracts.getAddresscount());
-        resultMap.put("OntCountSum", contracts.getOntcount().toPlainString());
-        resultMap.put("OngCountSum", contracts.getOngcount().toPlainString());
-        resultMap.put("SummaryList", dailyList);
-        resultMap.put("Total", dailyList.size());
-
-        return Helper.result("QueryContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
-    }
-
-    private List<Map> queryContract(List<Map> dailyList) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        for (Map map: dailyList) {
-            int time = (Integer) map.get("Time");
-            map.put("Time", simpleDateFormat.format((long)time * 1000));
-            map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
-            map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
-
-        }
-
-        return dailyList;
-    }
-
-    private List<Map> querySummaryInfo(List<Map> dailyList, Map<String, Object> addressAndOntIdCount) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        int addressCount = 0;
-        int ontIdCount = 0;
-        if(addressAndOntIdCount != null && addressAndOntIdCount.get("addressSum") != null){
-            addressCount = Integer.parseInt( addressAndOntIdCount.get("addressSum").toString());
-        }
-        if(addressAndOntIdCount != null && addressAndOntIdCount.get("ontIdSum") != null){
-            ontIdCount = Integer.parseInt( addressAndOntIdCount.get("ontIdSum").toString());
-        }
-
-        for (Map map: dailyList) {
-            int time = (Integer) map.get("Time");
-            map.put("Time", simpleDateFormat.format((long)time * 1000));
-            map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
-            map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
-            addressCount += (Integer) map.get("NewAddress");
-            ontIdCount += (Integer) map.get("OntIdNewCount");
-            map.put("AddressSum", addressCount);
-            map.put("OntIdSum", ontIdCount);
-
-        }
-
-        return dailyList;
-    }
-
-    private List<Map> queryContract(List<Map> dailyList, int count) {
-        List<Map> resultMapList = new ArrayList<>();
-        if(dailyList.size() < count){
-            return resultMapList;
-        }
-
-        int weekCount = dailyList.size() / count;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        for (int i = 0; i < weekCount; i++){
-            Map<String, Object> result = dailyList.get(i * count);
-            int time = (Integer) result.get("Time");
-            result.put("Time", simpleDateFormat.format((long)time * 1000));
-            for(int j = 1; j < count; j++){
-                Map<String, Object> perMap = dailyList.get(i * count + j);
-                result.put("TxnCount", (Integer)result.get("TxnCount") + (Integer)perMap.get("TxnCount"));
-                result.put("ActiveAddress", (Integer)result.get("ActiveAddress") + (Integer)perMap.get("ActiveAddress"));
-                result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
-                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
-                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
-            }
-            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
-            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
-
-            resultMapList.add(result);
-        }
-
-        return resultMapList;
     }
 }
