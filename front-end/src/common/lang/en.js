@@ -279,6 +279,8 @@ module.exports = {
     blockLbl: '14 Day New Block',
     newOntIdLbl: '14 Day New ONT-ID',
     activeOntIdLbl: '14 Day Active ONT-ID',
+    sumAddressLbl: '14 Day Address Growth',
+    sumOntIdLbl: '14 Day ONT-ID Growth',
     txnLbl: '14 Day Transaction History',
     ontLbl: '14 Day ONT Amount',
     ongLbl: '14 Day ONG Amount'
