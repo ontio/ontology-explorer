@@ -50,6 +50,14 @@ export default {
               label: 'activeOntIdLbl',
               list: []
             },
+            sumAddress: {
+              label: 'sumAddressLbl',
+              list: []
+            },
+            sumOntId: {
+              label: 'sumOntIdLbl',
+              list: []
+            },
             ont: {
               label: 'ontLbl',
               list: []
@@ -70,6 +78,8 @@ export default {
           chartData.data.activeAddress.list.push(list[listKey].NewAddress);
           chartData.data.newOntId.list.push(list[listKey].OntIdNewCount);
           chartData.data.activeOntId.list.push(list[listKey].OntIdActiveCount);
+          chartData.data.sumAddress.list.push(list[listKey].AddressSum);
+          chartData.data.sumOntId.list.push(list[listKey].OntIdSum);
           chartData.data.ont.list.push(list[listKey].OntCount)
           chartData.data.ong.list.push(list[listKey].OngCount)
         }
