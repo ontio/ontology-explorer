@@ -146,11 +146,11 @@
     where time = #{time,jdbcType=INTEGER}
   </update>
 
-  <select id="selectMaxTime" resultType="java.lang.Integer" useCache="false">
+  <select id="selectMaxTime" resultType="java.lang.Integer">
     select MAX(time) from tbl_ont_daily_summary
   </select>
 
-  <select id="selectDailyInfo" resultType="java.util.Map" parameterType="java.util.Map" useCache="false">
+  <select id="selectDailyInfo" resultType="java.util.Map" parameterType="java.util.Map">
     select TxnCount, BlockCount, OntIdNewCount, OntIdActiveCount, OntCount, OngCount, ActiveAddress, NewAddress, Time
     from tbl_ont_daily_summary
     where time &gt;= #{startTime}
@@ -158,7 +158,7 @@
     order by time
   </select>
 
-  <select id="selectAddressAndOntIdCount" parameterType="java.lang.Integer" resultType="java.util.Map" useCache="false">
+  <select id="selectAddressAndOntIdCount" parameterType="java.lang.Integer" resultType="java.util.Map">
     select SUM(newaddress) as addressSum, SUM(ontidnewcount) as ontIdSum
     from tbl_ont_daily_summary where <![CDATA[  time < #{startTime} ]]>
   </select>

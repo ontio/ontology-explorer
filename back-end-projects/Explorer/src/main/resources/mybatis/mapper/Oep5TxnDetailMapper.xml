@@ -206,7 +206,7 @@
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
 
-  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map">
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
     from tbl_ont_oep5txn_detail
     where contracthash = #{contractHash}

@@ -20,7 +20,7 @@
   <sql id="Base_Column_List">
     txnhash, txntype, ontid, txntime, height, description, fee
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" useCache="false">
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from tbl_ont_ontid_detail
@@ -123,19 +123,19 @@
   </update>
 
 
-  <select id="selectOntIdByPage" parameterType="java.lang.Integer" resultType="java.util.Map" useCache="false">
+  <select id="selectOntIdByPage" parameterType="java.lang.Integer" resultType="java.util.Map">
     select TxnHash, TxnType, OntId, TxnTime, Height, Description, Fee
     from tbl_ont_ontid_detail
     order by height DESC
     limit #{param1}, #{param2}
   </select>
 
-  <select id="selectOntIdTxnCount" resultType="java.lang.Integer" useCache="false">
+  <select id="selectOntIdTxnCount" resultType="java.lang.Integer">
     select count(1)
     from tbl_ont_ontid_detail
   </select>
 
-  <select id="selectOntId" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+  <select id="selectOntId" parameterType="java.util.Map" resultType="java.util.Map">
     select TxnHash, TxnType, OntId, TxnTime, Height, Description, Fee
     from tbl_ont_ontid_detail
     where ontid = #{OntId}
@@ -143,14 +143,14 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectCountByOntId" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
+  <select id="selectCountByOntId" parameterType="java.lang.String" resultType="java.lang.Integer">
     select count(1)
     from tbl_ont_ontid_detail
     where ontid = #{ontId}
   </select>
 
 
-  <select id="selectOntIdCountInOneDay" resultType="java.lang.Integer" useCache="false">
+  <select id="selectOntIdCountInOneDay" resultType="java.lang.Integer">
     select count(DISTINCT (txnhash))
     from tbl_ont_ontid_detail
     where description like #{Description}
@@ -158,7 +158,7 @@
     and <![CDATA[ txntime < #{EndTime} ]]>
   </select>
 
-  <select id="selectActiveOntIdCountInOneDay" resultType="java.lang.Integer" useCache="false">
+  <select id="selectActiveOntIdCountInOneDay" resultType="java.lang.Integer">
     select count(DISTINCT (txnhash))
     from tbl_ont_ontid_detail
     where txntime >= #{StartTime}
