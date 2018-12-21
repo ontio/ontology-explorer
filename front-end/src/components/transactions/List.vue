@@ -26,7 +26,7 @@
               <!--<td class="s-color">{{ tx.TxnType === 208 ? 'Deploy' : 'Run' }}</td>-->
               <!--<td class="s-color">{{ tx.BlockIndex }}</td>-->
               <td class="normal_color">{{tx.Height}}</td>
-              <td class="normal_color">{{Number(tx.Fee)}}</td>
+              <td class="normal_color">{{$HelperTools.toFinancialVal(tx.Fee)}}</td>
               <td class="normal_color">{{$HelperTools.getTransDate(tx.TxnTime)}}</td>
             </tr>
             </tbody>

@@ -152,6 +152,7 @@ const HelperTools = {
    */
   toFinancialVal(value) {
     if (typeof(value) !== 'undefined' && !isNaN(value)) {
+      DecimalMath.set({ toExpNeg: -10 })
       value = new DecimalMath(value).toString();
 
       if (value === '0') return value;
