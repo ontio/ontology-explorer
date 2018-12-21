@@ -1,6 +1,7 @@
 package com.github.ontio.schedule;
 
 import com.github.ontio.service.impl.SummaryServiceImpl;
+import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +26,13 @@ public class DailyInfoSchedule {
     @Autowired
     private SummaryServiceImpl summaryService;
 
+    @Autowired
+    private ConfigParam configParam;
 
     /**
      * 记录每日统计数据
      */
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 10 0 * * *")
     public void UpdateDailyInfo() {
 
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());

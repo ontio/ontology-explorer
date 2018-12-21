@@ -122,6 +122,22 @@ public class OntologySDKService {
         }
     }
 
+    /**
+     * 获取OEP5账户余额
+     *
+     * @param address
+     * @return
+     */
+    public String getAddressOep5Balance(String address, String contractAddr) {
+        OntSdk ontSdk = getOep5OntSdk(contractAddr);
+        try {
+            String balance = ontSdk.neovm().oep5().queryBalanceOf(address);
+            return balance;
+        } catch (Exception e) {
+            logger.error("getAddressOep4Balance error...", e);
+            return "";
+        }
+    }
 
     /**
      * 获取账户南瓜余额，包括unboundong

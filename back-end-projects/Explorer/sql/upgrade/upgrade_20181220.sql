@@ -1,15 +1,15 @@
-CREATE PROCEDURE add_tbl_ont_contracts_copy()
+CREATE PROCEDURE add_tbl_ont_contracts()
     BEGIN
         IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS
-            WHERE TABLE_NAME='tbl_ont_contracts_copy'
+            WHERE TABLE_NAME='tbl_ont_contracts'
             AND COLUMN_NAME='project')
     THEN
-          ALTER TABLE tbl_ont_contracts_copy ADD COLUMN project varchar(255) NOT NULL DEFAULT '' COMMENT '项目名称';
+          ALTER TABLE tbl_ont_contracts ADD COLUMN project varchar(255) NOT NULL DEFAULT '' COMMENT '项目名称';
         END IF;
   END;
 
-CALL add_tbl_ont_contracts_copy;
-DROP PROCEDURE add_tbl_ont_contracts_copy;
+CALL add_tbl_ont_contracts;
+DROP PROCEDURE add_tbl_ont_contracts;
 
 
 DROP TABLE IF EXISTS `tbl_ont_contract_summary`;
@@ -67,3 +67,13 @@ KEY `idx_toaddr` (`toaddress`),
 KEY `idx_height` (`height`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+DROP TABLE IF EXISTS `tbl_ont_address_summary`;
+CREATE TABLE `tbl_ont_address_summary` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `time` int(11) NOT NULL,
+  `type` varchar(64) NOT NULL COMMENT 'common:普通转账 contracthash：合约地址',
+  `address` varchar(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `idx_time` (`time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -190,4 +190,9 @@
     where blocktime >= #{StartTime}
     and <![CDATA[ blocktime < #{EndTime} ]]>
   </select>
+
+  <select id="selectBlockMaxTime" resultType="java.lang.Integer">
+    select MAX(blocktime) as time
+      from tbl_ont_block
+  </select>
 </mapper>

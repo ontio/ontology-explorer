@@ -177,4 +177,10 @@
   <delete id="deletContractByHash" parameterType="String">
     DELETE FROM tbl_ont_oep5 WHERE contract = #{contractHash}
   </delete>
+
+  <select id="selectAllKeyInfo" resultType="java.util.Map">
+    select Contract, name as Symbol
+    from tbl_ont_oep5
+    where auditflag = 1
+  </select>
 </mapper>

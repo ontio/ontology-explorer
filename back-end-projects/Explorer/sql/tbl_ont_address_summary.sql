@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS `tbl_ont_address_summary`;
 CREATE TABLE `tbl_ont_address_summary` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `time` int(11) NOT NULL,
-  `contract` varchar(64) NOT NULL COMMENT 'common:普通转账 contracthash：合约地址',
+  `type` varchar(64) NOT NULL COMMENT 'common:普通转账 contracthash：合约地址',
   `address` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `idx_time` (`time`)
