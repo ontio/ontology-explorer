@@ -269,20 +269,22 @@ module.exports = {
       code: 'ByteCode',
       abi: 'ABI',
       totalSupply: 'Total Supply: ',
-      decimals: 'Decimals: '
+      decimals: 'Decimals: ',
+      statistic: 'Statistics'
     }
   },
   statistics: {
     name: 'History Statistics',
-    newAddressLbl: '14 Day New Address',
-    activeAddressLbl: '14 Day Active Address',
-    blockLbl: '14 Day New Block',
-    newOntIdLbl: '14 Day New ONT-ID',
-    activeOntIdLbl: '14 Day Active ONT-ID',
-    sumAddressLbl: '14 Day Address Growth',
-    sumOntIdLbl: '14 Day ONT-ID Growth',
-    txnLbl: '14 Day Transaction History',
-    ontLbl: '14 Day ONT Amount',
-    ongLbl: '14 Day ONG Amount'
+    day: ' Day ',
+    newAddressLbl: 'New Address',
+    activeAddressLbl: 'Active Address',
+    blockLbl: 'New Block',
+    newOntIdLbl: 'New ONT-ID',
+    activeOntIdLbl: 'Active ONT-ID',
+    sumAddressLbl: 'Address Growth',
+    sumOntIdLbl: 'ONT-ID Growth',
+    txnLbl: 'Transaction History',
+    ontLbl: 'ONT Amount',
+    ongLbl: 'ONG Amount'
   }
 };

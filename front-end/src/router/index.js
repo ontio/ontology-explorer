@@ -199,13 +199,23 @@ let routes = [
     component: TokenDetail
   },
   {
-    path: '/statistics/table/',
-    name: 'StatisticsTable',
+    path: '/statistics/:day',
+    name: 'Statistics',
     component: StatisticsTable
   },
   {
-    path: '/statistics/table/:net',
-    name: 'StatisticsTableTest',
+    path: '/statistics/:day/:net',
+    name: 'StatisticsTest',
+    component: StatisticsTable
+  },
+  {
+    path: '/statistics/contract/:contractHash/:day',
+    name: 'StatisticsContract',
+    component: StatisticsTable
+  },
+  {
+    path: '/statistics/contract/:contractHash/:day/:net',
+    name: 'StatisticsContractTest',
     component: StatisticsTable
   }
 ];

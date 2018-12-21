@@ -269,20 +269,22 @@ module.exports = {
       code: '字节代码',
       abi: 'ABI',
       totalSupply: '发行总量：',
-      decimals: '精度位数：'
+      decimals: '精度位数：',
+      statistic: '数据统计'
     }
   },
   statistics: {
     name: '历史统计',
-    newAddressLbl: '14天新增地址数',
-    activeAddressLbl: '14天活动地址数',
-    blockLbl: '14天新增区块数',
-    newOntIdLbl: '14天新增ONT-ID数',
-    activeOntIdLbl: '14天活动ONT-ID数',
-    sumAddressLbl: '14天地址增长',
-    sumOntIdLbl: '14天ONT-ID增长',
-    txnLbl: '14天交易数',
-    ontLbl: '14天ONT交易总额',
-    ongLbl: '14天ONG交易总额'
+    day: '天',
+    newAddressLbl: '新增地址数',
+    activeAddressLbl: '活动地址数',
+    blockLbl: '新增区块数',
+    newOntIdLbl: '新增ONT-ID数',
+    activeOntIdLbl: '活动ONT-ID数',
+    sumAddressLbl: '地址增长',
+    sumOntIdLbl: 'ONT-ID增长',
+    txnLbl: '交易数',
+    ontLbl: 'ONT交易总额',
+    ongLbl: 'ONG交易总额'
   }
 };
