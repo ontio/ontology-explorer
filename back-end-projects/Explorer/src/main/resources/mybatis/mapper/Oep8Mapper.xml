@@ -224,4 +224,11 @@
   <delete id="deletContractByHash" parameterType="String">
     DELETE FROM tbl_ont_oep8 WHERE contract = #{contractHash}
   </delete>
+
+  <select id="selectAllKeyInfo" resultType="java.util.Map" useCache="false">
+    select Contract, GROUP_CONCAT(name) as Symbol
+    from tbl_ont_oep8
+    where auditflag = 1
+     GROUP BY contract
+  </select>
 </mapper>

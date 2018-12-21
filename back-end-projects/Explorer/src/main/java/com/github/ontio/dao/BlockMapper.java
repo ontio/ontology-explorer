@@ -55,4 +55,5 @@ public interface BlockMapper {
 
     int selectBlockCountInOneDay(@Param("StartTime") long startTime, @Param("EndTime") long endTime);
 
+    Integer selectBlockMaxTime();
 }

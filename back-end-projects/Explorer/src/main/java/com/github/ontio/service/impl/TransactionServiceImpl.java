@@ -20,10 +20,7 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.github.ontio.dao.CurrentMapper;
-import com.github.ontio.dao.Oep4Mapper;
-import com.github.ontio.dao.OntIdMapper;
-import com.github.ontio.dao.TransactionDetailMapper;
+import com.github.ontio.dao.*;
 import com.github.ontio.model.OntId;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ITransactionService;
@@ -55,6 +52,10 @@ public class TransactionServiceImpl implements ITransactionService {
     private TransactionDetailMapper transactionDetailMapper;
     @Autowired
     private Oep4Mapper oep4Mapper;
+    @Autowired
+    private Oep5Mapper oep5Mapper;
+    @Autowired
+    private Oep8Mapper oep8Mapper;
     @Autowired
     private OntIdMapper ontIdMapper;
     @Autowired
@@ -505,17 +506,60 @@ public class TransactionServiceImpl implements ITransactionService {
         if (Helper.isEmptyOrNull(assetName) || assetName.startsWith("pumpkin")) {
             balanceList = getPumpkinBalance(sdk, balanceList, address, assetName);
         }
+
         //OEP4余额
         List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
-        for (Map map :
-                oep4s) {
+        for (Map map : oep4s) {
+            String contract = (String) map.get("Contract");
+            BigDecimal balance = new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal) map.get("Decimals")).intValue())));
+            if (balance.equals(new BigDecimal(0))){
+                continue;
+            }
+
+            String symbol = (String) map.get("Symbol");
+            Map<String, Object> oep4Map = new HashMap<>();
+            oep4Map.put("AssertType", "OEP4");
+            oep4Map.put("AssetName", symbol);
+            oep4Map.put("Balance", balance.toPlainString());
+            balanceList.add(oep4Map);
+        }
+
+        //OEP5余额
+        List<Map> oep5s = oep5Mapper.selectAllKeyInfo();
+        for (Map map : oep5s) {
+            String contract = (String) map.get("Contract");
+            BigDecimal balance = new BigDecimal(sdk.getAddressOep5Balance(address, contract));
+            if (balance.equals(new BigDecimal(0))){
+                continue;
+            }
+
+            String symbol = (String) map.get("Symbol");
+            Map<String, Object> oep4Map = new HashMap<>();
+            oep4Map.put("AssertType", "OEP5");
+            oep4Map.put("AssetName", symbol);
+            oep4Map.put("Balance", balance.toPlainString());
+            balanceList.add(oep4Map);
+        }
+
+        //OEP8余额
+        List<Map> oep8s = oep8Mapper.selectAllKeyInfo();
+        for (Map map : oep8s) {
             String contract = (String) map.get("Contract");
             String symbol = (String) map.get("Symbol");
 
-            Map<String, Object> oep4Map = new HashMap<>();
-            oep4Map.put("AssetName", symbol);
-            oep4Map.put("Balance", new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal) map.get("Decimals")).intValue()))).toPlainString());
-            balanceList.add(oep4Map);
+            JSONArray balanceArray = sdk.getAddressOpe8Balance(address, contract);
+            String[] symbols = symbol.split(",");
+            for (int i = 0; i < symbols.length; i++){
+                if (Integer.parseInt((String) balanceArray.get(i)) == 0){
+                    continue;
+                }
+
+                Map<String, Object> oep8Map = new HashMap<>();
+                oep8Map.put("AssertType", "OEP8");
+                oep8Map.put("AssetName", symbols[i]);
+                oep8Map.put("Balance", balanceArray.get(i));
+                balanceList.add(oep8Map);
+            }
         }
 
         return balanceList;
@@ -540,6 +584,7 @@ public class TransactionServiceImpl implements ITransactionService {
             pumpkinTotal = pumpkinTotal + Integer.valueOf((String) obj);
         }
         Map<String, Object> pumpkinMap = new HashMap<>();
+        pumpkinMap.put("AssertType", "OEP8");
         switch (assetName) {
             case "pumpkin08":
                 pumpkinMap.put("AssetName", assetName);
@@ -604,41 +649,49 @@ public class TransactionServiceImpl implements ITransactionService {
     private List<Object> getAllPumpkinBalance(JSONArray oep8Balance, List<Object> balanceList) {
 
         Map<String, Object> pumpkinMap8 = new HashMap<>();
+        pumpkinMap8.put("AssertType", "OEP8");
         pumpkinMap8.put("AssetName", "pumpkin08");
         pumpkinMap8.put("Balance", oep8Balance.get(7).toString());
         balanceList.add(pumpkinMap8);
 
         Map<String, Object> pumpkinMap7 = new HashMap<>();
+        pumpkinMap7.put("AssertType", "OEP8");
         pumpkinMap7.put("AssetName", "pumpkin07");
         pumpkinMap7.put("Balance", oep8Balance.get(6).toString());
         balanceList.add(pumpkinMap7);
 
         Map<String, Object> pumpkinMap6 = new HashMap<>();
+        pumpkinMap6.put("AssertType", "OEP8");
         pumpkinMap6.put("AssetName", "pumpkin06");
         pumpkinMap6.put("Balance", oep8Balance.get(5).toString());
         balanceList.add(pumpkinMap6);
 
         Map<String, Object> pumpkinMap5 = new HashMap<>();
+        pumpkinMap5.put("AssertType", "OEP8");
         pumpkinMap5.put("AssetName", "pumpkin05");
         pumpkinMap5.put("Balance", oep8Balance.get(4).toString());
         balanceList.add(pumpkinMap5);
 
         Map<String, Object> pumpkinMap4 = new HashMap<>();
+        pumpkinMap4.put("AssertType", "OEP8");
         pumpkinMap4.put("AssetName", "pumpkin04");
         pumpkinMap4.put("Balance", oep8Balance.get(3).toString());
         balanceList.add(pumpkinMap4);
 
         Map<String, Object> pumpkinMap3 = new HashMap<>();
+        pumpkinMap3.put("AssertType", "OEP8");
         pumpkinMap3.put("AssetName", "pumpkin03");
         pumpkinMap3.put("Balance", oep8Balance.get(2).toString());
         balanceList.add(pumpkinMap3);
 
         Map<String, Object> pumpkinMap2 = new HashMap<>();
+        pumpkinMap2.put("AssertType", "OEP8");
         pumpkinMap2.put("AssetName", "pumpkin02");
         pumpkinMap2.put("Balance", oep8Balance.get(1).toString());
         balanceList.add(pumpkinMap2);
 
         Map<String, Object> pumpkinMap1 = new HashMap<>();
+        pumpkinMap1.put("AssertType", "OEP8");
         pumpkinMap1.put("AssetName", "pumpkin01");
         pumpkinMap1.put("Balance", oep8Balance.get(0).toString());
         balanceList.add(pumpkinMap1);
