@@ -339,7 +339,7 @@ public class TxnHandlerThread {
             oep5Mapper.updateByPrimaryKeySelective(oep5);
         }
 
-        OEP4TXN = true;
+        OEP5TXN = true;
     }
 
     private void handleTransferTxn(SqlSession session, JSONArray stateList, int txnType, String txnHash,

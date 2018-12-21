@@ -28,4 +28,6 @@ public interface Oep5Mapper {
     Oep5 queryOEPContract(String contractHash);
 
     int deletContractByHash(String contractHash);
+
+    List<Map> selectAllKeyInfo();
 }

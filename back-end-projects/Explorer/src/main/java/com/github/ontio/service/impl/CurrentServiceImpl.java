@@ -69,12 +69,6 @@ public class CurrentServiceImpl implements ICurrentService {
     private ContractsMapper contractsMapper;
 
     @Autowired
-    private DailySummaryMapper dailySummaryMapper;
-
-    @Autowired
-    private ContractSummaryMapper contractSummaryMapper;
-
-    @Autowired
     private ConfigParam configParam;
 
     private OntologySDKService sdk;
@@ -90,10 +84,10 @@ public class CurrentServiceImpl implements ICurrentService {
         Map summary = currentMapper.selectSummaryInfo();
        // List<String> addrList = transactionDetailMapper.selectAllAddress();
         initSDK();
-        int nodeCount = sdk.getNodeCount();
+//        int nodeCount = sdk.getNodeCount();
         Map<String, Object> rs = new HashMap();
 
-        rs.put("NodeCount", nodeCount);
+        rs.put("NodeCount", Integer.parseInt(configParam.SDK_NODE_COUNT));
         rs.put("CurrentHeight", summary.get("Height"));
         rs.put("TxnCount", summary.get("TxnCount"));
         rs.put("OntIdCount", summary.get("OntIdCount"));

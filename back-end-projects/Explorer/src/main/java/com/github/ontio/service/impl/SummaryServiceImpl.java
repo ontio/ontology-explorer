@@ -89,8 +89,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
         // 节点数
         initSDK();
-        int nodeCount = sdk.getNodeCount();
-        resultMap.put("NodeCount", nodeCount);
+        resultMap.put("NodeCount", Integer.parseInt(configParam.SDK_NODE_COUNT));
 
         // 区块高度、交易总数、OntId总数
         Map summary = currentMapper.selectSummaryInfo();
@@ -134,6 +133,10 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result summaryAllInfo() {
+        if (!configParam.EXPLORER_DAILY_SCHEDULE.equalsIgnoreCase("true")){
+            return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
+        }
+
         // blockCount、txCount、ontCount、ongCount、activeAddressCount、newAddressCount、ontidactivecount、ontidnewacount
         Integer perTime = 24 * 60 * 60;
         Integer startTime = dailySummaryMapper.selectMaxTime();
@@ -145,8 +148,9 @@ public class SummaryServiceImpl implements ISummaryService {
             startTime += perTime;
         }
 
+        Integer maxTime = blockMapper.selectBlockMaxTime();
         Map paramMap = new HashMap<>();
-        while (System.currentTimeMillis() / 1000 > (startTime + perTime)){
+        while (maxTime > (startTime + 2 * perTime)){
             paramMap.put("startTime", startTime);
             paramMap.put("endTime", startTime + perTime);
 
@@ -165,7 +169,7 @@ public class SummaryServiceImpl implements ISummaryService {
             startTime = startTime + perTime;
         }
 
-        return Helper.result("QueryMarketingInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
+        return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
     }
 
     private void setDailySummary(Integer startTime, Integer blockCount, Integer newOntidCount, Integer activeOntidCount){
