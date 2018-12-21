@@ -8,8 +8,8 @@
     mounted() {
       // 使用本体蓝做渐变色
       this.gradient = this.$refs.canvas.getContext('2d').createLinearGradient(0, 0, 0, 450);
-      this.gradient.addColorStop(0, 'rgba(54, 163 ,188, 0.6)');
-      this.gradient.addColorStop(0.5, 'rgba(54, 163, 188, 0.3)');
+      this.gradient.addColorStop(0, 'rgba(54, 163 ,188, 0.5)');
+      this.gradient.addColorStop(0.5, 'rgba(54, 163, 188, 0.25)');
       this.gradient.addColorStop(1, 'rgba(54, 163, 188, 0)');
 
       this.renderChart({
@@ -18,13 +18,13 @@
           {
             label: this.label,
             data: this.data,
-            borderColor: '#36a3bc',
-            borderWidth: 2,
+            // borderColor: '#36a3bc',
+            borderWidth: 1,
             backgroundColor: this.gradient, //线性图的渐变颜色
             pointBackgroundColor: '#36a3bc', //x轴 Y轴对应圆点的颜色
             pointBorderColor: 'white', //x轴 Y轴对应圆点的圆点border的颜色
             fontSize: 12, //字体的大小
-            radius: '4' //圆点的半径
+            radius: '2' //圆点的半径
           }
         ]
       }, {

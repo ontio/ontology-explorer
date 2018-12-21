@@ -4,8 +4,8 @@
     <detail-title :name="$t('addressDetail.address')" :val="$route.params.address"></detail-title>
 
     <!--主要余额显示-->
-    <detail-block-2 :name1="$t('addressDetail.ontBalance')" :val1="$HelperTools.toFinancialVal(assetsVal.ont)" :rows1="'1.3'"
-                    :name2="$t('addressDetail.ongBalance')" :val2="$HelperTools.toFinancialVal(assetsVal.ong)" :rows2="'1.3'">
+    <detail-block-2 :name1="$t('addressDetail.ontBalance')" :val1="assetsVal.ont" :rows1="'1.3'"
+                    :name2="$t('addressDetail.ongBalance')" :val2="assetsVal.ong" :rows2="'1.3'">
     </detail-block-2>
 
     <!--可领取和未领取的ONG显示-->
@@ -120,19 +120,19 @@
                       <!--支出-->
                       <span class="expenditure-color" v-if="tl.FromAddress === $route.params.address">
                         <span v-if="tl.AssetName.indexOf('pumpkin') > -1">
-                          {{ '-' + parseFloat(tl.Amount) + ' ' + $t('assetName.' + tl.AssetName ) }}
+                          {{ '-' + $HelperTools.toFinancialVal(tl.Amount) + ' ' + $t('assetName.' + tl.AssetName ) }}
                         </span>
                         <span v-else>
-                          {{ '-' + parseFloat(tl.Amount) + ' ' + tl.AssetName.toUpperCase() }}
+                          {{ '-' + $HelperTools.toFinancialVal(tl.Amount) + ' ' + tl.AssetName.toUpperCase() }}
                         </span>
                       </span>
                       <!--收入-->
                       <span class="income-color" v-else>
                         <span v-if="tl.AssetName.indexOf('pumpkin') > -1">
-                          {{ parseFloat(tl.Amount) + ' ' + $t('assetName.' + tl.AssetName ) }}
+                          {{ $HelperTools.toFinancialVal(tl.Amount) + ' ' + $t('assetName.' + tl.AssetName ) }}
                         </span>
                         <span v-else>
-                          {{ parseFloat(tl.Amount) + ' ' + tl.AssetName.toUpperCase() }}
+                          {{ $HelperTools.toFinancialVal(tl.Amount) + ' ' + tl.AssetName.toUpperCase() }}
                         </span>
                       </span>
 
@@ -222,7 +222,7 @@
         let retAssets = {};
 
         for (let index in this.AssetBalance) {
-          retAssets[this.AssetBalance[index].AssetName] = this.AssetBalance[index].Balance
+          retAssets[this.AssetBalance[index].AssetName] = this.$HelperTools.toFinancialVal(this.AssetBalance[index].Balance)
         }
 
         return retAssets
