@@ -269,7 +269,8 @@ module.exports = {
       code: 'ByteCode',
       abi: 'ABI',
       totalSupply: 'Total Supply: ',
-      decimals: 'Decimals: '
+      decimals: 'Decimals: ',
+      statistic: 'Statistics'
     }
   },
   statistics: {

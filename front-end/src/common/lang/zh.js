@@ -269,7 +269,8 @@ module.exports = {
       code: '字节代码',
       abi: 'ABI',
       totalSupply: '发行总量：',
-      decimals: '精度位数：'
+      decimals: '精度位数：',
+      statistic: '数据统计'
     }
   },
   statistics: {

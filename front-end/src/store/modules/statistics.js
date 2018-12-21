@@ -109,15 +109,15 @@ export default {
       let url = apiUrl + '/summary/daily/' + startTimestamp + '/' + timestamp;
 
       // 如果有hash，说明是合约信息
-      if (typeof($param.hash) !== "undefined") {
-        url = apiUrl + '/summary/contract/' + $param.hash + '/daily/' + startTimestamp + '/' + timestamp;
+      if (typeof($param.contractHash) !== "undefined") {
+        url = apiUrl + '/summary/contract/' + $param.contractHash + '/daily/' + startTimestamp + '/' + timestamp;
       }
 
       return axios.get(url).then(response => {
         let list = response.data.Result.SummaryList;
         let chartData = list;
 
-        if (typeof($param.hash) !== "undefined") {
+        if (typeof($param.contractHash) !== "undefined") {
           chartData = setContractData(list)
         } else {
           chartData = setAllData(list)

@@ -79,6 +79,9 @@
       <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#scABI">{{ $t('tokens.detail.abi') }}</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#scStatistic">{{ $t('tokens.detail.statistic') }}</a>
+      </li>
     </ul>
 
     <!-- Tab panes -->
@@ -164,6 +167,24 @@
           </div>
         </div>
       </div>
+      <div id="scStatistic" class="container tab-pane">
+        <div class="row">
+          <div class="col">
+            <div class="detail-col">
+              <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" v-for="item in statisticsData.data">
+                  <line-chart class="line-chart-style"
+                              :labels="statisticsData.labels"
+                              :label="14 + $t('statistics.day') + $t('statistics.' + item.label)"
+                              :data="item.list"
+                  >
+                  </line-chart>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -175,14 +196,16 @@
   export default {
     name: "Contracts-Detail",
     created() {
-      this.getContractData()
+      this.getContractData();
+      this.getStatisticsData();
     },
     watch: {
-      '$route': 'getContractData'
+      '$route': 'getContractData, getStatisticsData'
     },
     computed: {
       ...mapState({
-        contractData: state => state.ContractData.Contract
+        contractData: state => state.ContractData.Contract,
+        statisticsData: state => state.Statistics.StatisticsData
       })
     },
     data() {
@@ -205,15 +228,18 @@
       copyDetailVal($id) {
         let clipboard = new Clipboard('.copy-success');
 
-        clipboard.on('success', function(e) {
+        clipboard.on('success', function (e) {
           e.clearSelection();
         });
 
-        if($id === 'scCodeData') {
+        if ($id === 'scCodeData') {
           this.showCodeCopied = true
         } else {
           this.showABICopied = true
         }
+      },
+      getStatisticsData() {
+        this.$store.dispatch('getStatisticsData', this.$route.params).then()
       }
     }
   }
@@ -295,5 +321,13 @@
 
   .copy-bottom {
     margin-bottom: 5px;
+  }
+
+  .line-chart-style {
+    width: 100%;
+    height: 240px;
+    margin: 0 0 15px;
+    background-color: transparent;
+    border: 1px solid #edf2f5;
   }
 </style>

@@ -209,12 +209,12 @@ let routes = [
     component: StatisticsTable
   },
   {
-    path: '/statistics/contract/:hash/:day',
+    path: '/statistics/contract/:contractHash/:day',
     name: 'StatisticsContract',
     component: StatisticsTable
   },
   {
-    path: '/statistics/contract/:hash/:day/:net',
+    path: '/statistics/contract/:contractHash/:day/:net',
     name: 'StatisticsContractTest',
     component: StatisticsTable
   }

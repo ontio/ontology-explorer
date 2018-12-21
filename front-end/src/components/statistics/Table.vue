@@ -7,9 +7,9 @@
         <div class="col">
           <div class="btn-group">
             <button type="button"
-                    :disabled="typeof(this.$route.params.hash) === 'undefined'"
+                    :disabled="typeof(this.$route.params.contractHash) === 'undefined'"
                     @click="toAllStatistics"
-                    :class="typeof(this.$route.params.hash) === 'undefined' ? 'btn-current' : 'btn-choose'"
+                    :class="typeof(this.$route.params.contractHash) === 'undefined' ? 'btn-current' : 'btn-choose'"
                     class="btn">All</button>
             <div class="btn-group">
               <button type="button" class="btn btn-choose dropdown-toggle" data-toggle="dropdown">
@@ -77,7 +77,7 @@
       }),
       titName: function () {
         for (let scIndex in this.scList) {
-          if (this.scList[scIndex].ContractHash === this.$route.params.hash) {
+          if (this.scList[scIndex].ContractHash === this.$route.params.contractHash) {
             return this.scList[scIndex].Name + ' '
           }
         }
@@ -90,8 +90,8 @@
         let name = 'Statistics';
         let params = {day: $days};
 
-        if (typeof(this.$route.params.hash) !== "undefined") {
-          params.hash = this.$route.params.hash;
+        if (typeof(this.$route.params.contractHash) !== "undefined") {
+          params.contractHash = this.$route.params.contractHash;
           name = name + 'Contract'
         }
 
@@ -105,11 +105,11 @@
         location.reload()
       },
       toScStatistics($hash) {
-        this.$route.params.hash = $hash;
+        this.$route.params.contractHash = $hash;
         this.toStatistics(this.$route.params.day)
       },
       toAllStatistics() {
-        delete(this.$route.params.hash);
+        delete(this.$route.params.contractHash);
         this.toStatistics(this.$route.params.day)
       },
       getTableData() {
