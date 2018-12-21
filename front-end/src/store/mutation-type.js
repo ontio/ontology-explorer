@@ -27,3 +27,4 @@ export const SET_TOKENS_DATA = 'SET_TOKENS_DATA';
 export const SET_TOKEN_DATA = 'SET_TOKEN_DATA';
 
 export const SET_STATISTICS_DATA = 'SET_STATISTICS_DATA';
+export const SET_SC_LIST = 'SET_SC_LIST';

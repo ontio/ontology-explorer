@@ -5,21 +5,21 @@
         <span class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</span>
         <span class="view-go-to">>></span>
         <span class="d-block run-status-p font-ExtraLight font-size48">
-          <span>{{blockStatus.info.CurrentHeight}}</span>
+          <span>{{ $HelperTools.toFinancialVal(blockStatus.info.CurrentHeight) }}</span>
         </span>
       </div>
       <div class="col col-click" @click="toTransactionListPage">
         <span class="run-status-label">{{ $t('runStatus.TxnCount') }}</span>
         <span class="view-go-to">>></span>
         <span class="d-block run-status-p font-ExtraLight font-size48">
-          <span>{{blockStatus.info.TxnCount}}</span>
+          <span>{{ $HelperTools.toFinancialVal(blockStatus.info.TxnCount) }}</span>
         </span>
       </div>
       <div class="col col-click" @click="toOnlineNodes" v-if="$route.params.net !== 'testnet'">
         <span class="run-status-label">{{ $t('runStatus.NodeCount') }}</span>
         <span class="view-go-to">>></span>
         <span class="d-block run-status-p font-ExtraLight font-size48">
-          <span>{{blockStatus.info.NodeCount}}</span>
+          <span>{{ $HelperTools.toFinancialVal(blockStatus.info.NodeCount) }}</span>
         </span>
       </div>
       <!--<div class="col col-click" @click="toAddressListPage">-->
@@ -27,14 +27,14 @@
         <span class="run-status-label">{{ $t('runStatus.addressCount') }}</span>
         <!--<span class="view-go-to">>></span>-->
         <span class="d-block run-status-p font-ExtraLight font-size48">
-          <span>{{blockStatus.info.AddressCount}}</span>
+          <span>{{ $HelperTools.toFinancialVal(blockStatus.info.AddressCount) }}</span>
         </span>
       </div>
       <div class="col col-click" @click="toOntIdListPage">
         <span class="run-status-label">{{ $t('runStatus.ontid') }}</span>
         <span class="view-go-to">>></span>
         <span class="d-block run-status-p font-ExtraLight font-size48">
-          <span>{{blockStatus.info.OntIdCount}}</span>
+          <span>{{ $HelperTools.toFinancialVal(blockStatus.info.OntIdCount) }}</span>
         </span>
       </div>
     </div>
