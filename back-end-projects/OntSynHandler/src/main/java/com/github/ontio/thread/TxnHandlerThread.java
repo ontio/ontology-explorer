@@ -119,7 +119,7 @@ public class TxnHandlerThread {
             }
 
             JSONArray notifyList = eventObj.getJSONArray("Notify");
-            if(notifyList.size() == 0){
+            if (notifyList.size() == 0) {
                 //no event transaction
                 insertTxnBasicInfo(session, txnType, txnHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
                         gasConsumed, 1, 0, "");
@@ -137,8 +137,7 @@ public class TxnHandlerThread {
                 Object object = notifyObj.get("States");
                 if (object instanceof JSONArray) {
                     stateArray = (JSONArray) object;
-                }
-                else {
+                } else {
                     continue;
                 }
 
@@ -205,7 +204,7 @@ public class TxnHandlerThread {
         }
     }
 
-    private void deployContractHandle(SqlSession session, JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, BigDecimal gasConsumed) throws Exception{
+    private void deployContractHandle(SqlSession session, JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, BigDecimal gasConsumed) throws Exception {
 
         String txnHash = txnJson.getString("Hash");
         int txnType = txnJson.getInteger("TxType");
@@ -224,16 +223,16 @@ public class TxnHandlerThread {
         }
     }
 
-    private void judgeIsOepTransaction(JSONArray notifyList){
+    private void judgeIsOepTransaction(JSONArray notifyList) {
         for (int i = 0, len = notifyList.size(); i < len; i++) {
             JSONObject notifyObj = (JSONObject) notifyList.get(i);
             String contractAddress = notifyObj.getString("ContractAddress");
 
-            if(configParam.DRAGON_CODEHASH.equals(contractAddress) || ConstantParam.OEP5CONTRACTS.contains(contractAddress)){
+            if (configParam.DRAGON_CODEHASH.equals(contractAddress) || ConstantParam.OEP5CONTRACTS.contains(contractAddress)) {
                 OEP5TXN = true;
-            }else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)){
+            } else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)) {
                 OEP4TXN = true;
-            }else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)){
+            } else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)) {
                 OEP8TXN = true;
             }
         }
@@ -248,8 +247,8 @@ public class TxnHandlerThread {
     }
 
     private void handlePumpkinTransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash,
-                                         int blockHeight, int blockTime, int indexInBlock,
-                                         BigDecimal gasConsumed, int indexInTxn, int confirmFlag, String contractAddress) throws Exception {
+                                          int blockHeight, int blockTime, int indexInBlock,
+                                          BigDecimal gasConsumed, int indexInTxn, int confirmFlag, String contractAddress) throws Exception {
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
         String fromAddress = (String) stateArray.get(1);
@@ -298,8 +297,8 @@ public class TxnHandlerThread {
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
     }
 
-    private void handleDragonTransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash,int blockHeight, int blockTime,
-                                         int indexInBlock, BigDecimal gasConsumed, int indexInTxn, int confirmFlag, String contractAddress, Object oep5Obj) throws Exception{
+    private void handleDragonTransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash, int blockHeight, int blockTime,
+                                         int indexInBlock, BigDecimal gasConsumed, int indexInTxn, int confirmFlag, String contractAddress, Object oep5Obj) throws Exception {
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
         String fromAddress = (String) stateArray.get(1);
@@ -312,28 +311,27 @@ public class TxnHandlerThread {
         }
 
         String assetName = "";
-        if(oep5Obj == null || "HyperDragons".equalsIgnoreCase(((JSONObject) oep5Obj).getString("Name"))){
+        if (oep5Obj == null || "HyperDragons".equalsIgnoreCase(((JSONObject) oep5Obj).getString("Name"))) {
             // 如果是birth方法，id位置在2；如果是transfer方法，id位置在3
             int dragonIdIndex = 3;
-            if("birth".equalsIgnoreCase(action)){
+            if ("birth".equalsIgnoreCase(action)) {
                 dragonIdIndex = 2;
             }
             assetName = "HyperDragons: " + Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(dragonIdIndex))).toString();
-        }
-        else {
+        } else {
             assetName = ((JSONObject) oep5Obj).getString("Name") + ": " + stateArray.get(3);
         }
 
         logger.info("fromaddress:{}, toaddress:{}, dragonId:{}", fromAddress, toAddress, assetName);
         Oep8TxnDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, new BigDecimal("1"), txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 3, contractAddress);
-        if(!"transfer".equalsIgnoreCase(action)){
+        if (!"transfer".equalsIgnoreCase(action)) {
             transactionDetailDO.setAmount(ConstantParam.ZERO);
         }
 
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
         session.insert("com.github.ontio.dao.Oep5TxnDetailMapper.insertSelective", transactionDetailDO);
-        if("birth".equalsIgnoreCase(action) && oep5Obj != null){
+        if ("birth".equalsIgnoreCase(action) && oep5Obj != null) {
             Oep5 oep5 = oep5Mapper.selectByPrimaryKey(contractAddress);
             oep5.setTotalsupply(oep5.getTotalsupply().add(new BigDecimal(1)));
             oep5Mapper.updateByPrimaryKeySelective(oep5);
@@ -343,8 +341,8 @@ public class TxnHandlerThread {
     }
 
     private void handleTransferTxn(SqlSession session, JSONArray stateList, int txnType, String txnHash,
-                                  int blockHeight, int blockTime, int indexInBlock, String contractAddress,
-                                  BigDecimal gasConsumed, int indexInTxn, int notifyListSize, int confirmFlag) throws Exception {
+                                   int blockHeight, int blockTime, int indexInBlock, String contractAddress,
+                                   BigDecimal gasConsumed, int indexInTxn, int notifyListSize, int confirmFlag) throws Exception {
 
         int eventType = 3;
         String assetName = "";
@@ -369,22 +367,21 @@ public class TxnHandlerThread {
         Oep8TxnDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, amount, txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, eventType, contractAddress);
 
-        session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", (TransactionDetail)transactionDetailDO);
+        session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", (TransactionDetail) transactionDetailDO);
 
         // OEP交易的手续费入库
-        if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) && (OEP4TXN || OEP5TXN || OEP8TXN)){
-            if (OEP8TXN){
+        if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) && (OEP4TXN || OEP5TXN || OEP8TXN)) {
+            if (OEP8TXN) {
                 transactionDetailDO.setTokenname("");
                 session.insert("com.github.ontio.dao.Oep8TxnDetailMapper.insertSelective", transactionDetailDO);
-            }
-            else {
-                session.insert("com.github.ontio.dao.Oep4TxnDetailMapper.insertSelective", (TransactionDetail)transactionDetailDO);
+            } else {
+                session.insert("com.github.ontio.dao.Oep4TxnDetailMapper.insertSelective", (TransactionDetail) transactionDetailDO);
             }
         }
     }
 
     private void handleOntIdTxn(SqlSession session, JSONArray stateList, int txnType, String txnHash, int blockHeight, int blockTime, int indexInBlock,
-                               BigDecimal gasConsumed, int indexInTxn, String contractAddress) throws Exception {
+                                BigDecimal gasConsumed, int indexInTxn, String contractAddress) throws Exception {
 
         String action = stateList.getString(0);
         String ontId = "";
@@ -415,7 +412,7 @@ public class TxnHandlerThread {
     }
 
     private void handleClaimRecordTxn(SqlSession session, JSONArray stateList, int txnType, String txnHash, int blockHeight, int blockTime, int indexInBlock,
-                                     BigDecimal gasConsumed, int indexInTxn, String contractAddress) throws Exception {
+                                      BigDecimal gasConsumed, int indexInTxn, String contractAddress) throws Exception {
 
         String actionType = new String(Helper.hexToBytes(stateList.getString(0)));
         StringBuilder sb = new StringBuilder(140);
@@ -437,8 +434,8 @@ public class TxnHandlerThread {
     }
 
     private Oep8TxnDetail generateTransaction(String fromAddress, String toAddress, String assetName, BigDecimal account, int txnType,
-                                                  String txnHash, int blockHeight, int blockTime, int indexInBlock, int confirmFlag,
-                                                  String action, BigDecimal gasConsumed, int indexInTxn, int eventType, String contractAddress){
+                                              String txnHash, int blockHeight, int blockTime, int indexInBlock, int confirmFlag,
+                                              String action, BigDecimal gasConsumed, int indexInTxn, int eventType, String contractAddress) {
 
         Oep8TxnDetail txDetail = new Oep8TxnDetail();
         txDetail.setFromaddress(fromAddress);
@@ -461,7 +458,7 @@ public class TxnHandlerThread {
     }
 
     private void insertTxnBasicInfo(SqlSession session, int txnType, String txnHash, int blockHeight, int blockTime, int indexInBlock, int confirmFlag,
-                                   String action, BigDecimal gasConsumed, int indexInTxn, int eventType, String contractAddress) throws Exception{
+                                    String action, BigDecimal gasConsumed, int indexInTxn, int eventType, String contractAddress) throws Exception {
 
         Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", ConstantParam.ZERO, txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, eventType, contractAddress);
@@ -469,7 +466,7 @@ public class TxnHandlerThread {
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
     }
 
-    private void insertContratInfo(SqlSession session, String contractAddress, int blockTime, JSONObject contractObj, String playAddress) throws Exception{
+    private void insertContratInfo(SqlSession session, String contractAddress, int blockTime, JSONObject contractObj, String playAddress) throws Exception {
         Contracts contracts = new Contracts();
         contracts.setProject("");
         contracts.setContract(contractAddress);
@@ -488,9 +485,9 @@ public class TxnHandlerThread {
         contractsMapper.insertSelective(contracts);
     }
 
-    private String getNativeContractHash(String contractAddress){
+    private String getNativeContractHash(String contractAddress) {
         String contractHash = "";
-        switch (contractAddress){
+        switch (contractAddress) {
             case "0239dcf9b4a46f15c5f23f20d52fac916a0bac0d":
                 contractHash = configParam.ASSET_ONT_CODEHASH;
                 break;
@@ -511,20 +508,39 @@ public class TxnHandlerThread {
     }
 
     private void handleOep4TransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash,
-                                      int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed,
-                                      int indexInTxn, int confirmFlag, JSONObject oep4Obj, String contractHash) throws Exception {
+                                       int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed,
+                                       int indexInTxn, int confirmFlag, JSONObject oep4Obj, String contractHash) throws Exception {
 
-        String fromAddress = (String)stateArray.get(1);
-        if (40 == fromAddress.length()) {
-            fromAddress = Address.parse(fromAddress).toBase58();
-        }
-        String toAddress = (String) stateArray.get(2);
-        if (40 == toAddress.length()) {
-            toAddress = Address.parse(toAddress).toBase58();
-        }
+        String fromAddress = "";
+        String toAddress = "";
+        BigDecimal eventAmount = new BigDecimal("0");
+        //初始化交易列表长度为3
+        if (stateArray.size() == 3) {
 
-        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+            fromAddress = (String) stateArray.get(0);
+            if (40 == fromAddress.length()) {
+                fromAddress = Address.parse(fromAddress).toBase58();
+            }
+            toAddress = (String) stateArray.get(1);
+            if (40 == toAddress.length()) {
+                toAddress = Address.parse(toAddress).toBase58();
+            }
+            eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).longValue());
+
+        } else {
+            fromAddress = (String) stateArray.get(1);
+            if (40 == fromAddress.length()) {
+                fromAddress = Address.parse(fromAddress).toBase58();
+            }
+            toAddress = (String) stateArray.get(2);
+            if (40 == toAddress.length()) {
+                toAddress = Address.parse(toAddress).toBase58();
+            }
+
+            eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+        }
         logger.info("OEP4TransferTxn:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
+
 
         String assetName = oep4Obj.getString("Symbol");
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, oep4Obj.getInteger("Decimals"))));
@@ -538,13 +554,13 @@ public class TxnHandlerThread {
     }
 
     private void handleOep8TransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash,
-                                      int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed,
-                                      int indexInTxn, int confirmFlag, String contractHash, int stateSize) throws Exception {
-        String fromAddress = (String)stateArray.get(1);
+                                       int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed,
+                                       int indexInTxn, int confirmFlag, String contractHash, int stateSize) throws Exception {
+        String fromAddress = (String) stateArray.get(1);
         String toAddress = (String) stateArray.get(2);
         String tokenId = (String) stateArray.get(3);
         JSONObject oep8Obj = (JSONObject) ConstantParam.OEP8MAP.get(contractHash + "-" + tokenId);
-        if("00".equals(fromAddress) && stateSize == 2){
+        if ("00".equals(fromAddress) && stateSize == 2) {
             // mint方法即增加发行量方法, 区分标志：fromAddress为“00”，同时state数量为2
             Oep8 oep8 = new Oep8();
             oep8.setContract(contractHash);
@@ -721,11 +737,11 @@ public class TxnHandlerThread {
         DeployCode deployCodeObj = (DeployCode) ConstantParam.ONT_SDKSERVICE.getConnect().getTransaction(txnHash);
         String code = Helper.toHexString(deployCodeObj.code);
         String contractAddress = Address.AddressFromVmCode(code).toHexString();
-        logger.info("smartcontract codehash:{}",contractAddress);
+        logger.info("smartcontract codehash:{}", contractAddress);
         JSONObject contractObj = new JSONObject();
         contractObj.put("contractAddress", contractAddress);
-        contractObj.put("Name","");
-        contractObj.put("Description","");
+        contractObj.put("Name", "");
+        contractObj.put("Description", "");
         //catch底层报错，根据合约hash查不到合约信息
         try {
             contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractAddress);
