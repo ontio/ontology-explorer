@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Component(value = "Oep8Mapper")
 public interface Oep8Mapper {
     int deleteByPrimaryKey(Long id);
 
