@@ -132,7 +132,6 @@ public class BlockHandleService {
 
         JSONObject blockHeader = blockJson.getJSONObject("Header");
 
-
         com.github.ontio.model.Block blockDO = new com.github.ontio.model.Block();
         blockDO.setHash(blockJson.getString("Hash"));
         blockDO.setBlocksize(blockJson.getInteger("Size"));

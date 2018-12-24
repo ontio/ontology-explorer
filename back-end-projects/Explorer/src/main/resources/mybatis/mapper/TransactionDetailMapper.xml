@@ -437,6 +437,19 @@
     limit #{Start}, #{PageSize}
   </select>
 
+  <select id="selectOep5ByHash" parameterType="java.util.Map" resultType="java.util.Map" >
+    SELECT a.*, b.Jsonurl from (
+    select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, Contracthash, Assetname
+        from tbl_ont_txn_detail
+        where contracthash = #{contractHash}
+        order by height DESC
+        limit #{Start}, #{PageSize}
+    ) a
+    LEFT JOIN tbl_ont_oep5_dragon b
+    on a.Contracthash = b.contract and a.assetname = b.assertname
+    ORDER by Height DESC
+  </select>
+
   <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer" >
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail

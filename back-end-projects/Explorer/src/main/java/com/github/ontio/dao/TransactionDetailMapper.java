@@ -61,6 +61,8 @@ public interface TransactionDetailMapper {
 
     List<Map> selectContractByHash(Map<String, Object> param);
 
+    List<Map> selectOep5ByHash(Map<String, Object> param);
+
     int selectContractByHashAmount(String contractHash);
 
     int selectContractAddrAmount(String contractHash);
