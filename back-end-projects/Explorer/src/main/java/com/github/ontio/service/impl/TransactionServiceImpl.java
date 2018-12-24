@@ -195,7 +195,7 @@ public class TransactionServiceImpl implements ITransactionService {
             int amount = transactionDetailMapper.selectAddressRecordAmount(address);
             //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
             if (amount > pageNumber * pageSize * 3) {
-                returnTxnList = queryAddressInfoSpe(address, pageNumber, pageSize, amount);
+                returnTxnList = queryAddressInfoSpe(address, pageNumber, pageSize, amount, "");
             } else {
                 //先查询出txnlist，再根据请求条数进行分页
                 //根据分页确认start，end即请求的pageSize条数
@@ -234,10 +234,11 @@ public class TransactionServiceImpl implements ITransactionService {
      * @param amount
      * @return
      */
-    private List<Map> queryAddressInfoSpe(String address, int pageNumber, int pageSize, int amount) {
+    private List<Map> queryAddressInfoSpe(String address, int pageNumber, int pageSize, int amount, String assetName) {
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Address", address);
+        paramMap.put("AssetName", assetName);
         //int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(paramMap);
         //db查询返回总条数or分页的前几十条
 //        int dbReturnNum = (pageNumber * pageSize) > txnAmount ? txnAmount : (pageNumber * pageSize);
@@ -305,7 +306,7 @@ public class TransactionServiceImpl implements ITransactionService {
             int amount = transactionDetailMapper.selectAddressRecordAmount(address);
             //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
             if (amount > pageNumber * pageSize * 3) {
-                returnTxnList = queryAddressInfoSpe(address, pageNumber, pageSize, amount);
+                returnTxnList = queryAddressInfoSpe(address, pageNumber, pageSize, amount, assetName);
             } else {
                 //先查询出txnlist，再根据请求条数进行分页
                 //根据分页确认start，end即请求的pageSize条数
