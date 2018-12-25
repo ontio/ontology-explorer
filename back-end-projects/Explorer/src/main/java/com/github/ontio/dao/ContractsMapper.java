@@ -1,10 +1,12 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.Contracts;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Component(value = "ContractsMapper")
 public interface ContractsMapper {
     int deleteByPrimaryKey(String contract);
 
