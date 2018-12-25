@@ -146,7 +146,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="selectDailySummaryByContractHash" resultType="java.util.Map" parameterType="java.util.Map">
+  <select id="selectDailySummaryByContractHash" resultType="java.util.Map" parameterType="java.util.Map" useCache="false">
     select TxnCount, OntCount, OngCount, ActiveAddress, NewAddress, Time
     from tbl_ont_contract_summary
     where contracthash = #{contractHash} and time >= #{startTime}
