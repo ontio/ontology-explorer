@@ -292,7 +292,7 @@
   </update>
 
   <select id="selectAllContractByProject"  resultType="com.github.ontio.model.Contracts" parameterType="String" useCache="false">
-    select * from tbl_ont_contracts where auditflag = 1 and project = #{project}
+    select * from tbl_ont_contracts where project = #{project}
     order by createtime DESC
   </select>
 

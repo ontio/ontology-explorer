@@ -561,6 +561,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
         // 每天的统计
         Map<Integer, Map<String, Object>> projectMap = new HashMap<>();
+        List<Map> projectSummaryList0 = new ArrayList<>();
         for (Contracts contract: contractsList) {
             Map<String, Object> paramMap = new HashMap();
             paramMap.put("contractHash", contract.getContract());
@@ -575,6 +576,7 @@ public class SummaryServiceImpl implements ISummaryService {
                 Map<String, Object> perMap = projectMap.get(time);
                 if (perMap == null){
                     projectMap.put(time, map);
+                    projectSummaryList0.add(map);
                 }
                 else{
                     perMap.put("TxnCount", (Integer)perMap.get("TxnCount") + (Integer)map.get("TxnCount"));
@@ -586,13 +588,8 @@ public class SummaryServiceImpl implements ISummaryService {
             }
         }
 
-        List<Map> projectSummaryList = new ArrayList<>();
-        for (Map.Entry<Integer, Map<String, Object>> entry: projectMap.entrySet()) {
-            projectSummaryList.add(entry.getValue());
-        }
-
         // 按照type进行统计
-        projectSummaryList = getContractListMap(projectSummaryList, type);
+        projectSummaryList0 = getContractListMap(projectSummaryList0, type);
 
         // 总量的统计
         int txCountSum = 0;
@@ -609,8 +606,8 @@ public class SummaryServiceImpl implements ISummaryService {
         resultMap.put("AddressSum", addressSum);
         resultMap.put("OntCountSum", ontCountSum.toPlainString());
         resultMap.put("OngCountSum", ongCountSum.toPlainString());
-        resultMap.put("SummaryList", projectSummaryList);
-        resultMap.put("Total", projectSummaryList.size());
+        resultMap.put("SummaryList", projectSummaryList0);
+        resultMap.put("Total", projectSummaryList0.size());
 
 
         return Helper.result("QueryProject", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
