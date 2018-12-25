@@ -57,6 +57,8 @@
               <div class="dropdown-menu">
                 <a class="dropdown-item" @click="toTokenList('oep4')"><i class="fas fa-coins"></i>&nbsp;&nbsp;{{ $t('navbar.top.oep4') }}</a>
                 <hr style="margin: 4px 1rem">
+                <a class="dropdown-item" @click="toTokenList('oep5')"><i class="fas fa-coins"></i>&nbsp;&nbsp;{{ $t('navbar.top.oep5') }}</a>
+                <hr style="margin: 4px 1rem">
                 <a class="dropdown-item" @click="toTokenList('oep8')"><i class="fas fa-coins"></i>&nbsp;&nbsp;{{ $t('navbar.top.oep8') }}</a>
               </div>
             </li>
@@ -192,9 +194,9 @@
       },
       toTokenList($type) {
         if (this.$route.params.net === 'testnet') {
-          this.$router.push({name: 'TokenListTest', params: {type: $type, pageSize: 20, pageNumber: 1, net: 'testnet'}})
+          this.$router.push({name: 'TokenListTest', params: {type: $type, pageSize: 10, pageNumber: 1, net: 'testnet'}})
         } else {
-          this.$router.push({name: 'TokenList', params: {type: $type, pageSize: 20, pageNumber: 1}})
+          this.$router.push({name: 'TokenList', params: {type: $type, pageSize: 10, pageNumber: 1}})
         }
       }
     }

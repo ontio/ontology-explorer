@@ -231,7 +231,7 @@ function nodeDetailData() {
       "publickey": "02da86115d1c2450eb5780da3ffd21c0e68c9094f990f3c7c489e0c5d50b72ec43",
       "address": "AZ3P2wyaHzbjQAqgFSDpaTavn2iUSFaHqi",
       "ontid": "did:ont:AWtA9kUr4wXc51WNmYwxd9GrTdyNrY5XMC",
-      "ip": "142.93.233.100",
+      "ip": "178.128.252.38",
     },
     {
       "nodename": "CertiK",
@@ -359,7 +359,7 @@ export default {
           // const nodeProportion = attr.newPeerCost + '%';
           // const userProportion = (100 - attr.newPeerCost) + '%';
           // item.nodeProportion = nodeProportion + ' / ' + userProportion;
-          item.nodeProportion = (100 - attr.newPeerCost) + '%';
+          item.nodeProportion = (100 - attr.t1PeerCost) + '%';
 
           // 只有1和2显示
           if (item.status === 1 || item.status === 2) {
