@@ -157,7 +157,7 @@
     where contract = #{contract,jdbcType=VARCHAR}c
   </update>
 
-  <select id="queryOEPContracts" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="queryOEPContracts" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select a.contract as ContractHash, b.Name, a.TotalSupply, a.Symbol, b.Description, b.ContactInfo,
             b.CreateTime, b.UpdateTime, b.Logo, b.ABI, b.Code, b.TxCount, b.Creator, b.Addresscount, b.OntCount, b.OngCount
     from tbl_ont_oep5 a, tbl_ont_contracts b
@@ -166,11 +166,11 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="queryOEPContractCount" resultType="Integer">
+  <select id="queryOEPContractCount" resultType="Integer" useCache="false">
     select count(*) from tbl_ont_oep5 a,tbl_ont_contracts b where b.auditflag = 1 and a.contract = b.contract
   </select>
 
-  <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep5">
+  <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep5" useCache="false">
     select * from tbl_ont_oep5 where contract = #{contractHash}
   </select>
 
@@ -178,7 +178,7 @@
     DELETE FROM tbl_ont_oep5 WHERE contract = #{contractHash}
   </delete>
 
-  <select id="selectAllKeyInfo" resultType="java.util.Map">
+  <select id="selectAllKeyInfo" resultType="java.util.Map" useCache="false">
     select Contract, name as Symbol
     from tbl_ont_oep5
     where auditflag = 1

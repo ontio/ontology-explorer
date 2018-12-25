@@ -1,10 +1,12 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.Oep4;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Component(value = "Oep4Mapper")
 public interface Oep4Mapper {
     int insert(Oep4 record);
 

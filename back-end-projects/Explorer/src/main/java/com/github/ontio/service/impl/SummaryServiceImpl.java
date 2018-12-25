@@ -150,7 +150,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
         Integer maxTime = blockMapper.selectBlockMaxTime();
         Map paramMap = new HashMap<>();
-        while (maxTime > (startTime + 2 * perTime)){
+        while (maxTime > (startTime + perTime)){
             paramMap.put("startTime", startTime);
             paramMap.put("endTime", startTime + perTime);
 

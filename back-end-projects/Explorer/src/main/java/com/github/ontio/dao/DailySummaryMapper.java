@@ -1,10 +1,12 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.DailySummary;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Component(value = "DailySummaryMapper")
 public interface DailySummaryMapper {
     int deleteByPrimaryKey(Integer time);
 
