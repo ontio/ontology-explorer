@@ -273,7 +273,8 @@ module.exports = {
       decimals: '精度位数：',
       statistic: '数据统计',
       tokenLbl: '通证标签',
-      tokenImg: '通证图片'
+      tokenImg: '通证图片',
+      tip: '注意：该项为累积统计，非实时数据，可能有最多24小时的统计差异。'
     }
   },
   statistics: {
