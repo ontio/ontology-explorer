@@ -273,7 +273,8 @@ module.exports = {
       decimals: 'Decimals: ',
       statistic: 'Statistics',
       tokenLbl: 'Token Label',
-      tokenImg: 'Token Image'
+      tokenImg: 'Token Image',
+      tip: 'Please note: Here is daily cumulative statistics, not real-time summary, there is up to one day statistical difference.'
     }
   },
   statistics: {
