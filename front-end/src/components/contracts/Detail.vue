@@ -80,7 +80,11 @@
         <a class="nav-link" data-toggle="tab" href="#scABI">{{ $t('tokens.detail.abi') }}</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#scStatistic">{{ $t('tokens.detail.statistic') }}</a>
+        <a class="nav-link" data-toggle="tab" href="#scStatistic">{{ $t('tokens.detail.statistic') }}&nbsp;
+          <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+          </a>
+        </a>
       </li>
     </ul>
 
@@ -289,6 +293,12 @@
 
   .height-100 {
     height: 100%;
+  }
+
+  .tooltip-style {
+    padding-left: 6px;
+    color: #AAB3B4;
+    font-size: 16px;
   }
 
   .b-detail-divider-line {
