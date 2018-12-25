@@ -150,7 +150,7 @@
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
 
-  <select id="selectAllKeyInfo" resultType="java.util.Map">
+  <select id="selectAllKeyInfo" resultType="java.util.Map" useCache="false">
     select Contract, Symbol, Decimals
     from tbl_ont_oep4
     where auditflag = 1

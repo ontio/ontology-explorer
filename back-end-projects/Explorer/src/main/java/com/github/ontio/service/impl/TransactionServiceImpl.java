@@ -546,6 +546,9 @@ public class TransactionServiceImpl implements ITransactionService {
         for (Map map : oep8s) {
             String contract = (String) map.get("Contract");
             String symbol = (String) map.get("Symbol");
+            if(symbol.startsWith("pumpkin")){
+                continue;
+            }
 
             JSONArray balanceArray = sdk.getAddressOpe8Balance(address, contract);
             String[] symbols = symbol.split(",");
