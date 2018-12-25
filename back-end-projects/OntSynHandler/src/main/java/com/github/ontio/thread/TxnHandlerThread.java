@@ -52,7 +52,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 
@@ -258,7 +260,7 @@ public class TxnHandlerThread {
         String toAddress = (String) stateArray.get(2);
         String tokenId = (String) stateArray.get(3);
         JSONObject oep8Obj = (JSONObject) ConstantParam.OEP8MAP.get(contractAddress + "-" + tokenId);
-        if ("00".equals(fromAddress) && stateSize == 1) {
+        if ("00".equals(fromAddress) && stateSize == 2) {
             // mint方法即增加发行量方法, 区分标志：fromAddress为“00”，同时state数量为2
             Oep8 oep8 = new Oep8();
             oep8.setContract(contractAddress);
@@ -718,15 +720,15 @@ public class TxnHandlerThread {
 
             Transaction tx = ConstantParam.ONT_SDKSERVICE.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, null, 20000, 500);
             Object obj = ConstantParam.ONT_SDKSERVICE.getConnect().sendRawTransactionPreExec(tx.toHexString());
-            String str = ((JSONObject) obj).getString("Result");
+            String jsonUrl = BuildParams.deserializeItem(Helper.hexToBytes(((JSONObject) obj).getString("Result"))).toString();
 
-            byte[] baKeyword = new byte[str.length() / 2];
-            for (int i = 0; i < baKeyword.length; i++) {
-                baKeyword[i] = (byte) (0xff & Integer.parseInt(str.substring(
-                        i * 2, i * 2 + 2), 16));
+            Map<String, Object> jsonUrlMap = new HashMap<>();
+            if (jsonUrl.contains(",") && jsonUrl.contains("=")){
+                jsonUrlMap.put("image", new String(Helper.hexToBytes(jsonUrl.split(",")[0].split("=")[1])));
+                jsonUrlMap.put("name", new String(Helper.hexToBytes(jsonUrl.split(",")[1].split("=")[1].replaceAll("\\}", ""))));
             }
 
-            return new String(baKeyword, "utf-8");
+            return JSON.toJSONString(jsonUrlMap);
         }
         catch (Exception e){
             logger.error("getAddressOep4Balance error...", e);
