@@ -160,8 +160,7 @@ public class CurrentServiceImpl implements ICurrentService {
                 break;
             case "oep5":
                 if(!Helper.isEmptyOrNull(oep5Mapper.selectByPrimaryKey(contractHash))) {
-                    // 因为南瓜合约的name是pumpkin，不是合约内的tokenName，所以不重新录入
-                    return Helper.result("RegisterContractInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "1.0", true);
+                    oep5Mapper.deletContractByHash(contractHash);
                 }
 
                 JSONObject oep5Info = sdk.queryOep5Info(contractHash);
@@ -183,7 +182,8 @@ public class CurrentServiceImpl implements ICurrentService {
             case "oep8":
                 Oep8 oep8Contract = oep8Mapper.queryOEPContract(contractHash);
                 if(!Helper.isEmptyOrNull(oep8Contract)) {
-                    oep8Mapper.deletContractByHash(contractHash);
+                    // 因为南瓜合约的name是pumpkin，不是合约内的tokenName，所以不重新录入
+                    return Helper.result("RegisterContractInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "1.0", true);
                 }
 
                 // 要求tokenId内容为：01，02，03，04，05
