@@ -107,6 +107,13 @@ export default {
           basicRank: (Number($param.pageNumber) - 1) * $param.pageSize + 1
         };
 
+        // OEP-5
+        if($param.type === 'oep5') {
+          for(let key in info.info.TxnList) {
+            info.info.TxnList[key].Jsonurl = HelperTool.HelperTools.strToJson(info.info.TxnList[key].Jsonurl)
+          }
+        }
+
         commit({
           type: types.SET_TOKEN_DATA,
           info: info
