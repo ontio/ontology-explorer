@@ -236,26 +236,26 @@
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
 
-  <select id="selectContractCount" resultType="Integer">
+  <select id="selectContractCount" resultType="Integer" useCache="false">
       select count(*) from tbl_ont_contracts where auditflag = 1
   </select>
 
-  <select id="selectCreatorByContractHash" parameterType="java.lang.String" resultType="String">
+  <select id="selectCreatorByContractHash" parameterType="java.lang.String" resultType="String" useCache="false">
       select creator from tbl_ont_contracts where contract = #{param1}
   </select>
 
-  <select id="selectContractByContractHash" parameterType="java.lang.String" resultType="com.github.ontio.model.Contracts">
+  <select id="selectContractByContractHash" parameterType="java.lang.String" resultType="com.github.ontio.model.Contracts" useCache="false">
       select * from tbl_ont_contracts where contract = #{param1}
   </select>
 
-  <select id="selectContractByPage" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="selectContractByPage" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select contract as ContractHash, Project, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount,Type
     from tbl_ont_contracts where auditflag = 1
     order by createtime DESC
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectAllContract"  resultType="com.github.ontio.model.Contracts">
+  <select id="selectAllContract"  resultType="com.github.ontio.model.Contracts" useCache="false">
     select * from tbl_ont_contracts
     order by createtime DESC
   </select>
@@ -291,19 +291,19 @@
     </foreach>
   </update>
 
-  <select id="selectAllContractByProject"  resultType="com.github.ontio.model.Contracts" parameterType="String">
+  <select id="selectAllContractByProject"  resultType="com.github.ontio.model.Contracts" parameterType="String" useCache="false">
     select * from tbl_ont_contracts where auditflag = 1 and project = #{project}
     order by createtime DESC
   </select>
 
-  <select id="selectApprovedContractByPage" parameterType="java.util.Map" resultType="java.util.Map">
+  <select id="selectApprovedContractByPage" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select contract as ContractHash, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount,Type
     from tbl_ont_contracts where auditflag = 1
     order by createtime DESC
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectContract" resultType="java.util.Map">
+  <select id="selectContract" resultType="java.util.Map" useCache="false">
     select contract as ContractHash, Name, TxCount, ABI, Code, CreateTime, ContactInfo, UpdateTime, Logo, Description, Creator, AddressCount, OntCount, OngCount,Type
     from tbl_ont_contracts
     order by createtime DESC

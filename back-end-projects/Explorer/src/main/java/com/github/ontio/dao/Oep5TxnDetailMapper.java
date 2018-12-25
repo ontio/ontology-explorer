@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-@Component
+import com.github.ontio.model.Oep4;
+
+@Component(value = "Oep5TxnDetailMapper")
 public interface Oep5TxnDetailMapper {
     int insert(Oep5TxnDetail record);
 

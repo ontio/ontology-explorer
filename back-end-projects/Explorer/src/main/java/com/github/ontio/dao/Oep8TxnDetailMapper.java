@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Component(value = "Oep8TxnDetailMapper")
 public interface Oep8TxnDetailMapper {
     int insert(Oep8TxnDetail record);
 

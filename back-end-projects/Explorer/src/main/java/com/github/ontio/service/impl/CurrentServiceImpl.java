@@ -66,6 +66,9 @@ public class CurrentServiceImpl implements ICurrentService {
     private Oep8Mapper oep8Mapper;
 
     @Autowired
+    private AddressSummaryMapper addressSummaryMapper;
+
+    @Autowired
     private ContractsMapper contractsMapper;
 
     @Autowired
@@ -91,6 +94,7 @@ public class CurrentServiceImpl implements ICurrentService {
         rs.put("CurrentHeight", summary.get("Height"));
         rs.put("TxnCount", summary.get("TxnCount"));
         rs.put("OntIdCount", summary.get("OntIdCount"));
+        rs.put("AddressCount", addressSummaryMapper.selectAllAddressCount());
 
         return Helper.result("QueryCurrentInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
     }
@@ -178,7 +182,8 @@ public class CurrentServiceImpl implements ICurrentService {
             case "oep8":
                 Oep8 oep8Contract = oep8Mapper.queryOEPContract(contractHash);
                 if(!Helper.isEmptyOrNull(oep8Contract)) {
-                    oep8Mapper.deletContractByHash(contractHash);
+                    // 因为南瓜合约的name是pumpkin，不是合约内的tokenName，所以不重新录入
+                    return Helper.result("RegisterContractInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), "1.0", true);
                 }
 
                 // 要求tokenId内容为：01，02，03，04，05
