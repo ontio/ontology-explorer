@@ -25,7 +25,6 @@
               <th class="font-size18" scope="col">{{ $t('all.token') }}</th>
               <th v-if="$route.params.type === 'oep4'"
                   class="font-size18" scope="col">{{ $t('tokens.list.tab.totalSupply') }}</th>
-
               <th class="font-size18" scope="col">{{ $t('tokens.list.tab.addressCount') }}</th>
               <th class="font-size18" scope="col">{{ $t('tokens.list.tab.hash') }}</th>
               <th class="font-size18" scope="col">{{ $t('tokens.list.tab.creator') }}</th>
@@ -45,7 +44,7 @@
                   {{ token.Name }}
                   <span v-if="$route.params.type === 'oep4' && token.Symbol !== ''">&nbsp;&nbsp;{{ ' ( ' + token.Symbol + ' )' }}</span>
                 </div>
-                <div class="token-td" v-if="$route.params.type !== 'oep4'">
+                <div class="token-td" v-if="$route.params.type === 'oep8'">
                   <b class="col" v-for="tS in token.Symbol">
                     <span class="symbol-name-list">
                       {{ tS }}
@@ -56,7 +55,9 @@
               </td>
 
               <td v-if="$route.params.type === 'oep4'"
-                  class="font-size14 font-Regular important_color">{{ $HelperTools.toFinancialVal(token.TotalSupply) }}</td>
+                  class="font-size14 font-Regular important_color">
+                {{ $HelperTools.toFinancialVal(token.TotalSupply) }}
+              </td>
               <td class="font-size14 font-Regular important_color">{{ token.Addresscount }}</td>
               <td class="font-size14 font-Regular important_color pointer"
                   @click="goToTokenDetail(token)">
@@ -97,11 +98,13 @@
     },
     computed: {
       ...mapState({
-        tokens: state => state.TokenData.Tokens,
+        tokens: state => state.TokenData.Tokens
       }),
     },
     methods: {
       getTokensData() {
+        this.tokens.info = ''; // 清空内容
+
         this.$store.dispatch('getTokens', this.$route.params).then()
       },
       goToTokenDetail(token) {

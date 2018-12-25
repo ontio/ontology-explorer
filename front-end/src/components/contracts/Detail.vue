@@ -173,7 +173,8 @@
             <div class="detail-col">
               <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" v-for="item in statisticsData.data">
-                  <line-chart class="line-chart-style"
+                  <line-chart v-if="hackReset"
+                              class="line-chart-style"
                               :labels="statisticsData.labels"
                               :label="14 + $t('statistics.day') + $t('statistics.' + item.label)"
                               :data="item.list"
@@ -211,11 +212,14 @@
     data() {
       return {
         showCodeCopied: false,
-        showABICopied: false
+        showABICopied: false,
+        hackReset: false
       }
     },
     methods: {
       getContractData() {
+        this.contractData.info = '';
+
         this.$store.dispatch('getContract', this.$route.params).then();
       },
       toTransDetailPage($TxnId) {
@@ -239,6 +243,13 @@
         }
       },
       getStatisticsData() {
+        this.statisticsData.data = '';
+
+        this.hackReset = false;
+        this.$nextTick(() => {
+          this.hackReset = true
+        });
+
         this.$store.dispatch('getStatisticsData', this.$route.params).then()
       }
     }

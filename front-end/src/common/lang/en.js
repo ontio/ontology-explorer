@@ -27,6 +27,7 @@ module.exports = {
       txns: 'Transactions',
       accounts: 'Accounts',
       oep4: 'OEP-4 Overview',
+      oep5: 'OEP-5 Overview',
       oep8: 'OEP-8 Overview'
     }
   },
@@ -270,7 +271,9 @@ module.exports = {
       abi: 'ABI',
       totalSupply: 'Total Supply: ',
       decimals: 'Decimals: ',
-      statistic: 'Statistics'
+      statistic: 'Statistics',
+      tokenLbl: 'Token Label',
+      tokenImg: 'Token Image'
     }
   },
   statistics: {

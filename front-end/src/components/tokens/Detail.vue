@@ -33,7 +33,7 @@
       </div>
 
       <!--oep-8 资产-->
-      <div class="row" v-if="$route.params.type !== 'oep4'">
+      <div class="row" v-if="$route.params.type === 'oep8'">
         <div class="b-detail-divider-line"></div>
         <div class="col-12 f-color">{{ $t('addressDetail.oep8Assets') }}</div>
         <div class="col-3 text-center symbol-top" v-for="(item, index) in tokenData.info.Symbol">
@@ -121,6 +121,10 @@
                   <tr class="f-color">
                     <th class="td-tx-head font-size18 font-Blod">{{ $t('all.hash') }}</th>
                     <th class="td-tx-head font-size18 font-Blod">{{ $t('all.fee') }}</th>
+                    <th v-if="$route.params.type === 'oep5'"
+                         class="td-tx-head font-size18 font-Blod">{{ $t('tokens.detail.tokenLbl') }}</th>
+                    <th v-if="$route.params.type === 'oep5'"
+                        class="td-tx-head font-size18 font-Blod">{{ $t('tokens.detail.tokenImg') }}</th>
                     <th class="td-tx-head font-size18 font-Blod">{{ $t('all.status') }}</th>
                     <th class="td-tx-head font-size18 font-Blod">{{ $t('all.block') }}</th>
                     <th class="td-tx-head font-size18 font-Blod">{{ $t('all.time') }}</th>
@@ -132,18 +136,19 @@
                       {{tx.TxnHash.substr(0,4) + '...' + tx.TxnHash.substr(60)}}
                     </td>
                     <td class="normal_color">{{Number(tx.Fee).toString()}}</td>
-                    <td class="font-size14 s-color font-Regular" v-if="tx.ConfirmFlag === 1">
-                      Confirmed
+
+                    <td v-if="$route.params.type === 'oep5'"
+                        class="normal_color">{{ typeof(tx.Jsonurl) === 'undefined' ? '' : tx.Jsonurl.name }}</td>
+                    <td v-if="$route.params.type === 'oep5'"
+                        class="normal_color">
+                      <img width="100px" :src="typeof(tx.Jsonurl) === 'undefined' ? '' : tx.Jsonurl.image" alt="">
                     </td>
-                    <td class="font-size14 f-color font-Regular" v-else>
-                      Failed
-                    </td>
-                    <td class="font-size14 normal_color font-Regular">
-                      {{tx.Height}}
-                    </td>
-                    <td class="font-size14 normal_color font-Regular">
-                      {{$HelperTools.getTransDate(tx.TxnTime)}}
-                    </td>
+
+                    <td class="font-size14 s-color font-Regular" v-if="tx.ConfirmFlag === 1">Confirmed</td>
+                    <td class="font-size14 f-color font-Regular" v-else>Failed</td>
+
+                    <td class="font-size14 normal_color font-Regular">{{tx.Height}}</td>
+                    <td class="font-size14 normal_color font-Regular">{{$HelperTools.getTransDate(tx.TxnTime)}}</td>
                   </tr>
                   </tbody>
                 </table>

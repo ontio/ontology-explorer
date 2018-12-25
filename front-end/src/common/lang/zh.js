@@ -27,6 +27,7 @@ module.exports = {
       txns: '交易',
       accounts: '账户',
       oep4: 'OEP-4概述',
+      oep5: 'OEP-5概述',
       oep8: 'OEP-8概述'
     }
   },
@@ -270,7 +271,9 @@ module.exports = {
       abi: 'ABI',
       totalSupply: '发行总量：',
       decimals: '精度位数：',
-      statistic: '数据统计'
+      statistic: '数据统计',
+      tokenLbl: '通证标签',
+      tokenImg: '通证图片'
     }
   },
   statistics: {
