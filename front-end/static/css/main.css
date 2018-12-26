@@ -438,6 +438,15 @@ body {
   }
 }
 
+.tooltip-style {
+  padding-left: 6px;
+  color: #AAB3B4 !important;
+  font-size: 16px;
+}
+.tooltip-style:hover {
+  color: #32A4BE !important;
+}
+
 /* FONT */
 .normal_color {
   color: #595757;
