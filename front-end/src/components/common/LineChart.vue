@@ -35,6 +35,17 @@
           yAxes: [{ //对Y轴进行配置
             gridLines: { //Y轴网格配置
               // display: false, //如果为false，则不显示该轴的网格线。
+            },
+            ticks: {
+              beginAtZero: true,
+              userCallback: function (label, index, labels) {
+                // when the floored value is the same as the value we have a whole number
+                if (labels[0] > 1000 && Math.floor(label) === label) {
+                  return label / 1000 + 'k';
+                } else {
+                  return label
+                }
+              }
             }
           }],
           xAxes: [{ //对X轴进行配置

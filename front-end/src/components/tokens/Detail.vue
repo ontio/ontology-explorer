@@ -123,10 +123,6 @@
           <div class="col">
             <div class="detail-col">
               {{ tokenData.info.Total }}<span class="f-color"> {{ $t('tokens.detail.txOn') }}</span>
-              &nbsp;
-              <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
-                <i class="fa fa-info-circle" aria-hidden="true"></i>
-              </a>
               <div class="table-responsive">
                 <table class="table">
                   <thead>
