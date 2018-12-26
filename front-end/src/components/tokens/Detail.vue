@@ -79,11 +79,7 @@
       </div>
       <div class="col">
         <div class="detail-col detail-col-middle">
-          <div class="f-color">{{ $t('tokens.detail.txn') }}&nbsp;
-            <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
-            </a>
-          </div>
+          <div class="f-color">{{ $t('tokens.detail.txn') }}</div>
           <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(tokenData.info.Total) }}</div>
         </div>
       </div>
@@ -270,12 +266,6 @@
 <style scoped>
   .tab-content > .container {
     padding: 0;
-  }
-
-  .tooltip-style {
-    padding-left: 6px;
-    color: #AAB3B4;
-    font-size: 16px;
   }
 
   .tab-content > .container .detail-col {

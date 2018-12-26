@@ -42,7 +42,11 @@
     <div class="row">
       <div class="col">
         <div class="detail-col detail-col-left">
-          <div class="f-color">{{ $t('tokens.list.tab.addressCount') }}</div>
+          <div class="f-color">{{ $t('tokens.list.tab.addressCount') }}&nbsp;
+            <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+            </a>
+          </div>
           <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(contractData.info.AddressCount) }}</div>
         </div>
       </div>
@@ -54,7 +58,11 @@
       </div>
       <div class="col">
         <div class="detail-col detail-col-right">
-          <div class="f-color">{{ $t('tokens.detail.volume') }}</div>
+          <div class="f-color">{{ $t('tokens.detail.volume') }}&nbsp;
+            <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+            </a>
+          </div>
           <div class="important_color font-size24 text-center">
             {{ $HelperTools.toFinancialVal(parseInt(contractData.info.OntCount)) + ' ONT, ' +
             $HelperTools.toFinancialVal(contractData.info.OngCount) + ' ONG'}}
@@ -293,12 +301,6 @@
 
   .height-100 {
     height: 100%;
-  }
-
-  .tooltip-style {
-    padding-left: 6px;
-    color: #AAB3B4;
-    font-size: 16px;
   }
 
   .b-detail-divider-line {
