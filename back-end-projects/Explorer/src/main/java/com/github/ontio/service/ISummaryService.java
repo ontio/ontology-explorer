@@ -10,6 +10,12 @@ import com.github.ontio.paramBean.Result;
 public interface ISummaryService {
 
     /**
+     * updateAllContract
+     * @return
+     */
+    Result updateAllContract();
+
+    /**
      * Marketing Info
      * @return
      */
