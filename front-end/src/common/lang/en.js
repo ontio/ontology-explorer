@@ -28,7 +28,9 @@ module.exports = {
       accounts: 'Accounts',
       oep4: 'OEP-4 Overview',
       oep5: 'OEP-5 Overview',
-      oep8: 'OEP-8 Overview'
+      oep8: 'OEP-8 Overview',
+      statistics: 'Statistics',
+      tool: 'Tools'
     }
   },
   all: {

@@ -71,8 +71,15 @@
               <a class="nav-link" @click="toOntIdListPage"><i class="fas fa-id-card"></i>&nbsp;&nbsp;{{ $t('navbar.top.ontId') }}</a>
             </li>
 
-            <li class="nav-item">
-              <a class="nav-link" :href="apiDocUrl" target="_blank"><i class="fas fa-book"></i>&nbsp;&nbsp;{{ $t('navbar.top.apis') }}</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fas fa-tools"></i>&nbsp;&nbsp;{{ $t('navbar.top.tool') }}
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" target="_blank" :href="apiDocUrl"><i class="fas fa-book"></i>&nbsp;&nbsp;{{ $t('navbar.top.apis') }}</a>
+                <hr style="margin: 4px 1rem">
+                <a class="dropdown-item" @click="toStatistics"><i class="fas fa-table"></i>&nbsp;&nbsp;{{ $t('navbar.top.statistics') }}</a>
+              </div>
             </li>
 
             <li class="nav-item dropdown">
@@ -198,6 +205,17 @@
         } else {
           this.$router.push({name: 'TokenList', params: {type: $type, pageSize: 10, pageNumber: 1}})
         }
+      },
+      toStatistics() {
+        let name = 'Statistics';
+        let params = {day: '14'};
+
+        if (this.$route.params.net === 'testnet') {
+          params.net = "testnet";
+          name = name + 'Test'
+        }
+
+        this.$router.push({name: name, params: params});
       }
     }
   }
