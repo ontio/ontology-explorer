@@ -202,14 +202,14 @@
     select a.contract as ContractHash, b.Name, GROUP_CONCAT(a.tokenid) as TokenId,GROUP_CONCAT(a.TotalSupply) as TotalSupply, GROUP_CONCAT(a.Symbol) as Symbol, GROUP_CONCAT(a.Name) as TokenName, b.Description, b.ContactInfo,
             b.CreateTime, b.UpdateTime, b.Logo, b.ABI, b.Code, b.TxCount, b.Creator, b.Addresscount, b.OntCount, b.OngCount
     from tbl_ont_oep8 a, tbl_ont_contracts b
-		where b.auditflag = 1 and a.Contract = b.contract
+		where a.Contract = b.contract
 		GROUP BY a.contract
     order by Createtime asc
     limit #{Start}, #{PageSize}
   </select>
 
   <select id="queryOEPContractCount" resultType="Integer" useCache="false">
-    select count(distinct a.contract) from tbl_ont_oep8 a,tbl_ont_contracts b where b.auditflag = 1 and a.contract = b.contract	GROUP BY a.contract
+    select count(distinct a.contract) from tbl_ont_oep8 a,tbl_ont_contracts b where a.contract = b.contract	GROUP BY a.contract
   </select>
 
   <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep8" useCache="false">

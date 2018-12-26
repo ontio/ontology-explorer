@@ -27,13 +27,9 @@ public interface TransactionDetailTmpMapper {
 
     int deleteAll();
 
-    BigDecimal selectContractAssetSumByAddress(Map<String, Object> paramMap);
+    BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
 
-    BigDecimal selectContractAssetSumByContract(Map<String, Object> paramMap);
-
-    Integer selectTxnAmountByContractHash(String contractHash);
-
-    Integer selectTxnAmountByAddress(String address);
+    Integer selectTxnAmount(Map<String, Object> paramMap);
 
     List<String> selectAllAddressByContract(String contractHash);
 

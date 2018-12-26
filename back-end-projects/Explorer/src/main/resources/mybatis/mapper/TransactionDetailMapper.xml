@@ -429,7 +429,7 @@
 	OR toaddress = #{param1}
   </select>
 
-  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" >
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
     from tbl_ont_txn_detail
     where contracthash = #{contractHash}
@@ -437,7 +437,16 @@
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectOep5ByHash" parameterType="java.util.Map" resultType="java.util.Map" >
+  <select id="selectContractCountByHash" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+    select count(distinct TxnHash)
+    from tbl_ont_txn_detail
+    where contracthash = #{contractHash}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+  </select>
+
+  <select id="selectOep5ByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     SELECT a.*, b.Jsonurl from (
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, Contracthash, Assetname
         from tbl_ont_txn_detail
@@ -533,5 +542,18 @@
     from tbl_ont_txn_detail
     where txntime >= #{startTime}
     and <![CDATA[ txntime < #{endTime} ]]>
+  </select>
+
+    <select id="selectContractAssetAllSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+        SELECT SUM(amount)
+        from tbl_ont_txn_detail
+        where confirmflag = 1 and assetname = #{assetname}
+        and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
+  </select>
+
+    <select id="selectTxnAllAmount" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT(txnhash))
+    from tbl_ont_txn_detail
+    where confirmflag = 1 and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
   </select>
 </mapper>

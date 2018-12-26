@@ -24,9 +24,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
-import com.github.ontio.dao.ContractsMapper;
-import com.github.ontio.dao.TransactionDetailMapper;
-import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Current;
 import com.github.ontio.thread.TxnHandlerThread;
 import com.github.ontio.utils.ConstantParam;
@@ -55,14 +52,13 @@ public class BlockHandleService {
 
     @Autowired
     private BlockMapper blockMapper;
+
     @Autowired
     private CurrentMapper currentMapper;
-    @Autowired
-    private ContractsMapper contractsMapper;
-    @Autowired
-    private TransactionDetailMapper transactionDetailMapper;
+
     @Autowired
     private TxnHandlerThread txnHandlerThread;
+
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
@@ -96,14 +92,12 @@ public class BlockHandleService {
                 Future future = txnHandlerThread.asyncHandleTxn(session, txnJson, blockHeight, blockTime, i + 1);
                 future.get();
             }
+
             // 手动提交
             session.commit();
             // 清理缓存，防止溢出
             session.clearCache();
             logger.info("###batch insert success!!");
-
-            // 更新合约列表涉及的交易量，由Explorer 批量更新
-            //updateContractTxCount(blockHeight);
         } catch (Exception e) {
             logger.error("error...session.rollback", e);
             session.rollback();
@@ -128,8 +122,7 @@ public class BlockHandleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void insertBlock(JSONObject blockJson) throws Exception {
-
+    public void insertBlock(JSONObject blockJson) {
         JSONObject blockHeader = blockJson.getJSONObject("Header");
 
         com.github.ontio.model.Block blockDO = new com.github.ontio.model.Block();
@@ -162,7 +155,7 @@ public class BlockHandleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateCurrent(int height, int txnCount, int ontIdTxnCount, int nonontIdTxnCount) throws Exception {
+    public void updateCurrent(int height, int txnCount, int ontIdTxnCount, int nonontIdTxnCount) {
 
         Current currentDO = new Current();
         currentDO.setHeight(height);
