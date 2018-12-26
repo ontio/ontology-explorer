@@ -27,7 +27,7 @@ function setAllData(list) {
 
   // 表格数据填充
   for (let listKey in list) {
-    chartData.labels.push(list[listKey].Time);
+    chartData.labels.push(list[listKey].Time.length > 5 ? list[listKey].Time.substr(5) : list[listKey].Time);
     chartData.data.block.list.push(list[listKey].BlockCount);
     chartData.data.txn.list.push(list[listKey].TxnCount);
     chartData.data.newAddress.list.push(list[listKey].NewAddress);
