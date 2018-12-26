@@ -1,6 +1,7 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.common.Address;
 import com.github.ontio.dao.*;
 import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Oep4;
@@ -103,14 +104,15 @@ public class ContractServiceImpl implements IContractService {
             type = contract.getType();
         }
 
+        String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("contractHash", contractHash);
+        paramMap.put("contractAddress", contractAddress);
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
         List<Map> txnList = null;
 
-        int txnCount = contract.getTxcount();
-
+        Integer txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
         switch (type.toLowerCase()){
             case "oep4":
                 //TODO 考虑复兴积分，暂时从txn_detail表查询。等重新同步到oep4_txn_detail表，再更新回来
@@ -125,8 +127,9 @@ public class ContractServiceImpl implements IContractService {
             case "oep8":
                 //TODO 考虑南瓜oep8，暂时从txn_detail表查询。等重新同步到oep8_txn_detail表，再更新回来
                 if (!tokenName.isEmpty()){
-                    paramMap.put("tokenName", tokenName);
+                    paramMap.put("AssetName", tokenName);
                     //txnCount = oep8TxnDetailMapper.selectContractByHashAmount(paramMap);
+                    txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
                 }
                 //txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
@@ -155,6 +158,7 @@ public class ContractServiceImpl implements IContractService {
         rs.put("Description", contract.getDescription());
         rs.put("Logo", contract.getLogo());
         rs.put("AddressCount", contract.getAddresscount());
+        rs.put("TxSum", contract.getTxcount());
         rs.put("OntCount", (contract.getOntcount()).toPlainString());
         rs.put("OngCount", (contract.getOngcount()).toPlainString());
 

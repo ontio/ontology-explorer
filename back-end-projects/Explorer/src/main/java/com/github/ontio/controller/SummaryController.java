@@ -41,6 +41,20 @@ public class SummaryController {
     }
 
     /**
+     * query all address information
+     *
+     * @return
+     */
+    @RequestMapping(value = "/updateAllContract", method = RequestMethod.POST)
+    @ResponseBody
+    public Result updateAllContract() {
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = summaryService.updateAllContract();
+        return rs;
+    }
+
+    /**
      * query current summary information
      *
      * @return

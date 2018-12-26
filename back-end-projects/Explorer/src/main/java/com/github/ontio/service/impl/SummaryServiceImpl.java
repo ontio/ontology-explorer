@@ -128,6 +128,44 @@ public class SummaryServiceImpl implements ISummaryService {
     }
 
     /**
+     * updateAllContract
+     * @return
+     */
+    @Override
+    public Result updateAllContract() {
+        List<Contracts> contractList = contractsMapper.selectAllContract();
+        if(contractList.isEmpty()){
+            return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
+        }
+
+        for (Contracts contracts : contractList) {
+            String contractHash = contracts.getContract();
+            String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
+
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("contractHash", contractHash);
+            paramMap.put("contractAddress", contractAddress);
+            paramMap.put("assetname", "ont");
+            BigDecimal ontCount = transactionDetailMapper.selectContractAssetAllSum(paramMap);
+            ontCount = ontCount == null ? new BigDecimal(0) : ontCount;
+
+            paramMap.put("assetname", "ong");
+            BigDecimal ongCount = transactionDetailMapper.selectContractAssetAllSum(paramMap);
+            ongCount = ongCount == null ? new BigDecimal(0) : ongCount;
+
+            // 依据合约hash和合约地址分别查询交易数
+            int txnCount = transactionDetailMapper.selectTxnAllAmount(paramMap);
+
+            contracts.setTxcount(txnCount);
+            contracts.setOntcount(ontCount);
+            contracts.setOngcount(ongCount.divide(new BigDecimal("1000000000")));
+        }
+
+        contractsMapper.banchUpdateByPrimaryKeySelective(contractList);
+        return Helper.result("updateAllContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
+    }
+
+    /**
      * Marketing Info
      * @return
      */
@@ -248,31 +286,19 @@ public class SummaryServiceImpl implements ISummaryService {
             String contractHash = contracts.getContract();
             String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
 
-            Map<String, Object> paramMap1 = new HashMap<>();
-            paramMap1.put("address", contractAddress);
-            paramMap1.put("assetname", "ont");
-            BigDecimal ontCountByAddress = transactionDetailTmpMapper.selectContractAssetSumByAddress(paramMap1);
-            ontCountByAddress = ontCountByAddress == null ? new BigDecimal(0) : ontCountByAddress;
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("contractHash", contractHash);
+            paramMap.put("contractAddress", contractAddress);
+            paramMap.put("assetname", "ont");
+            BigDecimal ontCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+            ontCount = ontCount == null ? new BigDecimal(0) : ontCount;
 
-            paramMap1.put("assetname", "ong");
-            BigDecimal ongCountByAddress = transactionDetailTmpMapper.selectContractAssetSumByAddress(paramMap1);
-            ongCountByAddress = ongCountByAddress == null ? new BigDecimal(0) : ongCountByAddress;
-
-            paramMap1.put("address", contractHash);
-            paramMap1.put("assetname", "ont");
-            BigDecimal ontCountByContract = transactionDetailTmpMapper.selectContractAssetSumByContract(paramMap1);
-            ontCountByContract = ontCountByContract == null ? new BigDecimal(0) : ontCountByContract;
-
-            paramMap1.put("assetname", "ong");
-            BigDecimal ongCountByContract = transactionDetailTmpMapper.selectContractAssetSumByContract(paramMap1);
-            ongCountByContract = ongCountByContract == null ? new BigDecimal(0) : ongCountByContract;
-
-            BigDecimal ontCount = ontCountByContract.add(ontCountByAddress);
-            BigDecimal ongCount = ongCountByContract.add(ongCountByAddress);
+            paramMap.put("assetname", "ong");
+            BigDecimal ongCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+            ongCount = ongCount == null ? new BigDecimal(0) : ongCount;
 
             // 依据合约hash和合约地址分别查询交易数
-            int txnCountByContractHash = transactionDetailTmpMapper.selectTxnAmountByContractHash(contractHash);
-            int txnCountByAddress = transactionDetailTmpMapper.selectTxnAmountByAddress(contractAddress);
+            int txnCount = transactionDetailTmpMapper.selectTxnAmount(paramMap);
 
             // 依据合约hash和合约地址分别查询地址数（去重）
             List<String> addressByContractList = transactionDetailTmpMapper.selectAllAddressByContract(contractHash);
@@ -284,7 +310,7 @@ public class SummaryServiceImpl implements ISummaryService {
             List<String> contractAddressList = addressSummaryMapper.selectDistinctAddressByContract(contractHash);
             addressByContractList.removeAll(contractAddressList);
 
-            contracts.setTxcount(contracts.getTxcount() + txnCountByContractHash + txnCountByAddress);
+            contracts.setTxcount(contracts.getTxcount() + txnCount);
             contracts.setOntcount(contracts.getOntcount().add(ontCount));
             contracts.setOngcount(contracts.getOngcount().add(ongCount.divide(new BigDecimal("1000000000"))));
             contracts.setAddresscount(contracts.getAddresscount() + addressByContractList.size());
@@ -292,7 +318,7 @@ public class SummaryServiceImpl implements ISummaryService {
             ContractSummary contractSummary = new ContractSummary();
             contractSummary.setTime(startTime);
             contractSummary.setContracthash(contractHash);
-            contractSummary.setTxncount(txnCountByContractHash + txnCountByAddress);
+            contractSummary.setTxncount(txnCount);
             contractSummary.setOntcount(ontCount);
             contractSummary.setOngcount(ongCount.divide(new BigDecimal("1000000000")));
             contractSummary.setActiveaddress(activeAddress);
@@ -483,7 +509,6 @@ public class SummaryServiceImpl implements ISummaryService {
             map.put("Time", simpleDateFormat.format((long)time * 1000));
             map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
             map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
-
         }
 
         return dailyList;
@@ -562,7 +587,9 @@ public class SummaryServiceImpl implements ISummaryService {
         // 每天的统计
         Map<Integer, Map<String, Object>> projectMap = new HashMap<>();
         List<Map> projectSummaryList0 = new ArrayList<>();
+        List<String> contracts = new ArrayList<>();
         for (Contracts contract: contractsList) {
+            contracts.add(contract.getContract());
             Map<String, Object> paramMap = new HashMap();
             paramMap.put("contractHash", contract.getContract());
             paramMap.put("startTime", startTime);
@@ -607,8 +634,8 @@ public class SummaryServiceImpl implements ISummaryService {
         resultMap.put("OntCountSum", ontCountSum.toPlainString());
         resultMap.put("OngCountSum", ongCountSum.toPlainString());
         resultMap.put("SummaryList", projectSummaryList0);
+        resultMap.put("ContractsList", contracts);
         resultMap.put("Total", projectSummaryList0.size());
-
 
         return Helper.result("QueryProject", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
     }
