@@ -205,7 +205,7 @@
       this.getStatisticsData();
     },
     watch: {
-      '$route': 'getContractData, getStatisticsData'
+      '$route': ['getContractData', 'getStatisticsData']
     },
     computed: {
       ...mapState({
