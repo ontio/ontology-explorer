@@ -68,7 +68,7 @@
       this.getContractList()
     },
     watch: {
-      '$route': 'getTableData, getContractList'
+      '$route': ['getTableData', 'getContractList']
     },
     computed: {
       ...mapState({

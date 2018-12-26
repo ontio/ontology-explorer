@@ -154,12 +154,6 @@
     color: white;
   }
 
-  .tooltip-style {
-    padding-left: 6px;
-    color: #AAB3B4;
-    font-size: 16px;
-  }
-
   .node-progress-row {
     margin: 30px 0;
   }

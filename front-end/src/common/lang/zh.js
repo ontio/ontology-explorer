@@ -28,7 +28,9 @@ module.exports = {
       accounts: '账户',
       oep4: 'OEP-4概述',
       oep5: 'OEP-5概述',
-      oep8: 'OEP-8概述'
+      oep8: 'OEP-8概述',
+      statistics: '统计',
+      tool: '工具'
     }
   },
   all: {
