@@ -221,10 +221,10 @@
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, TokenName
     from tbl_ont_oep8txn_detail
     where contracthash = #{contractHash}
-    <if test="tokenName != null" >
-      and tokenName = #{tokenName,jdbcType=VARCHAR}
+    <if test="AssetName != null" >
+      and tokenName = #{AssetName,jdbcType=VARCHAR}
     </if>
-    order by height DESC
+    order by txnTime DESC
     limit #{Start}, #{PageSize}
   </select>
 
@@ -232,8 +232,8 @@
     select count(DISTINCT(txnhash))
     from tbl_ont_oep8txn_detail
     where contracthash = #{contractHash}
-    <if test="tokenName != null" >
-      and tokenName = #{tokenName,jdbcType=VARCHAR}
+    <if test="AssetName != null" >
+      and tokenName = #{AssetName,jdbcType=VARCHAR}
     </if>
   </select>
 </mapper>

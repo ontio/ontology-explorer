@@ -34,5 +34,7 @@ public interface ContractsMapper {
 
     List<Contracts> selectAllContract();
 
+    List<Contracts> selectAllApprovedContract();
+
     List<Contracts> selectAllContractByProject(String project);
 }

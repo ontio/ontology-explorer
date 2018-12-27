@@ -197,13 +197,13 @@
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
     from tbl_ont_oep4txn_detail
     where contracthash = #{contractHash}
-    order by height DESC
+    order by txnTime DESC
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectContractByHashAmount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  <select id="selectContractByHashAmount" parameterType="java.util.Map" resultType="java.lang.Integer">
     select count(DISTINCT(txnhash))
     from tbl_ont_oep4txn_detail
-    where contracthash = #{param1}
+    where contracthash = #{contractHash}
   </select>
 </mapper>

@@ -109,7 +109,7 @@
   <select id="selectTxnAmount" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail_tmp
-    where confirmflag = 1 and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
+    where confirmflag = 1 and contracthash = #{contractHash}
   </select>
 
   <select id="selectAllAddressByContract" resultType="String" parameterType="java.lang.String" useCache="false">
