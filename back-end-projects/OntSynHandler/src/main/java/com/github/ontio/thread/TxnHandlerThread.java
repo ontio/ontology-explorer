@@ -507,6 +507,7 @@ public class TxnHandlerThread {
         contracts.setAddresscount(0);
         contracts.setOntcount(new BigDecimal(0));
         contracts.setOngcount(new BigDecimal(0));
+        contracts.setTokencount(JSON.toJSONString(new ArrayList<>()));
         contractsMapper.insertSelective(contracts);
     }
 

@@ -19,4 +19,6 @@ public interface Oep5TxnDetailMapper {
     int updateByPrimaryKey(Oep5TxnDetail record);
 
     List<Map> selectContractByHash(Map<String, Object> param);
+
+    int selectContractByHashAmount(Map<String, Object> param);
 }

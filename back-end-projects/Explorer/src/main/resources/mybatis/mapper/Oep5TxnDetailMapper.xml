@@ -206,12 +206,22 @@
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
 
-  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map">
-    select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
-    from tbl_ont_oep5txn_detail
-    where contracthash = #{contractHash}
-    order by height DESC
-    limit #{Start}, #{PageSize}
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    SELECT a.*, b.Jsonurl from (
+    select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, Contracthash, Assetname
+        from tbl_ont_oep5txn_detail
+        where contracthash = #{contractHash}
+        order by txnTime DESC
+        limit #{Start}, #{PageSize}
+    ) a
+    LEFT JOIN tbl_ont_oep5_dragon b
+    on a.Contracthash = b.contract and a.assetname = b.assertname
+    ORDER by txnTime DESC
   </select>
 
+  <select id="selectContractByHashAmount" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(DISTINCT(txnhash))
+    from tbl_ont_oep5txn_detail
+    where contracthash = #{contractHash}
+  </select>
 </mapper>

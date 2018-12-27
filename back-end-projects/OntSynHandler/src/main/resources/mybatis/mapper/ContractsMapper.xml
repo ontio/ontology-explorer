@@ -19,23 +19,24 @@
     <result column="addresscount" property="addresscount" jdbcType="INTEGER" />
     <result column="ontcount" property="ontcount" jdbcType="DECIMAL" />
     <result column="ongcount" property="ongcount" jdbcType="DECIMAL" />
+    <result column="tokencount" property="tokencount" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     contract, project, name, txcount, abi, code, createtime, auditflag, updatetime, contactinfo,
-    type, description, logo, creator, addresscount, ontcount, ongcount
+    type, description, logo, creator, addresscount, ontcount, ongcount, tokencount
   </sql>
 
   <insert id="insert" parameterType="com.github.ontio.model.Contracts" >
     insert into tbl_ont_contracts (contract, project, name, txcount,
       abi, code, createtime, 
       auditflag, updatetime, contactinfo, 
-      type, description, logo, creator, addresscount, ontcount, ongcount
+      type, description, logo, creator, addresscount, ontcount, ongcount, tokencount
       )
     values (#{contract,jdbcType=VARCHAR}, #{project,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{txcount,jdbcType=INTEGER},
       #{abi,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{createtime,jdbcType=INTEGER}, 
       #{auditflag,jdbcType=INTEGER}, #{updatetime,jdbcType=INTEGER}, #{contactinfo,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}
-      , #{addresscount,jdbcType=INTEGER}, #{ontcount,jdbcType=DECIMAL}, #{ongcount,jdbcType=DECIMAL}
+      , #{addresscount,jdbcType=INTEGER}, #{ontcount,jdbcType=DECIMAL}, #{ongcount,jdbcType=DECIMAL}, #{tokencount,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.Contracts" >
@@ -92,6 +93,9 @@
       <if test="ongcount != null" >
         ongcount,
       </if>
+      <if test="tokencount != null" >
+        tokencount,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="contract != null" >
@@ -144,6 +148,9 @@
       </if>
       <if test="ongcount != null" >
         #{ongcount,jdbcType=DECIMAL},
+      </if>
+      <if test="tokencount != null" >
+        #{tokencount,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -198,6 +205,9 @@
       <if test="ongcount != null" >
         ongcount = #{ongcount,jdbcType=DECIMAL},
       </if>
+      <if test="tokencount != null" >
+        tokencount = #{tokencount,jdbcType=VARCHAR},
+      </if>
     </set>
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
@@ -217,7 +227,8 @@
       creator = #{creator,jdbcType=VARCHAR},
       addresscount = #{addresscount,jdbcType=INTEGER},
       ontcount = #{creator,jdbcType=DECIMAL},
-      ongcount = #{creator,jdbcType=DECIMAL}
+      ongcount = #{creator,jdbcType=DECIMAL},
+      tokencount = #{creator,jdbcType=VARCHAR}
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
 

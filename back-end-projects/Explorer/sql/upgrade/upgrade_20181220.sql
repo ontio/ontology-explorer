@@ -1,17 +1,3 @@
-CREATE PROCEDURE add_tbl_ont_contracts()
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS
-            WHERE TABLE_NAME='tbl_ont_contracts'
-            AND COLUMN_NAME='project')
-    THEN
-          ALTER TABLE tbl_ont_contracts ADD COLUMN project varchar(255) NOT NULL DEFAULT '' COMMENT '项目名称';
-        END IF;
-  END;
-
-CALL add_tbl_ont_contracts;
-DROP PROCEDURE add_tbl_ont_contracts;
-
-
 DROP TABLE IF EXISTS `tbl_ont_contract_summary`;
 CREATE TABLE `tbl_ont_contract_summary` (
 `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -125,3 +111,29 @@ CREATE TABLE `tbl_ont_oep5_dragon` (
   `jsonurl` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE PROCEDURE add_tbl_ont_contracts_project()
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS
+            WHERE TABLE_NAME='tbl_ont_contracts'
+            AND COLUMN_NAME='project')
+    THEN
+          ALTER TABLE tbl_ont_contracts ADD COLUMN project varchar(255) NOT NULL DEFAULT '' COMMENT '项目名称';
+        END IF;
+  END;
+
+CALL add_tbl_ont_contracts_project;
+DROP PROCEDURE add_tbl_ont_contracts_project;
+
+CREATE PROCEDURE add_tbl_ont_contracts_tokencount()
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS
+            WHERE TABLE_NAME='tbl_ont_contracts'
+            AND COLUMN_NAME='tokencount')
+    THEN
+          ALTER TABLE tbl_ont_contracts ADD COLUMN tokencount varchar(1000) NOT NULL DEFAULT '' COMMENT 'token数量';
+        END IF;
+  END;
+
+CALL add_tbl_ont_contracts_tokencount;
+DROP PROCEDURE add_tbl_ont_contracts_tokencount;

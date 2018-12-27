@@ -37,6 +37,8 @@ public class Contracts {
 
     private BigDecimal ongcount;
 
+    private String tokencount;
+
     public String getContract() {
         return contract;
     }
@@ -172,5 +174,13 @@ public class Contracts {
 
     public void setOngcount(BigDecimal ongcount) {
         this.ongcount = ongcount;
+    }
+
+    public String getTokencount() {
+        return tokencount;
+    }
+
+    public void setTokencount(String tokencount) {
+        this.tokencount = tokencount;
     }
 }

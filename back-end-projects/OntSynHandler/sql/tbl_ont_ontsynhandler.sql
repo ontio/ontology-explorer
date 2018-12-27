@@ -198,6 +198,7 @@ CREATE TABLE `tbl_ont_contracts` (
   `addresscount` int(10) NOT NULL,
   `ontcount` decimal(25,9) NOT NULL,
   `ongcount` decimal(25,9) NOT NULL,
+  `tokencount` varchar(1000) NOT NULL DEFAULT '',
   PRIMARY KEY (`contract`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

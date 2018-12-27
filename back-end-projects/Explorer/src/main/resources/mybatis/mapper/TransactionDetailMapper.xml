@@ -433,7 +433,10 @@
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
     from tbl_ont_txn_detail
     where contracthash = #{contractHash}
-    order by height DESC
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    order by txnTime DESC
     limit #{Start}, #{PageSize}
   </select>
 
@@ -451,25 +454,18 @@
     select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, Contracthash, Assetname
         from tbl_ont_txn_detail
         where contracthash = #{contractHash}
-        order by height DESC
+        order by txnTime DESC
         limit #{Start}, #{PageSize}
     ) a
     LEFT JOIN tbl_ont_oep5_dragon b
     on a.Contracthash = b.contract and a.assetname = b.assertname
-    ORDER by Height DESC
+    ORDER by txnTime DESC
   </select>
 
   <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer" >
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
-    where contracthash = #{param1}
-  </select>
-
-  <select id="selectContractAssetSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" >
-        SELECT SUM(amount)
-        from tbl_ont_txn_detail
-        where confirmflag = 1 and assetname = #{assetname}
-        and ( toaddress = #{address} OR fromaddress = #{address} )
+    where contracthash = #{param1} and confirmflag = 1
   </select>
 
   <select id="selectAllFromAddress" resultType="java.lang.String" >
@@ -556,4 +552,14 @@
     from tbl_ont_txn_detail
     where confirmflag = 1 and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
   </select>
+
+  <select id="selectContractTokenAllSum" resultType="java.util.Map" parameterType="java.util.Map" useCache="false">
+        SELECT SUM(amount) as Amount, Assetname
+        from tbl_ont_txn_detail
+        where confirmflag = 1 and contracthash = #{contractHash} and description = 'transfer'
+        <if test="OEP5 == null">
+          GROUP BY assetname
+        </if>
+  </select>
+
 </mapper>

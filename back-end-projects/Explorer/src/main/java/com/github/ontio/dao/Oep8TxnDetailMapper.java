@@ -19,5 +19,4 @@ public interface Oep8TxnDetailMapper {
     List<Map> selectContractByHash(Map<String, Object> param);
 
     int selectContractByHashAmount(Map<String, Object> param);
-
 }
