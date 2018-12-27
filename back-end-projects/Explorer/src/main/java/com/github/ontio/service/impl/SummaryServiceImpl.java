@@ -4,7 +4,6 @@ import com.github.ontio.common.Address;
 import com.github.ontio.dao.*;
 import com.github.ontio.model.*;
 import com.github.ontio.paramBean.Result;
-import com.github.ontio.schedule.DailyInfoSchedule;
 import com.github.ontio.service.ISummaryService;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ErrorInfo;
@@ -37,7 +36,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
     private static final Integer NUM_30 = 30;
 
-    private static final String CLASS_NAME = DailyInfoSchedule.class.getSimpleName();
+    private static final String CLASS_NAME = SummaryServiceImpl.class.getSimpleName();
 
     @Autowired
     private BlockMapper blockMapper;
@@ -85,6 +84,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result querySummary(int amount) {
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap();
 
         // 节点数
@@ -128,49 +128,12 @@ public class SummaryServiceImpl implements ISummaryService {
     }
 
     /**
-     * updateAllContract
-     * @return
-     */
-    @Override
-    public Result updateAllContract() {
-        List<Contracts> contractList = contractsMapper.selectAllContract();
-        if(contractList.isEmpty()){
-            return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
-        }
-
-        for (Contracts contracts : contractList) {
-            String contractHash = contracts.getContract();
-            String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
-
-            Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put("contractHash", contractHash);
-            paramMap.put("contractAddress", contractAddress);
-            paramMap.put("assetname", "ont");
-            BigDecimal ontCount = transactionDetailMapper.selectContractAssetAllSum(paramMap);
-            ontCount = ontCount == null ? new BigDecimal(0) : ontCount;
-
-            paramMap.put("assetname", "ong");
-            BigDecimal ongCount = transactionDetailMapper.selectContractAssetAllSum(paramMap);
-            ongCount = ongCount == null ? new BigDecimal(0) : ongCount;
-
-            // 依据合约hash和合约地址分别查询交易数
-            int txnCount = transactionDetailMapper.selectTxnAllAmount(paramMap);
-
-            contracts.setTxcount(txnCount);
-            contracts.setOntcount(ontCount);
-            contracts.setOngcount(ongCount.divide(new BigDecimal("1000000000")));
-        }
-
-        contractsMapper.banchUpdateByPrimaryKeySelective(contractList);
-        return Helper.result("updateAllContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
-    }
-
-    /**
      * Marketing Info
      * @return
      */
     @Override
     public Result summaryAllInfo() {
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         if (!configParam.EXPLORER_DAILY_SCHEDULE.equalsIgnoreCase("true")){
             return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
         }
@@ -230,7 +193,6 @@ public class SummaryServiceImpl implements ISummaryService {
 
         // 新增地址数
         Integer newAddressCount = setAddressSummary(txs, startTime, contractAddressSummarys);
-
 
         DailySummary dailySummary = new DailySummary();
         dailySummary.setBlockcount(blockCount);
@@ -310,11 +272,6 @@ public class SummaryServiceImpl implements ISummaryService {
             List<String> contractAddressList = addressSummaryMapper.selectDistinctAddressByContract(contractHash);
             addressByContractList.removeAll(contractAddressList);
 
-            contracts.setTxcount(contracts.getTxcount() + txnCount);
-            contracts.setOntcount(contracts.getOntcount().add(ontCount));
-            contracts.setOngcount(contracts.getOngcount().add(ongCount.divide(new BigDecimal("1000000000"))));
-            contracts.setAddresscount(contracts.getAddresscount() + addressByContractList.size());
-
             ContractSummary contractSummary = new ContractSummary();
             contractSummary.setTime(startTime);
             contractSummary.setContracthash(contractHash);
@@ -338,7 +295,6 @@ public class SummaryServiceImpl implements ISummaryService {
             }
         }
 
-        contractsMapper.banchUpdateByPrimaryKeySelective(contractList);
         contractSummaryMapper.banchInsertSelective(contractSummaryList);
 
         return contractAddressSummarys;
@@ -350,6 +306,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result queryTps() {
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("CurrentTps", queryCurrentTps());
         resultMap.put("MaxTps", 10000);
@@ -377,6 +334,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result querySummary(String type, int startTime, int endTime) {
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> paramMap = new HashMap();
         paramMap.put("startTime", startTime);
         paramMap.put("endTime", endTime);
@@ -471,6 +429,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result queryContract(String contractHash, String type, int startTime, int endTime) {
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap();
         resultMap.put("SummaryList", new ArrayList<>());
         resultMap.put("TxCountSum", 0);
@@ -571,6 +530,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result queryProjectInfo(String project, String type, int startTime, int endTime) {
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         List<Contracts> contractsList = contractsMapper.selectAllContractByProject(project);
         Map<String, Object> resultMap = new HashMap();
         resultMap.put("SummaryList", new ArrayList<>());

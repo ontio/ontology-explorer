@@ -32,6 +32,8 @@ import java.util.Map;
 public class ContractServiceImpl implements IContractService {
     private static final Logger logger = LoggerFactory.getLogger(CurrentServiceImpl.class);
 
+    private static final String CLASS_NAME = ContractServiceImpl.class.getSimpleName();
+
     private static final String VERSION = "1.0";
 
     @Autowired
@@ -60,6 +62,8 @@ public class ContractServiceImpl implements IContractService {
 
     @Override
     public Result queryContract(Integer pageSize, Integer pageNumber){
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
@@ -76,7 +80,7 @@ public class ContractServiceImpl implements IContractService {
         rs.put("ContractList", list);
 
         return Helper.result("QueryContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
-    };
+    }
 
     /**
      * query txn by page
@@ -87,6 +91,7 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryContractByHash(String contractHash, int pageSize, int pageNumber) {
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Map<String, Object> rs = getResultMap(contractHash, "", "", pageSize, pageNumber);
 
@@ -110,35 +115,38 @@ public class ContractServiceImpl implements IContractService {
         paramMap.put("contractAddress", contractAddress);
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
-        List<Map> txnList = null;
 
-        Integer txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
+        List<Map> txnList = null;
+        Integer txnCount = 0;
         switch (type.toLowerCase()){
             case "oep4":
                 //TODO 考虑复兴积分，暂时从txn_detail表查询。等重新同步到oep4_txn_detail表，再更新回来
 //                txnList = oep4TxnDetailMapper.selectContractByHash(paramMap);
+//                txnCount = oep4TxnDetailMapper.selectContractByHashAmount(paramMap);
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
                 break;
             case "oep5":
                 //TODO 考虑复兴积分，暂时从txn_detail表查询。等重新同步到oep4_txn_detail表，再更新回来
 //                txnList = oep5TxnDetailMapper.selectContractByHash(paramMap);
+//                txnCount = oep5TxnDetailMapper.selectContractByHashAmount(paramMap);
                 txnList = transactionDetailMapper.selectOep5ByHash(paramMap);
                 break;
             case "oep8":
                 //TODO 考虑南瓜oep8，暂时从txn_detail表查询。等重新同步到oep8_txn_detail表，再更新回来
                 if (!tokenName.isEmpty()){
                     paramMap.put("AssetName", tokenName);
-                    //txnCount = oep8TxnDetailMapper.selectContractByHashAmount(paramMap);
-                    txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
                 }
-                //txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
+//                txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
+//                txnCount = oep5TxnDetailMapper.selectContractByHashAmount(paramMap);
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
                 break;
             default:
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
+//                txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
                 break;
         }
 
+        txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
         if (!txnList.isEmpty()){
             for (Map map : txnList) {
                 map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
@@ -161,6 +169,7 @@ public class ContractServiceImpl implements IContractService {
         rs.put("TxSum", contract.getTxcount());
         rs.put("OntCount", (contract.getOntcount()).toPlainString());
         rs.put("OngCount", (contract.getOngcount()).toPlainString());
+        rs.put("TokenCount", contract.getTokencount());
 
         return rs;
     }
@@ -174,6 +183,8 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryOEPContract(String type, int pageSize, int pageNumber){
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
         paramMap.put("PageSize", pageSize);
@@ -224,7 +235,7 @@ public class ContractServiceImpl implements IContractService {
     }
 
     /**
-     *  依据合约hash查询Token合约
+     *  依据合约hash(tokenName)查询Token合约详情
      * @param contractHash   contractHash
      * @param type   type
      * @param tokenName   tokenName
@@ -234,11 +245,7 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber){
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("contract", contractHash);
-        paramMap.put("PageSize", pageSize);
-        paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
-
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> rs = getResultMap(contractHash, type, tokenName, pageSize, pageNumber);
         if(rs == null){
             return Helper.result("QueryOEPContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);

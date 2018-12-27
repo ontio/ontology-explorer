@@ -69,8 +69,6 @@ public interface TransactionDetailMapper {
 
     int selectContractAddrAmount(String contractHash);
 
-    BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
-
     List<Map<String, String>> selectAllAddress();
 
     Integer selectAllFromAddressCountByContract(String contractHash);
@@ -90,6 +88,8 @@ public interface TransactionDetailMapper {
     Integer queryTransactionCount(Map<String, Object> param);
 
     BigDecimal selectContractAssetAllSum(Map<String, Object> paramMap);
+
+    List<Map> selectContractTokenAllSum(Map<String, Object> paramMap);
 
     Integer selectTxnAllAmount(Map<String, Object> paramMap);
 }
