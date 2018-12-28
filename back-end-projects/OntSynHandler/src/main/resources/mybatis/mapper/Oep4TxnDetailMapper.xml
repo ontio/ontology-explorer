@@ -196,4 +196,15 @@
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
+
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_ont_oep4txn_detail
+    where height = #{param1}
+  </delete>
+
+  <select id="selectCountByHeight" resultType="java.lang.Integer" useCache="false">
+    select count(1)
+    from tbl_ont_oep4txn_detail
+    where height = #{height}
+  </select>
 </mapper>
