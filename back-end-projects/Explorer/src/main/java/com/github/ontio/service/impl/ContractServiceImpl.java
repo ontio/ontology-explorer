@@ -124,12 +124,14 @@ public class ContractServiceImpl implements IContractService {
 //                txnList = oep4TxnDetailMapper.selectContractByHash(paramMap);
 //                txnCount = oep4TxnDetailMapper.selectContractByHashAmount(paramMap);
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
+                txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
                 break;
             case "oep5":
                 //TODO 考虑复兴积分，暂时从txn_detail表查询。等重新同步到oep4_txn_detail表，再更新回来
 //                txnList = oep5TxnDetailMapper.selectContractByHash(paramMap);
 //                txnCount = oep5TxnDetailMapper.selectContractByHashAmount(paramMap);
                 txnList = transactionDetailMapper.selectOep5ByHash(paramMap);
+                txnCount = transactionDetailMapper.selectOep5ContractCountByHash(paramMap);
                 break;
             case "oep8":
                 //TODO 考虑南瓜oep8，暂时从txn_detail表查询。等重新同步到oep8_txn_detail表，再更新回来
@@ -139,14 +141,14 @@ public class ContractServiceImpl implements IContractService {
 //                txnList = oep8TxnDetailMapper.selectContractByHash(paramMap);
 //                txnCount = oep5TxnDetailMapper.selectContractByHashAmount(paramMap);
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
+                txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
                 break;
             default:
                 txnList = transactionDetailMapper.selectContractByHash(paramMap);
-//                txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
+                txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
                 break;
         }
 
-        txnCount = transactionDetailMapper.selectContractCountByHash(paramMap);
         if (!txnList.isEmpty()){
             for (Map map : txnList) {
                 map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());

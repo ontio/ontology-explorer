@@ -249,6 +249,7 @@ public class TxnHandlerThread {
             Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTxn, 1, contractAddress);
             session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+            session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
             session.insert("com.github.ontio.dao.Oep8TxnDetailMapper.insertSelective", transactionDetailDO);
             return;
         }
@@ -285,6 +286,7 @@ public class TxnHandlerThread {
 
         session.insert("com.github.ontio.dao.Oep8TxnDetailMapper.insertSelective", oep8TxnDetailDAO);
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", oep8TxnDetailDAO);
+        session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", oep8TxnDetailDAO);
     }
 
     private void handleDragonTransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash, int blockHeight, int blockTime,
@@ -295,6 +297,7 @@ public class TxnHandlerThread {
             Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 1, contractAddress);
             session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+            session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
             session.insert("com.github.ontio.dao.Oep5TxnDetailMapper.insertSelective", transactionDetailDO);
             return;
         }
@@ -338,6 +341,7 @@ public class TxnHandlerThread {
         }
 
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+        session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
         session.insert("com.github.ontio.dao.Oep5TxnDetailMapper.insertSelective", transactionDetailDO);
         if ("birth".equalsIgnoreCase(action) && oep5Obj != null) {
             Oep5 oep5 = new Oep5();
@@ -356,6 +360,7 @@ public class TxnHandlerThread {
             Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTxn, 1, contractAddress);
             session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+            session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
             return;
         }
 
@@ -383,6 +388,7 @@ public class TxnHandlerThread {
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, eventType, contractAddress);
 
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+        session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
         // OEP交易的手续费入库
         if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) && (OEP4TXN || OEP5TXN || OEP8TXN)) {
             insertSelectiveChoise(session, contractAddress, transactionDetailDO);
@@ -473,6 +479,7 @@ public class TxnHandlerThread {
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, eventType, contractAddress);
 
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+        session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
 
         // OEP合约交易理应插入分表
         if (OEP4TXN || OEP5TXN || OEP8TXN) {
@@ -541,6 +548,7 @@ public class TxnHandlerThread {
             Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTxn, 1, contractHash);
             session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+            session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
             session.insert("com.github.ontio.dao.Oep4TxnDetailMapper.insertSelective", transactionDetailDO);
             return;
         }
@@ -581,6 +589,7 @@ public class TxnHandlerThread {
                 blockTime, indexInBlock, confirmFlag, "transfer", gasConsumed, indexInTxn, 3, contractHash);
 
         session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
+        session.insert("com.github.ontio.dao.TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
         session.insert("com.github.ontio.dao.Oep4TxnDetailMapper.insertSelective", transactionDetailDO);
     }
 
