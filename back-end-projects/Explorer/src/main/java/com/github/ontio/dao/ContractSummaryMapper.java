@@ -25,4 +25,6 @@ public interface ContractSummaryMapper {
     int updateByPrimaryKey(ContractSummary record);
 
     List<Map> selectDailySummaryByContractHash(Map<String, Object> paramMap);
+
+    ContractSummary selectContractSummary(String contractHash);
 }

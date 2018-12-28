@@ -17,6 +17,8 @@ public interface TransactionDetailTmpMapper {
 
     int InsertSelective(Map paramMap);
 
+    int InsertSelectiveByStartTime(Map paramMap);
+
     int selectTxnCountInOneDay();
 
     BigDecimal selectOntCountInOneDay();

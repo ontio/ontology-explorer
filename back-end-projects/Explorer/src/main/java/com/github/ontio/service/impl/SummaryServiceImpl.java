@@ -183,16 +183,26 @@ public class SummaryServiceImpl implements ISummaryService {
 
         // 活跃地址数 + 新增地址数
         List<String> txs = transactionDetailTmpMapper.selectAddressInOneDay();
-        int activeAddressCount = txs.isEmpty() ? 0 : txs.size();// 活跃地址数
+        List<String> addressList = new ArrayList<>();
+        if (!txs.isEmpty()){
+            for (String address: txs) {
+                if (address.length() != 34){
+                    continue;
+                }
 
+                addressList.add(address);
+            }
+        }
+
+        int activeAddressCount = addressList.size();// 活跃地址数
         List<String> addressSummaryList = addressSummaryMapper.selectDistinctAddress();
-        txs.removeAll(addressSummaryList);
+        addressList.removeAll(addressSummaryList);
 
         // 更新合约的信息
         List<AddressSummary> contractAddressSummarys = updateContractInfo(startTime);
 
         // 新增地址数
-        Integer newAddressCount = setAddressSummary(txs, startTime, contractAddressSummarys);
+        Integer newAddressCount = setAddressSummary(addressList, startTime, contractAddressSummarys);
 
         DailySummary dailySummary = new DailySummary();
         dailySummary.setBlockcount(blockCount);
@@ -266,11 +276,20 @@ public class SummaryServiceImpl implements ISummaryService {
             List<String> addressByContractList = transactionDetailTmpMapper.selectAllAddressByContract(contractHash);
             List<String> addressByAddressList = transactionDetailTmpMapper.selectAllAddressByAddress(contractAddress);
             addressByContractList.addAll(addressByAddressList);
-            Integer activeAddress = addressByContractList.size();
+            
+            List<String> addressList = new ArrayList<>();
+            for (String address: addressByContractList) {
+                if (address.length() != 34){
+                    continue;
+                }
+
+                addressList.add(address);
+            }
+            Integer activeAddress = addressList.size();
 
             // 计算新增地址数
             List<String> contractAddressList = addressSummaryMapper.selectDistinctAddressByContract(contractHash);
-            addressByContractList.removeAll(contractAddressList);
+            addressList.removeAll(contractAddressList);
 
             ContractSummary contractSummary = new ContractSummary();
             contractSummary.setTime(startTime);
@@ -279,10 +298,10 @@ public class SummaryServiceImpl implements ISummaryService {
             contractSummary.setOntcount(ontCount);
             contractSummary.setOngcount(ongCount.divide(new BigDecimal("1000000000")));
             contractSummary.setActiveaddress(activeAddress);
-            contractSummary.setNewaddress(addressByContractList.size());
+            contractSummary.setNewaddress(addressList.size());
             contractSummaryList.add(contractSummary);
 
-            for (String address: addressByContractList) {
+            for (String address: addressList) {
                 if (address.length() != 34){
                     continue;
                 }
