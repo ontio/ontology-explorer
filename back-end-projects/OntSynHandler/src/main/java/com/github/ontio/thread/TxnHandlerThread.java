@@ -245,7 +245,7 @@ public class TxnHandlerThread {
     private void handlePumpkinTransferTxn(SqlSession session, JSONArray stateArray, int txnType, String txnHash,
                                           int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed,
                                           int indexInTxn, int confirmFlag, String contractAddress, int stateSize) throws Exception {
-        if (stateArray.size() < 4) {
+        if (stateArray.size() < 5) {
             Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTxn, 1, contractAddress);
             session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
@@ -291,8 +291,7 @@ public class TxnHandlerThread {
                                          int indexInBlock, BigDecimal gasConsumed, int indexInTxn, int confirmFlag, String contractAddress, Object oep5Obj) throws Exception {
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
-        if ((!action.equalsIgnoreCase("transfer") && !action.equalsIgnoreCase("birth")) || stateArray.size() < 4)
-        {
+        if(!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))){
             Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 1, contractAddress);
             session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
@@ -315,6 +314,8 @@ public class TxnHandlerThread {
             String dragonId = "";
             if ("birth".equalsIgnoreCase(action)) {
                 dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).toString();
+                fromAddress = "";
+                toAddress = "";
 
                 Oep5Dragon oep5Dragon = new Oep5Dragon();
                 oep5Dragon.setContract(contractAddress);
