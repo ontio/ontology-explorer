@@ -68,6 +68,10 @@
             and <![CDATA[ txntime < #{endTime} ]]>
   </insert>
 
+    <insert id="InsertSelectiveByStartTime" parameterType="java.util.Map">
+    INSERT into tbl_ont_txn_detail_tmp SELECT * from tbl_ont_txn_detail WHERE  txntime >= #{startTime}
+    </insert>
+
   <select id="selectTxnCountInOneDay" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT (txnhash))
     from tbl_ont_txn_detail_tmp

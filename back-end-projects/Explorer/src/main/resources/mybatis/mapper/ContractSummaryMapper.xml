@@ -154,4 +154,10 @@
     order by time desc
   </select>
 
+  <select id="selectContractSummary" parameterType="java.lang.String" resultType="com.github.ontio.model.ContractSummary" useCache="false">
+    select contracthash, SUM(txncount) as txncount, SUM(ontcount) as ontcount , SUM(ongcount) as ongcount ,SUM(newaddress) as newaddress
+    from tbl_ont_contract_summary
+    where contracthash = #{contractHash}
+	GROUP BY contracthash
+  </select>
 </mapper>
