@@ -104,7 +104,9 @@ public class OntologySDKService {
         } catch (Exception e) {
             logger.error("getAddressBalance error...", e);
             e.printStackTrace();
-            return null;
+            balanceMap.put("ong", "0");
+            balanceMap.put("ont", "0");
+            return balanceMap;
         }
 
         return balanceMap;

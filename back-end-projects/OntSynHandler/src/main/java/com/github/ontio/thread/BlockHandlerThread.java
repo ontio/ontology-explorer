@@ -61,6 +61,14 @@ public class BlockHandlerThread extends Thread {
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
     @Autowired
+    private Oep4TxnDetailMapper oep4TxnDetailMapper;
+    @Autowired
+    private Oep5TxnDetailMapper oep5TxnDetailMapper;
+    @Autowired
+    private Oep8TxnDetailMapper oep8TxnDetailMapper;
+    @Autowired
+    private TransactionDetailDailyMapper transactionDetailDailyMapper;
+    @Autowired
     private Oep4Mapper oep4Mapper;
     @Autowired
     private Oep5Mapper oep5Mapper;
@@ -119,6 +127,18 @@ public class BlockHandlerThread extends Thread {
                 }
                 if (transactionDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
                     transactionDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+                if (oep4TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep4TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+                if (oep5TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep5TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+                if (oep8TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep8TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+                if (transactionDetailDailyMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    transactionDetailDailyMapper.deleteByHeight(dbBlockHeight + 1);
                 }
 
                 //handle blocks and transactions

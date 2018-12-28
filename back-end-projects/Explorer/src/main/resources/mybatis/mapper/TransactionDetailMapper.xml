@@ -441,7 +441,16 @@
   </select>
 
   <select id="selectContractCountByHash" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
-    select count(distinct TxnHash)
+    select count(distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee)
+    from tbl_ont_txn_detail
+    where contracthash = #{contractHash}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+  </select>
+
+  <select id="selectOep5ContractCountByHash" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+    select count(distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, Contracthash, Assetname)
     from tbl_ont_txn_detail
     where contracthash = #{contractHash}
     <if test="AssetName != '' and AssetName != null">

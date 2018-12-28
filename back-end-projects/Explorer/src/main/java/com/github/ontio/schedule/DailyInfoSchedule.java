@@ -46,10 +46,13 @@ public class DailyInfoSchedule {
     private DailySummaryMapper dailySummaryMapper;
 
     @Autowired
-    private TransactionDetailTmpMapper transactionDetailTmpMapper;
+    private TransactionDetailDailyMapper transactionDetailDailyMapper;
 
     @Autowired
     private ContractSummaryMapper contractSummaryMapper;
+
+    @Autowired
+    private AddressSummaryMapper addressSummaryMapper;
 
     /**
      * 记录每日统计数据
@@ -72,14 +75,15 @@ public class DailyInfoSchedule {
             Integer startTime = dailySummaryMapper.selectMaxTime();
             if (startTime == null) {
                 // 创始区块的时间： 2018-06-30 00：00：00    时间戳：1530288000
-                startTime = Integer.valueOf(String.valueOf(System.currentTimeMillis() / 1000));
+                startTime = 1530288000;
             }
 
             // 将每10分钟的数据先转移到临时表，再统计其他信息
             Map param = new HashMap<>();
-            param.put("startTime", startTime);
-            transactionDetailTmpMapper.deleteAll();
-            transactionDetailTmpMapper.InsertSelectiveByStartTime(param);
+            param.put("startTime", startTime + 24 * 60 * 60);
+            if (transactionDetailDailyMapper.selectiveByEndTime(param) != 0){
+                transactionDetailDailyMapper.deleteByEndTime(param);
+            }
 
             //查询所有contract
             List<Contracts> contractList = contractsMapper.selectAllApprovedContract();
@@ -102,19 +106,19 @@ public class DailyInfoSchedule {
                 paramMap.put("contractHash", contractHash);
                 paramMap.put("contractAddress", contractAddress);
                 paramMap.put("assetname", "ont");
-                BigDecimal ontCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+                BigDecimal ontCount = transactionDetailDailyMapper.selectContractAssetSum(paramMap);
                 ontCount = ontCount == null ? new BigDecimal(0) : ontCount;
 
                 paramMap.put("assetname", "ong");
-                BigDecimal ongCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+                BigDecimal ongCount = transactionDetailDailyMapper.selectContractAssetSum(paramMap);
                 ongCount = ongCount == null ? new BigDecimal(0) : ongCount.divide(new BigDecimal("1000000000"));
 
                 // 依据合约hash和合约地址分别查询交易数
-                int txnCount = transactionDetailTmpMapper.selectTxnAmount(paramMap);
+                int txnCount = transactionDetailDailyMapper.selectTxnAmount(paramMap);
 
                 // 依据合约hash和合约地址分别查询地址数（去重）
-                List<String> addressByContractList = transactionDetailTmpMapper.selectAllAddressByContract(contractHash);
-                List<String> addressByAddressList = transactionDetailTmpMapper.selectAllAddressByAddress(contractAddress);
+                List<String> addressByContractList = transactionDetailDailyMapper.selectAllAddressByContract(contractHash);
+                List<String> addressByAddressList = transactionDetailDailyMapper.selectAllAddressByAddress(contractAddress);
                 addressByContractList.addAll(addressByAddressList);
 
                 List<String> addressList = new ArrayList<>();
@@ -125,6 +129,10 @@ public class DailyInfoSchedule {
 
                     addressList.add(address);
                 }
+
+                // 计算新增地址数
+                List<String> contractAddressList = addressSummaryMapper.selectDistinctAddressByContract(contractHash);
+                addressList.removeAll(contractAddressList);
 
                 // 计算合约内部转账金额
                 List<Map> tokenCountMapList = null;
