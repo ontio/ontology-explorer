@@ -4,15 +4,15 @@ import HelperTool from "./../../helpers/helper"
 
 export default {
   state: {
-    Tokens: {info: ''},
-    Token: {info: ''}
+    List: {},
+    Detail: {}
   },
   mutations: {
     [types.SET_TOKENS_DATA](state, payload) {
-      state.Tokens = payload.info
+      state.List = payload.info
     },
     [types.SET_TOKEN_DATA](state, payload) {
-      state.Token = payload.info
+      state.Detail = payload.info
     }
   },
   actions: {
@@ -24,40 +24,17 @@ export default {
      * @param $param
      * @return {Promise<AxiosResponse | never>}
      */
-    getTokens({dispatch, commit}, $param) {
+    GetTokens({dispatch, commit}, $param) {
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
       let url = apiUrl + '/oepcontract/' + $param.type + '/' + $param.pageSize + '/' + $param.pageNumber;
 
       return axios.get(url).then(response => {
-        let list = response.data.Result.ContractList;
-        let totalPage = Math.ceil(parseFloat(response.data.Result.Total) / $param.pageSize);
-
-        let info = {
-          info: list,
-          totalCount: response.data.Result.Total,
-          allPage: totalPage,
-          firstPage: {
-            pageSize: $param.pageSize,
-            pageNumber: 1
-          },
-          lastPage: {
-            pageSize: $param.pageSize,
-            pageNumber: Number($param.pageNumber) - 1
-          },
-          nextPage: {
-            pageSize: $param.pageSize,
-            pageNumber: Number($param.pageNumber) + 1
-          },
-          finalPage: {
-            pageSize: $param.pageSize,
-            pageNumber: totalPage
-          },
-          basicRank: (Number($param.pageNumber) - 1) * $param.pageSize + 1
-        };
-
         commit({
           type: types.SET_TOKENS_DATA,
-          info: info
+          info: {
+            list: response.data.Result.ContractList,
+            total: response.data.Result.Total
+          }
         })
       }).catch(error => {
         console.log(error)
@@ -71,52 +48,31 @@ export default {
      * @param $param
      * @return {Promise<AxiosResponse | never>}
      */
-    getToken({dispatch, commit}, $param) {
+    GetToken({dispatch, commit}, $param) {
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
       let url = apiUrl + '/oepcontract/' + $param.type + '/' + $param.contractHash + '/' + $param.pageSize + '/' + $param.pageNumber;
 
       return axios.get(url).then(response => {
         let list = response.data.Result;
-        let totalPage = Math.ceil(parseFloat(response.data.Result.Total) / $param.pageSize);
 
         // string to json
         list.ABI = HelperTool.HelperTools.strToJson(list.ABI);
         list.Code = HelperTool.HelperTools.strToJson(list.Code);
         list.ContactInfo = HelperTool.HelperTools.strToJson(list.ContactInfo);
 
-        let info = {
-          info: list,
-          totalCount: response.data.Result.Total,
-          allPage: totalPage,
-          firstPage: {
-            pageSize: $param.pageSize,
-            pageNumber: 1
-          },
-          lastPage: {
-            pageSize: $param.pageSize,
-            pageNumber: Number($param.pageNumber) - 1
-          },
-          nextPage: {
-            pageSize: $param.pageSize,
-            pageNumber: Number($param.pageNumber) + 1
-          },
-          finalPage: {
-            pageSize: $param.pageSize,
-            pageNumber: totalPage
-          },
-          basicRank: (Number($param.pageNumber) - 1) * $param.pageSize + 1
-        };
-
         // OEP-5
-        if($param.type === 'oep5') {
-          for(let key in info.info.TxnList) {
-            info.info.TxnList[key].Jsonurl = HelperTool.HelperTools.strToJson(info.info.TxnList[key].Jsonurl)
+        if ($param.type === 'oep5') {
+          for (let key in list.TxnList) {
+            list.TxnList[key].Jsonurl = HelperTool.HelperTools.strToJson(list.TxnList[key].Jsonurl)
           }
         }
 
         commit({
           type: types.SET_TOKEN_DATA,
-          info: info
+          info: {
+            list: list,
+            total: response.data.Result.Total
+          }
         })
       }).catch(error => {
         console.log(error)

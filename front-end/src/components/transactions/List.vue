@@ -2,6 +2,8 @@
   <div class="container container-margin-top">
     <list-title :name="$t('transList.name')"></list-title>
 
+    <ont-pagination :total="transactions.total"></ont-pagination>
+
     <div class="row justify-content-center">
       <div class="col">
         <div class="table-responsive">
@@ -18,7 +20,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="tx in txListData.info" class="font-size14 font-Regular">
+            <tr v-for="tx in transactions.list" class="font-size14 font-Regular">
               <td class="important_color pointer" @click="toTransactionDetailPage(tx.TxnHash)">
                 {{tx.TxnHash.substr(0,8) + '...' + tx.TxnHash.substr(56)}}
               </td>
@@ -35,7 +37,7 @@
       </div>
     </div>
 
-    <turn-the-page :pagesInfo="txListData" :pagesName="'TransactionListDetail'"></turn-the-page>
+    <ont-pagination :total="transactions.total"></ont-pagination>
   </div>
 </template>
 
@@ -44,7 +46,6 @@
   import GetTransactionType from './../../common/OntMsg/GetTransactionType.js'
 
   export default {
-    name: "transaction-list-page",
     data() {
       return {
         current: 1,
@@ -55,19 +56,19 @@
       }
     },
     created() {
-      this.getTransactionListPage()
+      this.getTransactions()
     },
     watch: {
-      '$route': 'getTransactionListPage'
+      '$route': 'getTransactions'
     },
     computed: {
       ...mapState({
-        txListData: state => state.TransactionListPage.TransactionListDetail
+        transactions: state => state.Transactions.List
       })
     },
     methods: {
-      getTransactionListPage() {
-        this.$store.dispatch('getTransactionListPage', this.$route.params).then()
+      getTransactions() {
+        this.$store.dispatch('GetTransactions', this.$route.params).then()
       },
       toTransactionDetailPage($TxnId) {
         if (this.$route.params.net == undefined) {

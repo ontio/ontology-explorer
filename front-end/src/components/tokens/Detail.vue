@@ -3,10 +3,10 @@
     <list-title :name="$t('tokens.detail.name')"></list-title>
     <detail-title :name="$t('tokens.detail.hash')" :val="$route.params.contractHash"></detail-title>
 
-    <detail-block-2 :name1="$t('tokens.detail.creator')" :val1="tokenData.info.Creator" :rows1="'1.2'"
-                    :params1="['address', tokenData.info.Creator]"
+    <detail-block-2 :name1="$t('tokens.detail.creator')" :val1="tokenData.list.Creator" :rows1="'1.2'"
+                    :params1="['address', tokenData.list.Creator]"
                     :name2="$t('tokens.detail.createdTime')"
-                    :val2="$HelperTools.getTransDate(tokenData.info.CreateTime)" :rows2="'1.1'">
+                    :val2="$HelperTools.getTransDate(tokenData.list.CreateTime)" :rows2="'1.1'">
     </detail-block-2>
 
     <div class="detail-col font-Regular detail-col-fix">
@@ -14,18 +14,18 @@
         <div class="col">
           <div class="d-flex">
             <div style="width: 106px; height: 106px;">
-              <img v-if="tokenData.info.Logo !== ''" class="img-sc-detail" :src="tokenData.info.Logo" alt="">
+              <img v-if="tokenData.list.Logo !== ''" class="img-sc-detail" :src="tokenData.list.Logo" alt="">
               <div v-else class="token-no-logo-detail">
-                {{ $route.params.type === 'oep4' ? tokenData.info.Symbol : tokenData.info.Name.substr(0, 2) }}
+                {{ $route.params.type === 'oep4' ? tokenData.list.Symbol : tokenData.list.Name.substr(0, 2) }}
               </div>
             </div>
 
             <div class="token-detail-desc">
-              <h4>{{ tokenData.info.Name }}
-                <span v-if="$route.params.type === 'oep4'">&nbsp;&nbsp;{{ '(' + tokenData.info.Symbol + ')' }}</span>
+              <h4>{{ tokenData.list.Name }}
+                <span v-if="$route.params.type === 'oep4'">&nbsp;&nbsp;{{ '(' + tokenData.list.Symbol + ')' }}</span>
               </h4>
               <div class="f-color word-break d-block height-100 font-size14">
-                <p>{{ tokenData.info.Description }}</p>
+                <p class="word-break-word">{{ tokenData.list.Description }}</p>
               </div>
             </div>
           </div>
@@ -36,16 +36,16 @@
       <div class="row" v-if="$route.params.type === 'oep8'">
         <div class="b-detail-divider-line"></div>
         <div class="col-12 f-color">{{ $t('addressDetail.oep8Assets') }}</div>
-        <div class="col-3 text-center symbol-top" v-for="(item, index) in tokenData.info.Symbol">
+        <div class="col-3 text-center symbol-top" v-for="(item, index) in tokenData.list.Symbol">
           <div class="font-blod">{{ item }}</div>
-          <div class="important_color font-size24">{{ $HelperTools.toFinancialVal(tokenData.info.TotalSupply[index]) }}</div>
+          <div class="important_color font-size24">{{ $HelperTools.toFinancialVal(tokenData.list.TotalSupply[index]) }}</div>
         </div>
       </div>
 
       <!--<div class="b-detail-divider-line"></div>-->
 
-      <div class="row font-size14" v-for="(scVal, scKey, scIndex) in tokenData.info.ContactInfo">
-        <div v-if="scIndex !== tokenData.info.ContactInfo.length" class="sc-detail-divider-line"></div>
+      <div class="row font-size14" v-for="(scVal, scKey, scIndex) in tokenData.list.ContactInfo">
+        <div v-if="scIndex !== tokenData.list.ContactInfo.length" class="sc-detail-divider-line"></div>
 
         <div class="col-2"><span class="normal_color">{{ scKey }}</span></div>
         <div class="col-10">
@@ -58,10 +58,10 @@
 
     <!--TotalSupply & Decimals-->
     <detail-block-2 :name1="$t('tokens.detail.totalSupply')"
-                    :val1="$HelperTools.toFinancialVal(tokenData.info.TotalSupply)"
+                    :val1="$HelperTools.toFinancialVal(tokenData.list.TotalSupply)"
                     :rows1="'1.3'"
                     :name2="$t('tokens.detail.decimals')"
-                    :val2="tokenData.info.Decimals"
+                    :val2="tokenData.list.Decimals"
                     :rows2="'1.3'">
     </detail-block-2>
 
@@ -74,13 +74,13 @@
               <i class="fa fa-info-circle" aria-hidden="true"></i>
             </a>
           </div>
-          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(tokenData.info.AddressCount) }}</div>
+          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(tokenData.list.AddressCount) }}</div>
         </div>
       </div>
       <div class="col">
         <div class="detail-col detail-col-middle">
           <div class="f-color">{{ $t('tokens.detail.txn') }}</div>
-          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(tokenData.info.Total) }}</div>
+          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(tokenData.list.Total) }}</div>
         </div>
       </div>
       <div class="col">
@@ -91,17 +91,12 @@
             </a>
           </div>
           <div class="important_color font-size24 text-center">
-            {{ $HelperTools.toFinancialVal(parseInt(tokenData.info.OntCount)) + ' ONT, ' +
-            $HelperTools.toFinancialVal(tokenData.info.OngCount) + ' ONG'}}
+            {{ $HelperTools.toFinancialVal(parseInt(tokenData.list.OntCount)) + ' ONT, ' +
+            $HelperTools.toFinancialVal(tokenData.list.OngCount) + ' ONG'}}
           </div>
         </div>
       </div>
     </div>
-
-    <!--更明显的展示方式，后期开放-->
-    <!--<detail-block-2 :name1="$t('tokens.detail.ontFlow')" :val1="tokenData.info.OntCount" :rows1="'1.1'"-->
-    <!--:name2="$t('tokens.detail.ongFlow')" :val2="tokenData.info.OngCount" :rows2="'1.1'">-->
-    <!--</detail-block-2>-->
 
     <!-- Tab Control -->
     <ul class="nav nav-tabs f-color" role="tablist" style="margin-top: 4px;">
@@ -122,7 +117,8 @@
         <div class="row" v-if="tokenData.Total !== 0">
           <div class="col">
             <div class="detail-col">
-              {{ tokenData.info.Total }}<span class="f-color"> {{ $t('tokens.detail.txOn') }}</span>
+              <ont-pagination :total="tokenData.total"></ont-pagination>
+
               <div class="table-responsive">
                 <table class="table">
                   <thead>
@@ -139,7 +135,7 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="tx in tokenData.info.TxnList">
+                  <tr v-for="tx in tokenData.list.TxnList">
                     <td class="font-size14 important_color font-Regular pointer" @click="toTransDetailPage(tx.TxnHash)">
                       {{tx.TxnHash.substr(0,4) + '...' + tx.TxnHash.substr(60)}}
                     </td>
@@ -161,13 +157,11 @@
                   </tbody>
                 </table>
               </div>
+
+              <ont-pagination :total="tokenData.total"></ont-pagination>
             </div>
           </div>
         </div>
-
-        <turn-the-page v-if="tokenData.allPage > 1"
-                       :pagesInfo="tokenData" :pagesName="'TokenDetail'"
-                       :who="'contractHash'" :paramVal="$route.params.contractHash"></turn-the-page>
       </div>
       <div id="scCode" class="container tab-pane">
         <div class="row">
@@ -182,7 +176,7 @@
                 </span>
                 <span class="pull-right font-size14 font-Regular copied-right" v-show="showCodeCopied">Copied!</span>
               </div>
-              <textarea id="scCodeData" readonly rows="6">{{ tokenData.info.Code }}</textarea>
+              <textarea id="scCodeData" readonly rows="6">{{ tokenData.list.Code }}</textarea>
             </div>
           </div>
         </div>
@@ -199,7 +193,7 @@
                   </span>
               <span class="pull-right font-size14 font-ExtraLight copied-right" v-show="showABICopied">Copied!</span>
             </div>
-              <textarea id="scABIData" readonly rows="6">{{tokenData.info.ABI}}</textarea>
+              <textarea id="scABIData" readonly rows="6">{{tokenData.list.ABI}}</textarea>
             </div>
           </div>
         </div>
@@ -222,7 +216,7 @@
     },
     computed: {
       ...mapState({
-        tokenData: state => state.TokenData.Token
+        tokenData: state => state.Tokens.Detail
       })
     },
     data() {
@@ -233,7 +227,9 @@
     },
     methods: {
       getTokenData() {
-        this.$store.dispatch('getToken', this.$route.params).then();
+        this.tokenData.list = '';
+        
+        this.$store.dispatch('GetToken', this.$route.params).then();
       },
       toTransDetailPage($TxnId) {
         if (this.$route.params.net === 'testnet') {

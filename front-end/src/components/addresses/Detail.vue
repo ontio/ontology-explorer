@@ -91,13 +91,16 @@
         <div class="detail-col">
           <div class="row font-size18 font-blod normal_color">
             <div class="col">
-              <!--{{ addressDetail.info.allPage }} {{ $t('addressDetail.txOnAddr') }}-->
+              <!--{{ addressDetail.allPage }} {{ $t('addressDetail.txOnAddr') }}-->
               {{ $t('addressDetail.txns') }}
             </div>
             <div class="col">
               <to-excel :address="$route.params.address"></to-excel>
             </div>
           </div>
+
+          <ont-pagination :total="addressDetail.total"></ont-pagination>
+
           <div class="row table-responsive">
             <div class="col">
               <table v-if="info.TxnTotal !== 0" class="table">
@@ -150,21 +153,9 @@
               </table>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="row justify-content-center" style="margin-top: 30px;">
-      <!--<div id="page" v-show="addressDetail.info.allPage > 10">-->
-      <div id="page">
-        <ul class="pagination">
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.firstPage)" ><button class="goto_btn"><a>{{$t('page.First')}}</a> </button></li>
-          <li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.lastPage)"><button style="border-left:0px" class="goto_btn"><a>{{$t('page.PreviousPage')}}</a></button></li>
-          <li v-show="haveNext" class="transaction-list-page-check-hand padding0"
-              @click="goToPage(addressDetail.info.nextPage)">
-            <button style="border-left:0px" class="goto_btn"><a>{{$t('page.NextPage')}}</a></button></li>
-          <!--<li class="transaction-list-page-check-hand padding0" @click="goToPage(addressDetail.info.finalPage)" ><button style="border-left:0px" class="goto_btn"><a>{{$t('page.Last')}}</a></button> </li>-->
-        </ul>
+          <ont-pagination :total="addressDetail.total"></ont-pagination>
+        </div>
       </div>
     </div>
   </div>
@@ -175,7 +166,6 @@
   import ToExcel from './../common/DownloadExcel'
 
   export default {
-    name: "address-detail-page",
     data() {
       return {
         Ddo: {},
@@ -185,7 +175,6 @@
         haveOtherOep: false, // 标识是否显示OEP-4/5资产
         TxnList: [],
         info: [],
-        haveNext: false, // 标识是否显示下一页的导航按钮
         tmpDown: ''
       }
     },
@@ -198,8 +187,8 @@
     },
     watch: {
       '$route': 'getAddressDetailData',
-      'addressDetail.info.info': function () {
-        this.info = this.addressDetail.info.info;
+      'addressDetail': function () {
+        this.info = this.addressDetail.list;
         this.AssetBalance = this.info.AssetBalance;
         if (this.info.AssetBalance.length > 4) { // 有南瓜资产
           this.havePumpkin = (this.info.AssetBalance[12].Balance !== '0' && this.info.AssetBalance[12].Balance !== 0)
@@ -208,12 +197,11 @@
           this.haveOtherOep = true
         }
         this.TxnList = this.info.TxnList;
-        this.haveNext = this.addressDetail.info.nextPage.pageNumber
       }
     },
     computed: {
       ...mapState({
-        addressDetail: state => state.AddressDetailPage.AddressDetail,
+        addressDetail: state => state.Addresses.Detail
       }),
       /**
        * 取出全部资产名称和值
@@ -230,7 +218,7 @@
     },
     methods: {
       getAddressDetailData() {
-        this.$store.dispatch('getAddressDetailPage', this.$route.params).then()
+        this.$store.dispatch('GetAddressDetail', this.$route.params).then()
       },
       toReturn() {
         this.$router.go(-1)

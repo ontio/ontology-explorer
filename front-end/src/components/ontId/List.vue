@@ -2,6 +2,8 @@
   <div class="container container-margin-top">
     <list-title :name="$t('ontIdList.name')"></list-title>
 
+    <ont-pagination :total="ontIdList.total"></ont-pagination>
+
     <div class="row justify-content-center">
       <div class="col">
         <div class="table-responsive">
@@ -17,7 +19,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="OntId in OntIdListDetail.info">
+            <tr v-for="OntId in ontIdList.list">
               <td class="font-size14 font-Regular important_color pointer" @click="toTransactionDetailPage(OntId.TxnHash)">{{OntId.TxnHash.substr(0,8) + '...' + OntId.TxnHash.substr(56)}}</td>
               <td class="font-size14 font-Regular important_color pointer" @click="toOntIdDetailPage(OntId.OntId)">{{OntId.OntId.substr(0,10)}}...{{OntId.OntId.substr(35,46)}}</td>
               <td class="font-size14 font-Regular normal_color">{{getOntIDEvent(OntId.Description)}}</td>
@@ -31,7 +33,7 @@
       </div>
     </div>
 
-    <turn-the-page :pagesInfo="OntIdListDetail" :pagesName="'OntIdListDetail'"></turn-the-page>
+    <ont-pagination :total="ontIdList.total"></ont-pagination>
   </div>
 </template>
 
@@ -40,21 +42,20 @@
   import GetTransactionType from './../../common/OntMsg/GetTransactionType.js'
 
   export default {
-    name: "ont-id-list-page",
     created() {
-      this.getOntIdListPage()
+      this.getOntIdList()
     },
     watch: {
-      '$route': 'getOntIdListPage'
+      '$route': 'getOntIdList'
     },
     computed: {
       ...mapState({
-        OntIdListDetail: state => state.OntIdListPage.OntIdListDetail,
+        ontIdList: state => state.OntIDs.List,
       })
     },
     methods: {
-      getOntIdListPage() {
-        this.$store.dispatch('getOntIdListPage', this.$route.params).then()
+      getOntIdList() {
+        this.$store.dispatch('GetOntIdList', this.$route.params).then()
       },
       getTransactionType($case) {
         return GetTransactionType.getTransactionType($case)

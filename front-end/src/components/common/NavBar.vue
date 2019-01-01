@@ -180,9 +180,9 @@
       },
       toTransactionListPage() {
         if (this.$route.params.net === 'testnet') {
-          this.$router.push({name: 'TransactionListDetailTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+          this.$router.push({name: 'TransactionListTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
         } else {
-          this.$router.push({name: 'TransactionListDetail', params: {pageSize: 20, pageNumber: 1}})
+          this.$router.push({name: 'TransactionList', params: {pageSize: 20, pageNumber: 1}})
         }
       },
       toOntIdListPage() {
