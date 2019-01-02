@@ -55,6 +55,10 @@ module.exports = {
     txn: '交易',
     txns: '交易',
   },
+  ontPagination: {
+    total: '共有 ',
+    data: ' 条数据'
+  },
   searchInput: {
     search: '查询',
     placeholder: 'Ont ID，区块高度，交易哈希，合约哈希，资产地址',

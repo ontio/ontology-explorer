@@ -3,10 +3,10 @@
     <list-title :name="$t('contracts.detail.name')"></list-title>
     <detail-title :name="$t('contracts.detail.hash')" :val="$route.params.contractHash"></detail-title>
 
-    <detail-block-2 :name1="$t('contracts.detail.creator')" :val1="contractData.info.Creator" :rows1="'1.2'"
-                    :params1="['address', contractData.info.Creator]"
+    <detail-block-2 :name1="$t('contracts.detail.creator')" :val1="contract.list.Creator" :rows1="'1.2'"
+                    :params1="['address', contract.list.Creator]"
                     :name2="$t('contracts.detail.createdTime')"
-                    :val2="$HelperTools.getTransDate(contractData.info.CreateTime)" :rows2="'1.1'">
+                    :val2="$HelperTools.getTransDate(contract.list.CreateTime)" :rows2="'1.1'">
     </detail-block-2>
 
     <div class="detail-col font-Regular detail-col-fix">
@@ -14,21 +14,21 @@
         <div class="col">
           <div class="d-flex">
             <div class="img-sc-detail">
-              <img v-if="contractData.info.Logo !== ''" :src="contractData.info.Logo" alt="">
+              <img v-if="contract.list.Logo !== ''" :src="contract.list.Logo" alt="">
               <div v-else class="sc-no-logo-detail">C</div>
             </div>
             <div class="sc-detail-desc">
-              <h4>{{ contractData.info.Name }}</h4>
+              <h4>{{ contract.list.Name }}</h4>
               <div class="f-color word-break d-block height-100 font-size14">
-                <p>{{ contractData.info.Description }}</p>
+                <p class="word-break-word">{{ contract.list.Description }}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="row font-size14" v-for="(scVal, scKey, scIndex) in contractData.info.ContactInfo">
-        <div v-if="scIndex !== contractData.info.ContactInfo.length" class="sc-detail-divider-line"></div>
+      <div class="row font-size14" v-for="(scVal, scKey, scIndex) in contract.list.ContactInfo">
+        <div v-if="scIndex !== contract.list.ContactInfo.length" class="sc-detail-divider-line"></div>
 
         <div class="col-2"><span class="normal_color">{{ scKey }}</span></div>
         <div class="col-10">
@@ -47,13 +47,13 @@
               <i class="fa fa-info-circle" aria-hidden="true"></i>
             </a>
           </div>
-          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(contractData.info.AddressCount) }}</div>
+          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(contract.list.AddressCount) }}</div>
         </div>
       </div>
       <div class="col">
         <div class="detail-col detail-col-middle">
           <div class="f-color">{{ $t('tokens.detail.txn') }}</div>
-          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(contractData.info.Total) }}</div>
+          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(contract.list.Total) }}</div>
         </div>
       </div>
       <div class="col">
@@ -64,16 +64,16 @@
             </a>
           </div>
           <div class="important_color font-size24 text-center">
-            {{ $HelperTools.toFinancialVal(parseInt(contractData.info.OntCount)) + ' ONT, ' +
-            $HelperTools.toFinancialVal(contractData.info.OngCount) + ' ONG'}}
+            {{ $HelperTools.toFinancialVal(parseInt(contract.list.OntCount)) + ' ONT, ' +
+            $HelperTools.toFinancialVal(contract.list.OngCount) + ' ONG'}}
           </div>
         </div>
       </div>
     </div>
 
     <!--更明显的展示方式，后期开放-->
-    <!--<detail-block-2 :name1="$t('contracts.detail.ontFlow')" :val1="contractData.info.OntCount" :rows1="'1.1'"-->
-    <!--:name2="$t('contracts.detail.ongFlow')" :val2="contractData.info.OngCount" :rows2="'1.1'">-->
+    <!--<detail-block-2 :name1="$t('contracts.detail.ontFlow')" :val1="contract.list.OntCount" :rows1="'1.1'"-->
+    <!--:name2="$t('contracts.detail.ongFlow')" :val2="contract.list.OngCount" :rows2="'1.1'">-->
     <!--</detail-block-2>-->
 
     <!-- Tab Control -->
@@ -99,10 +99,11 @@
     <!-- Tab panes -->
     <div class="tab-content">
       <div id="scTxn" class="container tab-pane active">
-        <div class="row" v-if="contractData.Total !== 0">
+        <div class="row" v-if="contract.total !== 0">
           <div class="col">
             <div class="detail-col">
-              {{ contractData.info.Total }}<span class="f-color"> {{ $t('contracts.detail.txOn') }}</span>
+              <ont-pagination :total="contract.total"></ont-pagination>
+
               <div class="table-responsive">
                 <table class="table">
                   <thead>
@@ -115,7 +116,7 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="tx in contractData.info.TxnList">
+                  <tr v-for="tx in contract.list.TxnList">
                     <td class="font-size14 important_color font-Regular pointer" @click="toTransDetailPage(tx.TxnHash)">
                       {{tx.TxnHash.substr(0,4) + '...' + tx.TxnHash.substr(60)}}
                     </td>
@@ -136,13 +137,11 @@
                   </tbody>
                 </table>
               </div>
+
+              <ont-pagination :total="contract.total"></ont-pagination>
             </div>
           </div>
         </div>
-
-        <turn-the-page v-if="contractData.allPage > 1"
-                       :pagesInfo="contractData" :pagesName="'ContractDetail'"
-                       :who="'contractHash'" :paramVal="$route.params.contractHash"></turn-the-page>
       </div>
       <div id="scCode" class="container tab-pane">
         <div class="row">
@@ -157,7 +156,7 @@
                 </span>
                 <span class="pull-right font-size14 font-ExtraLight copied-right" v-show="showCodeCopied">Copied!</span>
               </div>
-              <textarea id="scCodeData" readonly rows="6">{{ contractData.info.Code }}</textarea>
+              <textarea id="scCodeData" readonly rows="6">{{ contract.list.Code }}</textarea>
             </div>
           </div>
         </div>
@@ -174,7 +173,7 @@
                   </span>
                 <span class="pull-right font-size14 font-ExtraLight copied-right" v-show="showABICopied">Copied!</span>
               </div>
-              <textarea id="scABIData" readonly rows="6">{{contractData.info.ABI}}</textarea>
+              <textarea id="scABIData" readonly rows="6">{{contract.list.ABI}}</textarea>
             </div>
           </div>
         </div>
@@ -217,7 +216,7 @@
     },
     computed: {
       ...mapState({
-        contractData: state => state.ContractData.Contract,
+        contract: state => state.Contracts.Detail,
         statisticsData: state => state.Statistics.StatisticsData
       })
     },
@@ -230,9 +229,9 @@
     },
     methods: {
       getContractData() {
-        this.contractData.info = '';
+        this.contract.list = '';
 
-        this.$store.dispatch('getContract', this.$route.params).then();
+        this.$store.dispatch('GetContract', this.$route.params).then();
       },
       toTransDetailPage($TxnId) {
         if (this.$route.params.net === 'testnet') {
