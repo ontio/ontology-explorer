@@ -3,17 +3,14 @@
     <list-title :name="$t('tokens.list.name')"></list-title>
 
     <div class="row token-count-view">
-      <div class="col text-left font-size18">
-        {{ $t('contracts.list.tit.currently') }}
-        <span class="important_color"> {{ tokens.totalCount }} </span>
-        {{ $t('contracts.list.tit.contracts') }}
-      </div>
       <div class="col text-right">
         <a :href="applyForUrl" target="_blank" class="font-size18 font-blod important_color pointer2">
           <i class="far fa-hand-point-right"></i>&nbsp;&nbsp;{{ $t('contracts.list.tit.checkIn') }}
         </a>
       </div>
     </div>
+
+    <ont-pagination :total="tokens.total"></ont-pagination>
 
     <div class="row justify-content-center">
       <div class="col">
@@ -33,7 +30,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="token in tokens.info" class="sc-have-img-line-height">
+            <tr v-for="token in tokens.list" class="sc-have-img-line-height">
               <td class="font-size14 font-Regular normal_color">
                 <img v-if="token.Logo !== ''" class="sc-list-img" :src="token.Logo" alt="">
                 <div v-else class="sc-no-logo">{{ $route.params.type === 'oep4' ? token.Symbol : token.Name.substr(0, 2) }}</div>
@@ -76,7 +73,7 @@
       </div>
     </div>
 
-    <turn-the-page v-if="tokens.info.allPage > 1" :pagesInfo="tokens" :pagesName="'Token'"></turn-the-page>
+    <ont-pagination :total="tokens.total"></ont-pagination>
   </div>
 </template>
 
@@ -98,14 +95,14 @@
     },
     computed: {
       ...mapState({
-        tokens: state => state.TokenData.Tokens
+        tokens: state => state.Tokens.List
       }),
     },
     methods: {
       getTokensData() {
-        this.tokens.info = ''; // 清空内容
+        this.tokens.list = ''; // 清空内容
 
-        this.$store.dispatch('getTokens', this.$route.params).then()
+        this.$store.dispatch('GetTokens', this.$route.params).then()
       },
       goToTokenDetail(token) {
         if (this.$route.params.net == undefined) {

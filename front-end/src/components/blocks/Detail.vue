@@ -1,36 +1,26 @@
 <template>
   <div class="container container-margin-top">
     <list-title :name="$t('blockDetail.nickname')"></list-title>
-    <detail-title :name="$t('blockDetail.name')" :val="blockData.Height"></detail-title>
-
-    <!--test：-->
-    <!--<detail-block :params="detailParams"></detail-block>-->
+    <detail-title :name="$t('blockDetail.name')" :val="block.Height"></detail-title>
 
     <!--区块时间和大小-->
-    <detail-block-2 :name1="$t('blockDetail.BlockTime')" :val1="$HelperTools.getTransDate(blockData.BlockTime)" :rows1="'1.1'"
-                    :name2="$t('blockDetail.BlockSize')" :val2="blockData.BlockSize + ' bytes'" :rows2="'1.1'">
+    <detail-block-2 :name1="$t('blockDetail.BlockTime')" :val1="$HelperTools.getTransDate(block.BlockTime)" :rows1="'1.1'"
+                    :name2="$t('blockDetail.BlockSize')" :val2="block.BlockSize + ' bytes'" :rows2="'1.1'">
     </detail-block-2>
-
-    <!--<detail-block :params="[{name:$t('blockDetail.keeper'), val:blockData.BookKeeper, rows:2}]"></detail-block>-->
-    <!--<detail-block :params="[{name:$t('blockDetail.hash'), val:blockData.Hash, rows:2}]"></detail-block>-->
-
-
-    <!--<detail-block :params="[{name:$t('blockDetail.merkle'), val:blockData.TxnsRoot, rows:2},-->
-      <!--{name:$t('blockDetail.Consensus'), val:blockData.ConsensusData, rows:2}]"></detail-block>-->
 
     <detail-block :params="detailParams" :styleVal="'new'"></detail-block>
 
     <!--上一个区块及下一个区块-->
     <detail-block-2 :name1="$t('blockDetail.PrevBlock')" :val1="prevBlockUrl" :rows1="'2'"
-                    :params1="['block', blockData.Height-1]"
+                    :params1="['block', block.Height-1]"
                     :name2="$t('blockDetail.NextBlock')" :val2="nextBlockUrl" :rows2="'2'"
-                    :params2="nextBlockUrl !== 'Null' ? ['block', blockData.Height+1] : ''">
+                    :params2="nextBlockUrl !== 'Null' ? ['block', block.Height+1] : ''">
     </detail-block-2>
 
-    <div class="row" v-if="blockData.TxnNum !== 0">
+    <div class="row" v-if="block.TxnNum !== 0">
       <div class="col">
         <div class="detail-col">
-          {{ blockData.TxnNum }}<span class="f-color"> {{ $t('blockDetail.txOnBlock') }}</span>
+          {{ block.TxnNum }}<span class="f-color"> {{ $t('blockDetail.txOnBlock') }}</span>
           <div class="table-responsive">
             <table class="table">
               <thead>
@@ -41,7 +31,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr v-for="tx in blockData.TxnList">
+              <tr v-for="tx in block.TxnList">
                 <td class="font-size14 important_color font-Regular pointer" @click="toTransDetailPage(tx.TxnHash)">
                   {{tx.TxnHash.substr(0,4) + '...' + tx.TxnHash.substr(60)}}
                 </td>
@@ -68,32 +58,31 @@
   import {mapState} from 'vuex'
 
   export default {
-    name: "block-detail-page",
     created() {
-      this.getBlockData()
+      this.getBlock()
     },
     watch: {
-      '$route': 'getBlockData'
+      '$route': 'getBlock'
     },
     computed: {
       ...mapState({
-        blockData: state => state.BlockDetailPage.BlockDetail.info,
+        block: state => state.Blocks.Detail,
       }),
       detailParams: function () {
         return [
-          {name: this.$t('blockDetail.hash'), val: this.blockData.Hash, rows: 2},
-          {name: this.$t('blockDetail.keeper'), val: this.blockData.BookKeeper, rows: 2},
-          {name: this.$t('blockDetail.merkle'), val: this.blockData.TxnsRoot, rows: 2},
-          {name: this.$t('blockDetail.Consensus'), val: this.blockData.ConsensusData, rows: 2},
+          {name: this.$t('blockDetail.hash'), val: this.block.Hash, rows: 2},
+          {name: this.$t('blockDetail.keeper'), val: this.block.BookKeeper, rows: 2},
+          {name: this.$t('blockDetail.merkle'), val: this.block.TxnsRoot, rows: 2},
+          {name: this.$t('blockDetail.Consensus'), val: this.block.ConsensusData, rows: 2},
         ]
       },
       prevBlockUrl: function () {
-        return typeof(this.blockData.PrevBlock) === 'undefined' ? 'Null' : this.blockData.PrevBlock.substr(0, 4) + '...' + this.blockData.PrevBlock.substr(60)
+        return typeof(this.block.PrevBlock) === 'undefined' ? 'Null' : this.block.PrevBlock.substr(0, 4) + '...' + this.block.PrevBlock.substr(60)
       },
       nextBlockUrl: function () {
-        if (typeof(this.blockData.NextBlock) !== 'undefined') {
-          if (this.blockData.NextBlock !== '') {
-            return this.blockData.NextBlock.substr(0, 4) + '...' + this.blockData.NextBlock.substr(60)
+        if (typeof(this.block.NextBlock) !== 'undefined') {
+          if (this.block.NextBlock !== '') {
+            return this.block.NextBlock.substr(0, 4) + '...' + this.block.NextBlock.substr(60)
           }
         }
 
@@ -101,8 +90,8 @@
       }
     },
     methods: {
-      getBlockData() {
-        this.$store.dispatch('getBlockDetailPage', this.$route.params).then()
+      getBlock() {
+        this.$store.dispatch('GetBlock', this.$route.params).then()
       },
       toBlockDetailPage($blockHeight) {
         if (this.$route.params.net === 'testnet') {

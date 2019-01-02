@@ -230,7 +230,7 @@
     },
     computed: {
       ...mapState({
-        txData: state => state.TransactionDetailPage.TransactionDetail.info,
+        txData: state => state.Transactions.Detail,
       }),
       issuerData: function () {
         return [
@@ -295,7 +295,7 @@
         }
       },
       getTxData() {
-        this.$store.dispatch('getTransactionDetailPage', this.$route.params).then()
+        this.$store.dispatch('GetTransaction', this.$route.params).then()
       },
       getTransactionType($case) {
         return GetTransactionType.getTransactionType($case)

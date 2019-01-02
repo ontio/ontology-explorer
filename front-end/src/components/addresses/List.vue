@@ -2,6 +2,8 @@
   <div class="container container-margin-top">
     <list-title :name="$t('addressList.nickname')"></list-title>
 
+    <ont-pagination :total="addressList.total"></ont-pagination>
+
     <div class="row justify-content-center">
       <div class="col">
         <div class="table-responsive">
@@ -15,7 +17,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(address,index) in addressList.info">
+            <tr v-for="(address,index) in addressList.list">
               <td class="font-size14 font-Regular normal_color">{{Number(addressList.basicRank) + index}}</td>
               <td class="font-size14 font-Regular important_color pointer"
                   @click="goToAddressDetail(address.address)">
@@ -30,7 +32,7 @@
       </div>
     </div>
 
-    <turn-the-page :pagesInfo="addressList" :pagesName="'addressList'"></turn-the-page>
+    <ont-pagination :total="addressList.total"></ont-pagination>
   </div>
 </template>
 
@@ -38,7 +40,6 @@
   import {mapState} from 'vuex'
 
   export default {
-    name: "address-list-page",
     created() {
       this.getAddressListInfo()
     },
@@ -47,12 +48,12 @@
     },
     computed: {
       ...mapState({
-        addressList: state => state.AddressListPage.AddressListDetail,
-      }),
+        addressList: state => state.Addresses.List
+      })
     },
     methods: {
       getAddressListInfo() {
-        this.$store.dispatch('getAddressListPage', this.$route.params).then()
+        this.$store.dispatch('GetAddressList', this.$route.params).then()
       },
       goToAddressDetail(address) {
         if (this.$route.params.net == undefined) {

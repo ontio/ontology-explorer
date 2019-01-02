@@ -2,6 +2,8 @@
   <div class="container container-margin-top">
     <list-title :name="$t('blockList.name')"></list-title>
 
+    <ont-pagination :total="blocks.total"></ont-pagination>
+
     <div class="row justify-content-center">
       <div class="col">
         <div class="table-responsive">
@@ -16,7 +18,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="block in blockListDetail.info">
+            <tr v-for="block in blocks.info">
               <td class="font-size14 font-Regular important_color pointer" @click="toBlockDetailPage(block.Height)">{{block.Height}}</td>
               <td class="font-size14 font-Regular normal_color">{{block.TxnNum}}</td>
               <td class="font-size14 font-Regular normal_color">{{block.BookKeeper.length}}</td>
@@ -29,7 +31,7 @@
       </div>
     </div>
 
-    <turn-the-page :pagesInfo="blockListDetail" :pagesName="'blockListDetail'"></turn-the-page>
+    <ont-pagination :total="blocks.total"></ont-pagination>
   </div>
 </template>
 
@@ -37,21 +39,20 @@
   import {mapState} from 'vuex'
 
   export default {
-    name: "block-list-page",
     created() {
-      this.getBlockListPage()
+      this.getBlocks()
     },
     watch: {
-      '$route': 'getBlockListPage'
+      '$route': 'getBlocks'
     },
     computed: {
       ...mapState({
-        blockListDetail: state => state.BlockListPage.BlockListDetail,
-      }),
+        blocks: state => state.Blocks.List,
+      })
     },
     methods: {
-      getBlockListPage() {
-        this.$store.dispatch('getBlockListPage', this.$route.params).then()
+      getBlocks() {
+        this.$store.dispatch('GetBlocks', this.$route.params).then()
       },
       toBlockDetailPage($blockHeight) {
         if (this.$route.params.net == undefined) {

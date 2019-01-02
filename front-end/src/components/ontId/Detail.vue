@@ -102,7 +102,6 @@
   import {mapState} from 'vuex'
 
   export default {
-    name: "ont-id-detail-page",
     data() {
       return {
         Ddo: {},
@@ -113,10 +112,10 @@
       }
     },
     created() {
-      this.getOntIdDetailPage()
+      this.getOntIdDetail()
     },
     watch: {
-      '$route': 'getOntIdDetailPage',
+      '$route': 'getOntIdDetail',
       'OntIdDetail.info': function () {
         if (this.OntIdDetail.info === false) {
           this.haveData = false
@@ -129,12 +128,12 @@
     },
     computed: {
       ...mapState({
-        OntIdDetail: state => state.OntIdDetailPage.OntIdDetail,
+        OntIdDetail: state => state.OntIDs.Detail,
       })
     },
     methods: {
-      getOntIdDetailPage() {
-        this.$store.dispatch('getOntIdDetailPage', this.$route.params).then()
+      getOntIdDetail() {
+        this.$store.dispatch('GetOntIdDetail', this.$route.params).then()
       },
       toReturn() {
         this.$router.go(-1)

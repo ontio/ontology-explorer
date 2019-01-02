@@ -55,6 +55,10 @@ module.exports = {
     txn: 'Transaction',
     txns: 'Transactions',
   },
+  ontPagination: {
+    total: 'A total of ',
+    data: ' data'
+  },
   searchInput: {
     search: 'SEARCH',
     placeholder: 'ONT ID, Block Height, TX Hash, Contract Hash, Address',
