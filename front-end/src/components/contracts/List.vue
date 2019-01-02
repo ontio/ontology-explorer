@@ -3,17 +3,14 @@
     <list-title :name="$t('contracts.list.name')"></list-title>
 
     <div class="row contract-count-view">
-      <div class="col text-left font-size18">
-        {{ $t('contracts.list.tit.currently') }}
-        <span class="important_color"> {{ contracts.totalCount }} </span>
-        {{ $t('contracts.list.tit.contracts') }}
-      </div>
       <div class="col text-right">
         <a :href="applyForUrl" target="_blank" class="font-size18 font-blod important_color pointer2">
           <i class="far fa-hand-point-right"></i>&nbsp;&nbsp;{{ $t('contracts.list.tit.checkIn') }}
         </a>
       </div>
     </div>
+
+    <ont-pagination :total="contracts.total"></ont-pagination>
 
     <div class="row justify-content-center">
       <div class="col">
@@ -29,7 +26,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="contract in contracts.info">
+            <tr v-for="contract in contracts.list">
               <td class="font-size14 font-Regular normal_color logo-td-width">
                 <img v-if="contract.Logo !== ''" class="sc-list-img" :src="contract.Logo" alt="">
                 <div v-else class="sc-no-logo">C</div>
@@ -52,7 +49,7 @@
       </div>
     </div>
 
-    <turn-the-page v-if="contracts.info.allPage > 1" :pagesInfo="contracts" :pagesName="'Contract'"></turn-the-page>
+    <ont-pagination :total="contracts.total"></ont-pagination>
   </div>
 </template>
 
@@ -74,12 +71,12 @@
     },
     computed: {
       ...mapState({
-        contracts: state => state.ContractData.Contracts,
+        contracts: state => state.Contracts.List,
       }),
     },
     methods: {
       getContractsData() {
-        this.$store.dispatch('getContracts', this.$route.params).then()
+        this.$store.dispatch('GetContracts', this.$route.params).then()
       },
       goToContractDetail(contract) {
         if (this.$route.params.net == undefined) {

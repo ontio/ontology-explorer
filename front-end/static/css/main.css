@@ -368,8 +368,10 @@ body {
   border: 4px solid #ffffff;
 }
 
-.wordbreak {
-  word-break: break-all;
+/*文字不换行，且拉伸填满*/
+.word-break-word {
+  text-align: justify;
+  word-break: break-word;
 }
 
 .padding0-left {
@@ -455,6 +457,9 @@ body {
 .important_color {
   color: #32A4BE;
 }
+.ont-blue {
+  color: #32A4BE;
+}
 
 .s-color {
   color: #00AE1D;
@@ -463,6 +468,8 @@ body {
 .f-color {
   color: #AFACAC;
 }
+
+
 
 /* goto  */
 .goto_btn {

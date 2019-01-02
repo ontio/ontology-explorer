@@ -8,8 +8,8 @@ import OntIdListPage from '@/components/ontId/List'
 import OntIdDetailPage from '@/components/ontId/Detail'
 import AddressDetailPage from '@/components/addresses/Detail'
 import AddressList from '@/components/addresses/List'
-import TransactionPage from '@/components/transactions/List'
-import TransactionDetailPage from '@/components/transactions/Detail'
+import TransactionList from '@/components/transactions/List'
+import TransactionDetail from '@/components/transactions/Detail'
 import ClaimDetailPage from '@/components/claim/Detail'
 import ClaimVerifyPage from '@/components/claim/Verify'
 import NodeStakeAuthorization from '@/components/nodes/List'
@@ -29,7 +29,7 @@ let routes = [
     component: Home
   },
   {
-    path: '/BlockListDetail/:pageSize/:pageNumber',
+    path: '/blocks/:pageSize/:pageNumber',
     name: 'blockListDetail',
     component: BlockListPage
   },
@@ -39,7 +39,7 @@ let routes = [
     component: BlockDetailPage
   },
   {
-    path: '/BlockListDetail/:pageSize/:pageNumber/:net',
+    path: '/blocks/:pageSize/:pageNumber/:net',
     name: 'blockListDetailTest',
     component: BlockListPage
   },
@@ -79,14 +79,24 @@ let routes = [
     component: AddressList
   },
   {
-    path: '/transactionlist/:pageSize/:pageNumber',
-    name: 'TransactionListDetail',
-    component: TransactionPage
+    path: '/transactions/:pageSize/:pageNumber',
+    name: 'TransactionList',
+    component: TransactionList
+  },
+  {
+    path: '/transactions/:pageSize/:pageNumber/:net',
+    name: 'TransactionListTest',
+    component: TransactionList
   },
   {
     path: '/transaction/:txnHash',
     name: 'TransactionDetail',
-    component: TransactionDetailPage
+    component: TransactionDetail
+  },
+  {
+    path: '/transaction/:txnHash/:net',
+    name: 'TransactionDetailTest',
+    component: TransactionDetail
   },
   {
     path: '/claimverify/:cardId/:ownerOntId',
@@ -122,16 +132,6 @@ let routes = [
     path: '/address/:address/:net',
     name: 'AddressDetailTest',
     component: AddressDetailPage
-  },
-  {
-    path: '/transactionlist/:pageSize/:pageNumber/:net',
-    name: 'TransactionListDetailTest',
-    component: TransactionPage
-  },
-  {
-    path: '/transaction/:txnHash/:net',
-    name: 'TransactionDetailTest',
-    component: TransactionDetailPage
   },
   {
     path: '/claimverify/:cardId/:ownerOntId/:net',

@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './components/App'
+import "element-ui/lib/theme-chalk/index.css"; // element-ui css
 import router from './router'
 import store from './store/index'
 import Axios from 'axios'
@@ -10,16 +11,23 @@ import VueI18n from 'vue-i18n'
 import LangStorage from './helpers/lang'
 import $ from 'jquery'
 import 'font-awesome/css/font-awesome.css'
-import Helper from './helpers/helper'
 
+import Helper from './helpers/helper'
 Vue.use(Helper);
+
+import {
+  // Button,
+  Pagination
+} from "element-ui";
+Vue.component(Pagination.name, Pagination);
+// Vue.component(Button.name, Button);
 
 /**
  * 全局组件注册
  */
 import NavBar from './components/common/NavBar'
 import ListTitle from './components/common/ListTitle'
-import TurnThePage from './components/common/TurnThePage'
+import OntPagination from './components/common/OntPagination'
 import DetailTitle from './components/common/DetailTitle'
 import DetailTitle2 from './components/common/DetailTitle2'
 import DetailBlock from './components/common/DetailBlock'
@@ -28,7 +36,7 @@ import LineChart from './components/common/LineChart'
 
 Vue.component('nav-bar', NavBar);
 Vue.component('list-title', ListTitle);
-Vue.component('turn-the-page', TurnThePage);
+Vue.component('ont-pagination', OntPagination);
 Vue.component('detail-title', DetailTitle);
 Vue.component('detail-title-2', DetailTitle2);
 Vue.component('detail-block', DetailBlock);
