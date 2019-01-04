@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.TransactionDetailMapper">
 
-<!--  <cache type="com.github.ontio.ExplorerRedisCache">
+  <cache type="com.github.ontio.ExplorerRedisCache">
     <property name="eviction" value="LRU" />
     <property name="size" value="1024" />
     <property name="flushInterval" value="6000" />
     <property name="readOnly" value="false" />
-  </cache>-->
+  </cache>
 
   <resultMap id="BaseResultMap" type="com.github.ontio.model.TransactionDetail">
     <id column="txnhash" jdbcType="VARCHAR" property="txnhash" />
@@ -29,18 +29,7 @@
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
     toaddress, description, blockindex, confirmflag, eventtype
   </sql>
-  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey">
-    delete from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
@@ -422,23 +411,12 @@
     limit 1
   </select>
 
-
-  <select id="selectSwapTransferTxnTime" parameterType="java.lang.String" resultType="java.lang.Integer">
-    select TxnTime
-    from tbl_ont_txn_detail
-    where fromaddress in ('AcsptRGJ3ijThLqjwJAgbnhzihTmAefMDZ','AWyEMxiLUVr5MeVJe3Fw5Xsij7iZUmfYyk')
-    and toaddress = #{param1}
-    and assetname = 'ont'
-    order by height DESC
-    limit 1
-  </select>
-
-  <select id="selectAllAddress" resultType="java.lang.String">
+  <select id="selectAllAddress" resultType="java.util.Map" >
     SELECT
-	DISTINCT(toaddress)
+	fromaddress, toaddress
     FROM
 	tbl_ont_txn_detail
-    where eventtype in (1,3)
+    where eventtype = 3
   </select>
 
 
@@ -451,18 +429,146 @@
 	OR toaddress = #{param1}
   </select>
 
-  <select id="selectContractTxs" parameterType="java.util.Map" resultType="java.util.Map">
-    select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, BlockIndex, Amount, Fee
+  <select id="selectContractByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee
     from tbl_ont_txn_detail
     where contracthash = #{contractHash}
-    order by height DESC
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+    order by txnTime DESC
     limit #{Start}, #{PageSize}
   </select>
 
-  <select id="selectContractTxsAmount" parameterType="java.lang.String" resultType="java.lang.Integer">
+  <select id="selectContractCountByHash" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+    select count(distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee)
+    from tbl_ont_txn_detail
+    where contracthash = #{contractHash}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+  </select>
+
+  <select id="selectOep5ContractCountByHash" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+    select count(distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, Contracthash, Assetname)
+    from tbl_ont_txn_detail
+    where contracthash = #{contractHash}
+    <if test="AssetName != '' and AssetName != null">
+      and assetname = #{AssetName}
+    </if>
+  </select>
+
+  <select id="selectOep5ByHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    SELECT a.*, b.Jsonurl from (
+    select distinct TxnHash, Height, TxnType, TxnTime, ConfirmFlag, Fee, Contracthash, Assetname
+        from tbl_ont_txn_detail
+        where contracthash = #{contractHash}
+        order by txnTime DESC
+        limit #{Start}, #{PageSize}
+    ) a
+    LEFT JOIN tbl_ont_oep5_dragon b
+    on a.Contracthash = b.contract and a.assetname = b.assertname
+    ORDER by txnTime DESC
+  </select>
+
+  <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer" >
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
+    where contracthash = #{param1} and confirmflag = 1
+  </select>
+
+  <select id="selectAllFromAddress" resultType="java.lang.String" >
+    select DISTINCT (fromaddress)
+    from tbl_ont_txn_detail
+  </select>
+
+  <select id="selectAllToAddress" resultType="java.lang.String" >
+    select DISTINCT (toaddress)
+    from tbl_ont_txn_detail
+  </select>
+
+
+
+  <select id="selectAllFromAddressCountByAddr" resultType="java.lang.Integer" >
+    select count(DISTINCT(fromaddress))
+    from tbl_ont_txn_detail
+    where toaddress = #{param1}
+  </select>
+
+  <select id="selectAllToAddressCountByAddr" resultType="java.lang.Integer" >
+    select count(DISTINCT(toaddress))
+    from tbl_ont_txn_detail
+    where fromaddress = #{param1}
+  </select>
+
+  <select id="selectAllFromAddressCountByContract" resultType="java.lang.Integer" >
+    select count(DISTINCT (fromaddress))
+    from tbl_ont_txn_detail
     where contracthash = #{param1}
+  </select>
+
+  <select id="selectAllToAddressCountByContract" resultType="java.lang.Integer" >
+    select count(DISTINCT(toaddress))
+    from tbl_ont_txn_detail
+    where contracthash = #{param1}
+  </select>
+
+  <select id="selectAllAddressCount" resultType="java.lang.Integer" >
+    SELECT
+    count(DISTINCT(toaddress))
+    FROM
+    tbl_ont_txn_detail
+  </select>
+
+  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map" >
+    select t2.* from (
+    select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
+    from tbl_ont_txn_detail
+    where toaddress = #{Address}
+    and  eventtype = 3
+    union all
+    select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
+    from tbl_ont_txn_detail
+    where fromaddress = #{Address}
+    and  eventtype = 3
+    ) as t2
+    order by t2.TxnTime desc
+  </select>
+
+  <select id="selectTransactionDetail" resultType="com.github.ontio.model.TransactionDetail" >
+    select *
+    from tbl_ont_txn_detail
+    where txntime >= #{startTime}
+    and <![CDATA[ txntime < #{endTime} ]]>
+  </select>
+
+  <select id="queryTransactionCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    select count(DISTINCT(txnhash))
+    from tbl_ont_txn_detail
+    where txntime >= #{startTime}
+    and <![CDATA[ txntime < #{endTime} ]]>
+  </select>
+
+    <select id="selectContractAssetAllSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+        SELECT SUM(amount)
+        from tbl_ont_txn_detail
+        where confirmflag = 1 and assetname = #{assetname}
+        and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
+  </select>
+
+    <select id="selectTxnAllAmount" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+    select count(DISTINCT(txnhash))
+    from tbl_ont_txn_detail
+    where confirmflag = 1 and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
+  </select>
+
+  <select id="selectContractTokenAllSum" resultType="java.util.Map" parameterType="java.util.Map" useCache="false">
+        SELECT SUM(amount) as Amount, Assetname
+        from tbl_ont_txn_detail
+        where confirmflag = 1 and contracthash = #{contractHash} and description = 'transfer'
+        <if test="OEP5 == null">
+          GROUP BY assetname
+        </if>
   </select>
 
 </mapper>

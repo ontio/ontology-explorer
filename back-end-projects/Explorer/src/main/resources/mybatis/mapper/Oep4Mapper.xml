@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.Oep4Mapper">
+  <cache type="com.github.ontio.ExplorerRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Oep4">
     <id column="contract" jdbcType="VARCHAR" property="contract" />
     <id column="name" jdbcType="VARCHAR" property="name" />
@@ -12,32 +18,28 @@
     <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
     <result column="auditflag" jdbcType="INTEGER" property="auditflag" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
   </resultMap>
   <sql id="Base_Column_List">
     contract, name, totalsupply, symbol, decimals, description, contactinfo, createtime, 
-    auditflag, updatetime
+    auditflag, updatetime, logo
   </sql>
-  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.Oep4" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from tbl_ont_oep4
     where contract = #{contract,jdbcType=VARCHAR}
-      and name = #{name,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.Oep4Key">
-    delete from tbl_ont_oep4
-    where contract = #{contract,jdbcType=VARCHAR}
-      and name = #{name,jdbcType=VARCHAR}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.Oep4">
     insert into tbl_ont_oep4 (contract, name, totalsupply, 
       symbol, decimals, description, 
       contactinfo, createtime, auditflag, 
-      updatetime)
+      updatetime, logo)
     values (#{contract,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{totalsupply,jdbcType=DECIMAL}, 
       #{symbol,jdbcType=VARCHAR}, #{decimals,jdbcType=DECIMAL}, #{description,jdbcType=VARCHAR}, 
       #{contactinfo,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{auditflag,jdbcType=INTEGER}, 
-      #{updatetime,jdbcType=TIMESTAMP})
+      #{updatetime,jdbcType=TIMESTAMP}, #{logo,jdbcType=VARCHAR}))
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.Oep4">
     insert into tbl_ont_oep4
@@ -72,6 +74,9 @@
       <if test="updatetime != null">
         updatetime,
       </if>
+      <if test="logo != null">
+        logo,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="contract != null">
@@ -104,6 +109,9 @@
       <if test="updatetime != null">
         #{updatetime,jdbcType=TIMESTAMP},
       </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Oep4">
@@ -133,6 +141,9 @@
       <if test="updatetime != null">
         updatetime = #{updatetime,jdbcType=TIMESTAMP},
       </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
     </set>
     where contract = #{contract,jdbcType=VARCHAR}
       and name = #{name,jdbcType=VARCHAR}
@@ -148,14 +159,32 @@
       auditflag = #{auditflag,jdbcType=INTEGER},
       updatetime = #{updatetime,jdbcType=TIMESTAMP}
     where contract = #{contract,jdbcType=VARCHAR}
-      and name = #{name,jdbcType=VARCHAR}
   </update>
 
-
-  <select id="selectAllKeyInfo" resultType="java.util.Map">
+  <select id="selectAllKeyInfo" resultType="java.util.Map" useCache="false">
     select Contract, Symbol, Decimals
     from tbl_ont_oep4
     where auditflag = 1
   </select>
 
+  <select id="queryOEPContracts" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    select a.contract as ContractHash, b.Name, a.TotalSupply, a.Symbol, a.Decimals, b.Description, b.ContactInfo,
+            b.CreateTime, b.UpdateTime, b.Logo, b.ABI, b.Code, b.TxCount, b.Creator, b.Addresscount, b.OntCount, b.OngCount
+    from tbl_ont_oep4 a, tbl_ont_contracts b
+		where a.Contract = b.contract
+    order by Createtime asc
+    limit #{Start}, #{PageSize}
+  </select>
+
+  <select id="queryOEPContractCount" resultType="Integer" useCache="false">
+    select count(*) from tbl_ont_oep4 a,tbl_ont_contracts b where a.contract = b.contract
+  </select>
+
+  <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep4" useCache="false">
+    select * from tbl_ont_oep4 where contract = #{contractHash}
+  </select>
+
+  <delete id="deletContractByHash" parameterType="String">
+    DELETE FROM tbl_ont_oep4 WHERE contract = #{contractHash}
+  </delete>
 </mapper>

@@ -24,13 +24,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Address;
+import com.github.ontio.common.Helper;
+import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,7 +46,6 @@ import java.util.Map;
 
 @Component
 public class OntologySDKService {
-
     private static final Logger logger = LoggerFactory.getLogger(OntologySDKService.class);
 
     private static OntologySDKService instance = null;
@@ -58,7 +63,6 @@ public class OntologySDKService {
     public OntologySDKService(ConfigParam param) {
         this.configParam = param;
     }
-
 
     public String getDDO(String ontId) {
         OntSdk ontSdk = getOntSdk();
@@ -86,7 +90,6 @@ public class OntologySDKService {
         return nodeCount;
     }
 
-
     /**
      * 获取账户余额，包括unboundong
      *
@@ -94,7 +97,6 @@ public class OntologySDKService {
      * @return
      */
     public Map getAddressBalance(String address) {
-
         Map<String, Object> balanceMap = new HashMap<>();
         OntSdk ontSdk = getOntSdk();
         try {
@@ -102,12 +104,13 @@ public class OntologySDKService {
         } catch (Exception e) {
             logger.error("getAddressBalance error...", e);
             e.printStackTrace();
-            return null;
+            balanceMap.put("ong", "0");
+            balanceMap.put("ont", "0");
+            return balanceMap;
         }
 
         return balanceMap;
     }
-
 
     /**
      * 获取OEP4账户余额
@@ -116,17 +119,32 @@ public class OntologySDKService {
      * @return
      */
     public String getAddressOep4Balance(String address, String contractAddr) {
-
         OntSdk ontSdk = getOep4OntSdk(contractAddr);
         try {
             String balance = ontSdk.neovm().oep4().queryBalanceOf(address);
             return balance;
         } catch (Exception e) {
             logger.error("getAddressOep4Balance error...", e);
-            return "";
+            return "0";
         }
     }
 
+    /**
+     * 获取OEP5账户余额
+     *
+     * @param address
+     * @return
+     */
+    public String getAddressOep5Balance(String address, String contractAddr) {
+        OntSdk ontSdk = getOep5OntSdk(contractAddr);
+        try {
+            String balance = ontSdk.neovm().oep5().queryBalanceOf(address);
+            return balance;
+        } catch (Exception e) {
+            logger.error("getAddressOep4Balance error...", e);
+            return "0";
+        }
+    }
 
     /**
      * 获取账户南瓜余额，包括unboundong
@@ -135,7 +153,6 @@ public class OntologySDKService {
      * @return
      */
     public JSONArray getAddressOpe8Balance(String address, String codeHash) {
-
         JSONArray balanceArray = new JSONArray();
         try {
             OntSdk ontSdk = getOep8OntSdk(codeHash);
@@ -144,7 +161,17 @@ public class OntologySDKService {
         } catch (Exception e) {
             logger.error("getAddressOpe8Balance error...", e);
             e.printStackTrace();
-            return null;
+
+            balanceArray = new JSONArray();
+            balanceArray.add("0");
+            balanceArray.add("0");
+            balanceArray.add("0");
+            balanceArray.add("0");
+            balanceArray.add("0");
+            balanceArray.add("0");
+            balanceArray.add("0");
+            balanceArray.add("0");
+            return balanceArray;
         }
 
         return balanceArray;
@@ -157,7 +184,6 @@ public class OntologySDKService {
      * @return
      */
     public String getUnBoundOng(String address) {
-
         OntSdk ontSdk = getOntSdk();
         try {
             String unboundOng = ontSdk.nativevm().ong().unboundOng(address);
@@ -167,12 +193,9 @@ public class OntologySDKService {
             e.printStackTrace();
             return null;
         }
-
     }
 
-
     public JSONObject queryOep4Info(String contractHash) {
-
         try {
             OntSdk ontSdk = getOep4OntSdk(contractHash);
             String name = ontSdk.neovm().oep4().queryName();
@@ -191,9 +214,27 @@ public class OntologySDKService {
             e.printStackTrace();
             return null;
         }
-
     }
 
+    public JSONObject queryOep5Info(String contractHash) {
+        try {
+            OntSdk ontSdk = getOep5OntSdk(contractHash);
+            String name = ontSdk.neovm().oep5().queryName();
+            String symbol = ontSdk.neovm().oep5().querySymbol();
+            String total = ontSdk.neovm().oep5().queryTotalSupply();
+
+            JSONObject oep5Obj = new JSONObject();
+            oep5Obj.put("Name", name);
+            oep5Obj.put("Symbol", symbol);
+            oep5Obj.put("TotalSupply", total);
+
+            return oep5Obj;
+        } catch (Exception e) {
+            logger.error("getAddressBalance error...", e);
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private OntSdk getOntSdk() {
         OntSdk wm = OntSdk.getInstance();
@@ -201,7 +242,7 @@ public class OntologySDKService {
         return wm;
     }
 
-    private OntSdk getOep8OntSdk(String codeHash) {
+    private OntSdk getOep8OntSdk(String codeHash) throws Exception{
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
         wm.neovm().oep8().setContractAddress(codeHash);
@@ -215,5 +256,35 @@ public class OntologySDKService {
         return wm;
     }
 
+    private OntSdk getOep5OntSdk(String codeHash) {
+        OntSdk wm = OntSdk.getInstance();
+        wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
+        wm.neovm().oep5().setContractAddress(codeHash);
+        return wm;
+    }
 
+    public JSONObject queryOep8Info(String contractHash, String[] tokenIds) {
+        try {
+            OntSdk ontSdk = getOep8OntSdk(contractHash);
+
+            String[] names = new String[tokenIds.length];
+            String[] symbols = new String[tokenIds.length];
+            String[] totalSupplys = new String[tokenIds.length];
+            for(int i = 0; i < tokenIds.length; i++){
+                names[i] = ontSdk.neovm().oep8().queryName(Helper.hexToBytes(tokenIds[i]));
+                symbols[i] = ontSdk.neovm().oep8().querySymbol(Helper.hexToBytes(tokenIds[i]));
+                totalSupplys[i] = ontSdk.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenIds[i]));
+            }
+
+            JSONObject oep4Obj = new JSONObject();
+            oep4Obj.put("Name", names);
+            oep4Obj.put("Symbol", symbols);
+            oep4Obj.put("TotalSupply", totalSupplys);
+            return oep4Obj;
+        } catch (Exception e) {
+            logger.error("getAddressBalance error...", e);
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

@@ -220,26 +220,17 @@ public class TransactionController {
     }*/
 
     /**
-     * query contractTxs by page
+     * query all address information
      *
-     * @param contractHash   contractHash
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
      * @return
      */
-    @RequestMapping(value = "/contractTxs/{contractHash}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
+    @RequestMapping(value = "/address/queryaddressinfo/{address}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryContractTxsByPage(@PathVariable("contractHash") String contractHash,
-                                         @PathVariable("pagenumber") Integer pageNumber,
-                                         @PathVariable("pagesize") Integer pageSize) {
+    public Result queryAddressInfo(@PathVariable("address") String address) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
-        if (contractHash.isEmpty()){
-            return null;
-        }
 
-        Result rs = transactionService.queryContractTxsByPage(contractHash, pageSize, pageNumber);
+        Result rs = transactionService.queryAddressInfoForExcel(address);
         return rs;
     }
 }

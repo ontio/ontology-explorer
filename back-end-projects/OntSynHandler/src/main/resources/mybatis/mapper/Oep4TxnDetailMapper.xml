@@ -22,18 +22,7 @@
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
     toaddress, description, blockindex, confirmflag, eventtype, contracthash
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.github.ontio.model.Oep4TxnDetailKey" >
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_oep4txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.Oep4TxnDetailKey" >
-    delete from tbl_ont_oep4txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.Oep4TxnDetail" >
     insert into tbl_ont_oep4txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
@@ -207,4 +196,15 @@
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
+
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_ont_oep4txn_detail
+    where height = #{param1}
+  </delete>
+
+  <select id="selectCountByHeight" resultType="java.lang.Integer" useCache="false">
+    select count(1)
+    from tbl_ont_oep4txn_detail
+    where height = #{height}
+  </select>
 </mapper>

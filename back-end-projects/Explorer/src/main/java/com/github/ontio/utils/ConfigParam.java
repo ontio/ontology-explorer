@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 @Service("ConfigParam")
 public class ConfigParam {
 
-
     /**
      * ontology blockchain restful url
      */
@@ -50,6 +49,9 @@ public class ConfigParam {
     @Value("${oep8.pumpkin.codeHash}")
     public String OEP8_PUMPKIN_CODEHASH;
 
+    @Value("${sdk.nodecount}")
+    public String SDK_NODE_COUNT;
 
-
+    @Value("${explorer.dailyschedule}")
+    public String EXPLORER_DAILY_SCHEDULE;
 }

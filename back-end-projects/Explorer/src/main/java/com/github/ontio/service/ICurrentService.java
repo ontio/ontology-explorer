@@ -28,7 +28,6 @@ import com.github.ontio.paramBean.Result;
  * @date 2018/2/27
  */
 public interface ICurrentService {
-
     /**
      * query current information
      *
@@ -36,9 +35,16 @@ public interface ICurrentService {
      */
     Result querySummaryInfo();
 
+    /**
+     * 注册合约信息
+     * @param reqObj
+     * @return
+     */
+    Result registerContractInfo(JSONObject reqObj);
 
-
-
-    Result registerOep4Info(JSONObject reqObj);
-
+    /**
+     * Market info
+     * @return
+     */
+    Result queryMarketingInfo();
 }

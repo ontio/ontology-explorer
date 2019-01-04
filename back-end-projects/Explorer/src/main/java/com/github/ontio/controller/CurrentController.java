@@ -22,6 +22,7 @@ package com.github.ontio.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.CurrentServiceImpl;
+import com.github.ontio.service.impl.SummaryServiceImpl;
 import com.github.ontio.utils.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +39,12 @@ import org.springframework.web.bind.annotation.*;
 @EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer")
 public class CurrentController {
-
     private static final Logger logger = LoggerFactory.getLogger(CurrentController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
     @Autowired
     private CurrentServiceImpl currentService;
-
 
     /**
      * query current summary information
@@ -62,8 +61,6 @@ public class CurrentController {
         return rs;
     }
 
-
-
     /**
      * 负载均衡存活探测api
      *
@@ -77,17 +74,27 @@ public class CurrentController {
         return "success";
     }
 
-
-
-
-    @RequestMapping(value = "/oep4/info", method = RequestMethod.POST)
-    public Result registerOep4Info(@RequestBody JSONObject reqObj) {
+    @RequestMapping(value = "/contract/registerContractInfo", method = RequestMethod.POST)
+    public Result registerContractInfo(@RequestBody JSONObject reqObj) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("####reqObj:{}", reqObj.toJSONString());
 
-        Result rs = currentService.registerOep4Info(reqObj);
+        Result rs = currentService.registerContractInfo(reqObj);
         return rs;
     }
 
+    /**
+     * query current summary information
+     *
+     * @return
+     */
+    @RequestMapping(value = "/marketing/info", method = RequestMethod.GET)
+    public Result queryMarketingInfo() {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = currentService.queryMarketingInfo();
+        return rs;
+    }
 }
