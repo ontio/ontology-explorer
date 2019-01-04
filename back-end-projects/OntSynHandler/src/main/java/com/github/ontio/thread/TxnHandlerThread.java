@@ -28,7 +28,6 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.DeployCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.dao.ContractsMapper;
-import com.github.ontio.dao.Oep4Mapper;
 import com.github.ontio.dao.Oep5Mapper;
 import com.github.ontio.dao.Oep8Mapper;
 import com.github.ontio.model.*;
@@ -266,6 +265,7 @@ public class TxnHandlerThread {
             oep8.setTokenid((String) stateArray.get(3));
             ConstantParam.ONT_SDKSERVICE.neovm().oep8().setContractAddress(contractAddress);
             oep8.setTotalsupply(new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId))));
+            //TODO 南瓜合成交易，金南瓜会减少
 
             oep8Mapper.updateTotalSupply(oep8);
         }
