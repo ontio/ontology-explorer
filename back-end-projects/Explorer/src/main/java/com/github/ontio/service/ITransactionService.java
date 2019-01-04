@@ -100,17 +100,9 @@ public interface ITransactionService {
     Result queryAddressBalance(String address);
 
     /**
-     * 查询地址列表
+     * 查询地址所有交易
+     * @param address
      * @return
      */
-    Result queryAddressList();
-
-    /**
-     * query txn by page
-     * @param contractHash   contractHash
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    Result queryContractTxsByPage(String contractHash, int pageSize, int pageNumber);
+    Result queryAddressInfoForExcel(String address);
 }

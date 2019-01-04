@@ -11,7 +11,7 @@ public interface CurrentMapper {
 
     int insertSelective(Current record);
 
-    int selectDBHeight();
+    Integer selectDBHeight();
 
     Map<String,Integer> selectSummary();
 

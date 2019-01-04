@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.ontio.dao.Oep5Mapper" >
+  <cache type="com.github.ontio.ExplorerRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.Oep5" >
+    <id column="contract" property="contract" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="totalsupply" property="totalsupply" jdbcType="DECIMAL" />
+    <result column="symbol" property="symbol" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="contactinfo" property="contactinfo" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="auditflag" property="auditflag" jdbcType="INTEGER" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="logo" property="logo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    contract, name, totalsupply, symbol, description, contactinfo, createtime, auditflag, 
+    updatetime, logo
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_ont_oep5
+    where contract = #{contract,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tbl_ont_oep5
+    where contract = #{contract,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.github.ontio.model.Oep5" >
+    insert into tbl_ont_oep5 (contract, name, totalsupply, 
+      symbol, description, contactinfo, 
+      createtime, auditflag, updatetime, 
+      logo)
+    values (#{contract,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{totalsupply,jdbcType=DECIMAL}, 
+      #{symbol,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{contactinfo,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{auditflag,jdbcType=INTEGER}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{logo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.github.ontio.model.Oep5" >
+    insert into tbl_ont_oep5
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="contract != null" >
+        contract,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="totalsupply != null" >
+        totalsupply,
+      </if>
+      <if test="symbol != null" >
+        symbol,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="contactinfo != null" >
+        contactinfo,
+      </if>
+      <if test="createtime != null" >
+        createtime,
+      </if>
+      <if test="auditflag != null" >
+        auditflag,
+      </if>
+      <if test="updatetime != null" >
+        updatetime,
+      </if>
+      <if test="logo != null" >
+        logo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="contract != null" >
+        #{contract,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="totalsupply != null" >
+        #{totalsupply,jdbcType=DECIMAL},
+      </if>
+      <if test="symbol != null" >
+        #{symbol,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="contactinfo != null" >
+        #{contactinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditflag != null" >
+        #{auditflag,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="logo != null" >
+        #{logo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Oep5" >
+    update tbl_ont_oep5
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="totalsupply != null" >
+        totalsupply = #{totalsupply,jdbcType=DECIMAL},
+      </if>
+      <if test="symbol != null" >
+        symbol = #{symbol,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="contactinfo != null" >
+        contactinfo = #{contactinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="auditflag != null" >
+        auditflag = #{auditflag,jdbcType=INTEGER},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="logo != null" >
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where contract = #{contract,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.Oep5" >
+    update tbl_ont_oep5
+    set name = #{name,jdbcType=VARCHAR},
+      totalsupply = #{totalsupply,jdbcType=DECIMAL},
+      symbol = #{symbol,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      contactinfo = #{contactinfo,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      auditflag = #{auditflag,jdbcType=INTEGER},
+      updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      logo = #{logo,jdbcType=VARCHAR}
+    where contract = #{contract,jdbcType=VARCHAR}c
+  </update>
+
+  <select id="queryOEPContracts" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    select a.contract as ContractHash, b.Name, a.TotalSupply, a.Symbol, b.Description, b.ContactInfo,
+            b.CreateTime, b.UpdateTime, b.Logo, b.ABI, b.Code, b.TxCount, b.Creator, b.Addresscount, b.OntCount, b.OngCount
+    from tbl_ont_oep5 a, tbl_ont_contracts b
+		where a.Contract = b.contract
+    order by Createtime asc
+    limit #{Start}, #{PageSize}
+  </select>
+
+  <select id="queryOEPContractCount" resultType="Integer" useCache="false">
+    select count(*) from tbl_ont_oep5 a,tbl_ont_contracts b where a.contract = b.contract
+  </select>
+
+  <select id="queryOEPContract" parameterType="String" resultType="com.github.ontio.model.Oep5" useCache="false">
+    select * from tbl_ont_oep5 where contract = #{contractHash}
+  </select>
+
+  <delete id="deletContractByHash" parameterType="String">
+    DELETE FROM tbl_ont_oep5 WHERE contract = #{contractHash}
+  </delete>
+
+  <select id="selectAllKeyInfo" resultType="java.util.Map" useCache="false">
+    select Contract, name as Symbol
+    from tbl_ont_oep5
+    where auditflag = 1
+  </select>
+</mapper>

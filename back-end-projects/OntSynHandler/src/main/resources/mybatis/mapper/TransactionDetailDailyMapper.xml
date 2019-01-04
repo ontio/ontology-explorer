@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.github.ontio.dao.Oep4TxnDetailMapper" >
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.Oep4TxnDetail" >
+<mapper namespace="com.github.ontio.dao.TransactionDetailDailyMapper" >
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.TransactionDetail" >
     <id column="txnhash" property="txnhash" jdbcType="VARCHAR" />
     <id column="txnindex" property="txnindex" jdbcType="INTEGER" />
     <result column="txntype" property="txntype" jdbcType="INTEGER" />
@@ -16,37 +16,29 @@
     <result column="blockindex" property="blockindex" jdbcType="INTEGER" />
     <result column="confirmflag" property="confirmflag" jdbcType="INTEGER" />
     <result column="eventtype" property="eventtype" jdbcType="INTEGER" />
+    <result column="contracthash" property="contracthash" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
-    toaddress, description, blockindex, confirmflag, eventtype
+    toaddress, description, blockindex, confirmflag, eventtype, contracthash
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.github.ontio.model.Oep4TxnDetailKey" >
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_oep4txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.Oep4TxnDetailKey" >
-    delete from tbl_ont_oep4txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.github.ontio.model.Oep4TxnDetail" >
-    insert into tbl_ont_oep4txn_detail (txnhash, txnindex, txntype, 
+
+  <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail" >
+    insert into tbl_ont_txn_detail_daily (txnhash, txnindex, txntype, 
       txntime, height, amount, 
       fee, assetname, fromaddress, 
       toaddress, description, blockindex, 
-      confirmflag, eventtype)
+      confirmflag, eventtype, contracthash
+      )
     values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
       #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
       #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
       #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
-      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER})
+      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}
+      )
   </insert>
-  <insert id="insertSelective" parameterType="com.github.ontio.model.Oep4TxnDetail" >
-    insert into tbl_ont_oep4txn_detail
+  <insert id="insertSelective" parameterType="com.github.ontio.model.TransactionDetail" >
+    insert into tbl_ont_txn_detail_daily
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="txnhash != null" >
         txnhash,
@@ -89,6 +81,9 @@
       </if>
       <if test="eventtype != null" >
         eventtype,
+      </if>
+      <if test="contracthash != null" >
+        contracthash,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -134,10 +129,13 @@
       <if test="eventtype != null" >
         #{eventtype,jdbcType=INTEGER},
       </if>
+      <if test="contracthash != null" >
+        #{contracthash,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Oep4TxnDetail" >
-    update tbl_ont_oep4txn_detail
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.TransactionDetail" >
+    update tbl_ont_txn_detail_daily
     <set >
       <if test="txntype != null" >
         txntype = #{txntype,jdbcType=INTEGER},
@@ -175,12 +173,15 @@
       <if test="eventtype != null" >
         eventtype = #{eventtype,jdbcType=INTEGER},
       </if>
+      <if test="contracthash != null" >
+        contracthash = #{contracthash,jdbcType=VARCHAR},
+      </if>
     </set>
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.Oep4TxnDetail" >
-    update tbl_ont_oep4txn_detail
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail" >
+    update tbl_ont_txn_detail_daily
     set txntype = #{txntype,jdbcType=INTEGER},
       txntime = #{txntime,jdbcType=INTEGER},
       height = #{height,jdbcType=INTEGER},
@@ -192,8 +193,20 @@
       description = #{description,jdbcType=VARCHAR},
       blockindex = #{blockindex,jdbcType=INTEGER},
       confirmflag = #{confirmflag,jdbcType=INTEGER},
-      eventtype = #{eventtype,jdbcType=INTEGER}
+      eventtype = #{eventtype,jdbcType=INTEGER},
+      contracthash = #{contracthash,jdbcType=VARCHAR}
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
+
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_ont_txn_detail_daily
+    where height = #{param1}
+  </delete>
+
+  <select id="selectCountByHeight" resultType="java.lang.Integer" useCache="false">
+    select count(1)
+    from tbl_ont_txn_detail_daily
+    where height = #{height}
+  </select>
 </mapper>

@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 /**
@@ -52,10 +52,13 @@ public class BlockHandleService {
 
     @Autowired
     private BlockMapper blockMapper;
+
     @Autowired
     private CurrentMapper currentMapper;
+
     @Autowired
     private TxnHandlerThread txnHandlerThread;
+
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
@@ -89,6 +92,7 @@ public class BlockHandleService {
                 Future future = txnHandlerThread.asyncHandleTxn(session, txnJson, blockHeight, blockTime, i + 1);
                 future.get();
             }
+
             // 手动提交
             session.commit();
             // 清理缓存，防止溢出
@@ -117,12 +121,9 @@ public class BlockHandleService {
         logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }
 
-
     @Transactional(rollbackFor = Exception.class)
-    public void insertBlock(JSONObject blockJson) throws Exception {
-
+    public void insertBlock(JSONObject blockJson) {
         JSONObject blockHeader = blockJson.getJSONObject("Header");
-
 
         com.github.ontio.model.Block blockDO = new com.github.ontio.model.Block();
         blockDO.setHash(blockJson.getString("Hash"));
@@ -154,7 +155,7 @@ public class BlockHandleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateCurrent(int height, int txnCount, int ontIdTxnCount, int nonontIdTxnCount) throws Exception {
+    public void updateCurrent(int height, int txnCount, int ontIdTxnCount, int nonontIdTxnCount) {
 
         Current currentDO = new Current();
         currentDO.setHeight(height);
@@ -164,6 +165,4 @@ public class BlockHandleService {
 
         currentMapper.update(currentDO);
     }
-
-
 }

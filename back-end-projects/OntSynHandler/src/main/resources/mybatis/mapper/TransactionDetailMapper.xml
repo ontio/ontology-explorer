@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.TransactionDetailMapper">
+
+  <cache type="com.github.ontio.OntSynRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
   <resultMap id="BaseResultMap" type="com.github.ontio.model.TransactionDetail">
     <id column="txnhash" jdbcType="VARCHAR" property="txnhash" />
     <id column="txnindex" jdbcType="INTEGER" property="txnindex" />
@@ -22,18 +29,7 @@
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
     toaddress, description, blockindex, confirmflag, eventtype, contracthash
   </sql>
-  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetailKey">
-    delete from tbl_ont_txn_detail
-    where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
-  </delete>
+
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
@@ -215,11 +211,15 @@
     where height = #{param1}
   </delete>
 
-  <select id="selectCountByHeight" resultType="java.lang.Integer">
+  <select id="selectCountByHeight" resultType="java.lang.Integer" useCache="false">
     select count(1)
     from tbl_ont_txn_detail
     where height = #{height}
   </select>
 
-
+  <select id="selectContractTxCountByHeight" resultType="java.util.Map" parameterType="Integer">
+    SELECT contracthash as contract, COUNT(DISTINCT txnhash) as txcount
+        from tbl_ont_txn_detail where height = #{blockHeight} and contracthash != ""
+        GROUP BY contracthash
+  </select>
 </mapper>
