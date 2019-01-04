@@ -22,10 +22,7 @@ package com.github.ontio.thread;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.asyncService.BlockHandleService;
-import com.github.ontio.dao.CurrentMapper;
-import com.github.ontio.dao.Oep4Mapper;
-import com.github.ontio.dao.OntIdMapper;
-import com.github.ontio.dao.TransactionDetailMapper;
+import com.github.ontio.dao.*;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
@@ -64,14 +61,27 @@ public class BlockHandlerThread extends Thread {
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
     @Autowired
+    private Oep4TxnDetailMapper oep4TxnDetailMapper;
+    @Autowired
+    private Oep5TxnDetailMapper oep5TxnDetailMapper;
+    @Autowired
+    private Oep8TxnDetailMapper oep8TxnDetailMapper;
+    @Autowired
+    private TransactionDetailDailyMapper transactionDetailDailyMapper;
+    @Autowired
     private Oep4Mapper oep4Mapper;
+    @Autowired
+    private Oep5Mapper oep5Mapper;
+    @Autowired
+    private Oep8Mapper oep8Mapper;
     @Autowired
     private Environment env;
 
-
+    /**
+     * BlockHandlerThread
+     */
     @Override
     public void run() {
-
         logger.info("========{}.run=======", CLASS_NAME);
         try {
             ConstantParam.MASTERNODE_RESTFULURL = configParam.MASTERNODE_RESTFUL_URL;
@@ -82,21 +92,13 @@ public class BlockHandlerThread extends Thread {
 
             int oneBlockTryTime = 1;
             while (true) {
-                //获取审核过的OEP4资产信息
-                List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
-                for (Map map :
-                        oep4s) {
-                    JSONObject obj = new JSONObject();
-                    obj.put("Symbol", map.get("Symbol"));
-                    obj.put("Decimals", map.get("Decimals"));
-                    ConstantParam.OEP4MAP.put((String) map.get("Contract"), obj);
-                }
-                ConstantParam.OEP4CONTRACTS = ConstantParam.OEP4MAP.keySet();
+                // 获取OEP合约信息以备用
+                oepContractHandle();
 
                 int remoteBlockHieght = getRemoteBlockHeight();
                 logger.info("######remote blockheight:{}", remoteBlockHieght);
 
-                int dbBlockHeight = currentMapper.selectDBHeight();
+                Integer dbBlockHeight = currentMapper.selectDBHeight();
                 logger.info("######db blockheight:{}", dbBlockHeight);
 
                 //wait for generating block
@@ -126,6 +128,18 @@ public class BlockHandlerThread extends Thread {
                 if (transactionDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
                     transactionDetailMapper.deleteByHeight(dbBlockHeight + 1);
                 }
+                if (oep4TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep4TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+                if (oep5TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep5TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+                if (oep8TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep8TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+                if (transactionDetailDailyMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    transactionDetailDailyMapper.deleteByHeight(dbBlockHeight + 1);
+                }
 
                 //handle blocks and transactions
                 for (int tHeight = dbBlockHeight + 1; tHeight <= remoteBlockHieght; tHeight++) {
@@ -138,9 +152,40 @@ public class BlockHandlerThread extends Thread {
         } catch (Exception e) {
             logger.error("Exception occured，Synchronization thread can't work,error ...", e);
         }
-
     }
 
+    private void oepContractHandle(){
+        //获取审核过的OEP4资产信息
+        List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
+        for (Map map : oep4s) {
+            JSONObject obj = new JSONObject();
+            obj.put("Symbol", map.get("Symbol"));
+            obj.put("Decimals", map.get("Decimals"));
+            ConstantParam.OEP4MAP.put((String) map.get("Contract"), obj);
+        }
+        ConstantParam.OEP4CONTRACTS = ConstantParam.OEP4MAP.keySet();
+
+        //获取审核过的OEP5资产信息
+        List<Map> oep5s = oep5Mapper.selectAllKeyInfo();
+        for (Map map : oep5s) {
+            JSONObject obj = new JSONObject();
+            obj.put("Symbol", map.get("Symbol"));
+            obj.put("Name", map.get("Name"));
+            ConstantParam.OEP5MAP.put((String) map.get("Contract"), obj);
+        }
+        ConstantParam.OEP5CONTRACTS = ConstantParam.OEP5MAP.keySet();
+
+        //获取审核过的OEP8资产信息
+        List<Map> oep8s = oep8Mapper.selectAllKeyInfo();
+        for (Map map : oep8s) {
+            JSONObject obj = new JSONObject();
+            obj.put("Symbol", map.get("Symbol"));
+            obj.put("Name", map.get("Name"));
+
+            ConstantParam.OEP8MAP.put((String) map.get("Contract") + "-" + (String) map.get("TokenId"), obj);
+            ConstantParam.OEP8CONTRACTS.add((String) map.get("Contract"));
+        }
+    }
 
     /**
      * get the the blockheight of the ontology blockchain
@@ -149,7 +194,6 @@ public class BlockHandlerThread extends Thread {
      * @throws Exception
      */
     private int getRemoteBlockHeight() throws Exception {
-
         int remoteHeight = 0;
         int tryTime = 1;
         while (true) {
@@ -176,7 +220,6 @@ public class BlockHandlerThread extends Thread {
         return remoteHeight;
     }
 
-
     /**
      * get the block by height
      *
@@ -184,7 +227,6 @@ public class BlockHandlerThread extends Thread {
      * @throws Exception
      */
     private JSONObject getBlockJsonByHeight(int height) throws Exception {
-
         JSONObject block = new JSONObject();
         int tryTime = 1;
         while (true) {
@@ -202,7 +244,6 @@ public class BlockHandlerThread extends Thread {
                     Thread.sleep(1000);
                     continue;
                 }
-
             } catch (IOException ex) {
                 logger.error("getBlockJsonByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
@@ -212,7 +253,6 @@ public class BlockHandlerThread extends Thread {
         return block;
     }
 
-
     /**
      * get the bookkeeper of the block by height
      *
@@ -220,7 +260,6 @@ public class BlockHandlerThread extends Thread {
      * @throws Exception
      */
     private String getBlockBookKeeperByHeight(int height) throws Exception {
-
         String nextBookKeeper = "";
         int tryTime = 1;
         while (true) {
@@ -247,7 +286,6 @@ public class BlockHandlerThread extends Thread {
 
         return nextBookKeeper;
     }
-
 
     /**
      * switch to another node and initialize ONT_SDKSERVICE object
@@ -285,6 +323,4 @@ public class BlockHandlerThread extends Thread {
         sdkService.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
         ConstantParam.ONT_SDKSERVICE = sdkService;
     }
-
-
 }

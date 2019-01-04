@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.OntIdMapper">
 
-<!--  <cache type="com.github.ontio.ExplorerRedisCache">
+  <cache type="com.github.ontio.ExplorerRedisCache">
     <property name="eviction" value="LRU" />
     <property name="size" value="1024" />
     <property name="readOnly" value="false" />
-  </cache>-->
+  </cache>
 
   <resultMap id="BaseResultMap" type="com.github.ontio.model.OntId">
     <id column="txnhash" jdbcType="VARCHAR" property="txnhash" />
@@ -20,7 +20,7 @@
   <sql id="Base_Column_List">
     txnhash, txntype, ontid, txntime, height, description, fee
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap" useCache="false">
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from tbl_ont_ontid_detail
@@ -149,4 +149,19 @@
     where ontid = #{ontId}
   </select>
 
+
+  <select id="selectOntIdCountInOneDay" resultType="java.lang.Integer">
+    select count(DISTINCT (txnhash))
+    from tbl_ont_ontid_detail
+    where description like #{Description}
+    and txntime >= #{StartTime}
+    and <![CDATA[ txntime < #{EndTime} ]]>
+  </select>
+
+  <select id="selectActiveOntIdCountInOneDay" resultType="java.lang.Integer">
+    select count(DISTINCT (txnhash))
+    from tbl_ont_ontid_detail
+    where txntime >= #{StartTime}
+    and <![CDATA[ txntime < #{EndTime} ]]>
+  </select>
 </mapper>

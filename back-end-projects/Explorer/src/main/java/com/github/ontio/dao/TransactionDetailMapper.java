@@ -1,10 +1,11 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.TransactionDetail;
-import com.github.ontio.model.TransactionDetailKey;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -13,13 +14,9 @@ import java.util.Map;
 @Mapper
 @Component(value = "TransactionDetailMapper")
 public interface TransactionDetailMapper {
-    int deleteByPrimaryKey(TransactionDetailKey key);
-
     int insert(TransactionDetail record);
 
     int insertSelective(TransactionDetail record);
-
-    TransactionDetail selectByPrimaryKey(TransactionDetailKey key);
 
     int updateByPrimaryKeySelective(TransactionDetail record);
 
@@ -34,9 +31,6 @@ public interface TransactionDetailMapper {
     List<Map> selectTxnByBlockHeight(int height);
 
     Integer selectLastONTTransferTxnTime(String address);
-
-    Integer selectSwapTransferTxnTime(String address);
-
 
     List<Map> selectTransferTxnDetailByHash(String txnHash);
 
@@ -62,11 +56,42 @@ public interface TransactionDetailMapper {
 
     List<String> selectTxnAmountByAddressInfo2(Map<String, Object> param);
 
-    List<String> selectAllAddress();
 
     int selectAddressRecordAmount(String address);
 
-    List<Map> selectContractTxs(Map<String, Object> param);
+    List<Map> selectContractByHash(Map<String, Object> param);
 
-    int selectContractTxsAmount(String contractHash);
+    Integer selectContractCountByHash(Map<String, Object> param);
+
+    Integer selectOep5ContractCountByHash(Map<String, Object> param);
+
+    List<Map> selectOep5ByHash(Map<String, Object> param);
+
+    int selectContractByHashAmount(String contractHash);
+
+    int selectContractAddrAmount(String contractHash);
+
+    List<Map<String, String>> selectAllAddress();
+
+    Integer selectAllFromAddressCountByContract(String contractHash);
+
+    Integer selectAllToAddressCountByContract(String contractHash);
+
+    Integer selectAllFromAddressCountByAddr(String toAddress);
+
+    Integer selectAllToAddressCountByAddr(String fromAddress);
+
+    int selectAllAddressCount();
+
+    List<Map> selectTxnByAddress(Map<String, Object> param);
+
+    List<TransactionDetail> selectTransactionDetail();
+
+    Integer queryTransactionCount(Map<String, Object> param);
+
+    BigDecimal selectContractAssetAllSum(Map<String, Object> paramMap);
+
+    List<Map> selectContractTokenAllSum(Map<String, Object> paramMap);
+
+    Integer selectTxnAllAmount(Map<String, Object> paramMap);
 }
