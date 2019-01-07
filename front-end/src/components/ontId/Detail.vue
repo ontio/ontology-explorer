@@ -116,13 +116,14 @@
     },
     watch: {
       '$route': 'getOntIdDetail',
-      'OntIdDetail.info': function () {
+      'OntIdDetail': function () {
+        console.log(this.OntIdDetail)
         if (this.OntIdDetail.info === false) {
           this.haveData = false
         } else {
-          this.Ddo = this.OntIdDetail.info.Ddo
-          this.TxnList = this.OntIdDetail.info.TxnList
-          this.TxnTotal = this.OntIdDetail.info.TxnTotal
+          this.Ddo = this.OntIdDetail.Ddo
+          this.TxnList = this.OntIdDetail.TxnList
+          this.TxnTotal = this.OntIdDetail.TxnTotal
         }
       }
     },
