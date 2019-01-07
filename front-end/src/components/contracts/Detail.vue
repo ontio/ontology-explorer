@@ -87,13 +87,13 @@
       <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#scABI">{{ $t('tokens.detail.abi') }}</a>
       </li>
-      <li class="nav-item">
+<!--       <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#scStatistic">{{ $t('tokens.detail.statistic') }}&nbsp;
           <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
             <i class="fa fa-info-circle" aria-hidden="true"></i>
           </a>
         </a>
-      </li>
+      </li> -->
     </ul>
 
     <!-- Tab panes -->
@@ -212,7 +212,7 @@
       this.getStatisticsData();
     },
     watch: {
-      '$route': ['getContractData', 'getStatisticsData']
+      '$route': ['getContractData', 'getStatisticsData'],
     },
     computed: {
       ...mapState({
