@@ -11,7 +11,7 @@
                     @click="toAllStatistics"
                     :class="typeof(this.$route.params.contractHash) === 'undefined' ? 'btn-current' : 'btn-choose'"
                     class="btn">All</button>
-            <div class="btn-group">
+<!--             <div class="btn-group">
               <button type="button" class="btn btn-choose dropdown-toggle" data-toggle="dropdown">
                 Contract
               </button>
@@ -23,7 +23,7 @@
                   {{ scl.Name }}
                 </a>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="col text-right">
