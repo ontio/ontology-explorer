@@ -31,9 +31,15 @@ public interface TransactionDetailTmpMapper {
 
     BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
 
+    BigDecimal selectContractAssetSumNew(Map<String, Object> paramMap);
+
     Integer selectTxnAmount(Map<String, Object> paramMap);
 
     List<String> selectAllAddressByContract(String contractHash);
+
+    List<String> selectToAddressCountByContractNew(String contractHash);
+
+    List<String> selectFromAddressCountByContractNew(String contractHash);
 
     List<String> selectAllAddressByAddress(String toAddress);
 }
