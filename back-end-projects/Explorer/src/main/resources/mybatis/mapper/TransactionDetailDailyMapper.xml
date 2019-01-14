@@ -245,4 +245,54 @@
   <delete id="deleteByEndTime" parameterType="java.util.Map" >
     delete from tbl_ont_txn_detail_daily where <![CDATA[ txntime < #{startTime} ]]>
   </delete>
+
+
+
+
+  <select id="selectToAddressCountByContractNew" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
+    SELECT
+    DISTINCT(toaddress)
+    FROM
+    tbl_ont_txn_detail_daily
+    WHERE
+    txnhash IN (
+    SELECT DISTINCT
+    (txnhash)
+    FROM
+    tbl_ont_txn_detail_daily
+    WHERE
+    contracthash = #{contractHash}
+    )
+  </select>
+
+  <select id="selectFromAddressCountByContractNew" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
+    SELECT
+    DISTINCT(fromaddress)
+    FROM
+    tbl_ont_txn_detail_daily
+    WHERE
+    txnhash IN (
+    SELECT DISTINCT
+    (txnhash)
+    FROM
+    tbl_ont_txn_detail_daily
+    WHERE
+    contracthash = #{contractHash}
+    )
+  </select>
+
+  <select id="selectContractAssetSumNew" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+    SELECT sum(amount)
+    FROM tbl_ont_txn_detail_daily
+    WHERE txnhash IN (
+    SELECT DISTINCT
+    (txnhash)
+    FROM
+    tbl_ont_txn_detail_daily
+    WHERE
+    contracthash = #{contractHash}
+    )
+    and assetname = #{assetname}
+  </select>
+
 </mapper>
