@@ -128,7 +128,7 @@ public class SummaryServiceImpl implements ISummaryService {
     }
 
     /**
-     * Marketing Info
+     * 更新所有每日统计信息，更新daily_summary，contract_summary，address_summary
      * @return
      */
     @Override
@@ -151,21 +151,23 @@ public class SummaryServiceImpl implements ISummaryService {
 
         Integer maxTime = blockMapper.selectBlockMaxTime();
         Map paramMap = new HashMap<>();
+        //正常每天只会跑一次，while用于跑历史统计数据
         while (maxTime > (startTime + perTime)){
             paramMap.put("startTime", startTime);
             paramMap.put("endTime", startTime + perTime);
 
-            // 区块数
-            int blockCount = blockMapper.selectBlockCountInOneDay(startTime, startTime + perTime);
+            // 每日新增区块数
+            int newBlockCount = blockMapper.selectBlockCountInOneDay(startTime, startTime + perTime);
+            // 每日新增ontid数
+            int newOntIdCount = ontIdMapper.selectOntIdCountInOneDay(startTime, startTime + perTime, "Register%");
+            // 每日活跃ontid数
+            int activeOntIdCount = ontIdMapper.selectActiveOntIdCountInOneDay(startTime, startTime + perTime);
 
-            // 活跃ontid数 + 新增ontid数
-            int newOntidCount = ontIdMapper.selectOntIdCountInOneDay(startTime, startTime + perTime, "Register%");
-            int activeOntidCount = ontIdMapper.selectActiveOntIdCountInOneDay(startTime, startTime + perTime);
-
-            // 将每天的数据先转移到临时表，再统计其他信息
+            // 先删除temp表所有数据，再将前一天的数据迁移到temp表，再做其他各种信息统计
             transactionDetailTmpMapper.deleteAll();
             transactionDetailTmpMapper.InsertSelective(paramMap);
-            setDailySummary(startTime, blockCount, newOntidCount, activeOntidCount);
+            //在temp表进行每日其他数据统计
+            setDailySummaryInfoFromTempTable(startTime, newBlockCount, newOntIdCount, activeOntIdCount);
 
             startTime = startTime + perTime;
         }
@@ -173,17 +175,26 @@ public class SummaryServiceImpl implements ISummaryService {
         return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
     }
 
-    private void setDailySummary(Integer startTime, Integer blockCount, Integer newOntidCount, Integer activeOntidCount){
-        // 交易数
+    /**
+     * 从temp表进行每日各种数据统计
+     *
+     * @param startTime
+     * @param blockCount
+     * @param newOntidCount
+     * @param activeOntidCount
+     */
+    private void setDailySummaryInfoFromTempTable(Integer startTime, Integer blockCount, Integer newOntidCount, Integer activeOntidCount){
+
+        // 每日交易数
         int txnCount = transactionDetailTmpMapper.selectTxnCountInOneDay();
 
-        // 交易量
+        // 每日交易ont，ong量
         BigDecimal ontCount = transactionDetailTmpMapper.selectOntCountInOneDay();
         BigDecimal ongCount = transactionDetailTmpMapper.selectOngCountInOneDay();
 
-        // 活跃地址数 + 新增地址数
-        List<String> txs = transactionDetailTmpMapper.selectAddressInOneDay();
-        List<String> addressList = new ArrayList<>();
+        // 每日活跃地址（没有剔除不符合地址格式的数据）
+        List<String> addressList = transactionDetailTmpMapper.selectAddressInOneDay();
+/*        List<String> addressList = new ArrayList<>();
         if (!txs.isEmpty()){
             for (String address: txs) {
                 if (address.length() != 34){
@@ -192,16 +203,16 @@ public class SummaryServiceImpl implements ISummaryService {
 
                 addressList.add(address);
             }
-        }
-
-        int activeAddressCount = addressList.size();// 活跃地址数
+        }*/
+        // 每日新增地址数=每日活跃地址-address_summary表所有地址
+        int activeAddressCount = addressList.size();
         List<String> addressSummaryList = addressSummaryMapper.selectDistinctAddress();
         addressList.removeAll(addressSummaryList);
 
         // 更新合约的信息
         List<AddressSummary> contractAddressSummarys = updateContractInfo(startTime);
 
-        // 新增地址数
+        // 新增地址插入address_summary表
         Integer newAddressCount = setAddressSummary(addressList, startTime, contractAddressSummarys);
 
         DailySummary dailySummary = new DailySummary();
@@ -218,17 +229,25 @@ public class SummaryServiceImpl implements ISummaryService {
         dailySummaryMapper.insert(dailySummary);
     }
 
-    private Integer setAddressSummary(List<String> txs, Integer startTime, List<AddressSummary> contractAddressSummarys){
-        if (txs.isEmpty()){
+    /**
+     * 新增地址插入address_summary表
+     *
+     * @param addressList
+     * @param startTime
+     * @param contractAddressSummarys
+     * @return
+     */
+    private Integer setAddressSummary(List<String> addressList, Integer startTime, List<AddressSummary> contractAddressSummarys){
+        if (addressList.isEmpty()){
             return 0;
         }
 
         List<AddressSummary> addressSummarys = new ArrayList<>();
         int newAddressCount = 0;
-        for (String address: txs) {
-            if (address.length() != 34){
+        for (String address: addressList) {
+/*            if (address.length() != 34){
                 continue;
-            }
+            }*/
 
             AddressSummary addressSummary = new AddressSummary();
             addressSummary.setTime((int)startTime);
@@ -246,7 +265,13 @@ public class SummaryServiceImpl implements ISummaryService {
         return newAddressCount;
     }
 
+    /**
+     * 更新合约每日统计数据,即更新contract_summary表数据
+     * @param startTime
+     * @return
+     */
     private List<AddressSummary> updateContractInfo(Integer startTime){
+        //查询所有合约，不管是否审核过
         List<Contracts> contractList = contractsMapper.selectAllContract();
         if(contractList.isEmpty()){
             return new ArrayList<>();
@@ -262,18 +287,30 @@ public class SummaryServiceImpl implements ISummaryService {
             paramMap.put("contractHash", contractHash);
             paramMap.put("contractAddress", contractAddress);
             paramMap.put("assetname", "ont");
-            BigDecimal ontCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+/*            BigDecimal ontCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+            ontCount = ontCount == null ? new BigDecimal(0) : ontCount;*/
+            BigDecimal ontCount = transactionDetailTmpMapper.selectContractAssetSumNew(paramMap);
             ontCount = ontCount == null ? new BigDecimal(0) : ontCount;
 
             paramMap.put("assetname", "ong");
-            BigDecimal ongCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+/*            BigDecimal ongCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
+            ongCount = ongCount == null ? new BigDecimal(0) : ongCount;*/
+            BigDecimal ongCount = transactionDetailTmpMapper.selectContractAssetSumNew(paramMap);
             ongCount = ongCount == null ? new BigDecimal(0) : ongCount;
 
-            // 依据合约hash和合约地址分别查询交易数
+            // 依据合约hash查询交易数
             int txnCount = transactionDetailTmpMapper.selectTxnAmount(paramMap);
+            //每日合约活跃地址列表
+            List<String> toAddrList = transactionDetailTmpMapper.selectToAddressCountByContractNew(contractHash);
+            List<String> fromAddrList = transactionDetailTmpMapper.selectFromAddressCountByContractNew(contractHash);
+            toAddrList.addAll(fromAddrList);
+
+            List<String> addressList = toAddrList;
+            //每日合约活跃地址数
+            Integer activeAddressCount = addressList.size();
 
             // 依据合约hash和合约地址分别查询地址数（去重）
-            List<String> addressByContractList = transactionDetailTmpMapper.selectAllAddressByContract(contractHash);
+/*            List<String> addressByContractList = transactionDetailTmpMapper.selectAllAddressByContract(contractHash);
             List<String> addressByAddressList = transactionDetailTmpMapper.selectAllAddressByAddress(contractAddress);
             addressByContractList.addAll(addressByAddressList);
             
@@ -285,27 +322,27 @@ public class SummaryServiceImpl implements ISummaryService {
 
                 addressList.add(address);
             }
-            Integer activeAddress = addressList.size();
+            Integer activeAddress = addressList.size();*/
 
-            // 计算新增地址数
+
+            // 新增地址数=每日合约活跃地址数-address_summary所有地址
             List<String> contractAddressList = addressSummaryMapper.selectDistinctAddressByContract(contractHash);
             addressList.removeAll(contractAddressList);
-
+            //更新contract_summary表当天的合约统计信息
             ContractSummary contractSummary = new ContractSummary();
             contractSummary.setTime(startTime);
             contractSummary.setContracthash(contractHash);
             contractSummary.setTxncount(txnCount);
             contractSummary.setOntcount(ontCount);
             contractSummary.setOngcount(ongCount.divide(new BigDecimal("1000000000")));
-            contractSummary.setActiveaddress(activeAddress);
+            contractSummary.setActiveaddress(activeAddressCount);
             contractSummary.setNewaddress(addressList.size());
             contractSummaryList.add(contractSummary);
-
+            //新增地址放到列表中，再外面再插入address_summary表
             for (String address: addressList) {
-                if (address.length() != 34){
+/*                if (address.length() != 34){
                     continue;
-                }
-
+                }*/
                 AddressSummary addressSummary = new AddressSummary();
                 addressSummary.setTime(startTime);
                 addressSummary.setType(contractHash);
