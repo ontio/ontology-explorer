@@ -110,6 +110,20 @@
         and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
   </select>
 
+    <select id="selectContractAssetSumNew" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+    SELECT sum(amount)
+    FROM tbl_ont_txn_detail_tmp
+    WHERE txnhash IN (
+        SELECT DISTINCT
+        (txnhash)
+        FROM
+        tbl_ont_txn_detail_tmp
+        WHERE
+        contracthash = #{contractHash}
+    )
+    and assetname = #{assetname}
+    </select>
+
   <select id="selectTxnAmount" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail_tmp
@@ -127,6 +141,40 @@
         where contracthash = #{param1}
     ) a ORDER BY address
   </select>
+
+
+    <select id="selectToAddressCountByContractNew" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
+    SELECT
+        DISTINCT(toaddress)
+    FROM
+        tbl_ont_txn_detail_tmp
+    WHERE
+        txnhash IN (
+            SELECT DISTINCT
+                (txnhash)
+            FROM
+                tbl_ont_txn_detail_tmp
+            WHERE
+                contracthash = #{contractHash}
+        )
+    </select>
+
+    <select id="selectFromAddressCountByContractNew" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
+    SELECT
+        DISTINCT(fromaddress)
+    FROM
+        tbl_ont_txn_detail_tmp
+    WHERE
+        txnhash IN (
+            SELECT DISTINCT
+                (txnhash)
+            FROM
+                tbl_ont_txn_detail_tmp
+            WHERE
+                contracthash = #{contractHash}
+        )
+    </select>
+
 
   <select id="selectAllAddressByAddress" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
     SELECT DISTINCT(address) FROM (
