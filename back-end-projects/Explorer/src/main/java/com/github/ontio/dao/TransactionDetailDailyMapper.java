@@ -30,4 +30,15 @@ public interface TransactionDetailDailyMapper {
     int selectiveByEndTime(Map paramMap);
 
     int deleteByEndTime(Map paramMap);
+
+
+
+
+
+    BigDecimal selectContractAssetSumNew(Map<String, Object> paramMap);
+
+    List<String> selectToAddressCountByContractNew(String contractHash);
+
+    List<String> selectFromAddressCountByContractNew(String contractHash);
+
 }
