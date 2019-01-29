@@ -93,19 +93,6 @@ function nodeDetailData() {
       "publickey": "Infinity Stones is willing to build long-term partnership with Ontology in the following areas:"
     },
     {
-      "nodename": "ONEROOT Foundation",
-      "publickey": "025222dc49b168d47c12a77aa9ae3370f6319cfe97eab4f92b0e7f61597ebcc158",
-      "address": "AXFjm5G7vWC2rPGsRZL2Z7WinMDxf5L3fF",
-      "ontid": "did:ont:AZJn6xNPR4nkM56bkLJJUsYkNGcZ46TH3T",
-      "ip": "18.130.189.85",
-      "Intro": "ONEROOT Project brings together the tangible and intangible resources inside and outside the industry. In the process of optimizing and integrating resources, ONEROOT extends the idea of a shared economy and separates the right to use and the ownership of resources, and proposes the concept of a distributed business engine. With the help of blockchain technology, the co-builders can digitize the right to use resources, including software, hardware, manpower, etc., and establish transparent value exchange and cooperation rules, which greatly improve the resource utilization efficiency.",
-      "Website": "https://www.oneroot.io "
-    },
-    {
-      "nodename": "Twitter: https://twitter.com/OnerootNetwork",
-      "publickey": "1. Build more dApps for the ontology ecosystem."
-    },
-    {
       "nodename": "Martview",
       "publickey": "03a0cf8494ef9901c7a78df98abb9a8a245961da77c157cb3f31e67db0325f070c",
       "address": "AUEAGG1pWTg2nAMsoR4x6EvSN2wb2wdZHx",
@@ -298,6 +285,106 @@ function nodeDetailData() {
       "address": "AMJskicSD18QzVYcx5o4F6d67dbG4kKW7v",
       "ontid": "did:ont:ARU89iSYcLkiReH5b5KZ1z9zUcR34XmPwJ",
       "ip": "18.231.197.51",
+    },
+
+
+    {
+      "nodename": "FreeS Crypto Fund",
+      "publickey": "03569980d7fd460873767c0baac2d783f88617966ecb3dee1e7b7075b224463610",
+      "address": "AQ3wagLbjh65Cf5RgG7MqjnUh2o7YLthYN",
+      "ontid": "did:ont:AU28ptHRucTFN1qT55z8Pzpga43XmSP5Rg",
+    },
+    {
+      "nodename": "Krypto Knight",
+      "publickey": "03cb9417260995baf9781a58cb63db7e8bab2f8fdac193c27477e8e1b9eadecfae",
+      "address": "AWGrHN1DUAo6Ao3yTHu4tUHZonPNAy9ZmU",
+      "ontid": "did:ont:Af1DV2hEEDN2oo1UPQ3iCZFsnGaxksSwaL",
+    },
+    {
+      "nodename": "Midwest Blockchain Club",
+      "publickey": "03193e33a8373c480cb1b6dfec0d255364307dfc7072d6dd137041f5f240275a6a",
+      "address": "ASPPqj8yCcCV2sWHQZwsYfWZS2FMfd3PF7",
+      "ontid": "did:ont:ASPbda9sU8LrTgCVBRk2ECBFJL3Dzpo24z",
+    },
+    {
+      "nodename": "SNZ Holding",
+      "publickey": "036688d730248832b3cfc54a964201ff82dc212b73aa686629729ed3f11f26949e",
+      "address": "AaxbVD8M3dV2fpxFbkP1yhgPB1J45tWpYa",
+      "ontid": "did:ont:AWwiJHgUkUFyoiq2d13uvQ9ZMrJubZB8fs",
+    },
+    {
+      "nodename": "Dragon",
+      "publickey": "024477ed535fdf33e3f5251be5ddde8269bbc5bfa6eff253f3489ce9c1b72a27e2",
+      "address": "Ac8P8376ozoQ5H2Srcm32n5yb8kLoixRaP",
+      "ontid": "did:ont:AMmi2ANxyMK2jdd2Pd4dGWfSkrmXn56M5u",
+    },
+
+    {
+      "nodename": "ZhenFund",
+      "publickey": "02a529dc41498ecc989c43f03e6dc19e4798d0367fadec92cd49d4bec7e5cdee4c",
+      "address": "AM5TmRiR32fZSYedcWHxEBScLBPZ67hdER",
+      "ontid": "did:ont:ARagutv7Sw8MPdGTjSRsT3UMP4LjPUqjdz",
+    },
+    {
+      "nodename": "Fourier",
+      "publickey": "029d393356cd12e7e74b079234e8d014d878f961968646f6121b597dcaec43a757",
+      "address": "AP3ub6e7xeuw3Lr3SgUSTxYxxxNjTt3kXx",
+      "ontid": "did:ont:ANSZiNXysbqE78DPxJcEkGahrDz299a2D6",
+    },
+    {
+      "nodename": "Cobo",
+      "publickey": "02b325b47c80fa21967577cd748ffb6ed41e4dcb5d8b2d7e400d39d4b434827562",
+      "address": "AcdH5iCT5DSxUio29YMykT8eakgbjYeWBW",
+      "ontid": "did:ont:AV2Geuk7WJ15cUmMW5HxJReF2gEFVRLyTu",
+    },
+    {
+      "nodename": "Timestamp Capital",
+      "publickey": "0385bed5ddf7c45bfa586654c443af899377943343866e4da10705166d9dc2a124",
+      "address": "AbGDhXXyjHLBc53BDR8jrRZLAL1BteL7VA",
+      "ontid": "did:ont:ASssrQfeTpqUEMhEU7UYaj7g3TgDj1NrkT",
+    },
+    {
+      "nodename": "Marvelous Peach Capital",
+      "publickey": "03e7bedc0845ced9f9c34131e8582abe60db164152d5e265054e87ecffd44e8aaf",
+      "address": "AFsfeivZ1iTbL1sqY8UkTZ8kqygwGerDNj",
+      "ontid": "did:ont:AUDnDjyiWs3HW551S4ZAcnT1VGUEA1jxtW",
+    },
+    {
+      "nodename": "BlockBoost",
+      "publickey": "02f15de2033784e595fcb27e4b111b1dbebe55d1cd1f5d9f46792fe193851f3433",
+      "address": "AKshHCFGWHMftXELBmogxrjrDMW61xgph9",
+      "ontid": "did:ont:AeY65vMDgKotVogNAJzUs2fTbwgA1X9cUt",
+    },
+
+    {
+      "nodename": "PreAngel",
+      "publickey": "032f6464df7c42b5a80953680165a23cb98453a1fcb5770f233664909847faf36f",
+      "address": "ALaDrS5ZwMKZgTS3a8okgDDz84k3ttfP4x",
+      "ontid": "did:ont:AKLCERJ5KikFG4EVGDxK48uahdouAWqk6A",
+    },
+    {
+      "nodename": "Longlink Fund",
+      "publickey": "03199dcc2f89a54f171292e3e6c87472f742edefb7d4fe8685e24486262ca01f15",
+      "address": "Aa1MF3pTq4CaE3HK4umgZL3WxLh3A1CiBH",
+      "ontid": "did:ont:AV34rhrAZaPL7cmcyDsaLn5SoKNrf5ch29",
+    },
+    {
+      "nodename": "Nebuchadnezzar Limited",
+      "publickey": "033fb4fa791dc229b83c5e88a1e0c861f429b10a4551e02d33bab19a08640e4727",
+      "address": "AModfYVLuvvaacsexSBAvegnykog5yH2Ji",
+      "ontid": "did:ont:AFvBtfFHd5s7aCT3qNfxtAVUhmeS48WhDM",
+    },
+    {
+      "nodename": "Accomplice Blockchain Two - International",
+      "publickey": "03d0492bed2f45c78a88fb6f5e1ab2192bb3de43f72ba81774c32d6499e99d7ad9",
+      "address": "ANumnYcRtbT1XxCw1hs9WGjJaDURMxiuQ9",
+      "ontid": "did:ont:ARdphNxfxzkXmzCcnmaqHUzKa6MEXrsQbL",
+    },
+    {
+      "nodename": "Abine",
+      "publickey": "02f0e43592212629ff5f482a0011eba5c5be059cd40eb1bdd2c956c1139967bb35",
+      "address": "AV59sm9kRGB4EYRKCMYXXsiCPKzbAFMcpA",
+      "ontid": "did:ont:AdiYHQJkfGC1PjMP9KePMAcoPJrVpBW6RB",
     }
   ]
 }
@@ -392,8 +479,8 @@ export default {
 
           let nodeData = getItemData(item.pk);
 
-          item.ontId = nodeData.ontid;
-          item.name = nodeData.nodename;
+          item.ontId = nodeData.ontid
+          item.name = nodeData.nodename
           if (item.peerPubkey === '02f4c0a18ae38a65b070820e3e51583fd3aea06fee2dc4c03328e4b4115c622567') {//for test
             item.name = 'Node1 To Authorize'
           }
