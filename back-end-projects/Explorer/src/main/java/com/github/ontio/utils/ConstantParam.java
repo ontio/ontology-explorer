@@ -20,6 +20,7 @@
 package com.github.ontio.utils;
 
 import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author zhouq
@@ -83,8 +84,16 @@ public class ConstantParam {
     public static final BigDecimal ONT_TOTAL = new BigDecimal("1000000000");
 
 
+    public static final String GO_TOTALSUPPLY_URL = "/getAssetHolder";
 
 
-
-
+    public static final List<String> SPECIALADDRLIST = Arrays.asList(
+            //团队锁仓地址
+            "AKac3Bd6usdivrnNN8tyRcDZN94vpaoAu2",
+            //共建合作伙伴锁仓地址
+            "AS7MjVEicEsJ4zjEfm2LoKoYoFsmapD7rT",
+            //技术社区奖励锁仓地址
+            "AcdUMgeF16ScW9ts3kiD3pZkjYRMdYwtVQ",
+            //生态合作地址
+            "AMX6ZebrPDFELCYRMpSMbZWrhWkKbKg4y8");
 }
