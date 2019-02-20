@@ -54,4 +54,8 @@ public class ConfigParam {
 
     @Value("${explorer.dailyschedule}")
     public String EXPLORER_DAILY_SCHEDULE;
+
+    @Value("${goserver.domain}")
+    public String GOSERVER_DOMAIN;
+
 }
