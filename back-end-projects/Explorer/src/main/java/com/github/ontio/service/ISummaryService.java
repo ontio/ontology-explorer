@@ -57,4 +57,8 @@ public interface ISummaryService {
      * @return
      */
     Result queryContract(String contractHash, String type, int startTime, int endTime);
+
+
+    Result queryTotalSupply();
+
 }

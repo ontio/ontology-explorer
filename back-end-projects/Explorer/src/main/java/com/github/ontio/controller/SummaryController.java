@@ -124,4 +124,18 @@ public class SummaryController {
         Result rs = summaryService.queryContract(contractHash, type, startTime, endTime);
         return rs;
     }
+
+    /**
+     * 查询流通量
+     *
+     * @return
+     */
+    @GetMapping(value = "/summary/totalsupply")
+    public Result queryTotalSupply() {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = summaryService.queryTotalSupply();
+        return rs;
+    }
 }

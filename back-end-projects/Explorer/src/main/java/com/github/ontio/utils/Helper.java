@@ -21,6 +21,14 @@ package com.github.ontio.utils;
 
 import com.github.ontio.paramBean.Result;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Map;
+
 /**
  * @author zhouq
  * @date 2018/2/27
@@ -119,6 +127,69 @@ public class Helper {
 
     public static String currentMethod() {
         return new Exception("").getStackTrace()[1].getMethodName();
+    }
+
+
+    /**
+     * get请求
+     * @param urlParam
+     * @param params
+     * @return
+     * @throws IOException
+     */
+    public static String sendGet(String urlParam, Map<String,Object> params) throws IOException {
+
+        // 构建请求参数
+        StringBuffer sbParams = new StringBuffer();
+        if (params != null && params.size() > 0) {
+            sbParams.append("?");
+            for (Map.Entry<String, Object> e : params.entrySet()) {
+                sbParams.append(e.getKey());
+                sbParams.append("=");
+                sbParams.append(e.getValue());
+                sbParams.append("&");
+            }
+        }
+        HttpURLConnection connection = null;
+        OutputStream out = null;
+        BufferedReader responseReader = null;
+        // 发送请求
+        try {
+            URL url = new URL(urlParam + sbParams.toString());
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            //connection.setDoOutput(true);
+            //设置超时时间
+            connection.setConnectTimeout(30000);
+            connection.setReadTimeout(30000);
+            //connection.setRequestProperty("Content-type", "application/json");
+            connection.connect();
+
+            //获取输出
+            StringBuffer sb = new StringBuffer();
+            String readLine = "";
+            responseReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+            while ((readLine = responseReader.readLine()) != null) {
+                sb.append(readLine);
+            }
+
+            return sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+                connection = null;
+            }
+            if (out != null) {
+                out.close();
+            }
+            if (responseReader != null) {
+                responseReader.close();
+            }
+        }
+
     }
 
 

@@ -1,20 +1,23 @@
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.dao.*;
-import com.github.ontio.model.*;
+import com.github.ontio.model.AddressSummary;
+import com.github.ontio.model.ContractSummary;
+import com.github.ontio.model.Contracts;
+import com.github.ontio.model.DailySummary;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ISummaryService;
-import com.github.ontio.utils.ConfigParam;
-import com.github.ontio.utils.ErrorInfo;
-import com.github.ontio.utils.Helper;
-import com.github.ontio.utils.OntologySDKService;
+import com.github.ontio.utils.*;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -37,6 +40,10 @@ public class SummaryServiceImpl implements ISummaryService {
     private static final Integer NUM_30 = 30;
 
     private static final String CLASS_NAME = SummaryServiceImpl.class.getSimpleName();
+
+    private static final String ONTCONTRACT = "0100000000000000000000000000000000000000";
+
+    private static final String ONGCONTRACT = "0200000000000000000000000000000000000000";
 
     @Autowired
     private BlockMapper blockMapper;
@@ -129,30 +136,30 @@ public class SummaryServiceImpl implements ISummaryService {
 
     /**
      * 更新所有每日统计信息，更新daily_summary，contract_summary，address_summary
+     *
      * @return
      */
     @Override
     public Result summaryAllInfo() {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        if (!configParam.EXPLORER_DAILY_SCHEDULE.equalsIgnoreCase("true")){
+        if (!configParam.EXPLORER_DAILY_SCHEDULE.equalsIgnoreCase("true")) {
             return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
         }
 
         // blockCount、txCount、ontCount、ongCount、activeAddressCount、newAddressCount、ontidactivecount、ontidnewacount
         Integer perTime = 24 * 60 * 60;
         Integer startTime = dailySummaryMapper.selectMaxTime();
-        if (startTime == null){
+        if (startTime == null) {
             // 创始区块的时间： 2018-06-30 00：00：00    时间戳：1530288000
             startTime = 1530288000;
-        }
-        else {
+        } else {
             startTime += perTime;
         }
 
         Integer maxTime = blockMapper.selectBlockMaxTime();
         Map paramMap = new HashMap<>();
         //正常每天只会跑一次，while用于跑历史统计数据
-        while (maxTime > (startTime + perTime)){
+        while (maxTime > (startTime + perTime)) {
             paramMap.put("startTime", startTime);
             paramMap.put("endTime", startTime + perTime);
 
@@ -183,7 +190,7 @@ public class SummaryServiceImpl implements ISummaryService {
      * @param newOntidCount
      * @param activeOntidCount
      */
-    private void setDailySummaryInfoFromTempTable(Integer startTime, Integer blockCount, Integer newOntidCount, Integer activeOntidCount){
+    private void setDailySummaryInfoFromTempTable(Integer startTime, Integer blockCount, Integer newOntidCount, Integer activeOntidCount) {
 
         // 每日交易数
         int txnCount = transactionDetailTmpMapper.selectTxnCountInOneDay();
@@ -237,20 +244,20 @@ public class SummaryServiceImpl implements ISummaryService {
      * @param contractAddressSummarys
      * @return
      */
-    private Integer setAddressSummary(List<String> addressList, Integer startTime, List<AddressSummary> contractAddressSummarys){
-        if (addressList.isEmpty()){
+    private Integer setAddressSummary(List<String> addressList, Integer startTime, List<AddressSummary> contractAddressSummarys) {
+        if (addressList.isEmpty()) {
             return 0;
         }
 
         List<AddressSummary> addressSummarys = new ArrayList<>();
         int newAddressCount = 0;
-        for (String address: addressList) {
+        for (String address : addressList) {
 /*            if (address.length() != 34){
                 continue;
             }*/
 
             AddressSummary addressSummary = new AddressSummary();
-            addressSummary.setTime((int)startTime);
+            addressSummary.setTime((int) startTime);
             addressSummary.setType("common");
             addressSummary.setAddress(address);
             addressSummarys.add(addressSummary);
@@ -258,7 +265,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
         newAddressCount = addressSummarys.size();
         addressSummarys.addAll(contractAddressSummarys);
-        if (!addressSummarys.isEmpty()){
+        if (!addressSummarys.isEmpty()) {
             addressSummaryMapper.banchInsertSelective(addressSummarys);
         }
 
@@ -267,13 +274,14 @@ public class SummaryServiceImpl implements ISummaryService {
 
     /**
      * 更新合约每日统计数据,即更新contract_summary表数据
+     *
      * @param startTime
      * @return
      */
-    private List<AddressSummary> updateContractInfo(Integer startTime){
+    private List<AddressSummary> updateContractInfo(Integer startTime) {
         //查询所有合约，不管是否审核过
         List<Contracts> contractList = contractsMapper.selectAllContract();
-        if(contractList.isEmpty()){
+        if (contractList.isEmpty()) {
             return new ArrayList<>();
         }
 
@@ -339,7 +347,7 @@ public class SummaryServiceImpl implements ISummaryService {
             contractSummary.setNewaddress(addressList.size());
             contractSummaryList.add(contractSummary);
             //新增地址放到列表中，再外面再插入address_summary表
-            for (String address: addressList) {
+            for (String address : addressList) {
 /*                if (address.length() != 34){
                     continue;
                 }*/
@@ -358,6 +366,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
     /**
      * Tps Info
+     *
      * @return
      */
     @Override
@@ -370,8 +379,8 @@ public class SummaryServiceImpl implements ISummaryService {
         return Helper.result("QueryTps", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
     }
 
-    private String queryCurrentTps(){
-        int nowTime = (int)(System.currentTimeMillis() / 1000);
+    private String queryCurrentTps() {
+        int nowTime = (int) (System.currentTimeMillis() / 1000);
 
         Map<String, Object> paramMap = new HashMap();
         paramMap.put("startTime", nowTime - 60);
@@ -379,11 +388,12 @@ public class SummaryServiceImpl implements ISummaryService {
         Integer tpsPerMin = transactionDetailMapper.queryTransactionCount(paramMap);
 
         DecimalFormat df = new DecimalFormat("0.00");
-        return df.format((double)(tpsPerMin) / 60);
+        return df.format((double) (tpsPerMin) / 60);
     }
 
     /**
      * Daily Info
+     *
      * @param startTime
      * @param endTime
      * @return
@@ -399,7 +409,7 @@ public class SummaryServiceImpl implements ISummaryService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         Map<String, Object> addressAndOntIdCount = dailySummaryMapper.selectAddressAndOntIdCount(startTime);
-        switch (type){
+        switch (type) {
             case "weekly":
                 dailyList = querySummaryInfo(dailyList, simpleDateFormat, NUM_7);
                 Collections.reverse(dailyList);
@@ -423,29 +433,29 @@ public class SummaryServiceImpl implements ISummaryService {
 
     private List<Map> querySummaryInfo(List<Map> dailyList, SimpleDateFormat simpleDateFormat, Integer count) {
         List<Map> resultMapList = new ArrayList<>();
-        if(dailyList.size() < count){
+        if (dailyList.size() < count) {
             return resultMapList;
         }
 
         int weekCount = dailyList.size() / count;
-        for (int i = 0; i < weekCount; i++){
+        for (int i = 0; i < weekCount; i++) {
             Map<String, Object> result = dailyList.get(i * count);
             int time = (Integer) result.get("Time");
-            result.put("Time", simpleDateFormat.format((long)time * 1000));
-            for(int j = 1; j < count; j++){
+            result.put("Time", simpleDateFormat.format((long) time * 1000));
+            for (int j = 1; j < count; j++) {
                 Map<String, Object> perMap = dailyList.get(i * count + j);
-                result.put("TxnCount", (Integer)result.get("TxnCount") + (Integer)perMap.get("TxnCount"));
-                result.put("ActiveAddress", (Integer)result.get("ActiveAddress") + (Integer)perMap.get("ActiveAddress"));
-                result.put("BlockCount", (Integer)result.get("BlockCount") + (Integer)perMap.get("BlockCount"));
-                result.put("OntIdNewCount", (Integer)result.get("OntIdNewCount") + (Integer)perMap.get("OntIdNewCount"));
-                result.put("OntIdActiveCount", (Integer)result.get("OntIdActiveCount") + (Integer)perMap.get("OntIdActiveCount"));
-                result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
-                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
-                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
+                result.put("TxnCount", (Integer) result.get("TxnCount") + (Integer) perMap.get("TxnCount"));
+                result.put("ActiveAddress", (Integer) result.get("ActiveAddress") + (Integer) perMap.get("ActiveAddress"));
+                result.put("BlockCount", (Integer) result.get("BlockCount") + (Integer) perMap.get("BlockCount"));
+                result.put("OntIdNewCount", (Integer) result.get("OntIdNewCount") + (Integer) perMap.get("OntIdNewCount"));
+                result.put("OntIdActiveCount", (Integer) result.get("OntIdActiveCount") + (Integer) perMap.get("OntIdActiveCount"));
+                result.put("NewAddress", (Integer) result.get("NewAddress") + (Integer) perMap.get("NewAddress"));
+                result.put("OntCount", ((BigDecimal) result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
+                result.put("OngCount", ((BigDecimal) result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
             }
 
-            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
-            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
+            result.put("OntCount", ((BigDecimal) result.get("OntCount")).toPlainString());
+            result.put("OngCount", ((BigDecimal) result.get("OngCount")).toPlainString());
             resultMapList.add(result);
         }
 
@@ -455,18 +465,18 @@ public class SummaryServiceImpl implements ISummaryService {
     private List<Map> querySummaryInfo(List<Map> dailyList, SimpleDateFormat simpleDateFormat, Map<String, Object> addressAndOntIdCount) {
         int addressCount = 0;
         int ontIdCount = 0;
-        if(addressAndOntIdCount != null && addressAndOntIdCount.get("addressSum") != null){
-            addressCount = Integer.parseInt( addressAndOntIdCount.get("addressSum").toString());
+        if (addressAndOntIdCount != null && addressAndOntIdCount.get("addressSum") != null) {
+            addressCount = Integer.parseInt(addressAndOntIdCount.get("addressSum").toString());
         }
-        if(addressAndOntIdCount != null && addressAndOntIdCount.get("ontIdSum") != null){
-            ontIdCount = Integer.parseInt( addressAndOntIdCount.get("ontIdSum").toString());
+        if (addressAndOntIdCount != null && addressAndOntIdCount.get("ontIdSum") != null) {
+            ontIdCount = Integer.parseInt(addressAndOntIdCount.get("ontIdSum").toString());
         }
 
-        for (Map map: dailyList) {
+        for (Map map : dailyList) {
             int time = (Integer) map.get("Time");
-            map.put("Time", simpleDateFormat.format((long)time * 1000));
-            map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
-            map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
+            map.put("Time", simpleDateFormat.format((long) time * 1000));
+            map.put("OntCount", ((BigDecimal) map.get("OntCount")).toPlainString());
+            map.put("OngCount", ((BigDecimal) map.get("OngCount")).toPlainString());
             addressCount += (Integer) map.get("NewAddress");
             ontIdCount += (Integer) map.get("OntIdNewCount");
             map.put("AddressSum", addressCount);
@@ -479,6 +489,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
     /**
      * Contract Info
+     *
      * @param startTime
      * @param endTime
      * @return
@@ -495,7 +506,7 @@ public class SummaryServiceImpl implements ISummaryService {
         resultMap.put("Total", 0);
 
         Contracts contracts = contractsMapper.selectContractByContractHash(contractHash);
-        if(contracts == null){
+        if (contracts == null) {
             return Helper.result("QueryContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
         }
 
@@ -519,11 +530,11 @@ public class SummaryServiceImpl implements ISummaryService {
     }
 
     private List<Map> queryContract(List<Map> dailyList, SimpleDateFormat simpleDateFormat) {
-        for (Map map: dailyList) {
+        for (Map map : dailyList) {
             int time = (Integer) map.get("Time");
-            map.put("Time", simpleDateFormat.format((long)time * 1000));
-            map.put("OntCount", ((BigDecimal)map.get("OntCount")).toPlainString());
-            map.put("OngCount", ((BigDecimal)map.get("OngCount")).toPlainString());
+            map.put("Time", simpleDateFormat.format((long) time * 1000));
+            map.put("OntCount", ((BigDecimal) map.get("OntCount")).toPlainString());
+            map.put("OngCount", ((BigDecimal) map.get("OngCount")).toPlainString());
         }
 
         return dailyList;
@@ -531,25 +542,25 @@ public class SummaryServiceImpl implements ISummaryService {
 
     private List<Map> queryContract(List<Map> dailyList, SimpleDateFormat simpleDateFormat, int count) {
         List<Map> resultMapList = new ArrayList<>();
-        if(dailyList.size() < count){
+        if (dailyList.size() < count) {
             return resultMapList;
         }
 
         int weekCount = dailyList.size() / count;
-        for (int i = 0; i < weekCount; i++){
+        for (int i = 0; i < weekCount; i++) {
             Map<String, Object> result = dailyList.get(i * count);
             int time = (Integer) result.get("Time");
-            result.put("Time", simpleDateFormat.format((long)time * 1000));
-            for(int j = 1; j < count; j++){
+            result.put("Time", simpleDateFormat.format((long) time * 1000));
+            for (int j = 1; j < count; j++) {
                 Map<String, Object> perMap = dailyList.get(i * count + j);
-                result.put("TxnCount", (Integer)result.get("TxnCount") + (Integer)perMap.get("TxnCount"));
-                result.put("ActiveAddress", (Integer)result.get("ActiveAddress") + (Integer)perMap.get("ActiveAddress"));
-                result.put("NewAddress", (Integer)result.get("NewAddress") + (Integer)perMap.get("NewAddress"));
-                result.put("OntCount", ((BigDecimal)result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
-                result.put("OngCount", ((BigDecimal)result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
+                result.put("TxnCount", (Integer) result.get("TxnCount") + (Integer) perMap.get("TxnCount"));
+                result.put("ActiveAddress", (Integer) result.get("ActiveAddress") + (Integer) perMap.get("ActiveAddress"));
+                result.put("NewAddress", (Integer) result.get("NewAddress") + (Integer) perMap.get("NewAddress"));
+                result.put("OntCount", ((BigDecimal) result.get("OntCount")).add((BigDecimal) perMap.get("OntCount")));
+                result.put("OngCount", ((BigDecimal) result.get("OngCount")).add((BigDecimal) perMap.get("OngCount")));
             }
-            result.put("OntCount", ((BigDecimal)result.get("OntCount")).toPlainString());
-            result.put("OngCount", ((BigDecimal)result.get("OngCount")).toPlainString());
+            result.put("OntCount", ((BigDecimal) result.get("OntCount")).toPlainString());
+            result.put("OngCount", ((BigDecimal) result.get("OngCount")).toPlainString());
 
             resultMapList.add(result);
         }
@@ -557,10 +568,10 @@ public class SummaryServiceImpl implements ISummaryService {
         return resultMapList;
     }
 
-    private List<Map> getContractListMap(List<Map> dailyList, String type){
+    private List<Map> getContractListMap(List<Map> dailyList, String type) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        switch (type){
+        switch (type) {
             case "weekly":
                 dailyList = queryContract(dailyList, simpleDateFormat, NUM_7);
                 break;
@@ -578,6 +589,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
     /**
      * project Info
+     *
      * @param project
      * @param type
      * @param startTime
@@ -596,7 +608,7 @@ public class SummaryServiceImpl implements ISummaryService {
         resultMap.put("OngCountSum", new BigDecimal(0).toPlainString());
         resultMap.put("Total", 0);
 
-        if(contractsList.isEmpty()){
+        if (contractsList.isEmpty()) {
             return Helper.result("QueryProject", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
         }
 
@@ -604,7 +616,7 @@ public class SummaryServiceImpl implements ISummaryService {
         Map<Integer, Map<String, Object>> projectMap = new HashMap<>();
         List<Map> projectSummaryList0 = new ArrayList<>();
         List<String> contracts = new ArrayList<>();
-        for (Contracts contract: contractsList) {
+        for (Contracts contract : contractsList) {
             contracts.add(contract.getContract());
             Map<String, Object> paramMap = new HashMap();
             paramMap.put("contractHash", contract.getContract());
@@ -613,20 +625,19 @@ public class SummaryServiceImpl implements ISummaryService {
             List<Map> dailyList = contractSummaryMapper.selectDailySummaryByContractHash(paramMap);
 
             int time = 0;
-            for (Map map: dailyList) {
-                time = (int)map.get("Time");
+            for (Map map : dailyList) {
+                time = (int) map.get("Time");
 
                 Map<String, Object> perMap = projectMap.get(time);
-                if (perMap == null){
+                if (perMap == null) {
                     projectMap.put(time, map);
                     projectSummaryList0.add(map);
-                }
-                else{
-                    perMap.put("TxnCount", (Integer)perMap.get("TxnCount") + (Integer)map.get("TxnCount"));
-                    perMap.put("ActiveAddress", (Integer)perMap.get("ActiveAddress") + (Integer)map.get("ActiveAddress"));
-                    perMap.put("NewAddress", (Integer)perMap.get("NewAddress") + (Integer)map.get("NewAddress"));
-                    perMap.put("OntCount", ((BigDecimal)perMap.get("OntCount")).add((BigDecimal) map.get("OntCount")));
-                    perMap.put("OngCount", ((BigDecimal)perMap.get("OngCount")).add((BigDecimal) map.get("OngCount")));
+                } else {
+                    perMap.put("TxnCount", (Integer) perMap.get("TxnCount") + (Integer) map.get("TxnCount"));
+                    perMap.put("ActiveAddress", (Integer) perMap.get("ActiveAddress") + (Integer) map.get("ActiveAddress"));
+                    perMap.put("NewAddress", (Integer) perMap.get("NewAddress") + (Integer) map.get("NewAddress"));
+                    perMap.put("OntCount", ((BigDecimal) perMap.get("OntCount")).add((BigDecimal) map.get("OntCount")));
+                    perMap.put("OngCount", ((BigDecimal) perMap.get("OngCount")).add((BigDecimal) map.get("OngCount")));
                 }
             }
         }
@@ -639,7 +650,7 @@ public class SummaryServiceImpl implements ISummaryService {
         int addressSum = 0;
         BigDecimal ontCountSum = new BigDecimal(0);
         BigDecimal ongCountSum = new BigDecimal(0);
-        for (Contracts contract: contractsList) {
+        for (Contracts contract : contractsList) {
             txCountSum += contract.getTxcount();
             addressSum += contract.getAddresscount();
             ontCountSum = ontCountSum.add(contract.getOntcount());
@@ -655,4 +666,38 @@ public class SummaryServiceImpl implements ISummaryService {
 
         return Helper.result("QueryProject", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, resultMap);
     }
+
+
+    @Override
+    public Result queryTotalSupply() {
+
+        BigDecimal specialAmount = new BigDecimal("0");
+        //?qid=1&contract=0100000000000000000000000000000000000000&from=0&count=100
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("qid", 1);
+        paramMap.put("contract", ONTCONTRACT);
+        paramMap.put("from", 0);
+        paramMap.put("count", 20);
+        try {
+            String response = Helper.sendGet(configParam.GOSERVER_DOMAIN + ConstantParam.GO_TOTALSUPPLY_URL, paramMap);
+            logger.info("totalsupply go response:{}", response);
+            JSONObject responseObj = JSONObject.parseObject(response);
+            JSONArray addrArray = responseObj.getJSONArray("result");
+            for (Object temp :
+                    addrArray) {
+                JSONObject obj = (JSONObject) temp;
+                if (ConstantParam.SPECIALADDRLIST.contains(obj.getString("address"))) {
+                    //其他地址，即流通量
+                    specialAmount = specialAmount.add(obj.getBigDecimal("percent"));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("error...", e);
+        }
+
+        return Helper.result("QueryTotalSupply", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, new BigDecimal("1").subtract(specialAmount));
+    }
+
+
 }
