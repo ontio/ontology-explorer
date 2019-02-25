@@ -293,7 +293,7 @@ public class TxnHandlerThread {
                                          int indexInBlock, BigDecimal gasConsumed, int indexInTxn, int confirmFlag, String contractAddress, Object oep5Obj) throws Exception {
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
-        if(!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))){
+        if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
             Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 1, contractAddress);
             session.insert("com.github.ontio.dao.TransactionDetailMapper.insertSelective", transactionDetailDO);
@@ -569,19 +569,30 @@ public class TxnHandlerThread {
             eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).longValue());
 
         } else {
-            fromAddress = (String) stateArray.get(1);
-            if (40 == fromAddress.length()) {
-                fromAddress = Address.parse(fromAddress).toBase58();
+            String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+            if (action.equals("transferFrom")) {
+                fromAddress = (String) stateArray.get(1);
+                if (40 == fromAddress.length()) {
+                    fromAddress = Address.parse(fromAddress).toBase58();
+                }
+                toAddress = (String) stateArray.get(2);
+                if (40 == toAddress.length()) {
+                    toAddress = Address.parse(toAddress).toBase58();
+                }
+                eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
+            } else {
+                fromAddress = (String) stateArray.get(1);
+                if (40 == fromAddress.length()) {
+                    fromAddress = Address.parse(fromAddress).toBase58();
+                }
+                toAddress = (String) stateArray.get(2);
+                if (40 == toAddress.length()) {
+                    toAddress = Address.parse(toAddress).toBase58();
+                }
+                eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
             }
-            toAddress = (String) stateArray.get(2);
-            if (40 == toAddress.length()) {
-                toAddress = Address.parse(toAddress).toBase58();
-            }
-
-            eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
         }
         logger.info("OEP4TransferTxn:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
-
 
         String assetName = oep4Obj.getString("Symbol");
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, oep4Obj.getInteger("Decimals"))));
