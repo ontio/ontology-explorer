@@ -699,5 +699,44 @@ public class SummaryServiceImpl implements ISummaryService {
         return Helper.result("QueryTotalSupply", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, new BigDecimal("1").subtract(specialAmount));
     }
 
+    @Override
+    public Result queryNativeTotalSupply() {
 
+        BigDecimal specialAmount = new BigDecimal("0");
+        //?qid=1&contract=0100000000000000000000000000000000000000&from=0&count=100
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("qid", 1);
+        paramMap.put("contract", ONTCONTRACT);
+        paramMap.put("from", 0);
+        paramMap.put("count", 20);
+        try {
+            String response = Helper.sendGet(configParam.GOSERVER_DOMAIN + ConstantParam.GO_TOTALSUPPLY_URL, paramMap);
+            logger.info("totalsupply go response:{}", response);
+            JSONObject responseObj = JSONObject.parseObject(response);
+            JSONArray addrArray = responseObj.getJSONArray("result");
+            for (Object temp :
+                    addrArray) {
+                JSONObject obj = (JSONObject) temp;
+                if (ConstantParam.SPECIALADDRLIST.contains(obj.getString("address"))) {
+                    //特定地址总量
+                    specialAmount = specialAmount.add(obj.getBigDecimal("balance"));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error("error...", e);
+        }
+
+        //其他地址，即流通量
+        BigDecimal ontTotalSupply = ConstantParam.ONT_TOTAL.subtract(specialAmount);
+        //((当前时间-创世区块时间)*每秒生成5个ONG) * ONT持仓量/ONT总量
+        BigDecimal ongAmount = new BigDecimal(System.currentTimeMillis() / 1000L).subtract(new BigDecimal(configParam.GENESISBLOCK_TIME)).multiply(configParam.ONG_SECOND_GENERATE);
+        BigDecimal ongTotalSupply = ongAmount.multiply(ontTotalSupply).divide(ConstantParam.ONT_TOTAL);
+
+        Map<String, BigDecimal> rsMap = new HashMap<>();
+        rsMap.put("ong", ongTotalSupply);
+        rsMap.put("ont", ontTotalSupply);
+
+        return Helper.result("QueryNativeTotalSupply", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
+    }
 }

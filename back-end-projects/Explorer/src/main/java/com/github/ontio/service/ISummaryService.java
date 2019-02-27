@@ -61,4 +61,6 @@ public interface ISummaryService {
 
     Result queryTotalSupply();
 
+    Result queryNativeTotalSupply();
+
 }
