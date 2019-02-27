@@ -22,6 +22,8 @@ package com.github.ontio.utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 
 /**
  * @author zhouq
@@ -57,5 +59,15 @@ public class ConfigParam {
 
     @Value("${goserver.domain}")
     public String GOSERVER_DOMAIN;
+
+    /**
+     * 主网每秒生成的ong个数
+     */
+    @Value("${ong.second.generate}")
+    public BigDecimal ONG_SECOND_GENERATE;
+
+    //创世区块时间
+    @Value("${genesisblock.time}")
+    public int GENESISBLOCK_TIME;
 
 }
