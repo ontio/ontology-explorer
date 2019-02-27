@@ -126,7 +126,7 @@ public class SummaryController {
     }
 
     /**
-     * 查询流通量
+     * 查询ONT流通量
      *
      * @return
      */
@@ -138,4 +138,19 @@ public class SummaryController {
         Result rs = summaryService.queryTotalSupply();
         return rs;
     }
+
+    /**
+     * 查询ONT,ONG流通量
+     *
+     * @return
+     */
+    @GetMapping(value = "/summary/native/totalsupply")
+    public Result queryNativeTotalSupply() {
+
+        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = summaryService.queryNativeTotalSupply();
+        return rs;
+    }
+
 }

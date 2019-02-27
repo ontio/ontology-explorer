@@ -722,7 +722,7 @@ public class TransactionServiceImpl implements ITransactionService {
         long now = System.currentTimeMillis() / 1000L;
         logger.info("txntime:{},now:{}", txntime, now);
 
-        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txntime)).multiply(ConstantParam.ONG_SECONDMAKE);
+        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txntime)).multiply(configParam.ONG_SECOND_GENERATE);
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
 
         return ong.toPlainString();
