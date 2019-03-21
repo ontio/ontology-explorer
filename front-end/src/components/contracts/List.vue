@@ -1,14 +1,14 @@
 <template>
-  <div class="container margin-top-15">
+  <div class="e-container margin-top-15">
     <list-title :name="$t('contracts.list.name')"></list-title>
 
-    <div class="row contract-count-view">
-      <div class="col text-right">
-        <a :href="applyForUrl" target="_blank" class="font-size18 font-blod important_color pointer2">
-          <i class="far fa-hand-point-right"></i>&nbsp;&nbsp;{{ $t('contracts.list.tit.checkIn') }}
-        </a>
+<!--     <div class="row contract-count-view">
+      <div class="col checkin-btn-content">
+        <div class="  checkin-btn text-center font-weight-bold" @click="checkIn()">
+          {{ $t('contracts.list.tit.checkIn') }}
+        </div>
       </div>
-    </div>
+    </div> -->
 
     <ont-pagination :total="contracts.total"></ont-pagination>
 
@@ -34,7 +34,7 @@
               <td class="font-size14 font-Regular normal_color sc-pointer"
                   @click="goToContractDetail(contract)">
                 <div class="font-blod font-size16">{{ contract.Name }}</div>
-                <div class="f-color font-size14 token-td">{{ contract.Description.substr(0,128) + '...' }}</div>
+                <div class="f-color font-size14 token-td token-desc">{{ contract.Description ? contract.Description.length > 128 ? contract.Description.substr(0,128) + '...' : contract.Description.substr(0,128) : '' }}</div>
               </td>
               <td class="font-size14 font-Regular important_color pointer"
                   @click="goToContractDetail(contract)">
@@ -76,7 +76,21 @@
     },
     methods: {
       getContractsData() {
+        this.testNetPageSizeCheck()
         this.$store.dispatch('GetContracts', this.$route.params).then()
+      },
+      testNetPageSizeCheck(){
+        if(this.$route.params.net == "testnet"){
+          if(this.$route.params.pageSize > 30){
+            this.$message({message: this.$t('error.pagesize')});
+            this.$route.params.pageSize = 30
+            this.$router.push({name: this.$route.name, params: this.$route.params})
+            return
+          }
+        }
+      },
+      checkIn(){
+        window.open(this.applyForUrl)
       },
       goToContractDetail(contract) {
         if (this.$route.params.net == undefined) {
@@ -133,6 +147,27 @@
   }
 
   .token-td {
-    margin-top: 6px;
+    margin-top: 8px;
+  }
+  .table-responsive{
+    padding:0 24px;
+    background-color: white;
+  }
+  .token-desc{
+    line-height: 18px;
+  }
+  .checkin-btn-content{
+    display: flex;
+    justify-content: flex-end;
+  }
+  .checkin-btn {
+    line-height: 30px;
+    width: 128px;
+    color: #32a4be;
+    background-color:#fff;
+    border:1px solid #32A4BE;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
   }
 </style>

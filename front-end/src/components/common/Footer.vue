@@ -1,7 +1,7 @@
 <template>
   <div class="footer-background">
 
-    <div class="container footer-container mobile-container">
+    <div class="e-container footer-container mobile-container">
 
       <div class="footer-logo-title">
         <img class="footer-logo-img" src="../../assets/footer/ont logo footer.png">
@@ -45,7 +45,7 @@
           <div class="footer-content-title">{{ $t('footer.dApps') }}</div>
           <div class="footer-content-div"><a class="footer-content-text" href="https://dapp.ont.io"></a></div>
           <div class="footer-content-div"><a class="footer-content-text" href="https://dapp.ont.io/">{{ $t('footer.dApp') }}</a></div>
-          <div class="footer-content-div"><a class="footer-content-text" href="https://docs.google.com/forms/d/e/1FAIpQLSfdF3xuTGOdH77zWmwEzv_0ayqkfwCrROG0kMpFD70Om2ah2g/viewform?usp=send_form">{{ $t('footer.SubmitAdApp') }}</a></div>
+          <div class="footer-content-div"><a class="footer-content-text" href="https://docs.google.com/forms/d/e/1FAIpQLSdszQp1BbviS83psIZUZYMKoNkn0e4zcYxrVqM6v5Qbmzby3g/viewform?vc=0&c=0&w=1">{{ $t('footer.SubmitAdApp') }}</a></div>
         </div>
       </div>
 

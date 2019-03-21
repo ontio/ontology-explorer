@@ -13,11 +13,11 @@
       <div v-for="(block,index) in latestBlockList.info" class="col-12 block-item-wrapper">
         <div class="divider-line"></div>
         <div class="row block-item-sub-wrapper">
-          <div class="block-item col-6 text-left padding0 block-item-height font700 font-size18 pointer" @click="toBlockDetailPage(block.Height)" style="color:#32a4be">{{block.Height}}</div>
+          <div class="block-item col-6 text-left padding0 block-item-height font700 font-size22 pointer" @click="toBlockDetailPage(block.Height)" style="color:#32a4be;line-height: 27px;">{{block.Height}}</div>
           <div v-if="block.TxnNum ==1" class="block-item col-6 text-right padding0 font-size14">{{block.TxnNum}} Txns</div>
           <div v-else class="block-item col-6 text-right padding0 font-size14">{{block.TxnNum}} Txns</div>
         </div>
-        <div class="row block-item-sub-wrapper">
+        <div class="row block-item-sub-wrapper-s">
           <span class="block-item col-6 text-left padding0 font-size14">{{block.BlockSize}} byte</span>
           <span v-if="$HelperTools.getDateTime(block.BlockTime) < 60" class="block-item col-6 text-right padding0 font-size14 ">{{showtime[index]}}s ago</span>
           <span v-else class="block-item col-6 text-right padding0 font-size14 ">{{getShowDate(block.BlockTime)}} ago</span>
