@@ -6,6 +6,7 @@ module.exports = {
     en: 'EN',
   },
   navbar: {
+    flag:"zh",
     blockHeight: '区块高度',
     wallet: '钱包',
     blocks: '区块列表',
@@ -324,6 +325,7 @@ module.exports = {
   },
   error:{
     format:"对不起，无法找到您输入的搜索内容。",
-    copied:"已复制!"
+    copied:"已复制!",
+    pagesize:"pageSize limit 30"
   }
 };

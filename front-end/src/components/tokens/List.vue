@@ -1,13 +1,13 @@
 <template>
-  <div class="container margin-top-15">
+  <div class="e-container margin-top-15">
     <list-title :name="$t('tokens.list.name')"></list-title>
 
     <div class="row token-count-view">
-      <div class="col text-right">
+<!--       <div class="col text-right">
         <a :href="applyForUrl" target="_blank" class="font-size18 font-blod important_color pointer2">
           <i class="far fa-hand-point-right"></i>&nbsp;&nbsp;{{ $t('contracts.list.tit.checkIn') }}
         </a>
-      </div>
+      </div> -->
     </div>
 
     <ont-pagination :total="tokens.total"></ont-pagination>
@@ -101,8 +101,19 @@
     methods: {
       getTokensData() {
         this.tokens.list = ''; // 清空内容
-
+        this.testNetPageSizeCheck()
         this.$store.dispatch('GetTokens', this.$route.params).then()
+      },
+      
+      testNetPageSizeCheck(){
+        if(this.$route.params.net == "testnet"){
+          if(this.$route.params.pageSize > 30){
+            this.$message({message: this.$t('error.pagesize')});
+            this.$route.params.pageSize = 30
+            this.$router.push({name: this.$route.name, params: this.$route.params})
+            return
+          }
+        }
       },
       goToTokenDetail(token) {
         if (this.$route.params.net == undefined) {
