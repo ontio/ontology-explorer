@@ -43,9 +43,15 @@ table {
 .font-size14 {
   font-size: 14px !important;
 }
+.font-size16 {
+  font-size: 16px !important;
+}
 
 .font-size18 {
   font-size: 18px !important;
+}
+.font-size22 {
+  font-size: 22px !important;
 }
 
 .font-size48 {
@@ -62,6 +68,53 @@ table {
 
 .font-size28 {
   font-size: 28px;
+}
+.line-height36{
+  line-height: 36px;
+}
+.line-height72{
+  line-height: 72px;
+}
+.volume-height{
+  height: 72px;
+  vertical-align: middle;
+  display: table-cell;
+}
+.volume-font{
+  text-align: center;
+}
+.vol-col{
+  padding-right: 15px;
+  padding-left: 15px;
+}
+@media (min-width: 750px){
+  .vol-col{
+    -ms-flex-preferred-size: 0;
+    flex-basis: 0;
+    -ms-flex-positive: 1;
+    -webkit-box-flex: 1;
+    flex-grow: 1;
+    max-width: 100%;  
+  }
+}
+@media (max-width: 750px){
+  .vol-col{
+    -ms-flex: 0 0 100%;
+    -webkit-box-flex: 0;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+@media (min-width: 950px){
+  .volume-font{
+    font-size: 24px
+  }
+}
+
+@media (max-width: 950px){
+  .volume-font{
+    font-size: 18px
+  }
 }
 
 .normal_color {
@@ -105,9 +158,8 @@ th {
 }
 
 .title-color {
-  color: #AFACAC;
+  color: rgba(89,87,87,1);
 }
-
 .title-more {
   font-size: 18px;
   margin-right: 0;
@@ -119,6 +171,7 @@ th {
 .title-hover:hover {
   cursor: pointer;
   color: #32A4BE;
+  text-decoration: underline;
 }
 
 .testNet:before {
@@ -191,7 +244,7 @@ th {
 .input-group-addon {
   border-radius: 0 !important;
   border-left: 1px white !important;
-  background-color: #e9ecef !important;
+  background-color: #fff !important;
 }
 
 .form-control-top:focus {
@@ -229,7 +282,7 @@ th {
 
 .div-block-list {
   margin-top: 30px;
-  padding: 0 15px;
+  padding: 0 24px 12px 24px;
   background-color: white;
 }
 
@@ -245,7 +298,7 @@ th {
 .block-item-wrapper {
   background-color: white;
   margin: 0;
-  padding: 14px 15px 10px;
+  padding: 11px 15px 12px;
 }
 
 .divider-line {
@@ -265,11 +318,18 @@ th {
 }
 
 .block-title-wrapper {
-  margin: 9px 0;
+  margin: 12px 0;
 }
 
 .block-item-sub-wrapper {
   height: 27px;
+  margin-left:0px !important;
+  margin-right:0px !important;
+}
+.block-item-sub-wrapper-s {
+  height: 18px;
+  margin-left:0px !important;
+  margin-right:0px !important;
 }
 
 .justify-content-center {
@@ -373,7 +433,9 @@ body {
   text-align: justify;
   word-break: break-word;
 }
-
+.padding0{
+  padding:0 !important;
+}
 .padding0-left {
   padding-left: 0px;
 }
@@ -468,6 +530,9 @@ body {
 .f-color {
   color: #AFACAC;
 }
+.tt-color {
+  color:#5A5757;
+}
 
 
 
@@ -531,4 +596,89 @@ body {
   .pc-display {
     display: block !important
   }
+}
+
+@media screen and (max-width: 992px) {
+  .nav-mobile-display {
+    display: block !important
+  }
+
+  .nav-pc-display {
+    display: none !important
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .nav-mobile-display {
+    display: none !important
+  }
+
+  .nav-pc-display {
+    display: block !important
+  }
+}
+
+@media (min-width: 1200px){
+  .e-container {
+      max-width: 1140px;
+  }
+
+}
+@media (min-width: 992px){ 
+  .e-container {
+    max-width: 960px;
+  }  
+}
+
+@media (min-width: 768px){
+  .e-container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 576px){
+  .e-container {
+    max-width: 540px;
+  }  
+}
+.e-container {
+    max-width: 1200px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+@media (max-width: 640px){
+  .el-message {
+    min-width: 320px !important;
+    width: 100% !important;
+  }
+}
+@media (min-width: 640px){
+  .el-message {
+    min-width: 640px !important;
+  }
+}
+.el-message {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #ebeef5;
+  position: fixed;
+  left: 50%;
+  top: 24px !important;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  background-color: #FFFFFF !important;
+  -webkit-transition: opacity .3s,-webkit-transform .4s;
+  transition: opacity .3s,-webkit-transform .4s;
+  transition: opacity .3s,transform .4s;
+  transition: opacity .3s,transform .4s,-webkit-transform .4s;
+  padding: 13px 15px 13px 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center
 }

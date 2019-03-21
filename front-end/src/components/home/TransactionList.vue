@@ -13,15 +13,15 @@
       <div v-for="(tx,index) in latestTransactionList.info" class="col-12 block-item-wrapper">
         <div class="divider-line"></div>
         <div class="row  block-item-sub-wrapper">
-          <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':' font-size14 block-item col-8 text-left padding0 block-item-top'"
+          <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size16':' font-size16 block-item col-8 text-left padding0 block-item-top'"
                @click="toTransactionDetailPage(tx.TxnHash)">
-            <span class="txhash-text font700">{{tx.TxnHash.substr(0,8)}}...{{tx.TxnHash.substr(56)}}</span>
+            <span class="txhash-text font700 padding0">{{tx.TxnHash.substr(0,8)}}...{{tx.TxnHash.substr(56)}}</span>
           </div>
           <span v-if="$HelperTools.getDateTime(tx.TxnTime) < 60" class="font-size14 block-item col-4 text-right padding0 block-item-top">{{showtime[index]}}s ago</span>
           <span v-else class="font-size14 block-item col-4 text-right padding0 block-item-top">{{getShowDate(tx.TxnTime)}} ago</span>
         </div>
-        <div class="row  block-item-sub-wrapper">
-          <span :class="( index >4) ? ' block-item col-12 text-left padding0 font-size14':'block-item col-12 text-left padding0 block-item-bottom font-size14'">{{getTxtype(tx.TxnType)}}</span>
+        <div class="row  block-item-sub-wrapper-s">
+          <span :class="( index >4) ? ' block-item col-12 text-left padding0 font-size14':'block-item col-12 text-left padding0  font-size14'">{{getTxtype(tx.TxnType)}}</span>
         </div>
       </div>
     </div>
@@ -114,9 +114,12 @@
 
 <style scoped>
   .txhash-text{
-    background-color: #32a4be;
-    color:white;
+    background-color: #fff;
+    color:#32a4be;
     cursor: pointer;
     padding: 4px;
+  }
+  .txhash-text:hover{
+    text-decoration: underline;
   }
 </style>
