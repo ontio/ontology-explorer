@@ -13,9 +13,9 @@
       <div v-for="(OntId,index) in latestOntIdList.info" class="col-12 block-item-wrapper">
         <div class="divider-line"></div>
         <div class="row padding0 block-item-sub-wrapper">
-          <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size14':'block-item col-8 text-left padding0 block-item-top font-size14'"
-               @click="toOntIdDetailPage(OntId.OntId)">
-            <span class="ontID-text font700">{{OntId.OntId.substr(0,12)}}...{{OntId.OntId.substr(38)}}</span>
+          <div :class="( index <1) ?'block-item col-8 text-left padding0 font-size16':'block-item col-8 text-left padding0 block-item-top font-size16'"
+               @click="toTransactionDetailPage(OntId.TxnHash)">
+            <span class="ontID-text font700 padding0">{{OntId.TxnHash.substr(0,8)}}...{{OntId.TxnHash.substr(56)}}</span>
           </div>
           <span v-if="$HelperTools.getDateTime(OntId.TxnTime) <60" class="font-size14 block-item col-4 text-right padding0 block-item-top">
             {{showtime[index]}}s ago
@@ -24,9 +24,9 @@
             {{getShowDate(OntId.TxnTime)}} ago
           </span>
         </div>
-        <div class="row padding0 block-item-sub-wrapper">
-          <span :class="( index >4) ? ' block-item col-12 text-left padding0 font-size14 pointer':'block-item col-12 text-left padding0 block-item-bottom font-size14 pointer'"
-                @click="toTransactionDetailPage(OntId.TxnHash)">{{getOntIDEvent(OntId.Description)}}</span>
+        <div class="row padding0 block-item-sub-wrapper-s">
+          <span :class="( index >4) ? ' block-item col-12 text-left padding0 font-size14 ':'block-item col-12 text-left padding0  font-size14 '"
+                >{{getOntIDEvent(OntId.Description)}}</span>
         </div>
       </div>
     </div>
@@ -139,9 +139,12 @@
 
 <style scoped>
   .ontID-text{
-    background-color: #32a4be;
-    color:white;
+    background-color: #fff;
+    color:#32a4be;
     cursor: pointer;
     padding: 4px;
+  }
+  .ontID-text:hover{
+    text-decoration: underline;
   }
 </style>

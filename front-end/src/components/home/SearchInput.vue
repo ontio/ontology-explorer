@@ -7,6 +7,7 @@
           <div class="input-group">
             <input type="text" class="form-control input-search search-input-txt"
                    v-model="searchContent" @keyup.13="submitSearch" :placeholder="$t('searchInput.placeholder')">
+            <div class="search-cut-wrapper"><div class="search-cut"></div></div>
             <div class="input-group-addon input-submit-search search-input-txt search-btn text-center font-weight-bold"
                  @click="submitSearch">
               {{$t('searchInput.search')}}
@@ -54,8 +55,9 @@
 </template>
 
 <script>
-
+  import axios from 'axios'
   export default {
+
     components: {},
     name: "search-input",
     data() {
@@ -64,50 +66,74 @@
       }
     },
     methods: {
-      submitSearch() {
-        if (this.searchContent !== '') {
-          switch (this.searchContent.length) {
-            /* txhash */
-            case 64:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'TransactionDetail', params: {txnHash: this.searchContent}})
-              } else {
-                this.$router.push({
-                  name: 'TransactionDetailTest',
-                  params: {txnHash: this.searchContent, net: 'testnet'}
-                })
-              }
-              break;
-            /* address */
-            case 34:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({
-                  name: 'AddressDetail',
-                  params: {address: this.searchContent, pageSize: 20, pageNumber: 1}
-                })
-              } else {
-                this.$router.push({
-                  name: 'AddressDetailTest',
-                  params: {address: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
-                })
-              }
-              break;
-            /* contract hash */
-            case 40:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({
-                  name: 'ContractDetail',
-                  params: {contractHash: this.searchContent, pageSize: 20, pageNumber: 1}
-                })
-              } else {
-                this.$router.push({
-                  name: 'ContractDetailTest',
-                  params: {contractHash: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
-                })
-              }
-              break;
-            /* ontid */
-            case 42:
+      notFound(){
+       // this.$toast.center(this.$t('error.format'));
+       this.$message({message: this.$t('error.format')});
+      },
+      searchHash($searchContent){
+        let apiUrl = (this.$route.params.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+        axios.get(apiUrl + '/transaction/' + $searchContent).then(res=>{
+            if(res.data.Error != 0){
+                this.notFound()
+            }else{
+                if (this.$route.params.net == undefined){
+                    this.$router.push({name: 'TransactionDetail', params: {txnHash: this.searchContent}})
+                }else{
+                    this.$router.push({
+                      name: 'TransactionDetailTest',
+                      params: {txnHash: this.searchContent, net: 'testnet'}
+                    })
+                }
+            }          
+        })
+      },
+      searchAddress($searchContent){
+        if (this.$route.params.net == undefined) {
+          this.$router.push({
+            name: 'AddressDetail',
+            params: {address: this.searchContent, pageSize: 20, pageNumber: 1}
+          })
+        } else {
+          this.$router.push({
+            name: 'AddressDetailTest',
+            params: {address: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
+          })
+        }
+
+      },
+      searchContract($searchContent){
+        let apiUrl = (this.$route.params.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+        let url = apiUrl + '/contract/' + $searchContent + '/10/1';
+        axios.get(url).then(response => {
+            if(response.data.Error != 0){
+                this.notFound()
+            }else{
+              console.log(response)
+                if(response.data.Result == null){
+                  this.notFound()
+                }else{
+                  if (this.$route.params.net == undefined){
+                    this.$router.push({
+                      name: 'ContractDetail',
+                      params: {contractHash: this.searchContent, pageSize: 10, pageNumber: 1}
+                    })
+                  }else{
+                    this.$router.push({
+                      name: 'ContractDetailTest',
+                      params: {contractHash: this.searchContent, pageSize: 10, pageNumber: 1, net: 'testnet'}
+                    })
+                  }
+                }
+            }  
+        })
+      },
+      searchONTID($searchContent){
+        let apiUrl = (this.$route.params.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+        axios.get(apiUrl + '/ontid/'+$searchContent+'/20/1').then(response => {
+            if(response.data.Error != 0){
+              
+                this.notFound()
+            }else{
               if (this.$route.params.net == undefined) {
                 this.$router.push({
                   name: 'OntIdDetail',
@@ -118,80 +144,76 @@
                   name: 'OntIdDetailTest',
                   params: {ontid: this.searchContent, pageSize: 20, pageNumber: 1, net: 'testnet'}
                 })
-              }
+              }        
+            }      
+        })
+      },
+      searchHeight($searchContent){
+        let apiUrl = (this.$route.params.net === "testnet") ? process.env.TEST_API_URL : process.env.API_URL;
+        axios.get(apiUrl + '/block/' + $searchContent).then(response => {
+            if(response.data.Error != 0){
+                this.notFound()
+            }else{
+              if (this.$route.params.net == undefined) {
+                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
+              } else {
+                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
+              }              
+            }          
+        })
+      },
+      submitSearch() {
+        if (this.searchContent !== '') {
+          switch (this.searchContent.length) {
+            /* txhash */
+            case 64:
+              this.searchHash(this.searchContent)
               break;
-            /* block height */
+            /* address */
+            case 34:
+              this.searchAddress(this.searchContent)
+              break;
+            /* contract hash */
+            case 40:
+              this.searchContract(this.searchContent)
+              break;
+            /* ontid */
+            case 42:
+              this.searchONTID(this.searchContent)
+              break;
             /* block height */
             case 1:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 2:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 3:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 4:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 5:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 6:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 7:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 8:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 9:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
             case 10:
-              if (this.$route.params.net == undefined) {
-                this.$router.push({name: 'blockDetail', params: {param: this.searchContent}})
-              } else {
-                this.$router.push({name: 'blockDetailTest', params: {param: this.searchContent, net: 'testnet'}})
-              }
+              this.searchHeight(this.searchContent)
               break;
+            default:
+              this.notFound();
           }
         }
       },
@@ -209,8 +231,8 @@
   }
 
   .input-group {
-    height: 50px;
-    max-width: 670px;
+    height: 48px;
+    max-width: 620px;
     margin: 60px auto 0;
   }
 
@@ -242,8 +264,8 @@
   }
 
   .search-btn {
-    padding: 0.5rem 1.1rem;
-    line-height: 2rem;
+    padding: 12px 1.1rem;
+    line-height: 20px;
     max-width: 150px;
     width: 150px;
     color: #32a4be;
@@ -346,5 +368,14 @@
     background-color: #32A4BE !important;
     border-color: #32A4BE !important;
     box-shadow: 0 0 0 0rem rgba(69, 130, 236, 0) !important;
+  }
+  .search-cut-wrapper{
+    width: 1px;
+    padding:9px 0;
+    background: #fff;
+  }
+  .search-cut{
+    border-left:1px solid rgba(50,164,190,1);
+    height: 30px;
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="container div-run-status">
+  <div class="e-container div-run-status">
     <div class="row">
       <div class="col col-click" @click="toBlockListPage">
         <span class="run-status-label">{{ $t('runStatus.CurrentHeight') }}</span>
@@ -46,6 +46,25 @@
         </div>
       </div>
     </div>
+    <!--line-chart models-->
+<!--     <div v-if="data" class="row">
+      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" >
+        <line-chart class="line-chart-style"
+          :labels="data.labels"
+          :label=" '14' + $t('statistics.day') + $t('statistics.' + data.data.newAddress.label)"
+          :data="data.data.newAddress.list"
+          options="">
+        </line-chart>
+      </div>
+      <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" >
+        <line-chart class="line-chart-style"
+          :labels="data.labels"
+          :label=" '14' + $t('statistics.day') + $t('statistics.' + data.data.txn.label)"
+          :data="data.data.txn.list"
+          options="">
+        </line-chart>
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -73,6 +92,7 @@
       }
     },
     created() {
+      this.getTableData()
       this.getRunStatus()
       this.generateTime("76")
       this.intervalBlock = setInterval(() => {
@@ -101,15 +121,21 @@
             this.lastheight = this.getTime.info[0].Height
           }
         }
-      }
+      },
     },
     computed: {
       ...mapState({
         blockStatus: state => state.RunStatus.BlockStatus,
-        getTime: state => state.RunStatus.GenerateTime
+        getTime: state => state.RunStatus.GenerateTime,
+        /* data: state => state.Statistics.StatisticsData, */
       })
     },
     methods: {
+      getTableData() {
+        var params={}
+        params.day = 14
+        this.$store.dispatch('getStatisticsData', params).then()
+      },
       generateBgColor() {
         let retData = []
         for (let i = 0; i < 76; i++) {
@@ -413,7 +439,8 @@
   .run-status-label {
     margin-top: 10px;
     margin-bottom: 0px;
-    color: #AFACAC;
+    color: rgba(89,87,87,1);
+    font-weight:400;
   }
 
   .run-status-p {

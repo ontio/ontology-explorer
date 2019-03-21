@@ -1,8 +1,8 @@
 <template>
-  <div class="container margin-top-15 statistics-container">
+  <div class="e-container margin-top-15 statistics-container">
     <list-title :name="$route.params.day + $t('statistics.day') + titName + $t('statistics.name')"></list-title>
 
-    <div class="container">
+    <div class="e-container">
       <div class="row">
         <div class="col">
           <div class="btn-group">
@@ -44,7 +44,7 @@
 
       <!--line-chart models-->
       <div class="row">
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" v-for="item in data.data">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" v-for="(item,index) in data.data" >
           <line-chart class="line-chart-style"
             :labels="data.labels"
             :label=" $route.params.day + $t('statistics.day') + $t('statistics.' + item.label)"
@@ -53,6 +53,17 @@
           </line-chart>
         </div>
       </div>
+      <!--high-chart models-->
+<!--       <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" v-for="(item,index) in data.data">
+          <hi-chart class="line-chart-style"
+            :labels="data.labels"
+            :label=" $route.params.day + $t('statistics.day') + $t('statistics.' + item.label)"
+            :data="item.list"
+          ></hi-chart>
+        </div>
+      </div> -->
+
     </div>
 
   </div>
@@ -60,6 +71,7 @@
 
 <script>
   import {mapState} from 'vuex'
+  import HiChart from '../common/HiChart.vue'
 
   export default {
     name: "StatisticsTable",
@@ -68,7 +80,7 @@
       this.getContractList()
     },
     watch: {
-      '$route': ['getTableData', 'getContractList']
+      '$route': ['getTableData', 'getContractList'],
     },
     computed: {
       ...mapState({
@@ -83,6 +95,31 @@
         }
 
         return ''
+      }
+    },
+    data() {
+      return {
+        chartid: ['chart0','chart1','chart2','chart3','chart4','chart5','chart6','chart7','chart8','chart9',],
+        /* updateArgs: [true, true, {duration: 1000}], */
+        chartOptions: {
+          chart: {
+            type: 'area'
+          },
+          title: {
+            text: ''
+          },
+          credits: {
+              enabled: false
+          },
+          xAxis: {
+            categories: []
+          },
+          series: [{
+            name:'',
+            data: [],
+            color: '#6fcd98'
+          }]
+        }
       }
     },
     methods: {
@@ -118,6 +155,9 @@
       getContractList() {
         this.$store.dispatch('getContractList', this.$route.params).then()
       }
+    },
+    components: {
+      HiChart
     }
   }
 </script>

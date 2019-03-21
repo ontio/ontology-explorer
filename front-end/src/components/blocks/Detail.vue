@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div class="e-container container-margin-top">
     <list-title :name="$t('blockDetail.nickname')"></list-title>
     <detail-title :name="$t('blockDetail.name')" :val="block.Height"></detail-title>
 

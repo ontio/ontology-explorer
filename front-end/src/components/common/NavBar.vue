@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="e-container">
     <div class="row">
       <!--  Logo区域  -->
       <div v-if="isHome" class="col index-logo-warpper">
@@ -101,7 +101,7 @@
             </li>
 
             <li class="nav-item dropdown">
-              <a v-if="language === 'zh'" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+              <a v-if="$t('navbar.flag') === 'zh'" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fas fa-globe"></i>&nbsp;&nbsp;{{ $t('language.zh') }}
               </a>
               <a v-else class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
@@ -109,11 +109,11 @@
               </a>
               <div class="dropdown-menu">
                 <a class="dropdown-item"
-                   :class="language === 'zh' ? '' : 'pointer-events'" href="#"
+                   :class="$t('navbar.flag') === 'zh' ? '' : 'pointer-events'" href="#"
                    @click="chooseLanguage('en')">{{ $t('language.enName') }}</a>
                 <hr style="margin: 4px 1rem">
                 <a class="dropdown-item"
-                   :class="language === 'zh' ? 'pointer-events' : ''" href="#"
+                   :class="$t('navbar.flag') === 'zh' ? 'pointer-events' : ''" href="#"
                    @click="chooseLanguage('zh')">{{ $t('language.zhName') }}</a>
               </div>
             </li>
