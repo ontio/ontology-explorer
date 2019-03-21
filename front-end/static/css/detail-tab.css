@@ -23,7 +23,10 @@
   margin: 0 10px;
   border: 0;
   border-radius: 0;
-  color: #AFACAC;
+  color: #B0ACAC;
+}
+.nav-tabs .nav-link.active{
+  color: #595757 !important;
 }
 
 .explorer-detail-tab > .nav-tabs .nav-link.active {

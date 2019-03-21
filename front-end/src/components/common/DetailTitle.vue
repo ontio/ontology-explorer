@@ -38,8 +38,12 @@
           e.clearSelection();
         });
 
-        this.showCopied = true
-      }
+        //this.showCopied = true
+        this.copied()
+      },
+      copied(){
+        this.$toast.top(this.$t('error.copied'));
+      },
     }
   }
 </script>
