@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div class="e-container container-margin-top">
     <list-title :name="$t('addressList.nickname')"></list-title>
 
     <ont-pagination :total="addressList.total"></ont-pagination>

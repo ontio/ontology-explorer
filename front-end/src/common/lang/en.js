@@ -6,6 +6,7 @@ module.exports = {
     en: 'EN',
   },
   navbar: {
+    flag:"en",
     blockHeight: 'block height',
     wallet: 'wallet',
     blocks: 'Blocks',
@@ -344,6 +345,7 @@ module.exports = {
   },
   error:{
     format:"Sorry, the search string you entered could not be found.",
-    copied:"Copied!"
+    copied:"Copied!",
+    pagesize:"pageSize limit 30"
   }
 };

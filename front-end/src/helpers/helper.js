@@ -3,6 +3,7 @@
  * 在main.js import和use可全局使用。
  */
 import DecimalMath from 'decimal.js';
+import axios from 'axios'
 
 const HelperTools = {
   getDateTime(inputTime) {
@@ -206,7 +207,7 @@ const HelperTools = {
     }
 
     return data
-  }
+  },
 };
 
 export default {

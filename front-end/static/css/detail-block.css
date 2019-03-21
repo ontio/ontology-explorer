@@ -5,7 +5,7 @@
 /* 基础白色块属性 */
 .detail-col {
   padding: 16px 24px !important;
-  margin-top: 4px;
+  margin-top: 8px;
   color: #595757;
   background: white;
   font-size: 18px;
@@ -28,20 +28,51 @@
 
 /* 三块中间那块区域使用 */
 .detail-col-middle {
-  margin-left: -13px;
-  margin-right: -13px;
+  margin-left: -14px;
+  margin-right: -14px;
 }
 
 /* 两块左间那块区域使用 */
 .detail-col-left {
-  margin-right: -13px;
+  margin-right: -14px;
 }
 
 /* 两块右间那块区域使用 */
 .detail-col-right {
-  margin-left: -13px;
+  margin-left: -14px;
 }
 
+@media (min-width: 750px){
+  /* 三块中间那块区域使用 */
+  .detail-col-middle {
+    margin-left: -14px;
+    margin-right: -14px;
+  }
+
+  /* 两块左间那块区域使用 */
+  .detail-col-left {
+    margin-right: -14px;
+  }
+
+  /* 两块右间那块区域使用 */
+  .detail-col-right {
+    margin-left: -14px;
+  }
+}
+@media (max-width: 750px){
+  .detail-col-middle{
+    margin-left: 0px;
+    margin-right: 0px;    
+  }
+  .detail-col-left{
+    margin-left: 0px;
+    margin-right: 0px;    
+  }
+  .detail-col-right{
+    margin-left: 0px;
+    margin-right: 0px;    
+  }
+}
 /* 长英文字母串强制折行 */
 .word-break {
   word-break: break-all;
@@ -50,4 +81,7 @@
 /* 万圣节南瓜资产颜色 */
 .pumpkin-color {
   color: #D3A02E !important;
+}
+.t-color{
+  color:#595757;
 }
