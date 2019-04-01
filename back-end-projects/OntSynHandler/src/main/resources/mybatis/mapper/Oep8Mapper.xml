@@ -175,7 +175,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="selectAllKeyInfo" resultType="java.util.Map" useCache="false">
+  <select id="selectApprovedKeyInfo" resultType="java.util.Map" useCache="false">
     select Contract, TokenId, Symbol, Name
     from tbl_ont_oep8
     where auditflag = 1

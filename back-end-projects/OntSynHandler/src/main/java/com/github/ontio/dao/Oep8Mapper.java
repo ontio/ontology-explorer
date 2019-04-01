@@ -20,7 +20,7 @@ public interface Oep8Mapper {
 
     int updateByPrimaryKey(Oep8 record);
 
-    List<Map> selectAllKeyInfo();
+    List<Map> selectApprovedKeyInfo();
 
     int updateTotalSupply(Oep8 oep8);
 }

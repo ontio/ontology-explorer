@@ -92,8 +92,8 @@ public class BlockHandlerThread extends Thread {
 
             int oneBlockTryTime = 1;
             while (true) {
-                // 获取OEP合约信息以备用
-                oepContractHandle();
+                //每次重新获取OEP合约全局信息
+                initOepContractConstantInfo();
 
                 int remoteBlockHieght = getRemoteBlockHeight();
                 logger.info("######remote blockheight:{}", remoteBlockHieght);
@@ -154,9 +154,12 @@ public class BlockHandlerThread extends Thread {
         }
     }
 
-    private void oepContractHandle(){
+    /**
+     * 初始化oep合约全局信息
+     */
+    private void initOepContractConstantInfo(){
         //获取审核过的OEP4资产信息
-        List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
+        List<Map> oep4s = oep4Mapper.selectApprovedKeyInfo();
         for (Map map : oep4s) {
             JSONObject obj = new JSONObject();
             obj.put("Symbol", map.get("Symbol"));
@@ -166,7 +169,7 @@ public class BlockHandlerThread extends Thread {
         ConstantParam.OEP4CONTRACTS = ConstantParam.OEP4MAP.keySet();
 
         //获取审核过的OEP5资产信息
-        List<Map> oep5s = oep5Mapper.selectAllKeyInfo();
+        List<Map> oep5s = oep5Mapper.selectApprovedKeyInfo();
         for (Map map : oep5s) {
             JSONObject obj = new JSONObject();
             obj.put("Symbol", map.get("Symbol"));
@@ -176,7 +179,7 @@ public class BlockHandlerThread extends Thread {
         ConstantParam.OEP5CONTRACTS = ConstantParam.OEP5MAP.keySet();
 
         //获取审核过的OEP8资产信息
-        List<Map> oep8s = oep8Mapper.selectAllKeyInfo();
+        List<Map> oep8s = oep8Mapper.selectApprovedKeyInfo();
         for (Map map : oep8s) {
             JSONObject obj = new JSONObject();
             obj.put("Symbol", map.get("Symbol"));

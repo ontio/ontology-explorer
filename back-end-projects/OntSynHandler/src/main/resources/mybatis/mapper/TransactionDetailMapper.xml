@@ -24,23 +24,37 @@
     <result column="confirmflag" jdbcType="INTEGER" property="confirmflag" />
     <result column="eventtype" jdbcType="INTEGER" property="eventtype" />
     <result column="contracthash" jdbcType="VARCHAR" property="contracthash" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
   </resultMap>
   <sql id="Base_Column_List">
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
-    toaddress, description, blockindex, confirmflag, eventtype, contracthash
+    toaddress, description, blockindex, confirmflag, eventtype, contracthash, payer
   </sql>
-
+  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_ont_txn_detail
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+      and txnindex = #{txnindex,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail">
+    delete from tbl_ont_txn_detail
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+      and txnindex = #{txnindex,jdbcType=INTEGER}
+  </delete>
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
       fee, assetname, fromaddress, 
       toaddress, description, blockindex, 
-      confirmflag, eventtype, contracthash)
+      confirmflag, eventtype, contracthash, 
+      payer)
     values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
       #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
       #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
       #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
-      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR})
+      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}, 
+      #{payer,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail
@@ -90,6 +104,9 @@
       <if test="contracthash != null">
         contracthash,
       </if>
+      <if test="payer != null">
+        payer,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="txnhash != null">
@@ -137,6 +154,9 @@
       <if test="contracthash != null">
         #{contracthash,jdbcType=VARCHAR},
       </if>
+      <if test="payer != null">
+        #{payer,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.TransactionDetail">
@@ -181,6 +201,9 @@
       <if test="contracthash != null">
         contracthash = #{contracthash,jdbcType=VARCHAR},
       </if>
+      <if test="payer != null">
+        payer = #{payer,jdbcType=VARCHAR},
+      </if>
     </set>
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
@@ -199,7 +222,8 @@
       blockindex = #{blockindex,jdbcType=INTEGER},
       confirmflag = #{confirmflag,jdbcType=INTEGER},
       eventtype = #{eventtype,jdbcType=INTEGER},
-      contracthash = #{contracthash,jdbcType=VARCHAR}
+      contracthash = #{contracthash,jdbcType=VARCHAR},
+      payer = #{payer,jdbcType=VARCHAR}
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>

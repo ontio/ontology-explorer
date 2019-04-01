@@ -10,9 +10,13 @@ import java.util.Map;
 
 @Component
 public interface TransactionDetailMapper {
+    int deleteByPrimaryKey(TransactionDetail key);
+
     int insert(TransactionDetail record);
 
     int insertSelective(TransactionDetail record);
+
+    TransactionDetail selectByPrimaryKey(TransactionDetail key);
 
     int updateByPrimaryKeySelective(TransactionDetail record);
 
