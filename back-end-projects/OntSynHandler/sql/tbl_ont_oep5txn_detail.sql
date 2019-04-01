@@ -10,16 +10,16 @@ Target Server Type    : MYSQL
 Target Server Version : 50639
 File Encoding         : 65001
 
-Date: 2019-04-01 11:30:34
+Date: 2019-04-01 11:31:05
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for tbl_ont_oep4txn_detail
+-- Table structure for tbl_ont_oep5txn_detail
 -- ----------------------------
-DROP TABLE IF EXISTS `tbl_ont_oep4txn_detail`;
-CREATE TABLE `tbl_ont_oep4txn_detail` (
+DROP TABLE IF EXISTS `tbl_ont_oep5txn_detail`;
+CREATE TABLE `tbl_ont_oep5txn_detail` (
   `txnhash` varchar(64) NOT NULL DEFAULT '',
   `txntype` int(4) NOT NULL,
   `txntime` int(11) NOT NULL,
