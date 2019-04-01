@@ -33,6 +33,8 @@ public class TransactionDetail{
 
     private String contracthash;
 
+    private String payer;
+
     public Integer getTxntype() {
         return txntype;
     }
@@ -151,5 +153,13 @@ public class TransactionDetail{
 
     public void setTxnindex(Integer txnindex) {
         this.txnindex = txnindex;
+    }
+
+    public String getPayer() {
+        return payer;
+    }
+
+    public void setPayer(String payer) {
+        this.payer = payer == null ? null : payer.trim();
     }
 }

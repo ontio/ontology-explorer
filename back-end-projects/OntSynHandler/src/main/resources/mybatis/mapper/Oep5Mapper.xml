@@ -151,7 +151,7 @@
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
 
-  <select id="selectAllKeyInfo" resultType="java.util.Map" useCache="false">
+  <select id="selectApprovedKeyInfo" resultType="java.util.Map" useCache="false">
     select Contract, Symbol, Name
     from tbl_ont_oep5
     where auditflag = 1

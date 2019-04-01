@@ -16,5 +16,5 @@ public interface Oep4Mapper {
 
     int updateByPrimaryKey(Oep4 record);
 
-    List<Map> selectAllKeyInfo();
+    List<Map> selectApprovedKeyInfo();
 }

@@ -127,4 +127,9 @@ public final class ConstantParam {
     public static Map<String,Object> OEP8MAP = new HashMap<>();
 
     public static Set<String> OEP8CONTRACTS = new HashSet<>();
+
+
+    public static final int DAPPSTOREFLAG_YES = 1;
+
+    public static final int DAPPSTOREFLAG_NO = 0;
 }
