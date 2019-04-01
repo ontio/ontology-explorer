@@ -10,16 +10,16 @@ Target Server Type    : MYSQL
 Target Server Version : 50639
 File Encoding         : 65001
 
-Date: 2019-04-01 11:30:34
+Date: 2019-04-01 11:31:54
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for tbl_ont_oep4txn_detail
+-- Table structure for tbl_ont_txn_detail_daily
 -- ----------------------------
-DROP TABLE IF EXISTS `tbl_ont_oep4txn_detail`;
-CREATE TABLE `tbl_ont_oep4txn_detail` (
+DROP TABLE IF EXISTS `tbl_ont_txn_detail_daily`;
+CREATE TABLE `tbl_ont_txn_detail_daily` (
   `txnhash` varchar(64) NOT NULL DEFAULT '',
   `txntype` int(4) NOT NULL,
   `txntime` int(11) NOT NULL,
@@ -33,10 +33,13 @@ CREATE TABLE `tbl_ont_oep4txn_detail` (
   `blockindex` int(10) NOT NULL,
   `txnindex` int(10) NOT NULL,
   `confirmflag` int(1) NOT NULL,
-  `eventtype` int(2) NOT NULL COMMENT '0:其他 1:手续费 2:部署合约 3:转账',
+  `eventtype` int(2) NOT NULL COMMENT '0:其他 1:手续费 2:部署合约 3:转账 4:ontid 5:存证 6:权限',
   `contracthash` varchar(60) NOT NULL DEFAULT '',
+  `payer` varchar(255) NOT NULL DEFAULT '' COMMENT '交易的payer',
   PRIMARY KEY (`txnhash`,`txnindex`),
+  KEY `idx_eventtype` (`eventtype`),
   KEY `idx_fromaddr` (`fromaddress`),
   KEY `idx_toaddr` (`toaddress`),
-  KEY `idx_height` (`height`) USING BTREE
+  KEY `idx_height` (`height`),
+  KEY `index_contracthash` (`contracthash`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
