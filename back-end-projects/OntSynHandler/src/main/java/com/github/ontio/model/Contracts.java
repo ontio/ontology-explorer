@@ -3,9 +3,9 @@ package com.github.ontio.model;
 import java.math.BigDecimal;
 
 public class Contracts {
-    private String project;
-
     private String contract;
+
+    private String project;
 
     private String name;
 
@@ -39,13 +39,9 @@ public class Contracts {
 
     private String tokencount;
 
-    public String getProject() {
-        return project;
-    }
+    private Integer dappstoreflag;
 
-    public void setProject(String project) {
-        this.project = project;
-    }
+    private String category;
 
     public String getContract() {
         return contract;
@@ -53,6 +49,14 @@ public class Contracts {
 
     public void setContract(String contract) {
         this.contract = contract == null ? null : contract.trim();
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project == null ? null : project.trim();
     }
 
     public String getName() {
@@ -148,7 +152,7 @@ public class Contracts {
     }
 
     public void setCreator(String creator) {
-        this.creator = creator;
+        this.creator = creator == null ? null : creator.trim();
     }
 
     public Integer getAddresscount() {
@@ -180,6 +184,22 @@ public class Contracts {
     }
 
     public void setTokencount(String tokencount) {
-        this.tokencount = tokencount;
+        this.tokencount = tokencount == null ? null : tokencount.trim();
+    }
+
+    public Integer getDappstoreflag() {
+        return dappstoreflag;
+    }
+
+    public void setDappstoreflag(Integer dappstoreflag) {
+        this.dappstoreflag = dappstoreflag;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category == null ? null : category.trim();
     }
 }

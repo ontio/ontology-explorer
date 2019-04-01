@@ -20,5 +20,5 @@ public interface Oep5Mapper {
 
     int updateByPrimaryKey(Oep5 record);
 
-    List<Map> selectAllKeyInfo();
+    List<Map> selectApprovedKeyInfo();
 }
