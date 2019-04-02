@@ -26,10 +26,6 @@ public interface ContractsMapper {
 
     List<Map> selectApprovedContractByPage(Map<String, Object> paramMap);
 
-    List<Map> selectContract();
-
-    String selectCreatorByContractHash(String contract);
-
     Contracts selectContractByContractHash(String contract);
 
     List<Contracts> selectAllContract();
@@ -37,4 +33,7 @@ public interface ContractsMapper {
     List<Contracts> selectAllApprovedContract();
 
     List<Contracts> selectAllContractByProject(String project);
+
+    List<Map> selectDappstoreContract();
+
 }

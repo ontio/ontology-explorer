@@ -45,4 +45,11 @@ public interface IContractService {
      * @return
      */
      Result queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber);
+
+
+
+     Result queryDappstoreContractInfo(Integer pageSize, Integer pageNumber);
+
+
+     Result queryDappstore24hSummary();
 }

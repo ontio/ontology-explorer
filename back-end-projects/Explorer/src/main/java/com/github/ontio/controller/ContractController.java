@@ -133,4 +133,36 @@ public class ContractController {
         Result rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
         return rs;
     }
+
+
+    /**
+     * 查询dappstore里的合约列表信息
+     * @param pageSize
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping(value = "/contract/dappstore/{pagesize}/{pagenumber}")
+    public Result queryDappstoreContractInfo(@PathVariable("pagesize") Integer pageSize, @PathVariable("pagenumber") Integer pageNumber){
+
+        logger.info("####{}.{} begin...pagesize:{},pagenumber:{}", CLASS_NAME, Helper.currentMethod(),pageSize, pageNumber);
+
+        Result rs = contractService.queryDappstoreContractInfo(pageSize, pageNumber);
+        return rs;
+    }
+
+
+    /**
+     * 查询dappstore里合约汇总信息
+     * @return
+     */
+    @GetMapping(value = "/contract/dappstore/24h/summary")
+    public Result queryDappstoreContract24hSummary(){
+
+        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        Result rs = contractService.queryDappstore24hSummary();
+        return rs;
+    }
+
+
 }

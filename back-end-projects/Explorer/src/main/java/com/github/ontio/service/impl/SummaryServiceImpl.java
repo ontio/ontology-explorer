@@ -2,7 +2,6 @@ package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.common.Address;
 import com.github.ontio.dao.*;
 import com.github.ontio.model.AddressSummary;
 import com.github.ontio.model.ContractSummary;
@@ -23,6 +22,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.math.BigDecimal.ROUND_HALF_DOWN;
+
 /**
  * @author king
  * @version 1.0
@@ -40,6 +41,8 @@ public class SummaryServiceImpl implements ISummaryService {
     private static final Integer NUM_30 = 30;
 
     private static final String CLASS_NAME = SummaryServiceImpl.class.getSimpleName();
+
+    private static Boolean ISMONDAY = false;
 
     private static final String ONTCONTRACT = "0100000000000000000000000000000000000000";
 
@@ -146,8 +149,8 @@ public class SummaryServiceImpl implements ISummaryService {
             return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
         }
 
-        // blockCount、txCount、ontCount、ongCount、activeAddressCount、newAddressCount、ontidactivecount、ontidnewacount
         Integer perTime = 24 * 60 * 60;
+        //前一天0点，若现在3.28 0:10分，即3.27号0点
         Integer startTime = dailySummaryMapper.selectMaxTime();
         if (startTime == null) {
             // 创始区块的时间： 2018-06-30 00：00：00    时间戳：1530288000
@@ -155,7 +158,7 @@ public class SummaryServiceImpl implements ISummaryService {
         } else {
             startTime += perTime;
         }
-
+        //最新区块时间
         Integer maxTime = blockMapper.selectBlockMaxTime();
         Map paramMap = new HashMap<>();
         //正常每天只会跑一次，while用于跑历史统计数据
@@ -164,17 +167,17 @@ public class SummaryServiceImpl implements ISummaryService {
             paramMap.put("endTime", startTime + perTime);
 
             // 每日新增区块数
-            int newBlockCount = blockMapper.selectBlockCountInOneDay(startTime, startTime + perTime);
+            int dailyBlockCount = blockMapper.selectBlockCountInOneDay(startTime, startTime + perTime);
             // 每日新增ontid数
-            int newOntIdCount = ontIdMapper.selectOntIdCountInOneDay(startTime, startTime + perTime, "Register%");
+            int dailyOntIdCount = ontIdMapper.selectOntIdCountInOneDay(startTime, startTime + perTime, "Register%");
             // 每日活跃ontid数
-            int activeOntIdCount = ontIdMapper.selectActiveOntIdCountInOneDay(startTime, startTime + perTime);
+            int dailyActiveOntIdCount = ontIdMapper.selectActiveOntIdCountInOneDay(startTime, startTime + perTime);
 
-            // 先删除temp表所有数据，再将前一天的数据迁移到temp表，再做其他各种信息统计
+            // 先删除temp表所有数据，再将前一天的数据迁移到temp表，基于temp表做各种信息统计
             transactionDetailTmpMapper.deleteAll();
-            transactionDetailTmpMapper.InsertSelective(paramMap);
+            transactionDetailTmpMapper.InsertSelectiveFromDetailTable(paramMap);
             //在temp表进行每日其他数据统计
-            setDailySummaryInfoFromTempTable(startTime, newBlockCount, newOntIdCount, activeOntIdCount);
+            setDailySummaryInfoFromTempTable(startTime, dailyBlockCount, dailyOntIdCount, dailyActiveOntIdCount);
 
             startTime = startTime + perTime;
         }
@@ -186,76 +189,60 @@ public class SummaryServiceImpl implements ISummaryService {
      * 从temp表进行每日各种数据统计
      *
      * @param startTime
-     * @param blockCount
-     * @param newOntidCount
-     * @param activeOntidCount
+     * @param dailyBlockCount
+     * @param dailyNewOntidCount
+     * @param dailyActiveOntidCount
      */
-    private void setDailySummaryInfoFromTempTable(Integer startTime, Integer blockCount, Integer newOntidCount, Integer activeOntidCount) {
+    private void setDailySummaryInfoFromTempTable(Integer startTime, Integer dailyBlockCount, Integer dailyNewOntidCount, Integer dailyActiveOntidCount) {
 
         // 每日交易数
-        int txnCount = transactionDetailTmpMapper.selectTxnCountInOneDay();
-
+        int dailyTxnCount = transactionDetailTmpMapper.selectTxnCountInOneDay();
         // 每日交易ont，ong量
-        BigDecimal ontCount = transactionDetailTmpMapper.selectOntCountInOneDay();
-        BigDecimal ongCount = transactionDetailTmpMapper.selectOngCountInOneDay();
+        BigDecimal dailyOntAmount = transactionDetailTmpMapper.selectOntAmountInOneDay();
+        BigDecimal dailyOngAmount = transactionDetailTmpMapper.selectOngAmountInOneDay();
 
-        // 每日活跃地址（没有剔除不符合地址格式的数据）
-        List<String> addressList = transactionDetailTmpMapper.selectAddressInOneDay();
-/*        List<String> addressList = new ArrayList<>();
-        if (!txs.isEmpty()){
-            for (String address: txs) {
-                if (address.length() != 34){
-                    continue;
-                }
+        //每日活跃地址
+        List<String> dailyActiveAddrList = transactionDetailTmpMapper.selectAddressInOneDay();
+        int dailyActiveAddrCount = dailyActiveAddrList.size();
 
-                addressList.add(address);
-            }
-        }*/
         // 每日新增地址数=每日活跃地址-address_summary表所有地址
-        int activeAddressCount = addressList.size();
-        List<String> addressSummaryList = addressSummaryMapper.selectDistinctAddress();
-        addressList.removeAll(addressSummaryList);
+        List<String> allAddrList = addressSummaryMapper.selectDistinctAddress();
+        dailyActiveAddrList.removeAll(allAddrList);
+        int dailyNewAddrCount = dailyActiveAddrList.size();
 
         // 更新合约的信息
-        List<AddressSummary> contractAddressSummarys = updateContractInfo(startTime);
+        List<AddressSummary> contractAddressSummarys = updateDailyContractInfoAndContractNewAddress(startTime);
 
         // 新增地址插入address_summary表
-        Integer newAddressCount = setAddressSummary(addressList, startTime, contractAddressSummarys);
+        batchInsertNewAddress(dailyActiveAddrList, startTime, contractAddressSummarys);
 
         DailySummary dailySummary = new DailySummary();
-        dailySummary.setBlockcount(blockCount);
         dailySummary.setTime(startTime);
-        dailySummary.setTxncount(txnCount);
-        dailySummary.setOntidactivecount(activeOntidCount);
-        dailySummary.setOntidnewcount(newOntidCount);
-        dailySummary.setOntcount(ontCount == null ? new BigDecimal(0) : ontCount);
-        dailySummary.setOngcount(ongCount == null ? new BigDecimal(0) : ongCount.divide(new BigDecimal(1000000000)));
-        dailySummary.setActiveaddress(activeAddressCount);
-        dailySummary.setNewaddress(newAddressCount);
+        dailySummary.setBlockcount(dailyBlockCount);
+        dailySummary.setTxncount(dailyTxnCount);
+        dailySummary.setOntidactivecount(dailyActiveOntidCount);
+        dailySummary.setOntidnewcount(dailyNewOntidCount);
+        dailySummary.setOntcount(dailyOntAmount == null ? new BigDecimal(0) : dailyOntAmount);
+        dailySummary.setOngcount(dailyOngAmount == null ? new BigDecimal(0) : dailyOngAmount.divide(ConstantParam.ONG_TOTAL));
+        dailySummary.setActiveaddress(dailyActiveAddrCount);
+        dailySummary.setNewaddress(dailyNewAddrCount);
 
         dailySummaryMapper.insert(dailySummary);
     }
 
     /**
-     * 新增地址插入address_summary表
+     * 每天所有新增地址和每天每个合约新地址插入address_summary表
      *
      * @param addressList
      * @param startTime
      * @param contractAddressSummarys
      * @return
      */
-    private Integer setAddressSummary(List<String> addressList, Integer startTime, List<AddressSummary> contractAddressSummarys) {
-        if (addressList.isEmpty()) {
-            return 0;
-        }
+    private void batchInsertNewAddress(List<String> addressList, Integer startTime, List<AddressSummary> contractAddressSummarys) {
 
         List<AddressSummary> addressSummarys = new ArrayList<>();
-        int newAddressCount = 0;
-        for (String address : addressList) {
-/*            if (address.length() != 34){
-                continue;
-            }*/
-
+        for (String address :
+                addressList) {
             AddressSummary addressSummary = new AddressSummary();
             addressSummary.setTime((int) startTime);
             addressSummary.setType("common");
@@ -263,94 +250,100 @@ public class SummaryServiceImpl implements ISummaryService {
             addressSummarys.add(addressSummary);
         }
 
-        newAddressCount = addressSummarys.size();
         addressSummarys.addAll(contractAddressSummarys);
         if (!addressSummarys.isEmpty()) {
             addressSummaryMapper.banchInsertSelective(addressSummarys);
         }
-
-        return newAddressCount;
     }
 
     /**
-     * 更新合约每日统计数据,即更新contract_summary表数据
+     * 更新contracts_summary表里的每个合约的统计数据，并记录每个合约的新地址
      *
-     * @param startTime
+     * @param startTime 前一天的0点的时间戳
      * @return
      */
-    private List<AddressSummary> updateContractInfo(Integer startTime) {
+    public List<AddressSummary> updateDailyContractInfoAndContractNewAddress(Integer startTime) {
         //查询所有合约，不管是否审核过
         List<Contracts> contractList = contractsMapper.selectAllContract();
         if (contractList.isEmpty()) {
             return new ArrayList<>();
         }
+        //所有dappstore里的dapp的交易总量
+        int allDappTxnCount = 0;
+        //所有dappstore里的dapp的活跃地址总数
+        int allDappActiveAddrCount = 0;
+        //所有dappstore里的合约hash列表
+        List<String> allDappContractHashList = new ArrayList<>();
 
-        List<ContractSummary> contractSummaryList = new ArrayList<>();
+        List<ContractSummary> dappStoreContractSummaryList = new ArrayList<>();
+        List<ContractSummary> notDappStorecontractSummaryList = new ArrayList<>();
         List<AddressSummary> contractAddressSummarys = new ArrayList<>();
-        for (Contracts contracts : contractList) {
+        //记录每个合约当天的统计数据，并将每个合约的新地址插入地址汇总表
+        for (Contracts contracts :
+                contractList) {
             String contractHash = contracts.getContract();
-            String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
+            //String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
 
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("contractHash", contractHash);
-            paramMap.put("contractAddress", contractAddress);
             paramMap.put("assetname", "ont");
-/*            BigDecimal ontCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
-            ontCount = ontCount == null ? new BigDecimal(0) : ontCount;*/
-            BigDecimal ontCount = transactionDetailTmpMapper.selectContractAssetSumNew(paramMap);
-            ontCount = ontCount == null ? new BigDecimal(0) : ontCount;
+            //BigDecimal dailyOntAmount = transactionDetailTmpMapper.selectContractAssetSumNew(paramMap);
+
+            BigDecimal dailyOntAmount = transactionDetailTmpMapper.selectContractAssetAmount(contractHash, "ont");
+            dailyOntAmount = dailyOntAmount == null ? new BigDecimal(0) : dailyOntAmount;
 
             paramMap.put("assetname", "ong");
-/*            BigDecimal ongCount = transactionDetailTmpMapper.selectContractAssetSum(paramMap);
-            ongCount = ongCount == null ? new BigDecimal(0) : ongCount;*/
-            BigDecimal ongCount = transactionDetailTmpMapper.selectContractAssetSumNew(paramMap);
-            ongCount = ongCount == null ? new BigDecimal(0) : ongCount;
+            //BigDecimal dailyOngAmount = transactionDetailTmpMapper.selectContractAssetSumNew(paramMap);
+
+            BigDecimal dailyOngAmount = transactionDetailTmpMapper.selectContractAssetAmount(contractHash, "ong");
+            dailyOngAmount = dailyOngAmount == null ? new BigDecimal(0) : dailyOngAmount;
 
             // 依据合约hash查询交易数
-            int txnCount = transactionDetailTmpMapper.selectTxnAmount(paramMap);
-            //每日合约活跃地址列表
-            List<String> toAddrList = transactionDetailTmpMapper.selectToAddressCountByContractNew(contractHash);
-            List<String> fromAddrList = transactionDetailTmpMapper.selectFromAddressCountByContractNew(contractHash);
-            toAddrList.addAll(fromAddrList);
-
-            List<String> addressList = toAddrList;
-            //每日合约活跃地址数
-            Integer activeAddressCount = addressList.size();
-
-            // 依据合约hash和合约地址分别查询地址数（去重）
-/*            List<String> addressByContractList = transactionDetailTmpMapper.selectAllAddressByContract(contractHash);
-            List<String> addressByAddressList = transactionDetailTmpMapper.selectAllAddressByAddress(contractAddress);
-            addressByContractList.addAll(addressByAddressList);
-            
-            List<String> addressList = new ArrayList<>();
-            for (String address: addressByContractList) {
-                if (address.length() != 34){
-                    continue;
-                }
-
-                addressList.add(address);
-            }
-            Integer activeAddress = addressList.size();*/
-
+            int dailyTxnCount = transactionDetailTmpMapper.selectContractTxnCount(contractHash);
+            //每日合约活跃地址列表(保持跟tokenview一样，只判断payer)
+            List<String> dailyActiveAddrList = transactionDetailTmpMapper.selectContractAddrCount(contractHash);
+            int dailyActiveAddrCount = dailyActiveAddrList.size();
 
             // 新增地址数=每日合约活跃地址数-address_summary所有地址
-            List<String> contractAddressList = addressSummaryMapper.selectDistinctAddressByContract(contractHash);
-            addressList.removeAll(contractAddressList);
+            List<String> allAddrList = addressSummaryMapper.selectDistinctAddressByContract(contractHash);
+            dailyActiveAddrList.removeAll(allAddrList);
+            int dailyNewAddrCount = dailyActiveAddrList.size();
+
             //更新contract_summary表当天的合约统计信息
-            ContractSummary contractSummary = new ContractSummary();
-            contractSummary.setTime(startTime);
-            contractSummary.setContracthash(contractHash);
-            contractSummary.setTxncount(txnCount);
-            contractSummary.setOntcount(ontCount);
-            contractSummary.setOngcount(ongCount.divide(new BigDecimal("1000000000")));
-            contractSummary.setActiveaddress(activeAddressCount);
-            contractSummary.setNewaddress(addressList.size());
-            contractSummaryList.add(contractSummary);
-            //新增地址放到列表中，再外面再插入address_summary表
-            for (String address : addressList) {
-/*                if (address.length() != 34){
-                    continue;
-                }*/
+            if (contracts.getDappstoreflag() == ConstantParam.DAPPSTOREFLAG_YES) {
+                allDappTxnCount += dailyTxnCount;
+                allDappActiveAddrCount += dailyActiveAddrCount;
+                allDappContractHashList.add(contractHash);
+
+                ContractSummary contractSummary = new ContractSummary();
+                contractSummary.setTime(startTime);
+                contractSummary.setContracthash(contractHash);
+                contractSummary.setTxncount(dailyTxnCount);
+                contractSummary.setOntcount(dailyOntAmount);
+                contractSummary.setOngcount(dailyOngAmount.divide(ConstantParam.ONG_TOTAL));
+                contractSummary.setActiveaddress(dailyActiveAddrCount);
+                contractSummary.setNewaddress(dailyNewAddrCount);
+                contractSummary.setScore(0);
+                contractSummary.setOngreward(ConstantParam.ZERO);
+                contractSummary.setOntreward(ConstantParam.ZERO);
+                dappStoreContractSummaryList.add(contractSummary);
+            } else {
+                ContractSummary contractSummary = new ContractSummary();
+                contractSummary.setTime(startTime);
+                contractSummary.setContracthash(contractHash);
+                contractSummary.setTxncount(dailyTxnCount);
+                contractSummary.setOntcount(dailyOntAmount);
+                contractSummary.setOngcount(dailyOngAmount.divide(ConstantParam.ONG_TOTAL));
+                contractSummary.setActiveaddress(dailyActiveAddrCount);
+                contractSummary.setNewaddress(dailyNewAddrCount);
+                contractSummary.setScore(0);
+                contractSummary.setOngreward(ConstantParam.ZERO);
+                contractSummary.setOntreward(ConstantParam.ZERO);
+                notDappStorecontractSummaryList.add(contractSummary);
+            }
+            //新增地址放到列表中，在外面再插入address_summary表
+            for (String address :
+                    dailyActiveAddrList) {
                 AddressSummary addressSummary = new AddressSummary();
                 addressSummary.setTime(startTime);
                 addressSummary.setType(contractHash);
@@ -359,10 +352,181 @@ public class SummaryServiceImpl implements ISummaryService {
             }
         }
 
-        contractSummaryMapper.banchInsertSelective(contractSummaryList);
+        if (dappStoreContractSummaryList.size() > 0) {
+            handleDappStoreContractSummaryInfo(dappStoreContractSummaryList, allDappContractHashList, allDappTxnCount, allDappActiveAddrCount);
+        }
+
+        List<ContractSummary> allContractSummaryList = new ArrayList<>();
+        allContractSummaryList.addAll(dappStoreContractSummaryList);
+        allContractSummaryList.addAll(notDappStorecontractSummaryList);
+        contractSummaryMapper.banchInsertSelective(allContractSummaryList);
 
         return contractAddressSummarys;
     }
+
+    /**
+     * 处理DappStore里的合约的日得分，日激励，周激励统计信息
+     *
+     * @param dappStoreContractSummaryList
+     * @param allDappContractHashList
+     * @param allDappTxnCount
+     * @param allDappActiveAddrCount
+     */
+    private void handleDappStoreContractSummaryInfo(List<ContractSummary> dappStoreContractSummaryList, List<String> allDappContractHashList,
+                                                    int allDappTxnCount, int allDappActiveAddrCount) {
+
+        try {
+            //判断是否是周一
+            Calendar calendar = Calendar.getInstance();
+            if (ConstantParam.WEEK_ARR[calendar.get(Calendar.DAY_OF_WEEK) - 1].equals(ConstantParam.WEEK_ARR[1])) {
+                ISMONDAY = true;
+            }
+            //所有合约得分
+            int allDappScore = 0;
+            //计算每日得分
+            for (ContractSummary contractSummary :
+                    dappStoreContractSummaryList) {
+                int txnCount = contractSummary.getTxncount();
+                int activeAddrCount = contractSummary.getActiveaddress();
+                int score = calculateDailyScore(txnCount, activeAddrCount, allDappTxnCount, allDappActiveAddrCount);
+                contractSummary.setScore(score);
+                allDappScore += score;
+            }
+            //计算每日ong激励
+            for (ContractSummary contractSummary :
+                    dappStoreContractSummaryList) {
+                BigDecimal ongReward = calculateDailyOngReward(contractSummary.getScore(), allDappScore);
+                contractSummary.setOngreward(ongReward);
+            }
+            //每周一计算每周ont激励
+            if (ISMONDAY) {
+
+                long nowTime = System.currentTimeMillis();
+                //一天前的UTC 0点
+                Calendar yesterdayCalendar = Calendar.getInstance();
+                yesterdayCalendar.setTimeInMillis(nowTime);
+                yesterdayCalendar.add(Calendar.DAY_OF_MONTH, -1);
+                yesterdayCalendar.set(Calendar.HOUR_OF_DAY, -8);
+                yesterdayCalendar.set(Calendar.MINUTE, 0);
+                yesterdayCalendar.set(Calendar.SECOND, 0);
+                long yesterday0HourTime = yesterdayCalendar.getTimeInMillis() / 1000L;
+                //7天前的UTC 0点
+                Calendar last7dayCalendar = Calendar.getInstance();
+                last7dayCalendar.setTimeInMillis(nowTime);
+                last7dayCalendar.add(Calendar.DAY_OF_MONTH, -7);
+                last7dayCalendar.set(Calendar.HOUR_OF_DAY, -8);
+                last7dayCalendar.set(Calendar.MINUTE, 0);
+                last7dayCalendar.set(Calendar.SECOND, 0);
+                long last7Day0HourTime = last7dayCalendar.getTimeInMillis() / 1000L;
+
+                Map<String, Object> paramMap = new HashMap<>();
+                paramMap.put("beginTime", yesterday0HourTime);
+                paramMap.put("endTime", last7Day0HourTime);
+                paramMap.put("contractHashList", allDappContractHashList);
+                Map<String, Object> allDappSumMap = contractSummaryMapper.selectDappstoreContractSumInfo(paramMap);
+                //sql只能捞出前6天的，最近的昨天的统计数据还未插入db，手动加上
+                if (!Helper.isEmptyOrNull(allDappSumMap)) {
+                    int last6DayTxCount = (int) allDappSumMap.get("txnCount");
+                    int last6DayActiveAddrCount = (int) allDappSumMap.get("activeAddress");
+                    allDappSumMap.put("txnCount", last6DayTxCount + allDappTxnCount);
+                    allDappSumMap.put("activeAddress", last6DayActiveAddrCount + allDappActiveAddrCount);
+
+                    Map<String, Integer> map = new HashMap<>();
+                    //所有合约周得分
+                    int allDappWeekScore = 0;
+                    for (ContractSummary contractSummary :
+                            dappStoreContractSummaryList) {
+
+                        Map<String, Object> paramMap2 = new HashMap<>();
+                        paramMap2.put("beginTime", yesterday0HourTime);
+                        paramMap2.put("endTime", last7Day0HourTime);
+                        paramMap2.put("contractHashList", Arrays.asList(contractSummary.getContracthash()));
+                        Map<String, Object> dappSumMap = contractSummaryMapper.selectDappstoreContractSumInfo(paramMap2);
+                        int weekScore = 0;
+                        //sql只能捞出前6天的，最近的昨天的统计数据还未插入db，手动加上
+                        if (!Helper.isEmptyOrNull(dappSumMap)) {
+                            int last6DayTxCount2 = (int) dappSumMap.get("txnCount");
+                            int last6DayActiveAddrCount2 = (int) dappSumMap.get("activeAddress");
+                            dappSumMap.put("txnCount", last6DayTxCount2 + contractSummary.getTxncount());
+                            dappSumMap.put("activeAddress", last6DayActiveAddrCount2 + contractSummary.getActiveaddress());
+
+                            weekScore = calculateDailyScore((Integer) dappSumMap.get("txnCount"), (Integer) dappSumMap.get("activeAddress"),
+                                    (Integer) allDappSumMap.get("txnCount"), (Integer) allDappSumMap.get("activeAddress"));
+                            allDappWeekScore += weekScore;
+                        }
+                        map.put(contractSummary.getContracthash(), weekScore);
+                    }
+
+                    for (ContractSummary contractSummary :
+                            dappStoreContractSummaryList) {
+                        int weekScore = map.get(contractSummary.getContracthash());
+                        BigDecimal ontReward = calculateWeekOntReward(weekScore, allDappWeekScore);
+                        contractSummary.setOntreward(ontReward);
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            logger.error("calculate contract reward error...", e);
+        }
+
+    }
+
+
+    /**
+     * 计算合约的每日或者每周得分
+     *
+     * @param txnCount
+     * @param activeAddrCount
+     * @param allTxnCount
+     * @param allActiveAddrCount
+     * @return
+     */
+    private int calculateDailyScore(int txnCount, int activeAddrCount, int allTxnCount, int allActiveAddrCount) {
+        if (txnCount == 0 || activeAddrCount == 0 || allTxnCount == 0 || activeAddrCount == 0) {
+            return 0;
+        }
+
+        BigDecimal a = new BigDecimal(txnCount).divide(new BigDecimal(activeAddrCount), 2, ROUND_HALF_DOWN);
+        BigDecimal b = new BigDecimal(allTxnCount).divide(new BigDecimal(allActiveAddrCount), 2, ROUND_HALF_DOWN);
+        BigDecimal x = new BigDecimal("1.5").multiply(new BigDecimal("2")).multiply(a.divide(b, 2, ROUND_HALF_DOWN));
+        double exp = -x.divide(new BigDecimal("2")).doubleValue();
+
+        BigDecimal sapp = x.multiply(new BigDecimal(Math.exp(exp)));
+        BigDecimal appScore = sapp.multiply(new BigDecimal(txnCount));
+        return appScore.setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue();
+    }
+
+    /**
+     * 计算合约的每日ong激励
+     *
+     * @param dappScore
+     * @param allDappScore
+     * @return
+     */
+    private BigDecimal calculateDailyOngReward(int dappScore, int allDappScore) {
+        if (dappScore == 0 || allDappScore == 0) {
+            return ConstantParam.ZERO;
+        }
+
+        BigDecimal a = new BigDecimal(dappScore).divide(new BigDecimal(allDappScore), 2, ROUND_HALF_DOWN);
+        BigDecimal ongreward = configParam.ONGREWARD_DAILY.divide(new BigDecimal("5"), 2, ROUND_HALF_DOWN).multiply(a);
+        return ongreward;
+    }
+
+    /**
+     * 计算合约的每周ont激励
+     *
+     * @param weekScore
+     * @param allWeekScore
+     * @return
+     */
+    private BigDecimal calculateWeekOntReward(int weekScore, int allWeekScore) {
+
+        BigDecimal ontWeekReward = configParam.ONTREWARD_WEEK.divide(new BigDecimal("5"), 2, ROUND_HALF_DOWN).multiply(new BigDecimal(weekScore).divide(new BigDecimal(allWeekScore), 2, ROUND_HALF_DOWN));
+        return ontWeekReward;
+    }
+
 
     /**
      * Tps Info
