@@ -35,6 +35,8 @@ public class TransactionDetail{
 
     private String payer;
 
+    private String calledcontracthash;
+
     public Integer getTxntype() {
         return txntype;
     }
@@ -161,5 +163,13 @@ public class TransactionDetail{
 
     public void setPayer(String payer) {
         this.payer = payer == null ? null : payer.trim();
+    }
+
+    public String getCalledcontracthash() {
+        return calledcontracthash;
+    }
+
+    public void setCalledcontracthash(String calledcontracthash) {
+        this.calledcontracthash = calledcontracthash == null ? null : calledcontracthash.trim();
     }
 }
