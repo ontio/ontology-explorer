@@ -36,6 +36,7 @@ CREATE TABLE `tbl_ont_txn_detail` (
   `eventtype` int(2) NOT NULL COMMENT '0:其他 1:手续费 2:部署合约 3:转账 4:ontid 5:存证 6:权限',
   `contracthash` varchar(60) NOT NULL DEFAULT '',
   `payer` varchar(255) NOT NULL DEFAULT '' COMMENT '交易的payer',
+  `calledcontracthash` varchar(255) NOT NULL DEFAULT '' COMMENT '这笔交易真正调用的合约hash',
   PRIMARY KEY (`txnhash`,`txnindex`),
   KEY `idx_eventtype` (`eventtype`),
   KEY `idx_fromaddr` (`fromaddress`),
