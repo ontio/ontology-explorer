@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.github.ontio.dao.ContractSummaryMapper" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.dao.ContractSummaryMapper">
   <cache type="com.github.ontio.ExplorerRedisCache">
     <property name="eviction" value="LRU" />
     <property name="size" value="1024" />
@@ -8,133 +8,153 @@
     <property name="readOnly" value="false" />
   </cache>
 
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.ContractSummary" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="time" property="time" jdbcType="INTEGER" />
-    <result column="contracthash" property="contracthash" jdbcType="VARCHAR" />
-    <result column="txncount" property="txncount" jdbcType="INTEGER" />
-    <result column="ontcount" property="ontcount" jdbcType="DECIMAL" />
-    <result column="ongcount" property="ongcount" jdbcType="DECIMAL" />
-    <result column="activeaddress" property="activeaddress" jdbcType="INTEGER" />
-    <result column="newaddress" property="newaddress" jdbcType="INTEGER" />
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.ContractSummary">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="contracthash" jdbcType="VARCHAR" property="contracthash" />
+    <result column="txncount" jdbcType="INTEGER" property="txncount" />
+    <result column="ontcount" jdbcType="DECIMAL" property="ontcount" />
+    <result column="ongcount" jdbcType="DECIMAL" property="ongcount" />
+    <result column="activeaddress" jdbcType="INTEGER" property="activeaddress" />
+    <result column="newaddress" jdbcType="INTEGER" property="newaddress" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="ongreward" jdbcType="DECIMAL" property="ongreward" />
+    <result column="ontreward" jdbcType="DECIMAL" property="ontreward" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    id, time, contracthash, txncount, ontcount, ongcount, activeaddress, newaddress
+  <sql id="Base_Column_List">
+    id, time, contracthash, txncount, ontcount, ongcount, activeaddress, newaddress, 
+    score, ongreward, ontreward
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from tbl_ont_contract_summary
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from tbl_ont_contract_summary
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.github.ontio.model.ContractSummary" >
-    insert into tbl_ont_contract_summary (id, time, contracthash, txncount,
-      ontcount, ongcount, activeaddress, 
-      newaddress)
-    values (#{id,jdbcType=BIGINT}, #{time,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}, #{txncount,jdbcType=INTEGER},
-      #{ontcount,jdbcType=DECIMAL}, #{ongcount,jdbcType=DECIMAL}, #{activeaddress,jdbcType=INTEGER}, 
-      #{newaddress,jdbcType=INTEGER})
+  <insert id="insert" parameterType="com.github.ontio.model.ContractSummary">
+    insert into tbl_ont_contract_summary (id, time, contracthash, 
+      txncount, ontcount, ongcount, 
+      activeaddress, newaddress, score, 
+      ongreward, ontreward)
+    values (#{id,jdbcType=BIGINT}, #{time,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}, 
+      #{txncount,jdbcType=INTEGER}, #{ontcount,jdbcType=DECIMAL}, #{ongcount,jdbcType=DECIMAL}, 
+      #{activeaddress,jdbcType=INTEGER}, #{newaddress,jdbcType=INTEGER}, #{score,jdbcType=INTEGER}, 
+      #{ongreward,jdbcType=DECIMAL}, #{ontreward,jdbcType=DECIMAL})
   </insert>
-
-  <insert id="banchInsertSelective" parameterType="java.util.List" >
-    insert into tbl_ont_contract_summary (time, contracthash, txncount,
-      ontcount, ongcount, activeaddress,
-      newaddress)
-    values
-    <foreach collection="list" item="item" index="index" separator=",">
-    (#{item.time,jdbcType=INTEGER}, #{item.contracthash,jdbcType=VARCHAR}, #{item.txncount,jdbcType=INTEGER},
-      #{item.ontcount,jdbcType=DECIMAL}, #{item.ongcount,jdbcType=DECIMAL}, #{item.activeaddress,jdbcType=INTEGER},
-      #{item.newaddress,jdbcType=INTEGER})
-    </foreach>
-  </insert>
-
-  <insert id="insertSelective" parameterType="com.github.ontio.model.ContractSummary" >
+  <insert id="insertSelective" parameterType="com.github.ontio.model.ContractSummary">
     insert into tbl_ont_contract_summary
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         id,
       </if>
-      <if test="time != null" >
+      <if test="time != null">
         time,
       </if>
-      <if test="contracthash != null" >
+      <if test="contracthash != null">
         contracthash,
       </if>
-      <if test="txncount != null" >
+      <if test="txncount != null">
         txncount,
       </if>
-      <if test="ontcount != null" >
+      <if test="ontcount != null">
         ontcount,
       </if>
-      <if test="ongcount != null" >
+      <if test="ongcount != null">
         ongcount,
       </if>
-      <if test="activeaddress != null" >
+      <if test="activeaddress != null">
         activeaddress,
       </if>
-      <if test="newaddress != null" >
+      <if test="newaddress != null">
         newaddress,
       </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="ongreward != null">
+        ongreward,
+      </if>
+      <if test="ontreward != null">
+        ontreward,
+      </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="time != null" >
+      <if test="time != null">
         #{time,jdbcType=INTEGER},
       </if>
-      <if test="contracthash != null" >
+      <if test="contracthash != null">
         #{contracthash,jdbcType=VARCHAR},
       </if>
-      <if test="txncount != null" >
+      <if test="txncount != null">
         #{txncount,jdbcType=INTEGER},
       </if>
-      <if test="ontcount != null" >
+      <if test="ontcount != null">
         #{ontcount,jdbcType=DECIMAL},
       </if>
-      <if test="ongcount != null" >
+      <if test="ongcount != null">
         #{ongcount,jdbcType=DECIMAL},
       </if>
-      <if test="activeaddress != null" >
+      <if test="activeaddress != null">
         #{activeaddress,jdbcType=INTEGER},
       </if>
-      <if test="newaddress != null" >
+      <if test="newaddress != null">
         #{newaddress,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="ongreward != null">
+        #{ongreward,jdbcType=DECIMAL},
+      </if>
+      <if test="ontreward != null">
+        #{ontreward,jdbcType=DECIMAL},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.ContractSummary" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.ContractSummary">
     update tbl_ont_contract_summary
-    <set >
-      <if test="time != null" >
+    <set>
+      <if test="time != null">
         time = #{time,jdbcType=INTEGER},
       </if>
-      <if test="contracthash != null" >
+      <if test="contracthash != null">
         contracthash = #{contracthash,jdbcType=VARCHAR},
       </if>
-      <if test="txncount != null" >
+      <if test="txncount != null">
         txncount = #{txncount,jdbcType=INTEGER},
       </if>
-      <if test="ontcount != null" >
+      <if test="ontcount != null">
         ontcount = #{ontcount,jdbcType=DECIMAL},
       </if>
-      <if test="ongcount != null" >
+      <if test="ongcount != null">
         ongcount = #{ongcount,jdbcType=DECIMAL},
       </if>
-      <if test="activeaddress != null" >
+      <if test="activeaddress != null">
         activeaddress = #{activeaddress,jdbcType=INTEGER},
       </if>
-      <if test="newaddress != null" >
+      <if test="newaddress != null">
         newaddress = #{newaddress,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="ongreward != null">
+        ongreward = #{ongreward,jdbcType=DECIMAL},
+      </if>
+      <if test="ontreward != null">
+        ontreward = #{ontreward,jdbcType=DECIMAL},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.ContractSummary" >
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.ContractSummary">
     update tbl_ont_contract_summary
     set time = #{time,jdbcType=INTEGER},
       contracthash = #{contracthash,jdbcType=VARCHAR},
@@ -142,11 +162,29 @@
       ontcount = #{ontcount,jdbcType=DECIMAL},
       ongcount = #{ongcount,jdbcType=DECIMAL},
       activeaddress = #{activeaddress,jdbcType=INTEGER},
-      newaddress = #{newaddress,jdbcType=INTEGER}
+      newaddress = #{newaddress,jdbcType=INTEGER},
+      score = #{score,jdbcType=INTEGER},
+      ongreward = #{ongreward,jdbcType=DECIMAL},
+      ontreward = #{ontreward,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="selectDailySummaryByContractHash" resultType="java.util.Map" parameterType="java.util.Map" useCache="false">
+
+  <insert id="banchInsertSelective" parameterType="java.util.List">
+    insert into tbl_ont_contract_summary (time, contracthash, txncount,
+      ontcount, ongcount, activeaddress,
+      newaddress, score, ongreward, ontreward)
+    values
+    <foreach collection="list" index="index" item="item" separator=",">
+    (#{item.time,jdbcType=INTEGER}, #{item.contracthash,jdbcType=VARCHAR}, #{item.txncount,jdbcType=INTEGER},
+      #{item.ontcount,jdbcType=DECIMAL}, #{item.ongcount,jdbcType=DECIMAL}, #{item.activeaddress,jdbcType=INTEGER},
+      #{item.newaddress,jdbcType=INTEGER},#{item.score,jdbcType=INTEGER}, #{item.ongreward,jdbcType=DECIMAL}, #{item.ontreward,jdbcType=DECIMAL})
+    </foreach>
+  </insert>
+
+
+
+  <select id="selectDailySummaryByContractHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     select TxnCount, OntCount, OngCount, ActiveAddress, NewAddress, Time
     from tbl_ont_contract_summary
     where contracthash = #{contractHash} and time >= #{startTime}
@@ -160,4 +198,97 @@
     where contracthash = #{contractHash}
 	GROUP BY contracthash
   </select>
+
+  <select id="selectDappstoreContractYesterdayInfo" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    SELECT
+    contracthash AS ContractHash,
+    txncount AS DayTxCount,
+    ontcount AS DayOnt,
+    ongcount AS DayOng,
+    activeaddress AS DayActiveAddressCount,
+    ongreward AS DayRewardOng
+    FROM
+    tbl_ont_contract_summary
+    WHERE 1= 1
+    <if test="contractHashList.size() != 0">
+      and contracthash in
+      <foreach close=")" collection="contractHashList" index="index" item="item" open="(" separator=",">
+        #{item}
+      </foreach>
+    </if>
+    and time = #{time}
+    order by ongreward desc, activeaddress desc, contracthash
+    limit #{start}, #{pageSize}
+  </select>
+
+
+  <select id="selectDappstoreContractOneWeekInfo" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    SELECT
+    contracthash AS ContractHash,
+    SUM(txncount) AS WeekTxCount,
+    SUM(ontcount) AS WeekOnt,
+    SUM(ongcount) AS WeekOng,
+    SUM(activeaddress) AS WeekActiveAddressCount,
+    SUM(ontreward) AS WeekRewardOnt
+    FROM
+    tbl_ont_contract_summary
+    WHERE 1=1
+    <if test="contractHashList.size() != 0">
+      and contracthash in
+      <foreach close=")" collection="contractHashList" index="index" item="item" open="(" separator=",">
+        #{item}
+      </foreach>
+    </if>
+    and time >= #{beginTime}
+    and <![CDATA[ time <= #{endTime} ]]>
+    GROUP BY contracthash
+  </select>
+
+
+  <select id="selectAllDappstoreContractYesterdayInfo" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    SELECT
+    SUM(txncount) AS DayTxCount,
+    SUM(ontcount) AS DayOnt,
+    SUM(ongcount) AS DayOng,
+    SUM(activeaddress) AS DayActiveAddressCount
+    FROM
+    tbl_ont_contract_summary
+    WHERE 1= 1
+    <if test="contractHashList.size() != 0">
+      and contracthash in
+      <foreach close=")" collection="contractHashList" index="index" item="item" open="(" separator=",">
+        #{item}
+      </foreach>
+    </if>
+    and time = #{time}
+  </select>
+
+
+  <select id="selectDappstoreContractScore" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+    SELECT
+    sum(score) as score
+    FROM
+    tbl_ont_contract_summary
+    WHERE 1= 1
+    and contracthash = #{contractHash}
+    and time >= #{beginTime}
+    and <![CDATA[ time <= #{endTime} ]]>
+  </select>
+
+
+  <select id="selectDappstoreContractSumInfo" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    SELECT
+    sum(txncount) as txnCount, sum(activeaddress) as activeAddress
+    FROM
+    tbl_ont_contract_summary
+    WHERE contracthash in
+    <foreach close=")" collection="contractHashList" index="index" item="item" open="(" separator=",">
+      #{item}
+    </foreach>
+    and time >= #{beginTime}
+    and <![CDATA[ time <= #{endTime} ]]>
+  </select>
+
+
+
 </mapper>

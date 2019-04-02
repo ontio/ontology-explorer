@@ -2,6 +2,7 @@ package com.github.ontio.dao;
 
 import com.github.ontio.model.TransactionDetail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -21,11 +22,9 @@ public interface TransactionDetailDailyMapper {
 
     BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
 
-    Integer selectTxnAmount(Map<String, Object> paramMap);
+    BigDecimal selectContractAssetAmount(@Param("contractHash") String contractHash, @Param("assetName") String assetName);
 
-    List<String> selectAllAddressByContract(String contractHash);
-
-    List<String> selectAllAddressByAddress(String toAddress);
+    Integer selectTxnCount(@Param("contractHash") String contractHash);
 
     int selectiveByEndTime(Map paramMap);
 
@@ -33,12 +32,9 @@ public interface TransactionDetailDailyMapper {
 
 
 
-
-
     BigDecimal selectContractAssetSumNew(Map<String, Object> paramMap);
 
-    List<String> selectToAddressCountByContractNew(String contractHash);
+    List<String> selectContractAddrCount(@Param("contractHash") String contractHash);
 
-    List<String> selectFromAddressCountByContractNew(String contractHash);
 
 }

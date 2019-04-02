@@ -70,4 +70,12 @@ public class ConfigParam {
     @Value("${genesisblock.time}")
     public int GENESISBLOCK_TIME;
 
+
+    @Value("${ongreward.daily}")
+    public BigDecimal ONGREWARD_DAILY;
+
+    @Value("${ontreward.week}")
+    public BigDecimal ONTREWARD_WEEK;
+
+
 }

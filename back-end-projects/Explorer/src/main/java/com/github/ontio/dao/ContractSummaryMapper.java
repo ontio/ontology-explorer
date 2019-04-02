@@ -27,4 +27,16 @@ public interface ContractSummaryMapper {
     List<Map> selectDailySummaryByContractHash(Map<String, Object> paramMap);
 
     ContractSummary selectContractSummary(String contractHash);
+
+    List<Map> selectDappstoreContractYesterdayInfo(Map<String, Object> paramMap);
+
+    List<Map> selectDappstoreContractOneWeekInfo(Map<String, Object> paramMap);
+
+    Map selectAllDappstoreContractYesterdayInfo(Map<String,Object> paramMap);
+
+    Integer selectDappstoreContractScore(Map<String,Object> paramMap);
+
+    Map<String,Object> selectDappstoreContractSumInfo(Map<String,Object> paramMap);
+
+
 }

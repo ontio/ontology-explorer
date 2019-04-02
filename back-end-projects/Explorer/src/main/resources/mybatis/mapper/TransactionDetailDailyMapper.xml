@@ -17,170 +17,192 @@
     <result column="confirmflag" property="confirmflag" jdbcType="INTEGER" />
     <result column="eventtype" property="eventtype" jdbcType="INTEGER" />
     <result column="contracthash" property="contracthash" jdbcType="VARCHAR" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="calledcontracthash" jdbcType="VARCHAR" property="calledcontracthash" />
   </resultMap>
   <sql id="Base_Column_List" >
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
-    toaddress, description, blockindex, confirmflag, eventtype, contracthash
+    toaddress, description, blockindex, confirmflag, eventtype, contracthash, payer,
+    calledcontracthash
   </sql>
 
-  <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail" >
-    insert into tbl_ont_txn_detail_daily (txnhash, txnindex, txntype, 
-      txntime, height, amount, 
-      fee, assetname, fromaddress, 
-      toaddress, description, blockindex, 
-      confirmflag, eventtype, contracthash
-      )
-    values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
-      #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
-      #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
-      #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
-      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}
-      )
+
+  <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
+    insert into tbl_ont_txn_detail_daily (txnhash, txnindex, txntype,
+    txntime, height, amount,
+    fee, assetname, fromaddress,
+    toaddress, description, blockindex,
+    confirmflag, eventtype, contracthash,
+    payer, calledcontracthash)
+    values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER},
+    #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL},
+    #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR},
+    #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER},
+    #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR},
+    #{payer,jdbcType=VARCHAR}, #{calledcontracthash,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.github.ontio.model.TransactionDetail" >
+  <insert id="insertSelective" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail_daily
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="txnhash != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="txnhash != null">
         txnhash,
       </if>
-      <if test="txnindex != null" >
+      <if test="txnindex != null">
         txnindex,
       </if>
-      <if test="txntype != null" >
+      <if test="txntype != null">
         txntype,
       </if>
-      <if test="txntime != null" >
+      <if test="txntime != null">
         txntime,
       </if>
-      <if test="height != null" >
+      <if test="height != null">
         height,
       </if>
-      <if test="amount != null" >
+      <if test="amount != null">
         amount,
       </if>
-      <if test="fee != null" >
+      <if test="fee != null">
         fee,
       </if>
-      <if test="assetname != null" >
+      <if test="assetname != null">
         assetname,
       </if>
-      <if test="fromaddress != null" >
+      <if test="fromaddress != null">
         fromaddress,
       </if>
-      <if test="toaddress != null" >
+      <if test="toaddress != null">
         toaddress,
       </if>
-      <if test="description != null" >
+      <if test="description != null">
         description,
       </if>
-      <if test="blockindex != null" >
+      <if test="blockindex != null">
         blockindex,
       </if>
-      <if test="confirmflag != null" >
+      <if test="confirmflag != null">
         confirmflag,
       </if>
-      <if test="eventtype != null" >
+      <if test="eventtype != null">
         eventtype,
       </if>
-      <if test="contracthash != null" >
+      <if test="contracthash != null">
         contracthash,
       </if>
+      <if test="payer != null">
+        payer,
+      </if>
+      <if test="calledcontracthash != null">
+        calledcontracthash,
+      </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="txnhash != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="txnhash != null">
         #{txnhash,jdbcType=VARCHAR},
       </if>
-      <if test="txnindex != null" >
+      <if test="txnindex != null">
         #{txnindex,jdbcType=INTEGER},
       </if>
-      <if test="txntype != null" >
+      <if test="txntype != null">
         #{txntype,jdbcType=INTEGER},
       </if>
-      <if test="txntime != null" >
+      <if test="txntime != null">
         #{txntime,jdbcType=INTEGER},
       </if>
-      <if test="height != null" >
+      <if test="height != null">
         #{height,jdbcType=INTEGER},
       </if>
-      <if test="amount != null" >
+      <if test="amount != null">
         #{amount,jdbcType=DECIMAL},
       </if>
-      <if test="fee != null" >
+      <if test="fee != null">
         #{fee,jdbcType=DECIMAL},
       </if>
-      <if test="assetname != null" >
+      <if test="assetname != null">
         #{assetname,jdbcType=VARCHAR},
       </if>
-      <if test="fromaddress != null" >
+      <if test="fromaddress != null">
         #{fromaddress,jdbcType=VARCHAR},
       </if>
-      <if test="toaddress != null" >
+      <if test="toaddress != null">
         #{toaddress,jdbcType=VARCHAR},
       </if>
-      <if test="description != null" >
+      <if test="description != null">
         #{description,jdbcType=VARCHAR},
       </if>
-      <if test="blockindex != null" >
+      <if test="blockindex != null">
         #{blockindex,jdbcType=INTEGER},
       </if>
-      <if test="confirmflag != null" >
+      <if test="confirmflag != null">
         #{confirmflag,jdbcType=INTEGER},
       </if>
-      <if test="eventtype != null" >
+      <if test="eventtype != null">
         #{eventtype,jdbcType=INTEGER},
       </if>
-      <if test="contracthash != null" >
+      <if test="contracthash != null">
         #{contracthash,jdbcType=VARCHAR},
+      </if>
+      <if test="payer != null">
+        #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="calledcontracthash != null">
+        #{calledcontracthash,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.TransactionDetail" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.TransactionDetail">
     update tbl_ont_txn_detail_daily
-    <set >
-      <if test="txntype != null" >
+    <set>
+      <if test="txntype != null">
         txntype = #{txntype,jdbcType=INTEGER},
       </if>
-      <if test="txntime != null" >
+      <if test="txntime != null">
         txntime = #{txntime,jdbcType=INTEGER},
       </if>
-      <if test="height != null" >
+      <if test="height != null">
         height = #{height,jdbcType=INTEGER},
       </if>
-      <if test="amount != null" >
+      <if test="amount != null">
         amount = #{amount,jdbcType=DECIMAL},
       </if>
-      <if test="fee != null" >
+      <if test="fee != null">
         fee = #{fee,jdbcType=DECIMAL},
       </if>
-      <if test="assetname != null" >
+      <if test="assetname != null">
         assetname = #{assetname,jdbcType=VARCHAR},
       </if>
-      <if test="fromaddress != null" >
+      <if test="fromaddress != null">
         fromaddress = #{fromaddress,jdbcType=VARCHAR},
       </if>
-      <if test="toaddress != null" >
+      <if test="toaddress != null">
         toaddress = #{toaddress,jdbcType=VARCHAR},
       </if>
-      <if test="description != null" >
+      <if test="description != null">
         description = #{description,jdbcType=VARCHAR},
       </if>
-      <if test="blockindex != null" >
+      <if test="blockindex != null">
         blockindex = #{blockindex,jdbcType=INTEGER},
       </if>
-      <if test="confirmflag != null" >
+      <if test="confirmflag != null">
         confirmflag = #{confirmflag,jdbcType=INTEGER},
       </if>
-      <if test="eventtype != null" >
+      <if test="eventtype != null">
         eventtype = #{eventtype,jdbcType=INTEGER},
       </if>
-      <if test="contracthash != null" >
+      <if test="contracthash != null">
         contracthash = #{contracthash,jdbcType=VARCHAR},
+      </if>
+      <if test="payer != null">
+        payer = #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="calledcontracthash != null">
+        calledcontracthash = #{calledcontracthash,jdbcType=VARCHAR},
       </if>
     </set>
     where txnhash = #{txnhash,jdbcType=VARCHAR}
-      and txnindex = #{txnindex,jdbcType=INTEGER}
+    and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail" >
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail">
     update tbl_ont_txn_detail_daily
     set txntype = #{txntype,jdbcType=INTEGER},
       txntime = #{txntime,jdbcType=INTEGER},
@@ -194,7 +216,9 @@
       blockindex = #{blockindex,jdbcType=INTEGER},
       confirmflag = #{confirmflag,jdbcType=INTEGER},
       eventtype = #{eventtype,jdbcType=INTEGER},
-      contracthash = #{contracthash,jdbcType=VARCHAR}
+      contracthash = #{contracthash,jdbcType=VARCHAR},
+      payer = #{payer,jdbcType=VARCHAR},
+      calledcontracthash = #{calledcontracthash,jdbcType=VARCHAR}
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
@@ -207,35 +231,13 @@
         and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
   </select>
 
-  <select id="selectTxnAmount" parameterType="java.util.Map" resultType="java.lang.Integer" useCache="false">
+  <select id="selectTxnCount" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail_daily
-    where confirmflag = 1 and contracthash = #{contractHash}
+    where confirmflag = 1
+    and calledcontracthash = #{contractHash}
   </select>
 
-  <select id="selectAllAddressByContract" resultType="String" parameterType="java.lang.String" useCache="false">
-    SELECT DISTINCT(address) FROM (
-        select DISTINCT (fromaddress) as address
-        from tbl_ont_txn_detail_daily
-        where contracthash = #{param1}
-    UNION
-        select DISTINCT(toaddress) as address
-        from tbl_ont_txn_detail_daily
-        where contracthash = #{param1}
-    ) a ORDER BY address
-  </select>
-
-  <select id="selectAllAddressByAddress" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
-    SELECT DISTINCT(address) FROM (
-        select DISTINCT (fromaddress) as address
-        from tbl_ont_txn_detail_daily
-        where toaddress = #{param1}
-    UNION
-        select DISTINCT(toaddress) as address
-        from tbl_ont_txn_detail_daily
-        where fromaddress = #{param1}
-    ) a ORDER BY address
-  </select>
 
   <select id="selectiveByEndTime"  resultType="java.lang.Integer" parameterType="java.util.Map" useCache="false">
     SELECT count(1) from tbl_ont_txn_detail_daily
@@ -247,39 +249,6 @@
   </delete>
 
 
-
-
-  <select id="selectToAddressCountByContractNew" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
-    SELECT
-    DISTINCT(toaddress)
-    FROM
-    tbl_ont_txn_detail_daily
-    WHERE
-    txnhash IN (
-    SELECT DISTINCT
-    (txnhash)
-    FROM
-    tbl_ont_txn_detail_daily
-    WHERE
-    contracthash = #{contractHash}
-    )
-  </select>
-
-  <select id="selectFromAddressCountByContractNew" resultType="java.lang.String" parameterType="java.lang.String" useCache="false">
-    SELECT
-    DISTINCT(fromaddress)
-    FROM
-    tbl_ont_txn_detail_daily
-    WHERE
-    txnhash IN (
-    SELECT DISTINCT
-    (txnhash)
-    FROM
-    tbl_ont_txn_detail_daily
-    WHERE
-    contracthash = #{contractHash}
-    )
-  </select>
 
   <select id="selectContractAssetSumNew" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
     SELECT sum(amount)
@@ -293,6 +262,20 @@
     contracthash = #{contractHash}
     )
     and assetname = #{assetname}
+  </select>
+
+  <select id="selectContractAddrCount" parameterType="java.lang.String" resultType="java.lang.String" useCache="false">
+    select distinct(payer)
+    from tbl_ont_txn_detail_daily
+    where calledcontracthash = #{contractHash}
+  </select>
+
+  <select id="selectContractAssetAmount" resultType="java.math.BigDecimal" useCache="false">
+    SELECT
+    sum(amount)
+    FROM tbl_ont_txn_detail_daily
+    WHERE calledcontracthash = #{contractHash}
+    AND assetname = #{assetName}
   </select>
 
 </mapper>
