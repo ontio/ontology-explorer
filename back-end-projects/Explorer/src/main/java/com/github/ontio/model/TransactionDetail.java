@@ -33,6 +33,10 @@ public class TransactionDetail{
 
     private Integer txnindex;
 
+    private String payer;
+
+    private String calledcontracthash;
+
     public String getTxnhash() {
         return txnhash;
     }
@@ -150,6 +154,22 @@ public class TransactionDetail{
     }
 
     public void setContracthash(String contracthash) {
-        this.contracthash = contracthash;
+        this.contracthash = contracthash == null ? null : contracthash.trim();
+    }
+
+    public String getPayer() {
+        return payer;
+    }
+
+    public void setPayer(String payer) {
+        this.payer = payer == null ? null : payer.trim();
+    }
+
+    public String getCalledcontracthash() {
+        return calledcontracthash;
+    }
+
+    public void setCalledcontracthash(String calledcontracthash) {
+        this.calledcontracthash = calledcontracthash == null ? null : calledcontracthash.trim();
     }
 }

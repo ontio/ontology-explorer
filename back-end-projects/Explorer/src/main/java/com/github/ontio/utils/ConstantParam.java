@@ -83,6 +83,10 @@ public class ConstantParam {
 
     public static final BigDecimal ONT_TOTAL = new BigDecimal("1000000000");
 
+    public static final BigDecimal ONG_TOTAL = new BigDecimal("1000000000");
+
+
+
 
     public static final String GO_TOTALSUPPLY_URL = "/getAssetHolder";
 
@@ -96,4 +100,13 @@ public class ConstantParam {
             "AcdUMgeF16ScW9ts3kiD3pZkjYRMdYwtVQ",
             //生态合作地址
             "AMX6ZebrPDFELCYRMpSMbZWrhWkKbKg4y8");
+
+    public static final int DAPPSTOREFLAG_YES = 1;
+
+    public static final int DAPPSTOREFLAG_NO = 0;
+
+
+    public static final String []WEEK_ARR = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+
+
 }

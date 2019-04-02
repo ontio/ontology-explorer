@@ -19,6 +19,12 @@ public class ContractSummary {
 
     private Integer newaddress;
 
+    private Integer score;
+
+    private BigDecimal ongreward;
+
+    private BigDecimal ontreward;
+
     public Long getId() {
         return id;
     }
@@ -81,5 +87,29 @@ public class ContractSummary {
 
     public void setNewaddress(Integer newaddress) {
         this.newaddress = newaddress;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public BigDecimal getOngreward() {
+        return ongreward;
+    }
+
+    public void setOngreward(BigDecimal ongreward) {
+        this.ongreward = ongreward;
+    }
+
+    public BigDecimal getOntreward() {
+        return ontreward;
+    }
+
+    public void setOntreward(BigDecimal ontreward) {
+        this.ontreward = ontreward;
     }
 }

@@ -24,23 +24,40 @@
     <result column="blockindex" jdbcType="INTEGER" property="blockindex" />
     <result column="confirmflag" jdbcType="INTEGER" property="confirmflag" />
     <result column="eventtype" jdbcType="INTEGER" property="eventtype" />
+    <result column="contracthash" jdbcType="VARCHAR" property="contracthash" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="calledcontracthash" jdbcType="VARCHAR" property="calledcontracthash" />
   </resultMap>
   <sql id="Base_Column_List">
     txnhash, txnindex, txntype, txntime, height, amount, fee, assetname, fromaddress, 
-    toaddress, description, blockindex, confirmflag, eventtype
+    toaddress, description, blockindex, confirmflag, eventtype, contracthash, payer, 
+    calledcontracthash
   </sql>
-
+  <select id="selectByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_ont_txn_detail
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+      and txnindex = #{txnindex,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.github.ontio.model.TransactionDetail">
+    delete from tbl_ont_txn_detail
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+      and txnindex = #{txnindex,jdbcType=INTEGER}
+  </delete>
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
       txntime, height, amount, 
       fee, assetname, fromaddress, 
       toaddress, description, blockindex, 
-      confirmflag, eventtype)
+      confirmflag, eventtype, contracthash, 
+      payer, calledcontracthash)
     values (#{txnhash,jdbcType=VARCHAR}, #{txnindex,jdbcType=INTEGER}, #{txntype,jdbcType=INTEGER}, 
       #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, 
       #{fee,jdbcType=DECIMAL}, #{assetname,jdbcType=VARCHAR}, #{fromaddress,jdbcType=VARCHAR}, 
       #{toaddress,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{blockindex,jdbcType=INTEGER}, 
-      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER})
+      #{confirmflag,jdbcType=INTEGER}, #{eventtype,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}, 
+      #{payer,jdbcType=VARCHAR}, #{calledcontracthash,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.TransactionDetail">
     insert into tbl_ont_txn_detail
@@ -87,6 +104,15 @@
       <if test="eventtype != null">
         eventtype,
       </if>
+      <if test="contracthash != null">
+        contracthash,
+      </if>
+      <if test="payer != null">
+        payer,
+      </if>
+      <if test="calledcontracthash != null">
+        calledcontracthash,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="txnhash != null">
@@ -131,6 +157,15 @@
       <if test="eventtype != null">
         #{eventtype,jdbcType=INTEGER},
       </if>
+      <if test="contracthash != null">
+        #{contracthash,jdbcType=VARCHAR},
+      </if>
+      <if test="payer != null">
+        #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="calledcontracthash != null">
+        #{calledcontracthash,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.TransactionDetail">
@@ -172,6 +207,15 @@
       <if test="eventtype != null">
         eventtype = #{eventtype,jdbcType=INTEGER},
       </if>
+      <if test="contracthash != null">
+        contracthash = #{contracthash,jdbcType=VARCHAR},
+      </if>
+      <if test="payer != null">
+        payer = #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="calledcontracthash != null">
+        calledcontracthash = #{calledcontracthash,jdbcType=VARCHAR},
+      </if>
     </set>
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
@@ -189,7 +233,10 @@
       description = #{description,jdbcType=VARCHAR},
       blockindex = #{blockindex,jdbcType=INTEGER},
       confirmflag = #{confirmflag,jdbcType=INTEGER},
-      eventtype = #{eventtype,jdbcType=INTEGER}
+      eventtype = #{eventtype,jdbcType=INTEGER},
+      contracthash = #{contracthash,jdbcType=VARCHAR},
+      payer = #{payer,jdbcType=VARCHAR},
+      calledcontracthash = #{calledcontracthash,jdbcType=VARCHAR}
     where txnhash = #{txnhash,jdbcType=VARCHAR}
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </update>
@@ -411,7 +458,7 @@
     limit 1
   </select>
 
-  <select id="selectAllAddress" resultType="java.util.Map" >
+  <select id="selectAllAddress" resultType="java.util.Map">
     SELECT
 	fromaddress, toaddress
     FROM
@@ -471,56 +518,56 @@
     ORDER by txnTime DESC
   </select>
 
-  <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer" >
+  <select id="selectContractAddrAmount" parameterType="java.lang.String" resultType="java.lang.Integer">
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
     where contracthash = #{param1} and confirmflag = 1
   </select>
 
-  <select id="selectAllFromAddress" resultType="java.lang.String" >
+  <select id="selectAllFromAddress" resultType="java.lang.String">
     select DISTINCT (fromaddress)
     from tbl_ont_txn_detail
   </select>
 
-  <select id="selectAllToAddress" resultType="java.lang.String" >
+  <select id="selectAllToAddress" resultType="java.lang.String">
     select DISTINCT (toaddress)
     from tbl_ont_txn_detail
   </select>
 
 
 
-  <select id="selectAllFromAddressCountByAddr" resultType="java.lang.Integer" >
+  <select id="selectAllFromAddressCountByAddr" resultType="java.lang.Integer">
     select count(DISTINCT(fromaddress))
     from tbl_ont_txn_detail
     where toaddress = #{param1}
   </select>
 
-  <select id="selectAllToAddressCountByAddr" resultType="java.lang.Integer" >
+  <select id="selectAllToAddressCountByAddr" resultType="java.lang.Integer">
     select count(DISTINCT(toaddress))
     from tbl_ont_txn_detail
     where fromaddress = #{param1}
   </select>
 
-  <select id="selectAllFromAddressCountByContract" resultType="java.lang.Integer" >
+  <select id="selectAllFromAddressCountByContract" resultType="java.lang.Integer">
     select count(DISTINCT (fromaddress))
     from tbl_ont_txn_detail
     where contracthash = #{param1}
   </select>
 
-  <select id="selectAllToAddressCountByContract" resultType="java.lang.Integer" >
+  <select id="selectAllToAddressCountByContract" resultType="java.lang.Integer">
     select count(DISTINCT(toaddress))
     from tbl_ont_txn_detail
     where contracthash = #{param1}
   </select>
 
-  <select id="selectAllAddressCount" resultType="java.lang.Integer" >
+  <select id="selectAllAddressCount" resultType="java.lang.Integer">
     SELECT
     count(DISTINCT(toaddress))
     FROM
     tbl_ont_txn_detail
   </select>
 
-  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map" >
+  <select id="selectTxnByAddress" parameterType="java.util.Map" resultType="java.util.Map">
     select t2.* from (
     select TxnHash, TxnTime, ConfirmFlag, Fee, AssetName, Amount, ToAddress, FromAddress
     from tbl_ont_txn_detail
@@ -535,21 +582,21 @@
     order by t2.TxnTime desc
   </select>
 
-  <select id="selectTransactionDetail" resultType="com.github.ontio.model.TransactionDetail" >
+  <select id="selectTransactionDetail" resultType="com.github.ontio.model.TransactionDetail">
     select *
     from tbl_ont_txn_detail
-    where txntime >= #{startTime}
+    where txntime &gt;= #{startTime}
     and <![CDATA[ txntime < #{endTime} ]]>
   </select>
 
-  <select id="queryTransactionCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+  <select id="queryTransactionCount" parameterType="java.util.Map" resultType="java.lang.Integer">
     select count(DISTINCT(txnhash))
     from tbl_ont_txn_detail
-    where txntime >= #{startTime}
+    where txntime &gt;= #{startTime}
     and <![CDATA[ txntime < #{endTime} ]]>
   </select>
 
-    <select id="selectContractAssetAllSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
+    <select id="selectContractAssetAllSum" parameterType="java.util.Map" resultType="java.math.BigDecimal" useCache="false">
         SELECT SUM(amount)
         from tbl_ont_txn_detail
         where confirmflag = 1 and assetname = #{assetname}
@@ -562,7 +609,7 @@
     where confirmflag = 1 and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
   </select>
 
-  <select id="selectContractTokenAllSum" resultType="java.util.Map" parameterType="java.util.Map" useCache="false">
+  <select id="selectContractTokenAllSum" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
         SELECT SUM(amount) as Amount, Assetname
         from tbl_ont_txn_detail
         where confirmflag = 1 and contracthash = #{contractHash} and description = 'transfer'
