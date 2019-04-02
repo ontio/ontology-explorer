@@ -68,9 +68,9 @@
                 <table tableName="tbl_ont_ontid_detail" domainObjectName="OntId" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
         -->
 
-<!--        <table tableName="tbl_ont_txn_detail" domainObjectName="TransactionDetail" enableCountByExample="false"
+        <table tableName="tbl_ont_txn_detail" domainObjectName="TransactionDetail" enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false"></table>-->
+               selectByExampleQueryId="false"></table>
 
 <!--        <table tableName="tbl_ont_txn_detail_daily" domainObjectName="TransactionDetail" enableCountByExample="false"
                enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
@@ -85,9 +85,9 @@
                        enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false"></table>-->
 
-                <table tableName="tbl_ont_contracts" domainObjectName="Contracts" enableCountByExample="false"
+<!--                <table tableName="tbl_ont_contracts" domainObjectName="Contracts" enableCountByExample="false"
                        enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
-                       selectByExampleQueryId="false"></table>
+                       selectByExampleQueryId="false"></table>-->
 
     </context>
 </generatorConfiguration>
