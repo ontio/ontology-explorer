@@ -204,21 +204,22 @@ public class TxnHandlerThread {
      * @return
      */
     private String parseCalledContractHash(JSONObject txnJson) {
+
+        String code = txnJson.getJSONObject("Payload").getString("Code");
         String calledContractHash = "";
-        try {
-            String code = txnJson.getJSONObject("Payload").getString("Code");
-            int index = code.lastIndexOf("67");
-            if (index > 0) {
-                String str = code.substring(index + 2);
-                if (str.length() >= 40) {
-                    calledContractHash = str.substring(0, 40);
-                }
+
+        while (code.contains("67")) {
+            int index = code.indexOf("67");
+            code = code.substring(index + 2);
+            if (code.length() < 40) {
+                break;
+            } else if (code.length() == 40) {
+                calledContractHash = Helper.reverse(code);
+                break;
             }
-            return Helper.reverse(calledContractHash);
-        } catch (Exception e) {
-            logger.error("error...", e);
         }
         return calledContractHash;
+
     }
 
 
