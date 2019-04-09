@@ -70,12 +70,12 @@ let routes = [
     component: AddressDetailPage
   },
   {
-    path: '/addresses/:pageSize/:pageNumber',
+    path: '/addresses/:token/:pageSize/:pageNumber',
     name: 'addressList',
     component: AddressList
   },
   {
-    path: '/addresses/:pageSize/:pageNumber/:net',
+    path: '/addresses/:token/:pageSize/:pageNumber/:net',
     name: 'addressListTest',
     component: AddressList
   },

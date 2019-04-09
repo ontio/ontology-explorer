@@ -106,7 +106,7 @@ module.exports = {
     rank: 'Rank',
     name: 'Address',
     nickname: 'ADDRESSES - Position Ranking',
-    balance: 'ONT Balance',
+    balance: ' Balance',
     percent: 'Percent'
   },
   addressDetail: {
