@@ -106,7 +106,7 @@ module.exports = {
     rank: '排名',
     name: '地址',
     nickname: '持仓排名',
-    balance: 'ONT',
+    balance: '余额',
     percent: '占比'
   },
   addressDetail: {
