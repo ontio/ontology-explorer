@@ -21,21 +21,20 @@
           <div class="footer-content-div"><a class="footer-content-text" href="https://github.com/ontio">{{ $t('footer.Github') }}</a></div>
         </div>
 
-        <div class="footer-content">
+<!--         <div class="footer-content">
           <div class="mobile-foot-line"></div>
           <div class="footer-content-title">{{ $t('footer.Cooperation') }}</div>
           <div class="footer-content-div"><a class="footer-content-text" href="https://info.ont.io/cooperation/en">{{ $t('footer.CooperateWithOntology') }}</a></div>
-<!--           <div class="footer-content-div"><a class="footer-content-text" href="https://ont.io/trust-anchor/en ">{{ $t('footer.TrustEcosystem') }}</a></div> -->
           <div class="footer-content-div"><a class="footer-content-text" href="https://info.ont.io/listtriones/en">{{ $t('footer.Nodes') }}</a></div>
-        </div>
+        </div> -->
 
         <div class="footer-content">
           <div class="mobile-foot-line"></div>
           <div class="footer-content-title">{{ $t('footer.About') }}</div>
-          <div class="footer-content-div"><a class="footer-content-text" href="https://info.ont.io/news/en">{{ $t('footer.Press') }}</a></div>
+<!--           <div class="footer-content-div"><a class="footer-content-text" href="https://info.ont.io/news/en">{{ $t('footer.Press') }}</a></div>
           <div class="footer-content-div" @click="toTechNews()" ><a class="footer-content-text" >{{ $t('footer.TechNews') }}</a></div>
-          <div class="footer-content-div"><a class="footer-content-text" href="https://info.ont.io/team/en">{{ $t('footer.Team') }}</a></div>
-          <div class="footer-content-div"><a class="footer-content-text" href="https://ont.io/about">{{ $t('footer.AboutOntology') }}</a></div>
+          <div class="footer-content-div"><a class="footer-content-text" href="https://info.ont.io/team/en">{{ $t('footer.Team') }}</a></div> -->
+          <div class="footer-content-div"><a class="footer-content-text" href="https://ont.io/#/aboutus">{{ $t('footer.AboutOntology') }}</a></div>
           <div class="footer-content-div"><a class="footer-content-text" href="https://ontio.github.io/documentation/wp_download_en.html">{{ $t('footer.WhitePaper') }}</a></div>
 <!--           <div class="footer-content-div"><a class="footer-content-text" href="https://explorer.ont.io">{{ $t('footer.Explorer') }}</a></div> -->
         </div>
@@ -45,7 +44,7 @@
           <div class="footer-content-title">{{ $t('footer.dApps') }}</div>
           <div class="footer-content-div"><a class="footer-content-text" href="https://dapp.ont.io"></a></div>
           <div class="footer-content-div"><a class="footer-content-text" href="https://dapp.ont.io/">{{ $t('footer.dApp') }}</a></div>
-          <div class="footer-content-div"><a class="footer-content-text" href="https://docs.google.com/forms/d/e/1FAIpQLSdszQp1BbviS83psIZUZYMKoNkn0e4zcYxrVqM6v5Qbmzby3g/viewform?vc=0&c=0&w=1">{{ $t('footer.SubmitAdApp') }}</a></div>
+          <div class="footer-content-div"><a class="footer-content-text" href="https://ont.io/#/dapp">{{ $t('footer.SubmitAdApp') }}</a></div>
         </div>
       </div>
 
