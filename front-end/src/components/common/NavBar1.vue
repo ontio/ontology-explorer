@@ -40,8 +40,8 @@
                 <a class="dropdown-item" @click="toBlockListPage"><!-- <i class="fas fa-th"></i>&nbsp;&nbsp; -->{{ $t('navbar.top.blocks') }}</a>
                 <hr style="margin: 4px 1rem">
                 <a class="dropdown-item" @click="toTransactionListPage"><!-- <i class="fas fa-exchange-alt"></i>&nbsp;&nbsp; -->{{ $t('navbar.top.txns') }}</a>
-                <!--<hr style="margin: 4px 1rem">-->
-                <!--<a class="dropdown-item" @click="toAddressList"><i class="fas fa-university"></i>&nbsp;&nbsp;{{ $t('navbar.top.accounts') }}</a>-->
+                <hr style="margin: 4px 1rem">
+                <a class="dropdown-item" @click="toAddressList"><!-- <i class="fas fa-university"></i>&nbsp;&nbsp; -->{{ $t('navbar.top.accounts') }}</a>
               </div>
             </li>
 
@@ -221,9 +221,9 @@
       },
       toAddressList() {
         if (this.$route.params.net === 'testnet') {
-          this.$router.push({name: 'addressListTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
+          this.$router.push({name: 'addressListTest', params: {token: 'ont',pageSize: 20, pageNumber: 1, net: 'testnet'}})
         } else {
-          this.$router.push({name: 'addressList', params: {pageSize: 20, pageNumber: 1}})
+          this.$router.push({name: 'addressList', params: {token: 'ont', pageSize: 20, pageNumber: 1}})
         }
       },
       toTokenList($type) {
