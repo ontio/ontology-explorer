@@ -17,8 +17,9 @@ export default {
   actions: {
     GetAddressList({dispatch, commit}, $param) {
       let apiUrl = ($param.net === "testnet") ? process.env.TEST_EXPLORE_URL : process.env.EXPLORE_URL;
-      let url = apiUrl + 'getAssetHolder?qid=1&contract=0100000000000000000000000000000000000000&'
-        + 'from=' + (($param.pageNumber - 1) * $param.pageSize) + '&count=' + $param.pageSize
+      let token = $param.token === "ont" ? "0100000000000000000000000000000000000000" : "0200000000000000000000000000000000000000";
+      let url = apiUrl + 'getAssetHolder?qid=1&contract=' + token + '&'
+        + 'from=' + (($param.pageNumber - 1) * $param.pageSize) + '&count=' + $param.pageSize;
 
       return axios.get(url).then(response => {
         commit({

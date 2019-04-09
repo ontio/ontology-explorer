@@ -22,10 +22,10 @@
           <span>{{ $HelperTools.toFinancialVal(blockStatus.info.NodeCount) }}</span>
         </span>
       </div>
-      <!--<div class="col col-click" @click="toAddressListPage">-->
-      <div class="col col-no-click-fix">
+      <div class="col col-click" @click="toAddressListPage">
+<!--      <div class="col col-no-click-fix">-->
         <span class="run-status-label">{{ $t('runStatus.addressCount') }}</span>
-        <!--<span class="view-go-to">>></span>-->
+        <span class="view-go-to">>></span>
         <span class="d-block run-status-p font-ExtraLight font-size48">
           <span>{{ $HelperTools.toFinancialVal(blockStatus.info.AddressCount) }}</span>
         </span>
@@ -161,9 +161,9 @@
       },
       toAddressListPage() {
         if (this.$route.params.net == undefined) {
-          this.$router.push({name: 'addressList', params: {pageSize: 20, pageNumber: 1}})
+          this.$router.push({name: 'addressList', params: {token: 'ont', pageSize: 20, pageNumber: 1}})
         } else {
-          this.$router.push({name: 'addressListTest', params: {pageSize: 20, pageNumber: 1, net: "testnet"}})
+          this.$router.push({name: 'addressListTest', params: {token: 'ont',pageSize: 20, pageNumber: 1, net: "testnet"}})
         }
       },
       toOntIdListPage() {
