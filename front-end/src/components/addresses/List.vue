@@ -30,7 +30,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(address,index) in addressList.list">
+            <tr v-for="(address,index) in rankList">
               <td class="font-size14 font-Regular normal_color">{{Number(addressList.basicRank) + index}}</td>
               <td class="font-size14 font-Regular important_color pointer"
                   @click="goToAddressDetail(address.address)">
@@ -62,7 +62,23 @@
     computed: {
       ...mapState({
         addressList: state => state.Addresses.List
-      })
+      }),
+      rankList() {
+        if (this.addressList.list) {
+          let lists = this.addressList.list;
+
+          if (this.$route.params.token === 'ong') {
+            for (let i in lists) {
+              let tmpB = lists[i].balance.toString();
+              lists[i].balance = tmpB.substring(0, tmpB.length - 9) + '.' + tmpB.substring(tmpB.length - 9)
+            }
+          }
+
+          return lists;
+        } else {
+          return {}
+        }
+      }
     },
     methods: {
       getAddressListInfo() {
@@ -72,7 +88,10 @@
         if (this.$route.params.net == undefined) {
           this.$router.push({name: 'addressList', params: {token: $token, pageSize: 20, pageNumber: 1}})
         } else {
-          this.$router.push({name: 'addressListTest', params: {token: $token,pageSize: 20, pageNumber: 1, net: "testnet"}})
+          this.$router.push({
+            name: 'addressListTest',
+            params: {token: $token, pageSize: 20, pageNumber: 1, net: "testnet"}
+          })
         }
       },
       goToAddressDetail(address) {
