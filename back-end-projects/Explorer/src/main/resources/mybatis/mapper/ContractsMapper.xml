@@ -9,7 +9,6 @@
 
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Contracts">
     <id column="contract" jdbcType="VARCHAR" property="contract" />
-    <result column="project" jdbcType="VARCHAR" property="project" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="txcount" jdbcType="INTEGER" property="txcount" />
     <result column="abi" jdbcType="VARCHAR" property="abi" />
@@ -25,14 +24,16 @@
     <result column="addresscount" jdbcType="INTEGER" property="addresscount" />
     <result column="ontcount" jdbcType="DECIMAL" property="ontcount" />
     <result column="ongcount" jdbcType="DECIMAL" property="ongcount" />
+    <result column="project" jdbcType="VARCHAR" property="project" />
     <result column="tokencount" jdbcType="VARCHAR" property="tokencount" />
     <result column="dappstoreflag" jdbcType="INTEGER" property="dappstoreflag" />
     <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="totalreward" jdbcType="DECIMAL" property="totalreward" />
   </resultMap>
   <sql id="Base_Column_List">
-    contract, project, name, txcount, abi, code, createtime, auditflag, updatetime, contactinfo, 
-    type, description, logo, creator, addresscount, ontcount, ongcount, tokencount, dappstoreflag, 
-    category
+    contract, name, txcount, abi, code, createtime, auditflag, updatetime, contactinfo, 
+    type, description, logo, creator, addresscount, ontcount, ongcount, project, tokencount, 
+    dappstoreflag, category, totalreward
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
@@ -45,29 +46,28 @@
     where contract = #{contract,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.github.ontio.model.Contracts">
-    insert into tbl_ont_contracts (contract, project, name, 
-      txcount, abi, code, 
-      createtime, auditflag, updatetime, 
-      contactinfo, type, description, 
-      logo, creator, addresscount, 
-      ontcount, ongcount, tokencount, 
-      dappstoreflag, category)
-    values (#{contract,jdbcType=VARCHAR}, #{project,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{txcount,jdbcType=INTEGER}, #{abi,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, 
-      #{createtime,jdbcType=INTEGER}, #{auditflag,jdbcType=INTEGER}, #{updatetime,jdbcType=INTEGER}, 
-      #{contactinfo,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{logo,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, #{addresscount,jdbcType=INTEGER}, 
-      #{ontcount,jdbcType=DECIMAL}, #{ongcount,jdbcType=DECIMAL}, #{tokencount,jdbcType=VARCHAR}, 
-      #{dappstoreflag,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR})
+    insert into tbl_ont_contracts (contract, name, txcount, 
+      abi, code, createtime, 
+      auditflag, updatetime, contactinfo, 
+      type, description, logo, 
+      creator, addresscount, ontcount, 
+      ongcount, project, tokencount, 
+      dappstoreflag, category, totalreward
+      )
+    values (#{contract,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{txcount,jdbcType=INTEGER}, 
+      #{abi,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{createtime,jdbcType=INTEGER}, 
+      #{auditflag,jdbcType=INTEGER}, #{updatetime,jdbcType=INTEGER}, #{contactinfo,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{logo,jdbcType=VARCHAR}, 
+      #{creator,jdbcType=VARCHAR}, #{addresscount,jdbcType=INTEGER}, #{ontcount,jdbcType=DECIMAL}, 
+      #{ongcount,jdbcType=DECIMAL}, #{project,jdbcType=VARCHAR}, #{tokencount,jdbcType=VARCHAR}, 
+      #{dappstoreflag,jdbcType=INTEGER}, #{category,jdbcType=VARCHAR}, #{totalreward,jdbcType=DECIMAL}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.Contracts">
     insert into tbl_ont_contracts
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="contract != null">
         contract,
-      </if>
-      <if test="project != null">
-        project,
       </if>
       <if test="name != null">
         name,
@@ -114,6 +114,9 @@
       <if test="ongcount != null">
         ongcount,
       </if>
+      <if test="project != null">
+        project,
+      </if>
       <if test="tokencount != null">
         tokencount,
       </if>
@@ -123,13 +126,13 @@
       <if test="category != null">
         category,
       </if>
+      <if test="totalreward != null">
+        totalreward,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="contract != null">
         #{contract,jdbcType=VARCHAR},
-      </if>
-      <if test="project != null">
-        #{project,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
@@ -176,6 +179,9 @@
       <if test="ongcount != null">
         #{ongcount,jdbcType=DECIMAL},
       </if>
+      <if test="project != null">
+        #{project,jdbcType=VARCHAR},
+      </if>
       <if test="tokencount != null">
         #{tokencount,jdbcType=VARCHAR},
       </if>
@@ -185,14 +191,14 @@
       <if test="category != null">
         #{category,jdbcType=VARCHAR},
       </if>
+      <if test="totalreward != null">
+        #{totalreward,jdbcType=DECIMAL},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.Contracts">
     update tbl_ont_contracts
     <set>
-      <if test="project != null">
-        project = #{project,jdbcType=VARCHAR},
-      </if>
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
@@ -238,6 +244,9 @@
       <if test="ongcount != null">
         ongcount = #{ongcount,jdbcType=DECIMAL},
       </if>
+      <if test="project != null">
+        project = #{project,jdbcType=VARCHAR},
+      </if>
       <if test="tokencount != null">
         tokencount = #{tokencount,jdbcType=VARCHAR},
       </if>
@@ -247,13 +256,15 @@
       <if test="category != null">
         category = #{category,jdbcType=VARCHAR},
       </if>
+      <if test="totalreward != null">
+        totalreward = #{totalreward,jdbcType=DECIMAL},
+      </if>
     </set>
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.Contracts">
     update tbl_ont_contracts
-    set project = #{project,jdbcType=VARCHAR},
-      name = #{name,jdbcType=VARCHAR},
+    set name = #{name,jdbcType=VARCHAR},
       txcount = #{txcount,jdbcType=INTEGER},
       abi = #{abi,jdbcType=VARCHAR},
       code = #{code,jdbcType=VARCHAR},
@@ -268,13 +279,13 @@
       addresscount = #{addresscount,jdbcType=INTEGER},
       ontcount = #{ontcount,jdbcType=DECIMAL},
       ongcount = #{ongcount,jdbcType=DECIMAL},
+      project = #{project,jdbcType=VARCHAR},
       tokencount = #{tokencount,jdbcType=VARCHAR},
       dappstoreflag = #{dappstoreflag,jdbcType=INTEGER},
-      category = #{category,jdbcType=VARCHAR}
+      category = #{category,jdbcType=VARCHAR},
+      totalreward = #{totalreward,jdbcType=DECIMAL}
     where contract = #{contract,jdbcType=VARCHAR}
   </update>
-
-
 
   <select id="selectContractCount" resultType="Integer" useCache="false">
       select count(*) from tbl_ont_contracts where auditflag = 1
@@ -345,11 +356,21 @@
 
 
   <select id="selectDappstoreContract" resultType="java.util.Map" useCache="false">
-    select contract as ContractHash, Name, Logo, Description, Category,CreateTime
+    select contract as ContractHash, Name, Logo, Description, Category, CreateTime, Project, TotalReward
     from tbl_ont_contracts
     where dappstoreflag = 1
   </select>
 
+
+
+  <select id="selectContractHashByProject" parameterType="java.util.Map" resultType="java.lang.String" useCache="false">
+    select contract as ContractHash
+    from tbl_ont_contracts
+    where project in
+    <foreach close=")" collection="ProjectList" index="index" item="item" open="(" separator=",">
+      #{item}
+    </foreach>
+  </select>
 
 
 

@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 public class Contracts {
     private String contract;
 
-    private String project;
-
     private String name;
 
     private Integer txcount;
@@ -37,11 +35,15 @@ public class Contracts {
 
     private BigDecimal ongcount;
 
+    private String project;
+
     private String tokencount;
 
     private Integer dappstoreflag;
 
     private String category;
+
+    private BigDecimal totalreward;
 
     public String getContract() {
         return contract;
@@ -49,14 +51,6 @@ public class Contracts {
 
     public void setContract(String contract) {
         this.contract = contract == null ? null : contract.trim();
-    }
-
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project == null ? null : project.trim();
     }
 
     public String getName() {
@@ -179,6 +173,14 @@ public class Contracts {
         this.ongcount = ongcount;
     }
 
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project == null ? null : project.trim();
+    }
+
     public String getTokencount() {
         return tokencount;
     }
@@ -201,5 +203,13 @@ public class Contracts {
 
     public void setCategory(String category) {
         this.category = category == null ? null : category.trim();
+    }
+
+    public BigDecimal getTotalreward() {
+        return totalreward;
+    }
+
+    public void setTotalreward(BigDecimal totalreward) {
+        this.totalreward = totalreward;
     }
 }

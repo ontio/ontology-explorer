@@ -25,6 +25,8 @@ public class ContractSummary {
 
     private BigDecimal ontreward;
 
+    private String project;
+
     public Long getId() {
         return id;
     }
@@ -111,5 +113,13 @@ public class ContractSummary {
 
     public void setOntreward(BigDecimal ontreward) {
         this.ontreward = ontreward;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project == null ? null : project.trim();
     }
 }

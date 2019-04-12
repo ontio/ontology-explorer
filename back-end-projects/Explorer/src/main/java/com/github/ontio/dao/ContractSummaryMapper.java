@@ -38,5 +38,4 @@ public interface ContractSummaryMapper {
 
     Map<String,Object> selectDappstoreContractSumInfo(Map<String,Object> paramMap);
 
-
 }

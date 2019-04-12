@@ -36,4 +36,7 @@ public interface ContractsMapper {
 
     List<Map> selectDappstoreContract();
 
+    List<String> selectContractHashByProject(Map<String,Object> paramMap);
+
+
 }
