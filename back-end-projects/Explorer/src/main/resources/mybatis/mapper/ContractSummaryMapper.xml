@@ -20,10 +20,11 @@
     <result column="score" jdbcType="INTEGER" property="score" />
     <result column="ongreward" jdbcType="DECIMAL" property="ongreward" />
     <result column="ontreward" jdbcType="DECIMAL" property="ontreward" />
+    <result column="project" jdbcType="VARCHAR" property="project" />
   </resultMap>
   <sql id="Base_Column_List">
     id, time, contracthash, txncount, ontcount, ongcount, activeaddress, newaddress, 
-    score, ongreward, ontreward
+    score, ongreward, ontreward, project
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -39,11 +40,13 @@
     insert into tbl_ont_contract_summary (id, time, contracthash, 
       txncount, ontcount, ongcount, 
       activeaddress, newaddress, score, 
-      ongreward, ontreward)
+      ongreward, ontreward, project
+      )
     values (#{id,jdbcType=BIGINT}, #{time,jdbcType=INTEGER}, #{contracthash,jdbcType=VARCHAR}, 
       #{txncount,jdbcType=INTEGER}, #{ontcount,jdbcType=DECIMAL}, #{ongcount,jdbcType=DECIMAL}, 
       #{activeaddress,jdbcType=INTEGER}, #{newaddress,jdbcType=INTEGER}, #{score,jdbcType=INTEGER}, 
-      #{ongreward,jdbcType=DECIMAL}, #{ontreward,jdbcType=DECIMAL})
+      #{ongreward,jdbcType=DECIMAL}, #{ontreward,jdbcType=DECIMAL}, #{project,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.github.ontio.model.ContractSummary">
     insert into tbl_ont_contract_summary
@@ -81,6 +84,9 @@
       <if test="ontreward != null">
         ontreward,
       </if>
+      <if test="project != null">
+        project,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -115,6 +121,9 @@
       </if>
       <if test="ontreward != null">
         #{ontreward,jdbcType=DECIMAL},
+      </if>
+      <if test="project != null">
+        #{project,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -151,6 +160,9 @@
       <if test="ontreward != null">
         ontreward = #{ontreward,jdbcType=DECIMAL},
       </if>
+      <if test="project != null">
+        project = #{project,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -165,7 +177,8 @@
       newaddress = #{newaddress,jdbcType=INTEGER},
       score = #{score,jdbcType=INTEGER},
       ongreward = #{ongreward,jdbcType=DECIMAL},
-      ontreward = #{ontreward,jdbcType=DECIMAL}
+      ontreward = #{ontreward,jdbcType=DECIMAL},
+      project = #{project,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
@@ -173,12 +186,12 @@
   <insert id="banchInsertSelective" parameterType="java.util.List">
     insert into tbl_ont_contract_summary (time, contracthash, txncount,
       ontcount, ongcount, activeaddress,
-      newaddress, score, ongreward, ontreward)
+      newaddress, score, ongreward, ontreward, project)
     values
     <foreach collection="list" index="index" item="item" separator=",">
     (#{item.time,jdbcType=INTEGER}, #{item.contracthash,jdbcType=VARCHAR}, #{item.txncount,jdbcType=INTEGER},
       #{item.ontcount,jdbcType=DECIMAL}, #{item.ongcount,jdbcType=DECIMAL}, #{item.activeaddress,jdbcType=INTEGER},
-      #{item.newaddress,jdbcType=INTEGER},#{item.score,jdbcType=INTEGER}, #{item.ongreward,jdbcType=DECIMAL}, #{item.ontreward,jdbcType=DECIMAL})
+      #{item.newaddress,jdbcType=INTEGER},#{item.score,jdbcType=INTEGER}, #{item.ongreward,jdbcType=DECIMAL}, #{item.ontreward,jdbcType=DECIMAL}, #{item.project,jdbcType=VARCHAR})
     </foreach>
   </insert>
 
@@ -201,12 +214,12 @@
 
   <select id="selectDappstoreContractYesterdayInfo" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     SELECT
-    contracthash AS ContractHash,
-    txncount AS DayTxCount,
-    ontcount AS DayOnt,
-    ongcount AS DayOng,
-    activeaddress AS DayActiveAddressCount,
-    ongreward AS DayRewardOng
+    sum(txncount) AS DayTxCount,
+    sum(ontcount) AS DayOnt,
+    sum(ongcount) AS DayOng,
+    sum(activeaddress) AS DayActiveAddressCount,
+    sum(ongreward) AS DayRewardOng,
+    Project
     FROM
     tbl_ont_contract_summary
     WHERE 1= 1
@@ -217,19 +230,18 @@
       </foreach>
     </if>
     and time = #{time}
-    order by ongreward desc, activeaddress desc, contracthash
-    limit #{start}, #{pageSize}
+    GROUP BY project
   </select>
 
 
   <select id="selectDappstoreContractOneWeekInfo" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
     SELECT
-    contracthash AS ContractHash,
+    Project,
     SUM(txncount) AS WeekTxCount,
     SUM(ontcount) AS WeekOnt,
     SUM(ongcount) AS WeekOng,
     SUM(activeaddress) AS WeekActiveAddressCount,
-    SUM(ontreward) AS WeekRewardOnt
+    ontreward AS WeekRewardOnt
     FROM
     tbl_ont_contract_summary
     WHERE 1=1
@@ -241,7 +253,9 @@
     </if>
     and time >= #{beginTime}
     and <![CDATA[ time <= #{endTime} ]]>
-    GROUP BY contracthash
+    GROUP BY project
+    order by WeekActiveAddressCount desc, WeekTxCount desc
+    limit #{start}, #{pageSize}
   </select>
 
 
@@ -288,7 +302,6 @@
     and time >= #{beginTime}
     and <![CDATA[ time <= #{endTime} ]]>
   </select>
-
 
 
 </mapper>
