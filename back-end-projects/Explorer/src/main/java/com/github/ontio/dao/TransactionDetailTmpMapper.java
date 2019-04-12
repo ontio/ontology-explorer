@@ -12,9 +12,8 @@ import java.util.Map;
 @Mapper
 @Component(value = "TransactionDetailTmpMapper")
 public interface TransactionDetailTmpMapper {
-    int insert(TransactionDetail record);
 
-    int banchInsertSelective(List<TransactionDetail> records);
+    int insert(TransactionDetail record);
 
     int InsertSelectiveFromDetailTable(Map paramMap);
 
@@ -28,11 +27,9 @@ public interface TransactionDetailTmpMapper {
 
     int deleteAll();
 
-    BigDecimal selectContractAssetSumNew(Map<String, Object> paramMap);
-
     BigDecimal selectContractAssetAmount(@Param("contractHash") String contractHash, @Param("assetName") String assetName);
 
     Integer selectContractTxnCount(@Param("contractHash") String contractHash);
 
-    List<String> selectContractAddrCount(@Param("contractHash") String contractHash);
+    List<String> selectContractAddr(@Param("contractHash") String contractHash);
 }
