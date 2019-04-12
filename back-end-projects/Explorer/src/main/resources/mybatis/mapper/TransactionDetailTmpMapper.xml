@@ -47,24 +47,6 @@
         #{payer,jdbcType=VARCHAR}, #{calledcontracthash,jdbcType=VARCHAR})
     </insert>
 
-  <insert id="banchInsertSelective" parameterType="java.util.List">
-    insert into tbl_ont_txn_detail_tmp (txnhash, txnindex, txntype,
-      txntime, height, amount,
-      fee, assetname, fromaddress,
-      toaddress, description, blockindex,
-      confirmflag, eventtype, contracthash, payer, calledcontracthash
-      )
-    values
-    <foreach collection="list" item="item" index="index" separator=",">
-      (#{item.txnhash,jdbcType=VARCHAR}, #{item.txnindex,jdbcType=INTEGER}, #{item.txntype,jdbcType=INTEGER},
-      #{item.txntime,jdbcType=INTEGER}, #{item.height,jdbcType=INTEGER}, #{item.amount,jdbcType=DECIMAL},
-      #{item.fee,jdbcType=DECIMAL}, #{item.assetname,jdbcType=VARCHAR}, #{item.fromaddress,jdbcType=VARCHAR},
-      #{item.toaddress,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.blockindex,jdbcType=INTEGER},
-      #{item.confirmflag,jdbcType=INTEGER}, #{item.eventtype,jdbcType=INTEGER}, #{item.contracthash,jdbcType=VARCHAR},
-        #{payer,jdbcType=VARCHAR}, #{calledcontracthash,jdbcType=VARCHAR}
-      )
-    </foreach>
-  </insert>
 
   <insert id="InsertSelectiveFromDetailTable" parameterType="java.util.Map">
     INSERT into tbl_ont_txn_detail_tmp SELECT * from tbl_ont_txn_detail WHERE  txntime >= #{startTime}
@@ -104,19 +86,6 @@
   </delete>
 
 
-    <select id="selectContractAssetSumNew" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
-    SELECT sum(amount)
-    FROM tbl_ont_txn_detail_tmp
-    WHERE txnhash IN (
-        SELECT DISTINCT
-        (txnhash)
-        FROM
-        tbl_ont_txn_detail_tmp
-        WHERE
-        contracthash = #{contractHash}
-    )
-    and assetname = #{assetname}
-    </select>
 
   <select id="selectContractTxnCount" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT(txnhash))
@@ -126,10 +95,22 @@
   </select>
 
 
-    <select id="selectContractAddrCount" parameterType="java.lang.String" resultType="java.lang.String" useCache="false">
-        select distinct(payer)
-        from tbl_ont_txn_detail_tmp
-        where calledcontracthash = #{contractHash}
+    <select id="selectContractAddr" parameterType="java.lang.String" resultType="java.lang.String" useCache="false">
+        select DISTINCT(address) from (
+            SELECT
+            DISTINCT(fromaddress) as address
+            FROM
+            tbl_ont_txn_detail_tmp
+            WHERE calledcontracthash = #{contractHash}
+            and confirmflag = 1
+          UNION
+            SELECT
+            DISTINCT(payer) as address
+            FROM
+            tbl_ont_txn_detail_tmp
+            WHERE calledcontracthash = #{contractHash}
+            and confirmflag = 1
+        ) a
     </select>
 
     <select id="selectContractAssetAmount" resultType="java.math.BigDecimal" useCache="false">
@@ -138,6 +119,7 @@
         FROM tbl_ont_txn_detail_tmp
         WHERE calledcontracthash = #{contractHash}
         AND assetname = #{assetName}
+        AND confirmflag = 1
     </select>
 
 
