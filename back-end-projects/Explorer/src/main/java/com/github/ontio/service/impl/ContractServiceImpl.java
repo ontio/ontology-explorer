@@ -320,20 +320,24 @@ public class ContractServiceImpl implements IContractService {
         Map<String, Object> rsMap = new HashMap<>();
 
         //查询Dappstore的合约基本信息
-        List<Map> allContractList = contractsMapper.selectDappstoreContract();
-        if (allContractList.size() == 0) {
-            rsMap.put("ContractList", allContractList);
-            rsMap.put("Total", allContractList.size());
+        List<Map> allContractInfoList = contractsMapper.selectDappstoreContract();
+        if (allContractInfoList.size() == 0) {
+            rsMap.put("ContractList", new ArrayList<>());
+            rsMap.put("Total", 0);
         } else {
+            //一个project可能会有多个合约
+            Set<Object> allProjectSet = new HashSet<>();
+            allContractInfoList.forEach(item->allProjectSet.add(item.get("Project")));
+
             List<String> allContractHashList = new ArrayList<>();
-            allContractList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));
+            allContractInfoList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));
 
             long nowTime = System.currentTimeMillis();
             //一天前的UTC 0点
             Calendar yesterdayCalendar = Calendar.getInstance();
             yesterdayCalendar.setTimeInMillis(nowTime);
             yesterdayCalendar.add(Calendar.DAY_OF_MONTH, -1);
-            yesterdayCalendar.set(Calendar.HOUR_OF_DAY, -8);
+            yesterdayCalendar.set(Calendar.HOUR_OF_DAY, 0);
             yesterdayCalendar.set(Calendar.MINUTE, 0);
             yesterdayCalendar.set(Calendar.SECOND, 0);
             long yesterday0HourTime = yesterdayCalendar.getTimeInMillis() / 1000L;
@@ -341,47 +345,53 @@ public class ContractServiceImpl implements IContractService {
             Calendar last7dayCalendar = Calendar.getInstance();
             last7dayCalendar.setTimeInMillis(nowTime);
             last7dayCalendar.add(Calendar.DAY_OF_MONTH, -7);
-            last7dayCalendar.set(Calendar.HOUR_OF_DAY, -8);
+            last7dayCalendar.set(Calendar.HOUR_OF_DAY, 0);
             last7dayCalendar.set(Calendar.MINUTE, 0);
             last7dayCalendar.set(Calendar.SECOND, 0);
             long last7Day0HourTime = last7dayCalendar.getTimeInMillis() / 1000L;
 
             Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put("contractHashList", allContractHashList);
-            paramMap.put("time", yesterday0HourTime);
-            paramMap.put("start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
-            paramMap.put("pageSize", pageSize);
-            //先根据所有合约hash列表排序查询后返回分页结果
-            List<Map> contractList = contractSummaryMapper.selectDappstoreContractYesterdayInfo(paramMap);
-
-            List<String> contractHashList = new ArrayList<>();
-            contractList.forEach(item -> contractHashList.add((String) item.get("ContractHash")));
-
-            paramMap.put("contractHashList", contractHashList);
             paramMap.put("beginTime", last7Day0HourTime);
             paramMap.put("endTime", yesterday0HourTime);
-            //根据昨日排序查询后的分页结果的合约hash列表，查这些合约hash的周统计数据
+            paramMap.put("contractHashList", allContractHashList);
+            paramMap.put("start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
+            paramMap.put("pageSize", pageSize);
+
+            //根据project分组查询周统计数据，并以WeekActiveAddressCount和WeekTxCount倒序
             List<Map> contractOneWeekInfoList = contractSummaryMapper.selectDappstoreContractOneWeekInfo(paramMap);
+            //获取分页后的project列表
+            List<String> projectList = new ArrayList<>();
+            contractOneWeekInfoList.forEach(item -> projectList.add((String) item.get("Project")));
+
+
+            Map<String, Object> paramMap2 = new HashMap<>();
+            paramMap2.put("ProjectList", projectList);
+            List<String> contractHashList = contractsMapper.selectContractHashByProject(paramMap2);
+
+            paramMap.put("contractHashList", contractHashList);
+            paramMap.put("time", yesterday0HourTime);
+            //查询project日统计数据
+            List<Map> contractDayInfoList = contractSummaryMapper.selectDappstoreContractYesterdayInfo(paramMap);
 
             for (Map map :
-                    contractList) {
-                String contractHash = (String) map.get("ContractHash");
+                    contractOneWeekInfoList) {
+                String project = (String) map.get("Project");
                 for (Map map1 :
-                        allContractList) {
-                    if (contractHash.equals(map1.get("ContractHash"))) {
+                        allContractInfoList) {
+                    if (project.equals(map1.get("Project"))) {
                         map.putAll(map1);
                     }
                 }
                 for (Map map2 :
-                        contractOneWeekInfoList) {
-                    if (contractHash.equals(map2.get("ContractHash"))) {
+                        contractDayInfoList) {
+                    if (project.equals(map2.get("Project"))) {
                         map.putAll(map2);
                     }
                 }
             }
 
-            rsMap.put("ContractList", contractList);
-            rsMap.put("Total", allContractList.size());
+            rsMap.put("ContractList", contractOneWeekInfoList);
+            rsMap.put("Total", allProjectSet.size());
         }
 
         return Helper.result("QueryDappStoreContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
@@ -392,8 +402,8 @@ public class ContractServiceImpl implements IContractService {
     public Result queryDappstore24hSummary() {
 
         //查询Dappstore的合约基本信息
-        List<Map> allContractList = contractsMapper.selectDappstoreContract();
-        if (allContractList.size() == 0) {
+        List<Map> allContractInfoList = contractsMapper.selectDappstoreContract();
+        if (allContractInfoList.size() == 0) {
             Map rsMap = new HashMap();
             rsMap.put("DayOnt", 0);
             rsMap.put("DayOng", 0);
@@ -402,25 +412,29 @@ public class ContractServiceImpl implements IContractService {
             rsMap.put("Total", 0);
             return Helper.result("QueryDappStoreContract", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsMap);
         } else {
+            //一个project可能会有多个合约
+            Set<Object> allProjectSet = new HashSet<>();
+            allContractInfoList.forEach(item->allProjectSet.add(item.get("Project")));
+
             List<String> allContractHashList = new ArrayList<>();
-            allContractList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));
+            allContractInfoList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));
+
+            Map<String, Object> rsMap = new HashMap<>();
+            rsMap.put("Total", allProjectSet.size());
 
             long nowTime = System.currentTimeMillis();
             //一天前的UTC 0点
             Calendar yesterdayCalendar = Calendar.getInstance();
             yesterdayCalendar.setTimeInMillis(nowTime);
             yesterdayCalendar.add(Calendar.DAY_OF_MONTH, -1);
-            yesterdayCalendar.set(Calendar.HOUR_OF_DAY, -8);
+            yesterdayCalendar.set(Calendar.HOUR_OF_DAY, 0);
             yesterdayCalendar.set(Calendar.MINUTE, 0);
             yesterdayCalendar.set(Calendar.SECOND, 0);
             long yesterday0HourTime = yesterdayCalendar.getTimeInMillis() / 1000L;
+
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("contractHashList", allContractHashList);
             paramMap.put("time", yesterday0HourTime);
-
-            Map<String, Object> rsMap = new HashMap<>();
-            rsMap.put("Total", allContractList.size());
-
             Map contractInfo = contractSummaryMapper.selectAllDappstoreContractYesterdayInfo(paramMap);
             if (Helper.isEmptyOrNull(contractInfo)) {
                 rsMap.put("DayOnt", 0);
