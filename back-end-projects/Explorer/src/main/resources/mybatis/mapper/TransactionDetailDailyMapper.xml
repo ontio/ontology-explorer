@@ -224,12 +224,7 @@
   </update>
 
 
-  <select id="selectContractAssetSum" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
-        SELECT SUM(amount)
-        from tbl_ont_txn_detail_daily
-        where confirmflag = 1 and assetname = #{assetname}
-        and ((toaddress = #{contractAddress} OR fromaddress = #{contractAddress}) OR contracthash = #{contractHash})
-  </select>
+
 
   <select id="selectTxnCount" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
     select count(DISTINCT(txnhash))
@@ -237,7 +232,6 @@
     where confirmflag = 1
     and calledcontracthash = #{contractHash}
   </select>
-
 
   <select id="selectiveByEndTime"  resultType="java.lang.Integer" parameterType="java.util.Map" useCache="false">
     SELECT count(1) from tbl_ont_txn_detail_daily
@@ -248,26 +242,22 @@
     delete from tbl_ont_txn_detail_daily where <![CDATA[ txntime < #{startTime} ]]>
   </delete>
 
-
-
-  <select id="selectContractAssetSumNew" resultType="java.math.BigDecimal" parameterType="java.util.Map" useCache="false">
-    SELECT sum(amount)
-    FROM tbl_ont_txn_detail_daily
-    WHERE txnhash IN (
-    SELECT DISTINCT
-    (txnhash)
-    FROM
-    tbl_ont_txn_detail_daily
-    WHERE
-    contracthash = #{contractHash}
-    )
-    and assetname = #{assetname}
-  </select>
-
-  <select id="selectContractAddrCount" parameterType="java.lang.String" resultType="java.lang.String" useCache="false">
-    select distinct(payer)
-    from tbl_ont_txn_detail_daily
-    where calledcontracthash = #{contractHash}
+  <select id="selectContractAddr" parameterType="java.lang.String" resultType="java.lang.String" useCache="false">
+    select DISTINCT(address) from (
+      SELECT
+      DISTINCT(fromaddress) as address
+      FROM
+      tbl_ont_txn_detail_daily
+      WHERE calledcontracthash = #{contractHash}
+      and confirmflag = 1
+    UNION
+      SELECT
+      DISTINCT(payer) as address
+      FROM
+      tbl_ont_txn_detail_daily
+      WHERE calledcontracthash = #{contractHash}
+      and confirmflag = 1
+    ) a
   </select>
 
   <select id="selectContractAssetAmount" resultType="java.math.BigDecimal" useCache="false">
@@ -276,6 +266,7 @@
     FROM tbl_ont_txn_detail_daily
     WHERE calledcontracthash = #{contractHash}
     AND assetname = #{assetName}
+    AND confirmflag = 1
   </select>
 
 </mapper>

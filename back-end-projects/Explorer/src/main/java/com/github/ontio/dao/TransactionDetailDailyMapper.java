@@ -20,7 +20,7 @@ public interface TransactionDetailDailyMapper {
 
     int updateByPrimaryKey(TransactionDetail record);
 
-    BigDecimal selectContractAssetSum(Map<String, Object> paramMap);
+
 
     BigDecimal selectContractAssetAmount(@Param("contractHash") String contractHash, @Param("assetName") String assetName);
 
@@ -30,11 +30,7 @@ public interface TransactionDetailDailyMapper {
 
     int deleteByEndTime(Map paramMap);
 
-
-
-    BigDecimal selectContractAssetSumNew(Map<String, Object> paramMap);
-
-    List<String> selectContractAddrCount(@Param("contractHash") String contractHash);
+    List<String> selectContractAddr(@Param("contractHash") String contractHash);
 
 
 }
