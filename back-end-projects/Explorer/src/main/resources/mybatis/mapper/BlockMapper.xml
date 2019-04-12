@@ -191,7 +191,7 @@
     and <![CDATA[ blocktime < #{EndTime} ]]>
   </select>
 
-  <select id="selectBlockMaxTime" resultType="java.lang.Integer">
+  <select id="selectBlockMaxTime" resultType="java.lang.Integer" useCache="false">
     select MAX(blocktime) as time
       from tbl_ont_block
   </select>
