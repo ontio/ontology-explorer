@@ -47,31 +47,34 @@
 
           </div>
           <div class=" special-ddo-wrapper"   v-if="workFlag">
-            <div class="work-name-wrapper">
-              <span class="work-normal-font">work name: </span>
-              <span class="work-normal-font">{{work.work_name}} </span>
-            </div>
             <div class="work-group-wrapper">
-              <span class="work-normal-font">Group: </span>
-              <span class="work-normal-font">{{work.group}} </span>
+              <span class="work-group-font">Group: </span>
+              <span class="work-group-font">{{work.group}} </span>
             </div>
-            <div class="work-awards-wrapper" :class="work.awards.length > 3 ?'work-awards-wrapper-small':''">
+            <div class="work-name-wrapper">
+              <span class="work-name-font">{{work.work_name}} </span>
+            </div>
+<!--             <div class="work-awards-wrapper" :class="work.awards.length > 3 ?'work-awards-wrapper-small':''">
               <span class="work-awards-font" :class="work.awards.length > 3 ?'work-awards-font-small':''">{{work.awards}} </span>
-            </div>
+            </div> -->
             <div class="work-trustAnchor-wrapper">
-              <span class="work-normal-font">Trust Anchor: </span>
-              <span class="work-normal-font">{{work.trust_anchor}} </span>
+              <span class="work-group-font">Trust Anchor: </span>
+              <span class="work-group-font">{{work.trust_anchor}} </span>
             </div>
             <div class="work-description-wrapper">
               <!-- <p class="work-normal-font"><span class="work-normal-font">Description: </span>{{work.description.length > 120 ? work.description.substr(0,120)+'...':work.description}} </p> -->
-              <p class="work-normal-font p-work-normal-font"><span class="work-normal-font">Description: </span>{{work.description}} </p>
+              <p class="work-p-normal-font p-work-normal-font"><span class="work-normal-font">Description: </span>{{work.description}} </p>
             </div>
             <div class="work-cryptoFunction-wrapper">
-              <span class="work-normal-font">crypto_function: </span>
+              <span class="work-normal-font">crypto_function </span>
+            </div>
+            <div class="work-cryptoFunction-wrapper1">
               <span class="work-normal-font">{{work.crypto_function}} </span>
             </div>
             <div class="work-uploadTime-wrapper">
-              <span class="work-normal-font">uploadTime: </span>
+              <span class="work-normal-font">uploadTime </span>
+            </div>
+            <div class="work-uploadTime-wrapper1">
               <span class="work-normal-font">{{work.uploadTime}} </span>
             </div>
             <div class="work-logo-wrapper">
@@ -240,10 +243,10 @@
 
 <style scoped>
 .special-ddo-wrapper{
-    background-image: url(../../assets/ontid/bj@3x.png);
+    background-image: url(../../assets/ontid/dianqingback.png);
     background-repeat: no-repeat;
-    background-size: 746px 392px;
-    height: 392px;
+    background-size: 950px 699px;
+    height: 699px;
     min-width: 1122px;
     background-position: center;
     margin-bottom: 32px;
@@ -251,7 +254,7 @@
 .p-work-normal-font{
     position:relative;
     /* 3 times the line-height to show 3 lines */
-    height:54px;
+    height:72px;
     overflow:hidden;
 }
 .p-work-normal-font::after {
@@ -265,11 +268,32 @@
     opacity: 1;
 }
 .work-normal-font{
-    font-size:14px;
+    font-size:16px;
     font-family:SourceSansPro-Regular;
     font-weight:400;
     color:rgba(89,87,87,1);
-    line-height:18px;
+    line-height:20px;
+}
+.work-name-font{
+    font-size:30px;
+    font-family:SourceSansPro-Regular;
+    font-weight:blod;
+    color:rgba(181,148,114,1);
+    line-height:46px;
+}
+.work-p-normal-font{
+    font-size:16px;
+    font-family:SourceSansPro-Regular;
+    font-weight:400;
+    color:rgba(89,87,87,1);
+    line-height:24px;
+}
+.work-group-font{
+    font-size:20px;
+    font-family:SourceSansPro-Regular;
+    font-weight:400;
+    color:rgba(89,87,87,1);
+    line-height:24px;
 }
 .work-awards-font{
     font-size:34px;
@@ -286,26 +310,26 @@
     line-height:48px;  
 }
 .work-hash-font{
-    font-size:14px;
+    font-size:16px;
     font-family:SourceSansPro-Regular;
     font-weight:400;
-    color:rgba(50,164,190,1);
-    line-height:18px;
+    color:rgba(89,87,87,1);
+    line-height:24px;
 }
 .work-name-wrapper{
     position: absolute;
     left: 600px;
     transform: translate(-50%,0);
-    top: 96px;
-    min-width: 520px;
+    top: 205px;
+    width: 520px;
     text-align: center;
 }
 .work-group-wrapper{
     position: absolute;
-    left: 600px;
-    transform: translate(-50%,0);
-    top: 121px;
-    min-width: 87px;
+    left: 561px;
+    transform: translate(-18%,0);
+    top: 143px;
+    min-width: 130px;
 }
 .work-awards-wrapper{
     position: absolute;
@@ -325,49 +349,69 @@
     position: absolute;
     left: 600px;
     transform: translate(-50%,0);
-    top: 209px;
-    min-width: 115px;
+    top: 332px;
+    min-width: 170px;
 }
 .work-description-wrapper{
     position: absolute;
     left: 600px;
     transform: translate(-50%,0);
-    top: 248px;    
-    width: 630px;
-    height: 60px;
+    top: 407px;    
+    width: 610px;
+    height: 72px;
     overflow: hidden;
 }
 .work-cryptoFunction-wrapper{
     position: absolute;
-    left: 440px;
+    left: 369px;
     transform: translate(-50%,0);
-    top: 365px;    
-    border-top: 2px solid #32a4be;
-    min-width: 150px;
+    top: 580px;    
+    /* border-top: 2px solid #32a4be; */
+    min-width: 146px;
+    text-align: center;
+}
+.work-cryptoFunction-wrapper1{
+    position: absolute;
+    left: 369px;
+    transform: translate(-50%,0);
+    top: 624px;    
+    /* border-top: 2px solid #32a4be; */
+    min-width: 146px;
+    text-align: center;
 }
 .work-uploadTime-wrapper{
     position: absolute;
-    left: 760px;
+    left: 832px;
     transform: translate(-50%,0);
-    top: 365px;
-    border-top: 2px solid #32a4be;
-    min-width: 140px;
+    top: 580px;
+    /* border-top: 2px solid #32a4be; */
+    min-width: 146px;
+    text-align: center;
+}
+.work-uploadTime-wrapper1{
+    position: absolute;
+    left: 832px;
+    transform: translate(-50%,0);
+    top: 624px;
+    /* border-top: 2px solid #32a4be; */
+    min-width: 146px;
+    text-align: center;
 }
 .work-logo-wrapper{
     position: absolute;
     left: 600px;
     transform: translate(-50%,0);
-    top: 341px;
+    top: 564px;
 }
 .work-logo-img{
-    width: 106px;
-    height: 51px;
+    width: 155px;
+    height: 74px;
 }
 .work-hash-wrapper{
     position: absolute;
     left: 600px;
     transform: translate(-50%,0);
-    top: 417px;
-    min-width: 520px;
+    top: 686px;
+    min-width: 590px;
 }
 </style>
