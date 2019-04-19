@@ -37,7 +37,9 @@ import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.OntIdEventDesType;
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,16 +85,32 @@ public class TxnHandlerThread {
     @Autowired
     private Oep8Mapper oep8Mapper;
 
+    @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
+
     @Async
-    public Future<String> asyncHandleTxn(SqlSession session, JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock) {
+    public Future<String> asyncHandleTxn(JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock) {
 
-        String threadName = Thread.currentThread().getName();
-        logger.info("{} run--------blockHeight:{}", threadName, blockHeight);
+        //设置一个模式为BATCH，自动提交为false的session，最后统一提交，需防止内存溢出
+        SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
+        try {
+            String threadName = Thread.currentThread().getName();
+            logger.info("{} run--------blockHeight:{},txnHash:{}", threadName, blockHeight, txnJson.getString("Hash"));
+            handleOneTxn(session, txnJson, blockHeight, blockTime, indexInBlock);
+            // 手动提交
+            session.commit();
+            // 清理缓存，防止溢出
+            session.clearCache();
+            logger.info("{} end-------blockHeight:{},txnHash:{}", threadName, blockHeight, txnJson.getString("Hash"));
 
-        handleOneTxn(session, txnJson, blockHeight, blockTime, indexInBlock);
-
-        logger.info("{} end-------blockHeight:{}", threadName, blockHeight);
-        return new AsyncResult<String>("success");
+            return new AsyncResult<String>("success");
+        } catch (Exception e) {
+            logger.error("asyncHandleTxn error...", e);
+            session.rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
     }
 
     @Transactional
