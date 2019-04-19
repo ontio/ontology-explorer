@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @SpringBootApplication
@@ -39,14 +38,15 @@ public class OntsynhandlerApplication {
 		executor.setKeepAliveSeconds(configParam.THREADPOOLSIZE_KEEPALIVE_SECOND);
 
 		// Rejection policies
-		executor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
+/*		executor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
 			@Override
 			public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
 				logger.error("###########reject thread....");
 				// .....
 			}
-		});
-		// executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+		});*/
+		//调用者的线程会执行该任务,如果执行器已关闭,则丢弃
+		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 		executor.initialize();
 
 		return executor;
