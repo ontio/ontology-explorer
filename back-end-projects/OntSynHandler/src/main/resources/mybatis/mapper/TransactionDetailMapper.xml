@@ -45,7 +45,7 @@
       and txnindex = #{txnindex,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.github.ontio.model.TransactionDetail">
-    insert into tbl_ont_txn_detail (txnhash, txnindex, txntype, 
+    insert into tbl_ont_txn_detail (txnhash, txnindex, txntype,
       txntime, height, amount, 
       fee, assetname, fromaddress, 
       toaddress, description, blockindex, 
