@@ -120,8 +120,8 @@ public class BlockHandlerThread extends Thread {
 
                 oneBlockTryTime = 1;
 
-                //每次删除当前current表height+1的交易，防止上次程序异常退出时，因为多线程事务插入了height+1的交易而current表height未更新
-                //本次同步再次插入会报主键重复异常
+                //每次删除当前current表height+1的交易，防止上次程序异常退出时，因为多线程事务插入了height+1的交易
+                //而current表height未更新，则本次同步再次插入会报主键重复异常
                 if (ontIdMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
                     ontIdMapper.deleteByHeight(dbBlockHeight + 1);
                 }
@@ -144,7 +144,10 @@ public class BlockHandlerThread extends Thread {
                 //handle blocks and transactions
                 for (int tHeight = dbBlockHeight + 1; tHeight <= remoteBlockHieght; tHeight++) {
                     JSONObject blockJson = getBlockJsonByHeight(tHeight);
+                    long time1 = System.currentTimeMillis();
                     blockManagementService.handleOneBlock(blockJson);
+                    long time2 = System.currentTimeMillis();
+                    logger.info("handle block {} used time:{}", tHeight, (time2-time1));
                 }
 
             }
