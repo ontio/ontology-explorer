@@ -59,11 +59,11 @@
             </div> -->
             <div class="work-trustAnchor-wrapper">
               <span class="work-group-font">Trust Anchor: </span>
-              <span class="work-group-font">{{work.trust_anchor}} </span>
+              <span class="work-group-font">{{work.trust_anchor == "GGCA"?"GGAC":work.trust_anchor}} </span>
             </div>
             <div class="work-description-wrapper">
               <!-- <p class="work-normal-font"><span class="work-normal-font">Description: </span>{{work.description.length > 120 ? work.description.substr(0,120)+'...':work.description}} </p> -->
-              <p class="work-p-normal-font p-work-normal-font"><span class="work-normal-font">Description: </span>{{work.description}} </p>
+              <p  class="work-p-normal-font p-work-normal-font"><span class="work-normal-font">Description: </span>{{work.description1}} </p>
             </div>
             <div class="work-cryptoFunction-wrapper">
               <span class="work-normal-font">crypto_function </span>
@@ -166,7 +166,6 @@
       '$route': 'getOntIdDetail',
       'OntIdDetail': function () {
         console.log(this.OntIdDetail)
-
         if (this.OntIdDetail.info === false) {
           this.haveData = false
         } else {
@@ -177,8 +176,21 @@
         if(this.Ddo.Attributes[5].SelfDefined['trust anchor'] == 'GGCA'){
           this.workFlag = true
           this.work.awards = this.Ddo.Attributes[0].SelfDefined['awards']
-          this.work.group = this.Ddo.Attributes[1].SelfDefined['group']
+          this.work.group = this.Ddo.Attributes[1].SelfDefined['group']          
           this.work.description = this.Ddo.Attributes[2].SelfDefined['description']
+          let descLength = this.getLength(this.work.description)
+          console.log( descLength )
+          for(var i=0; i<this.work.description.length; i++) {
+                    let trueText = this.work.description.substr(0, i)
+                    let trueLength = this.getLength(trueText)
+                    if(trueLength > 210) { 
+                      this.work.description1 = this.work.description.substr(0, i-4) + ' ...';  //最后三个字
+                      break;
+                    }else{
+                      this.work.description1 = this.work.description
+                    }
+          }
+          console.log( this.work.description1 )
           this.work.owner_id = this.Ddo.Attributes[3].SelfDefined['owner_id']
           this.work.work_name = this.Ddo.Attributes[4].SelfDefined['work name']
           this.work.trust_anchor = this.Ddo.Attributes[5].SelfDefined['trust anchor']
@@ -195,6 +207,22 @@
       })
     },
     methods: {
+      getLength(str) {
+        debugger
+        var realLength = 0, len = str.length, charCode = -1;
+        for (var i = 0; i < len; i++) {
+          charCode = str.charCodeAt(i);
+          if (charCode >= 0 && charCode <= 128) {
+            realLength += 0.85;
+            /* console.log(str.substr(i,1),charCode,"1") */
+          }else{
+            realLength += 2;
+            /* console.log(str.substr(i,1),charCode,"2") */
+          }
+        }
+        /* console.log(realLength) */
+        return realLength;
+      },
       getOntIdDetail() {
         this.$store.dispatch('GetOntIdDetail', this.$route.params).then()
       },
@@ -256,8 +284,12 @@
     /* 3 times the line-height to show 3 lines */
     height:72px;
     overflow:hidden;
+    text-overflow: ellipsis;
+/*     display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical; */
 }
-.p-work-normal-font::after {
+/* .p-work-normal-font::after {
     content:"...";
     font-weight:bold;
     position:absolute;
@@ -266,7 +298,7 @@
     padding:0 20px 1px 45px;
     background:url(http://newimg88.b0.upaiyun.com/newimg88/2014/09/ellipsis_bg.png) repeat-y;
     opacity: 1;
-}
+} */
 .work-normal-font{
     font-size:16px;
     font-family:SourceSansPro-Regular;
