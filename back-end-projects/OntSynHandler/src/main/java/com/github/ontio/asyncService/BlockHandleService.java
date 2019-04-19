@@ -28,16 +28,15 @@ import com.github.ontio.model.Current;
 import com.github.ontio.thread.TxnHandlerThread;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
-import org.apache.ibatis.session.ExecutorType;
-import org.apache.ibatis.session.SqlSession;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -59,9 +58,6 @@ public class BlockHandleService {
     @Autowired
     private TxnHandlerThread txnHandlerThread;
 
-    @Autowired
-    private SqlSessionTemplate sqlSessionTemplate;
-
     /**
      * handle the block and the transactions in this block
      *
@@ -70,9 +66,6 @@ public class BlockHandleService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void handleOneBlock(JSONObject blockJson) throws Exception {
-
-        //设置一个模式为BATCH，自动提交为false的session，最后统一提交，需防止内存溢出
-        SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
 
         JSONObject blockHeader = blockJson.getJSONObject("Header");
         int blockHeight = blockHeader.getInteger("Height");
@@ -84,26 +77,17 @@ public class BlockHandleService {
         ConstantParam.ONEBLOCK_ONTID_AMOUNT = 0;
         ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT = 0;
 
-        try {
-            //asynchronize handle transaction
-            //future.get() 主线程阻塞等待
-            for (int i = 0; i < txnNum; i++) {
-                JSONObject txnJson = (JSONObject) txnArray.get(i);
-                Future future = txnHandlerThread.asyncHandleTxn(session, txnJson, blockHeight, blockTime, i + 1);
-                future.get();
-            }
-
-            // 手动提交
-            session.commit();
-            // 清理缓存，防止溢出
-            session.clearCache();
-            logger.info("###batch insert success!!");
-        } catch (Exception e) {
-            logger.error("error...session.rollback", e);
-            session.rollback();
-            throw e;
-        } finally {
-            session.close();
+        List<Future> futureList = new ArrayList<>();
+        //asynchronize handle transaction
+        for (int i = 0; i < txnNum; i++) {
+            JSONObject txnJson = (JSONObject) txnArray.get(i);
+            Future future = txnHandlerThread.asyncHandleTxn(txnJson, blockHeight, blockTime, i + 1);
+            futureList.add(future);
+            //future.get();
+        }
+        //等待线程池里的线程都执行结束
+        for (int j = 0; j < futureList.size(); j++) {
+            futureList.get(j).get();
         }
 
         if (blockHeight >= 1) {
