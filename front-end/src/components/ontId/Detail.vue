@@ -208,7 +208,6 @@
     },
     methods: {
       getLength(str) {
-        debugger
         var realLength = 0, len = str.length, charCode = -1;
         for (var i = 0; i < len; i++) {
           charCode = str.charCodeAt(i);
