@@ -1,9 +1,7 @@
 package com.github.ontio.dao;
 
 import com.github.ontio.model.Contracts;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 
 @Component
@@ -12,7 +10,7 @@ public interface ContractsMapper {
 
     int insertSelective(Contracts record);
 
-    Contracts selectContractByContractHash(String contract);
+    Integer selectCountByContractHash(String contract);
 
     int updateByPrimaryKeySelective(Contracts record);
 
