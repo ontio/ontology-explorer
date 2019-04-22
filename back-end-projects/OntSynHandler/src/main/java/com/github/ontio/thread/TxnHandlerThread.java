@@ -89,7 +89,7 @@ public class TxnHandlerThread {
     private SqlSessionTemplate sqlSessionTemplate;
 
     @Async
-    public Future<String> asyncHandleTxn(JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock) {
+    public Future<String> asyncHandleTxn(JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock) throws Exception {
 
         //设置一个模式为BATCH，自动提交为false的session，最后统一提交，需防止内存溢出
         SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
@@ -113,8 +113,8 @@ public class TxnHandlerThread {
         }
     }
 
-    @Transactional
-    public void handleOneTxn(SqlSession session, JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock) {
+    @Transactional(rollbackFor = Exception.class)
+    public void handleOneTxn(SqlSession session, JSONObject txnJson, int blockHeight, int blockTime, int indexInBlock) throws Exception {
 
         int txnType = txnJson.getInteger("TxType");
         String txnHash = txnJson.getString("Hash");
@@ -209,9 +209,11 @@ public class TxnHandlerThread {
         } catch (RestfulException e) {
             logger.error("handleOneTxn RestfulException...{}", e);
             e.printStackTrace();
+            throw e;
         } catch (Exception e) {
             logger.error("handleOneTxn error...", e);
             e.printStackTrace();
+            throw e;
         }
     }
 
@@ -268,8 +270,8 @@ public class TxnHandlerThread {
                 gasConsumed, 0, 2, contractAddress, payer, calledContractHash);
 
         // 部署合约，将合约信息保存到合约列表
-        Contracts contracts = contractsMapper.selectContractByContractHash(contractAddress);
-        if (contracts == null) {
+        Integer count = contractsMapper.selectCountByContractHash(contractAddress);
+        if (count.equals(0)) {
             insertContratInfo(contractAddress, blockTime, contractObj, payer);
         }
     }
