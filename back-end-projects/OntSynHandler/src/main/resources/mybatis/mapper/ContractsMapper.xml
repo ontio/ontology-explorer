@@ -270,8 +270,9 @@
 
 
 
-  <select id="selectContractByContractHash" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select * from tbl_ont_contracts
+  <select id="selectCountByContractHash" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
+    select count(*)
+    from tbl_ont_contracts
     where contract = #{contract}
   </select>
 </mapper>
