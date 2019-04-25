@@ -2,6 +2,7 @@ package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.*;
 import com.github.ontio.model.AddressSummary;
 import com.github.ontio.model.ContractSummary;
@@ -9,7 +10,7 @@ import com.github.ontio.model.Contracts;
 import com.github.ontio.model.DailySummary;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ISummaryService;
-import com.github.ontio.utils.*;
+import com.github.ontio.util.*;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
