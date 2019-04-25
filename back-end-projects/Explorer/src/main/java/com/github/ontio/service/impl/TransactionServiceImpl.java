@@ -20,11 +20,12 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.*;
 import com.github.ontio.model.OntId;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ITransactionService;
-import com.github.ontio.utils.*;
+import com.github.ontio.util.*;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
