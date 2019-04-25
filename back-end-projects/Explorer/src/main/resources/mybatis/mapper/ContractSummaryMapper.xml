@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.dao.ContractSummaryMapper">
-  <cache type="com.github.ontio.ExplorerRedisCache">
+  <cache type="com.github.ontio.config.ExplorerRedisCache">
     <property name="eviction" value="LRU" />
     <property name="size" value="1024" />
     <property name="flushInterval" value="6000" />
