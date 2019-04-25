@@ -24,3 +24,5 @@ CREATE TABLE `tbl_address_daily_summary` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_time` (`time`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+
