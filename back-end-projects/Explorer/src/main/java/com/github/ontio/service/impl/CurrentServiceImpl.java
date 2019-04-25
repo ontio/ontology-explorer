@@ -24,10 +24,10 @@ import com.github.ontio.dao.*;
 import com.github.ontio.model.*;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ICurrentService;
-import com.github.ontio.utils.ConfigParam;
-import com.github.ontio.utils.ErrorInfo;
-import com.github.ontio.utils.Helper;
-import com.github.ontio.utils.OntologySDKService;
+import com.github.ontio.config.ConfigParam;
+import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
+import com.github.ontio.util.OntologySDKService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
