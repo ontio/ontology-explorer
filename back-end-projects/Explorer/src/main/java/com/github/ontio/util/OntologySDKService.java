@@ -17,26 +17,22 @@
  */
 
 
-package com.github.ontio.utils;
+package com.github.ontio.util;
 
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.smartcontract.neovm.abi.BuildParams;
+import com.github.ontio.config.ConfigParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -1,4 +1,4 @@
-package com.github.ontio;
+package com.github.ontio.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

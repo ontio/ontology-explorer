@@ -2,7 +2,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.ContractServiceImpl;
-import com.github.ontio.utils.Helper;
+import com.github.ontio.util.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
