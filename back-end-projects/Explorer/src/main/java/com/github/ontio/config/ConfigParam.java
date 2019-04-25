@@ -17,7 +17,7 @@
  */
 
 
-package com.github.ontio.utils;
+package com.github.ontio.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -21,8 +21,9 @@ package com.github.ontio.controller;
 
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.BlockServiceImpl;
-import com.github.ontio.utils.ErrorInfo;
-import com.github.ontio.utils.Helper;
+import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class BlockController {
      * @param amount the amount of queries
      * @return
      */
+    @ApiOperation(value = "查询block list")
     @RequestMapping(value = "/blocklist/{amount}", method = RequestMethod.GET)
     @ResponseBody
     public Result queryBlockList(@PathVariable("amount") int amount) {
