@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.Oep5Mapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Oep5">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="total_supply" jdbcType="DECIMAL" property="totalSupply" />
+    <result column="symbol" jdbcType="VARCHAR" property="symbol" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="auditflag" jdbcType="INTEGER" property="auditflag" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+  </resultMap>
+</mapper>
