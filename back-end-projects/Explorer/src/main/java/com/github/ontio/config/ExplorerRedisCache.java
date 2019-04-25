@@ -1,5 +1,6 @@
-package com.github.ontio;
+package com.github.ontio.config;
 
+import com.github.ontio.ApplicationContextProvider;
 import org.apache.ibatis.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

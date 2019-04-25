@@ -18,7 +18,7 @@
 
 
 
-package com.github.ontio.utils;
+package com.github.ontio.util;
 
 /**
  * @author zhouq

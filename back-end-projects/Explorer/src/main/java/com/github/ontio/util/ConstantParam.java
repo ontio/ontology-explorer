@@ -17,7 +17,7 @@
  */
 
 
-package com.github.ontio.utils;
+package com.github.ontio.util;
 
 import java.math.BigDecimal;
 import java.util.*;
