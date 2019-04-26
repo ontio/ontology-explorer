@@ -19,7 +19,7 @@
 
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 
 public interface IBlockService {
 
@@ -28,21 +28,21 @@ public interface IBlockService {
      *
      * @return
      */
-    Result queryBlockList(int amount);
+    OldResult queryBlockList(int amount);
 
     /**
      * query block by page
      *
      * @return
      */
-    Result queryBlockList(int pageSize, int pageNumber);
+    OldResult queryBlockList(int pageSize, int pageNumber);
 
     /**
      * query block by height
      *
      * @return
      */
-    Result queryBlockByHeight(int height);
+    OldResult queryBlockByHeight(int height);
 
 
     /**
@@ -50,7 +50,7 @@ public interface IBlockService {
      *
      * @return
      */
-    Result queryBlockByHash(String hash);
+    OldResult queryBlockByHash(String hash);
 
     /**
      * query block generatetime
@@ -58,7 +58,7 @@ public interface IBlockService {
      * @param amount
      * @return
      */
-    Result queryBlockGenerateTime(int amount);
+    OldResult queryBlockGenerateTime(int amount);
 
 
     /**
@@ -67,5 +67,5 @@ public interface IBlockService {
      * @param time
      * @return
      */
-    Result blockCountInTwoWeeks(long time);
+    OldResult blockCountInTwoWeeks(long time);
 }

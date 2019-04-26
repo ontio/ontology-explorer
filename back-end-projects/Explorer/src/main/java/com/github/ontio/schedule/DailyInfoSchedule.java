@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -57,7 +56,7 @@ public class DailyInfoSchedule {
     /**
      * 记录每日统计数据
      */
-    @Scheduled(cron = "0 5 0 * * *")
+   // @Scheduled(cron = "0 5 0 * * *")
     public void UpdateDailyInfo() {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
@@ -67,7 +66,7 @@ public class DailyInfoSchedule {
     /**
      * 更新合约的地址数、交易数、交易额（ong\ont\tokenName）
      */
-    @Scheduled(cron = "0 0/10 * * * *")
+  //  @Scheduled(cron = "0 0/10 * * * *")
     public void UpdateContractInfo() {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 

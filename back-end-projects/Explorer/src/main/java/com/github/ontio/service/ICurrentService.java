@@ -20,7 +20,7 @@
 package com.github.ontio.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 
 /**
  * @author zhouq
@@ -33,18 +33,18 @@ public interface ICurrentService {
      *
      * @return
      */
-    Result querySummaryInfo();
+    OldResult querySummaryInfo();
 
     /**
      * 注册合约信息
      * @param reqObj
      * @return
      */
-    Result registerContractInfo(JSONObject reqObj);
+    OldResult registerContractInfo(JSONObject reqObj);
 
     /**
      * Market info
      * @return
      */
-    Result queryMarketingInfo();
+    OldResult queryMarketingInfo();
 }

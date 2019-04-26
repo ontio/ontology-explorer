@@ -1,6 +1,6 @@
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.impl.SummaryServiceImpl;
 import com.github.ontio.util.Helper;
 import org.slf4j.Logger;
@@ -33,10 +33,10 @@ public class SummaryController {
      */
     @RequestMapping(value = "/summaryAllInfo", method = RequestMethod.POST)
     @ResponseBody
-    public Result summaryAllInfo() {
+    public OldResult summaryAllInfo() {
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = summaryService.summaryAllInfo();
+        OldResult rs = summaryService.summaryAllInfo();
         return rs;
     }
 
@@ -47,11 +47,11 @@ public class SummaryController {
      */
     @RequestMapping(value = "/summary/{amount}", method = RequestMethod.GET)
     @ResponseBody
-    public Result querySummary(@PathVariable("amount") int amount) {
+    public OldResult querySummary(@PathVariable("amount") int amount) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = summaryService.querySummary(amount);
+        OldResult rs = summaryService.querySummary(amount);
         return rs;
     }
 
@@ -60,11 +60,11 @@ public class SummaryController {
      * @return
      */
     @RequestMapping(value = "/summary/tps", method = RequestMethod.GET)
-    public Result queryTps() {
+    public OldResult queryTps() {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = summaryService.queryTps();
+        OldResult rs = summaryService.queryTps();
         return rs;
     }
 
@@ -73,14 +73,14 @@ public class SummaryController {
      * @return
      */
     @RequestMapping(value = "/summary/project/{project}/{type}/{starttime}/{endtime}", method = RequestMethod.GET)
-    public Result queryProjectInfo(@PathVariable("project") String project,
-                                   @PathVariable("type") String type,
-                                   @PathVariable("starttime") int startTime,
-                                   @PathVariable("endtime") int endTime) {
+    public OldResult queryProjectInfo(@PathVariable("project") String project,
+                                      @PathVariable("type") String type,
+                                      @PathVariable("starttime") int startTime,
+                                      @PathVariable("endtime") int endTime) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = summaryService.queryProjectInfo(project, type, startTime, endTime);
+        OldResult rs = summaryService.queryProjectInfo(project, type, startTime, endTime);
         return rs;
     }
 
@@ -92,14 +92,14 @@ public class SummaryController {
      * @return
      */
     @RequestMapping(value = "/summary/{type}/{starttime}/{endtime}", method = RequestMethod.GET)
-    public Result querySummary(@PathVariable("type") String type,
-                               @PathVariable("starttime") int startTime,
-                               @PathVariable("endtime") int endTime) {
+    public OldResult querySummary(@PathVariable("type") String type,
+                                  @PathVariable("starttime") int startTime,
+                                  @PathVariable("endtime") int endTime) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("####startTime:{}, endTime:{}", startTime, endTime);
 
-        Result rs = summaryService.querySummary(type, startTime, endTime);
+        OldResult rs = summaryService.querySummary(type, startTime, endTime);
         return rs;
     }
 
@@ -113,15 +113,15 @@ public class SummaryController {
      * @return
      */
     @RequestMapping(value = "/summary/contract/{contracthash}/{type}/{starttime}/{endtime}", method = RequestMethod.GET)
-    public Result queryContract(@PathVariable("contracthash") String contractHash,
-                                @PathVariable("type") String type,
-                                @PathVariable("starttime") int startTime,
-                                @PathVariable("endtime") int endTime) {
+    public OldResult queryContract(@PathVariable("contracthash") String contractHash,
+                                   @PathVariable("type") String type,
+                                   @PathVariable("starttime") int startTime,
+                                   @PathVariable("endtime") int endTime) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("####startTime:{}, endTime:{}", startTime, endTime);
 
-        Result rs = summaryService.queryContract(contractHash, type, startTime, endTime);
+        OldResult rs = summaryService.queryContract(contractHash, type, startTime, endTime);
         return rs;
     }
 
@@ -131,11 +131,11 @@ public class SummaryController {
      * @return
      */
     @GetMapping(value = "/summary/totalsupply")
-    public Result queryTotalSupply() {
+    public OldResult queryTotalSupply() {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = summaryService.queryTotalSupply();
+        OldResult rs = summaryService.queryTotalSupply();
         return rs;
     }
 
@@ -145,11 +145,11 @@ public class SummaryController {
      * @return
      */
     @GetMapping(value = "/summary/native/totalsupply")
-    public Result queryNativeTotalSupply() {
+    public OldResult queryNativeTotalSupply() {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = summaryService.queryNativeTotalSupply();
+        OldResult rs = summaryService.queryNativeTotalSupply();
         return rs;
     }
 
