@@ -202,7 +202,7 @@
     from tbl_ont_contract_summary
     where contracthash = #{contractHash} and time >= #{startTime}
     and <![CDATA[ time <= #{endTime} ]]>
-    order by time desc
+    order by time msg
   </select>
 
   <select id="selectContractSummary" parameterType="java.lang.String" resultType="com.github.ontio.model.ContractSummary" useCache="false">
@@ -254,7 +254,7 @@
     and time >= #{beginTime}
     and <![CDATA[ time <= #{endTime} ]]>
     GROUP BY project
-    order by WeekActiveAddressCount desc, WeekTxCount desc
+    order by WeekActiveAddressCount msg, WeekTxCount msg
     limit #{start}, #{pageSize}
   </select>
 

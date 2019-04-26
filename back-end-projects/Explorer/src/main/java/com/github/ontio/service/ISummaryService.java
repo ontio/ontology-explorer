@@ -1,6 +1,6 @@
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 
 /**
  * @author king
@@ -13,7 +13,7 @@ public interface ISummaryService {
      * Marketing Info
      * @return
      */
-    Result summaryAllInfo();
+    OldResult summaryAllInfo();
 
     /**
      * query current information
@@ -21,13 +21,13 @@ public interface ISummaryService {
      * @param amount
      * @return
      */
-    Result querySummary(int amount);
+    OldResult querySummary(int amount);
 
     /**
      * TPS查询
      * @return
      */
-    Result queryTps();
+    OldResult queryTps();
 
     /**
      * 项目信息查询
@@ -37,7 +37,7 @@ public interface ISummaryService {
      * @param endTime
      * @return
      */
-    Result queryProjectInfo(String project, String type, int startTime, int endTime);
+    OldResult queryProjectInfo(String project, String type, int startTime, int endTime);
 
     /**
      * 日常统计查询
@@ -46,7 +46,7 @@ public interface ISummaryService {
      * @param endTime
      * @return
      */
-    Result querySummary(String type, int startTime, int endTime);
+    OldResult querySummary(String type, int startTime, int endTime);
 
     /**
      * 合约统计查询
@@ -56,11 +56,11 @@ public interface ISummaryService {
      * @param endTime
      * @return
      */
-    Result queryContract(String contractHash, String type, int startTime, int endTime);
+    OldResult queryContract(String contractHash, String type, int startTime, int endTime);
 
 
-    Result queryTotalSupply();
+    OldResult queryTotalSupply();
 
-    Result queryNativeTotalSupply();
+    OldResult queryNativeTotalSupply();
 
 }

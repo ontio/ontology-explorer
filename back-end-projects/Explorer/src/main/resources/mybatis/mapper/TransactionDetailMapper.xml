@@ -313,7 +313,7 @@
     and  eventtype = 3
     ) as t2
     where <![CDATA[ t2.TxnTime < #{EndTime} ]]>
-    order by t2.TxnTime desc
+    order by t2.TxnTime msg
     limit #{PageSize}
   </select>
 
@@ -333,7 +333,7 @@
     and  eventtype = 3
     ) as t2
     where <![CDATA[ t2.TxnTime < #{EndTime} ]]>
-    order by t2.TxnTime desc
+    order by t2.TxnTime msg
     limit #{PageSize}
   </select>
 
@@ -360,7 +360,7 @@
     <if test="EndTime != null and EndTime != ''">
       and  <![CDATA[ t2.TxnTime < #{EndTime} ]]>
     </if>
-    order by t2.TxnTime desc
+    order by t2.TxnTime msg
   </select>
 
 
@@ -382,7 +382,7 @@
     <if test="EndTime != null and EndTime != ''">
       and  <![CDATA[ t2.TxnTime < #{EndTime} ]]>
     </if>
-    order by t2.TxnTime desc
+    order by t2.TxnTime msg
   </select>
 
 
@@ -501,7 +501,7 @@
     where fromaddress = #{Address}
     and  eventtype = 3
     ) as t2
-    order by t2.TxnTime desc
+    order by t2.TxnTime msg
   </select>
 
 

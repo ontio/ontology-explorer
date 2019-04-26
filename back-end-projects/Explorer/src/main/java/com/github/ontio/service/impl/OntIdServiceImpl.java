@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.OntIdMapper;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.IOntIdService;
 import com.github.ontio.util.*;
 import org.mybatis.spring.annotation.MapperScan;
@@ -69,7 +69,7 @@ public class OntIdServiceImpl implements IOntIdService {
     }
 
     @Override
-    public Result queryOntIdList(int amount) {
+    public OldResult queryOntIdList(int amount) {
 
         List<Map> ontIdList = ontIdMapper.selectOntIdByPage(0, amount);
 
@@ -82,7 +82,7 @@ public class OntIdServiceImpl implements IOntIdService {
     }
 
     @Override
-    public Result queryOntIdList(int pageSize, int pageNumber) {
+    public OldResult queryOntIdList(int pageSize, int pageNumber) {
 
         if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
             return Helper.result("QueryOntIdList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
@@ -107,7 +107,7 @@ public class OntIdServiceImpl implements IOntIdService {
     }
 
     @Override
-    public Result queryOntIdDetail(String ontId, int pageSize, int pageNumber) {
+    public OldResult queryOntIdDetail(String ontId, int pageSize, int pageNumber) {
 
         if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
             return Helper.result("QueryOntId", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);

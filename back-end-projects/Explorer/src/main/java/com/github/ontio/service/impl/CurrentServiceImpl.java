@@ -22,7 +22,7 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.dao.*;
 import com.github.ontio.model.*;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.ICurrentService;
 import com.github.ontio.config.ConfigParam;
 import com.github.ontio.util.ErrorInfo;
@@ -82,7 +82,7 @@ public class CurrentServiceImpl implements ICurrentService {
     }
 
     @Override
-    public Result querySummaryInfo() {
+    public OldResult querySummaryInfo() {
         Map summary = currentMapper.selectSummaryInfo();
        // List<String> addrList = transactionDetailMapper.selectAllAddress();
         initSDK();
@@ -104,7 +104,7 @@ public class CurrentServiceImpl implements ICurrentService {
      * @return
      */
     @Override
-    public Result registerContractInfo(JSONObject reqObj) {
+    public OldResult registerContractInfo(JSONObject reqObj) {
         initSDK();
 
         //TODO 首先更新合约总表，再更新token子表（oep4和oep8）, 需要联系信息
@@ -224,7 +224,7 @@ public class CurrentServiceImpl implements ICurrentService {
      * @return
      */
     @Override
-    public Result queryMarketingInfo() {
+    public OldResult queryMarketingInfo() {
         Map summary = currentMapper.selectSummaryInfo();
         int height = (Integer) summary.get("Height");
 

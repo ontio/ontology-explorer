@@ -19,7 +19,8 @@
 
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.paramBean.ResponseBean;
 
 /**
  * @author zhouq
@@ -34,14 +35,14 @@ public interface ITransactionService {
      * @param txid
      * @return
      */
-    Result queryTxnDetailByHash(String txid);
+    OldResult queryTxnDetailByHash(String txid);
 
     /**
-     * query the last few transactions
+     * query latest transactions
      *
      * @return
      */
-    Result queryTxnList(int amount);
+    ResponseBean queryLatestTxs(int amount);
 
     /**
      * query txn by page
@@ -50,7 +51,7 @@ public interface ITransactionService {
      * @param pageNumber
      * @return
      */
-    Result queryTxnList(int pageSize, int pageNumber);
+    OldResult queryLatestTxs(int pageSize, int pageNumber);
 
     /**
      *  query asset balance and transactions
@@ -58,7 +59,7 @@ public interface ITransactionService {
      * @param address
      * @return
      */
-    Result queryAddressInfo(String address, int pageNumber, int pageSize);
+    OldResult queryAddressInfo(String address, int pageNumber, int pageSize);
 
     /**
      *  query the specially asset balance and transactions
@@ -66,7 +67,7 @@ public interface ITransactionService {
      * @param address
      * @return
      */
-    Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName);
+    OldResult queryAddressInfo(String address, int pageNumber, int pageSize, String assetName);
 
     /**
      *  query the specially asset balance and transactions
@@ -74,7 +75,7 @@ public interface ITransactionService {
      * @param address
      * @return
      */
-    Result queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int time);
+    OldResult queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int time);
 
     /**
      *  query the specially asset balance and transactions
@@ -82,7 +83,7 @@ public interface ITransactionService {
      * @param address
      * @return
      */
-    Result queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime);
+    OldResult queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime);
 
     /**
      *  query the specially asset balance and transactions
@@ -90,19 +91,19 @@ public interface ITransactionService {
      * @param address
      * @return
      */
-    Result queryAddressInfoByTime(String address, String assetName, int beginTime);
+    OldResult queryAddressInfoByTime(String address, String assetName, int beginTime);
 
     /**
      * 查询地址余额
      * @param address
      * @return
      */
-    Result queryAddressBalance(String address);
+    OldResult queryAddressBalance(String address);
 
     /**
      * 查询地址所有交易
      * @param address
      * @return
      */
-    Result queryAddressInfoForExcel(String address);
+    OldResult queryAddressInfoForExcel(String address);
 }

@@ -8,7 +8,7 @@ import com.github.ontio.model.AddressSummary;
 import com.github.ontio.model.ContractSummary;
 import com.github.ontio.model.Contracts;
 import com.github.ontio.model.DailySummary;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.ISummaryService;
 import com.github.ontio.util.*;
 import org.mybatis.spring.annotation.MapperScan;
@@ -92,7 +92,7 @@ public class SummaryServiceImpl implements ISummaryService {
      * @return
      */
     @Override
-    public Result querySummary(int amount) {
+    public OldResult querySummary(int amount) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap();
 
@@ -142,7 +142,7 @@ public class SummaryServiceImpl implements ISummaryService {
      * @return
      */
     @Override
-    public Result summaryAllInfo() {
+    public OldResult summaryAllInfo() {
 
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         if (!configParam.EXPLORER_DAILY_SCHEDULE.equalsIgnoreCase("true")) {
@@ -442,7 +442,7 @@ public class SummaryServiceImpl implements ISummaryService {
      * @return
      */
     @Override
-    public Result queryTps() {
+    public OldResult queryTps() {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("CurrentTps", queryCurrentTps());
@@ -471,7 +471,7 @@ public class SummaryServiceImpl implements ISummaryService {
      * @return
      */
     @Override
-    public Result querySummary(String type, int startTime, int endTime) {
+    public OldResult querySummary(String type, int startTime, int endTime) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> paramMap = new HashMap();
         paramMap.put("startTime", startTime);
@@ -567,7 +567,7 @@ public class SummaryServiceImpl implements ISummaryService {
      * @return
      */
     @Override
-    public Result queryContract(String contractHash, String type, int startTime, int endTime) {
+    public OldResult queryContract(String contractHash, String type, int startTime, int endTime) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap();
         resultMap.put("SummaryList", new ArrayList<>());
@@ -669,7 +669,7 @@ public class SummaryServiceImpl implements ISummaryService {
      * @return
      */
     @Override
-    public Result queryProjectInfo(String project, String type, int startTime, int endTime) {
+    public OldResult queryProjectInfo(String project, String type, int startTime, int endTime) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         List<Contracts> contractsList = contractsMapper.selectAllContractByProject(project);
         Map<String, Object> resultMap = new HashMap();
@@ -741,7 +741,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
 
     @Override
-    public Result queryTotalSupply() {
+    public OldResult queryTotalSupply() {
 
         BigDecimal specialAmount = new BigDecimal("0");
         //?qid=1&contract=0100000000000000000000000000000000000000&from=0&count=100
@@ -772,7 +772,7 @@ public class SummaryServiceImpl implements ISummaryService {
     }
 
     @Override
-    public Result queryNativeTotalSupply() {
+    public OldResult queryNativeTotalSupply() {
 
         BigDecimal specialAmount = new BigDecimal("0");
         //?qid=1&contract=0100000000000000000000000000000000000000&from=0&count=100

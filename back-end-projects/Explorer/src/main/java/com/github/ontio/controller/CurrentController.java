@@ -20,7 +20,7 @@
 package com.github.ontio.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.impl.CurrentServiceImpl;
 import com.github.ontio.util.Helper;
 import org.slf4j.Logger;
@@ -52,11 +52,11 @@ public class CurrentController {
      */
     @RequestMapping(value = "/summary", method = RequestMethod.GET)
     @ResponseBody
-    public Result querySummaryInfo() {
+    public OldResult querySummaryInfo() {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = currentService.querySummaryInfo();
+        OldResult rs = currentService.querySummaryInfo();
         return rs;
     }
 
@@ -74,12 +74,12 @@ public class CurrentController {
     }
 
     @RequestMapping(value = "/contract/registerContractInfo", method = RequestMethod.POST)
-    public Result registerContractInfo(@RequestBody JSONObject reqObj) {
+    public OldResult registerContractInfo(@RequestBody JSONObject reqObj) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("####reqObj:{}", reqObj.toJSONString());
 
-        Result rs = currentService.registerContractInfo(reqObj);
+        OldResult rs = currentService.registerContractInfo(reqObj);
         return rs;
     }
 
@@ -89,11 +89,11 @@ public class CurrentController {
      * @return
      */
     @RequestMapping(value = "/marketing/info", method = RequestMethod.GET)
-    public Result queryMarketingInfo() {
+    public OldResult queryMarketingInfo() {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = currentService.queryMarketingInfo();
+        OldResult rs = currentService.queryMarketingInfo();
         return rs;
     }
 }
