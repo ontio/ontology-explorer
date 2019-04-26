@@ -24,7 +24,7 @@ package com.github.ontio.service.impl;
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
@@ -56,7 +56,7 @@ public class BlockServiceImpl implements IBlockService {
 
 
     @Override
-    public Result queryBlockList(int amount) {
+    public OldResult queryBlockList(int amount) {
 
         List<Map> blockList = blockMapper.selectBlockByPage(0, amount);
 
@@ -64,7 +64,7 @@ public class BlockServiceImpl implements IBlockService {
     }
 
     @Override
-    public Result queryBlockList(int pageSize, int pageNumber) {
+    public OldResult queryBlockList(int pageSize, int pageNumber) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
         List<Map> blockList = blockMapper.selectBlockByPage(start, pageSize);
@@ -81,7 +81,7 @@ public class BlockServiceImpl implements IBlockService {
 
 
     @Override
-    public Result queryBlockByHeight(int height) {
+    public OldResult queryBlockByHeight(int height) {
 
         Map blockInfo = blockMapper.selectBlockByHeight(height);
         if (Helper.isEmptyOrNull(blockInfo)) {
@@ -95,7 +95,7 @@ public class BlockServiceImpl implements IBlockService {
     }
 
     @Override
-    public Result queryBlockByHash(String hash) {
+    public OldResult queryBlockByHash(String hash) {
 
         Map blockInfo = blockMapper.selectBlockByHash(hash);
         if (Helper.isEmptyOrNull(blockInfo)) {
@@ -110,7 +110,7 @@ public class BlockServiceImpl implements IBlockService {
     }
 
     @Override
-    public Result queryBlockGenerateTime(int amount) {
+    public OldResult queryBlockGenerateTime(int amount) {
 
         List<Map> dataList = blockMapper.selectHeightAndTime(amount + 1);
         List<Map> rsList = new ArrayList<>();
@@ -127,7 +127,7 @@ public class BlockServiceImpl implements IBlockService {
     }
 
     @Override
-    public Result blockCountInTwoWeeks(long time) {
+    public OldResult blockCountInTwoWeeks(long time) {
 
         List<Map> twoWeeksBlockCountList = new ArrayList<>();
         long zeroTime = time / 86400 * 86400;

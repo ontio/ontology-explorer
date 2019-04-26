@@ -19,7 +19,7 @@
 
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.impl.BlockServiceImpl;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
@@ -59,12 +59,12 @@ public class BlockController {
     @ApiOperation(value = "查询block list")
     @RequestMapping(value = "/blocklist/{amount}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryBlockList(@PathVariable("amount") int amount) {
+    public OldResult queryBlockList(@PathVariable("amount") int amount) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("amount:{}", amount);
 
-        Result rs = blockService.queryBlockList(amount);
+        OldResult rs = blockService.queryBlockList(amount);
         return rs;
     }
 
@@ -77,13 +77,13 @@ public class BlockController {
      */
     @RequestMapping(value = "/blocklist/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryBlockByPage(@PathVariable("pagenumber") Integer pageNumber,
-                                   @PathVariable("pagesize") Integer pageSize) {
+    public OldResult queryBlockByPage(@PathVariable("pagenumber") Integer pageNumber,
+                                      @PathVariable("pagesize") Integer pageSize) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
 
-        Result rs = blockService.queryBlockList(pageSize, pageNumber);
+        OldResult rs = blockService.queryBlockList(pageSize, pageNumber);
         return rs;
     }
 
@@ -94,12 +94,12 @@ public class BlockController {
      */
     @RequestMapping(value = "/block/{param}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryBlock(@PathVariable("param") String param) {
+    public OldResult queryBlock(@PathVariable("param") String param) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("param:{}", param);
 
-        Result rs = new Result();
+        OldResult rs = new OldResult();
         if (param.length() == 64) {
             rs = blockService.queryBlockByHash(param);
         } else {
@@ -123,12 +123,12 @@ public class BlockController {
      */
     @RequestMapping(value = "/block/generatetime/{amount}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryBlockGenerateTime(@PathVariable("amount") int amount) {
+    public OldResult queryBlockGenerateTime(@PathVariable("amount") int amount) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("amount:{}", amount);
 
-        Result rs = blockService.queryBlockGenerateTime(amount);
+        OldResult rs = blockService.queryBlockGenerateTime(amount);
         return rs;
     }
 
@@ -142,12 +142,12 @@ public class BlockController {
      */
     @RequestMapping(value = "/blockCountInTwoWeeks/{time}", method = RequestMethod.GET)
     @ResponseBody
-    public Result blockCountInTwoWeeks(@PathVariable("time") long time) {
+    public OldResult blockCountInTwoWeeks(@PathVariable("time") long time) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("time:{}", time);
 
-        Result rs = blockService.blockCountInTwoWeeks(time);
+        OldResult rs = blockService.blockCountInTwoWeeks(time);
         return rs;
     }
 }

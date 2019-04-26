@@ -1,6 +1,6 @@
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.impl.ContractServiceImpl;
 import com.github.ontio.util.Helper;
 import org.slf4j.Logger;
@@ -31,9 +31,9 @@ public class ContractController {
      * @param pagesize   the amount of each page
      */
     @RequestMapping(value = "contract/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public Result contracts(@PathVariable("pagesize") int pagesize,
-                            @PathVariable("pagenumber") int pagenumber){
-        Result rs = contractService.queryContract(pagesize, pagenumber);
+    public OldResult contracts(@PathVariable("pagesize") int pagesize,
+                               @PathVariable("pagenumber") int pagenumber){
+        OldResult rs = contractService.queryContract(pagesize, pagenumber);
 
         return rs;
     }
@@ -48,9 +48,9 @@ public class ContractController {
      */
     @RequestMapping(value = "/contract/{contracthash}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryContractTxsByPage(@PathVariable("contracthash") String contractHash,
-                                         @PathVariable("pagenumber") Integer pageNumber,
-                                         @PathVariable("pagesize") Integer pageSize) {
+    public OldResult queryContractTxsByPage(@PathVariable("contracthash") String contractHash,
+                                            @PathVariable("pagenumber") Integer pageNumber,
+                                            @PathVariable("pagesize") Integer pageSize) {
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
@@ -58,7 +58,7 @@ public class ContractController {
             return null;
         }
 
-        Result rs = contractService.queryContractByHash(contractHash, pageSize, pageNumber);
+        OldResult rs = contractService.queryContractByHash(contractHash, pageSize, pageNumber);
         return rs;
     }
 
@@ -70,9 +70,9 @@ public class ContractController {
      * @return
      */
     @RequestMapping(value = "/oepcontract/{type}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public Result queryOEPContract(@PathVariable("type") String type,
-                                    @PathVariable("pagenumber") Integer pageNumber,
-                                    @PathVariable("pagesize") Integer pageSize){
+    public OldResult queryOEPContract(@PathVariable("type") String type,
+                                      @PathVariable("pagenumber") Integer pageNumber,
+                                      @PathVariable("pagesize") Integer pageSize){
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
@@ -80,7 +80,7 @@ public class ContractController {
             return null;
         }
 
-        Result rs = contractService.queryOEPContract(type, pageSize, pageNumber);
+        OldResult rs = contractService.queryOEPContract(type, pageSize, pageNumber);
         return rs;
     }
 
@@ -93,10 +93,10 @@ public class ContractController {
      * @return
      */
     @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public Result queryOEPContractByHash(@PathVariable("contracthash") String contracthash,
-                                         @PathVariable("type") String type,
-                                         @PathVariable("pagenumber") Integer pageNumber,
-                                         @PathVariable("pagesize") Integer pageSize){
+    public OldResult queryOEPContractByHash(@PathVariable("contracthash") String contracthash,
+                                            @PathVariable("type") String type,
+                                            @PathVariable("pagenumber") Integer pageNumber,
+                                            @PathVariable("pagesize") Integer pageSize){
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
@@ -104,7 +104,7 @@ public class ContractController {
             return null;
         }
 
-        Result rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, "", pageSize, pageNumber);
+        OldResult rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, "", pageSize, pageNumber);
         return rs;
     }
 
@@ -118,11 +118,11 @@ public class ContractController {
      * @return
      */
     @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{tokenname}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public Result queryOEPContractByHashAndSymbol(@PathVariable("contracthash") String contracthash,
-                                                   @PathVariable("type") String type,
-                                                   @PathVariable("tokenname") String tokenname,
-                                                   @PathVariable("pagenumber") Integer pageNumber,
-                                                   @PathVariable("pagesize") Integer pageSize){
+    public OldResult queryOEPContractByHashAndSymbol(@PathVariable("contracthash") String contracthash,
+                                                     @PathVariable("type") String type,
+                                                     @PathVariable("tokenname") String tokenname,
+                                                     @PathVariable("pagenumber") Integer pageNumber,
+                                                     @PathVariable("pagesize") Integer pageSize){
 
         logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
@@ -130,7 +130,7 @@ public class ContractController {
             return null;
         }
 
-        Result rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
+        OldResult rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
         return rs;
     }
 
@@ -142,11 +142,11 @@ public class ContractController {
      * @return
      */
     @GetMapping(value = "/contract/dappstore/{pagesize}/{pagenumber}")
-    public Result queryDappstoreContractInfo(@PathVariable("pagesize") Integer pageSize, @PathVariable("pagenumber") Integer pageNumber){
+    public OldResult queryDappstoreContractInfo(@PathVariable("pagesize") Integer pageSize, @PathVariable("pagenumber") Integer pageNumber){
 
         logger.info("####{}.{} begin...pagesize:{},pagenumber:{}", CLASS_NAME, Helper.currentMethod(),pageSize, pageNumber);
 
-        Result rs = contractService.queryDappstoreContractInfo(pageSize, pageNumber);
+        OldResult rs = contractService.queryDappstoreContractInfo(pageSize, pageNumber);
         return rs;
     }
 
@@ -156,11 +156,11 @@ public class ContractController {
      * @return
      */
     @GetMapping(value = "/contract/dappstore/24h/summary")
-    public Result queryDappstoreContract24hSummary(){
+    public OldResult queryDappstoreContract24hSummary(){
 
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = contractService.queryDappstore24hSummary();
+        OldResult rs = contractService.queryDappstore24hSummary();
         return rs;
     }
 

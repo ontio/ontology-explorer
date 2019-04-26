@@ -7,7 +7,7 @@ import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Oep4;
 import com.github.ontio.model.Oep5;
 import com.github.ontio.model.Oep8;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
@@ -61,7 +61,7 @@ public class ContractServiceImpl implements IContractService {
     private ContractSummaryMapper contractSummaryMapper;
 
     @Override
-    public Result queryContract(Integer pageSize, Integer pageNumber) {
+    public OldResult queryContract(Integer pageSize, Integer pageNumber) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Map<String, Object> paramMap = new HashMap<>();
@@ -91,7 +91,7 @@ public class ContractServiceImpl implements IContractService {
      * @return
      */
     @Override
-    public Result queryContractByHash(String contractHash, int pageSize, int pageNumber) {
+    public OldResult queryContractByHash(String contractHash, int pageSize, int pageNumber) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Map<String, Object> rs = getResultMap(contractHash, "", "", pageSize, pageNumber);
@@ -185,7 +185,7 @@ public class ContractServiceImpl implements IContractService {
      * @return
      */
     @Override
-    public Result queryOEPContract(String type, int pageSize, int pageNumber) {
+    public OldResult queryOEPContract(String type, int pageSize, int pageNumber) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Map<String, Object> paramMap = new HashMap<>();
@@ -248,7 +248,7 @@ public class ContractServiceImpl implements IContractService {
      * @return
      */
     @Override
-    public Result queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber) {
+    public OldResult queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber) {
         logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> rs = getResultMap(contractHash, type, tokenName, pageSize, pageNumber);
         if (rs == null) {
@@ -315,7 +315,7 @@ public class ContractServiceImpl implements IContractService {
 
 
     @Override
-    public Result queryDappstoreContractInfo(Integer pageSize, Integer pageNumber) {
+    public OldResult queryDappstoreContractInfo(Integer pageSize, Integer pageNumber) {
 
         Map<String, Object> rsMap = new HashMap<>();
 
@@ -399,7 +399,7 @@ public class ContractServiceImpl implements IContractService {
 
 
     @Override
-    public Result queryDappstore24hSummary() {
+    public OldResult queryDappstore24hSummary() {
 
         //查询Dappstore的合约基本信息
         List<Map> allContractInfoList = contractsMapper.selectDappstoreContract();

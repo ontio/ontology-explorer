@@ -1,6 +1,6 @@
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 
 /**
  * @author king
@@ -15,7 +15,7 @@ public interface IContractService {
      * @param pageNum
      * @return
      */
-    Result queryContract(Integer pagesize, Integer pageNum);
+    OldResult queryContract(Integer pagesize, Integer pageNum);
 
     /**
      * query txn by page
@@ -24,7 +24,7 @@ public interface IContractService {
      * @param pageSize   the amount of each page
      * @return
      */
-    Result queryContractByHash(String contractHash, int pageSize, int pageNumber);
+    OldResult queryContractByHash(String contractHash, int pageSize, int pageNumber);
 
     /**
      * query txn by page
@@ -33,7 +33,7 @@ public interface IContractService {
      * @param pageSize   the amount of each page
      * @return
      */
-    Result queryOEPContract(String type, int pageSize, int pageNumber);
+    OldResult queryOEPContract(String type, int pageSize, int pageNumber);
 
     /**
      *  依据合约hash查询Token合约
@@ -44,12 +44,12 @@ public interface IContractService {
      * @param pageNumber the start page
      * @return
      */
-     Result queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber);
+     OldResult queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber);
 
 
 
-     Result queryDappstoreContractInfo(Integer pageSize, Integer pageNumber);
+     OldResult queryDappstoreContractInfo(Integer pageSize, Integer pageNumber);
 
 
-     Result queryDappstore24hSummary();
+     OldResult queryDappstore24hSummary();
 }

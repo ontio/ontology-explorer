@@ -30,52 +30,52 @@ public enum ErrorInfo {
     /**
      * success
      */
-    SUCCESS(0L, "SUCCESS"),
+    SUCCESS(0, "SUCCESS"),
 
     /**
      * param error
      */
-    PARAM_ERROR(61001L, "FAIL, param error."),
+    PARAM_ERROR(61001, "FAIL, param error."),
 
     /**
      * already exist
      */
-    ALREADY_EXIST(61002L, "FAIL, already exist."),
+    ALREADY_EXIST(61002, "FAIL, already exist."),
 
     /**
      * not found in db
      */
-    NOT_FOUND(61003L, "FAIL, not found."),
+    NOT_FOUND(61003, "FAIL, not found."),
 
     /**
      * not exist
      */
-    NOT_EXIST(61004L, "FAIL, not exist."),
+    NOT_EXIST(61004, "FAIL, not exist."),
 
     /**
      * no permission
      */
-    NO_PERMISSION(61005L, "FAIL, no permission"),
+    NO_PERMISSION(61005, "FAIL, no permission"),
 
     /**
      * not register
      */
-    NOT_REGISTRY(61006L, "FAIL, not registry."),
+    NOT_REGISTRY(61006, "FAIL, not registry."),
 
     /**
      * expires
      */
-    EXPIRES(61007L, "FAIL, expires."),
+    EXPIRES(61007, "FAIL, expires."),
 
     /**
      * revoked
      */
-    REVOKED(61008L,"FAIL, revoked."),
+    REVOKED(61008,"FAIL, revoked."),
 
     /**
      * serialized error
      */
-    SERIALIZE_ERROR(61009L,"FAIL, serialized error."),
+    SERIALIZE_ERROR(61009,"FAIL, serialized error."),
 
 
 
@@ -83,55 +83,53 @@ public enum ErrorInfo {
     /**
      * verify failed
      */
-    VERIFY_FAILED(62001L, "FAIL, verify fail."),
+    VERIFY_FAILED(62001, "FAIL, verify fail."),
 
     /**
      * error occur whern create
      */
-    CREATE_FAIL(62002L, "FAIL, create fail."),
+    CREATE_FAIL(62002, "FAIL, create fail."),
 
     /**
      * error occur whern communicate
      */
-    COMM_FAIL(62003L, "FAIL, communication fail."),
+    COMM_FAIL(62003, "FAIL, communication fail."),
 
     /**
      * error occur whern operate file
      */
-    FILE_ERROR(62004L, "FAIL, file operate fail."),
+    FILE_ERROR(62004, "FAIL, file operate fail."),
 
     /**
      * error occur when operate db
      */
-    DB_ERROR(62005L, "FAIL, db operate fail."),
-
-
+    DB_ERROR(62005, "FAIL, db operate fail."),
 
 
     /**
      * inner error
      */
-    INNER_ERROR(63001L, "FAIL, inner error."),
+    INNER_ERROR(63001, "FAIL, inner error."),
 
     /**
      * exception
      */
-    EXCEPTION(63002L, "FAIL, exception.");
+    EXCEPTION(63002, "FAIL, exception.");
 
-    private long errorCode;
-    private String errorDesc;
+    private Integer code;
+    private String msg;
 
-    ErrorInfo(long errorCode, String errorDesc) {
-        this.errorCode = errorCode;
-        this.errorDesc = errorDesc;
+    ErrorInfo(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
     }
 
-    public long code() {
-        return errorCode;
+    public Integer code() {
+        return code;
     }
 
     public String desc() {
-        return errorDesc;
+        return msg;
     }
 
 

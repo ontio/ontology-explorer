@@ -22,10 +22,15 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.*;
+import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.model.OntId;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.paramBean.ResponseBean;
 import com.github.ontio.service.ITransactionService;
-import com.github.ontio.util.*;
+import com.github.ontio.util.ConstantParam;
+import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
+import com.github.ontio.util.OntologySDKService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +53,10 @@ public class TransactionServiceImpl implements ITransactionService {
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private static final String VERSION = "1.0";
+
+
+    @Autowired
+    private TxDetailMapper txDetailMapper;
 
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
@@ -73,7 +82,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryTxnList(int amount) {
+    public ResponseBean queryLatestTxs(int amount) {
 
         List<Map> txnList = transactionDetailMapper.selectTxnWithoutOntId(0, amount);
         for (Map map :
@@ -84,11 +93,11 @@ public class TransactionServiceImpl implements ITransactionService {
         Map<String, Object> rs = new HashMap();
         rs.put("TxnList", txnList);
 
-        return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(),  rs);
     }
 
     @Override
-    public Result queryTxnList(int pageSize, int pageNumber) {
+    public OldResult queryLatestTxs(int pageSize, int pageNumber) {
 
         if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
             return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
@@ -111,7 +120,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryTxnDetailByHash(String txnHash) {
+    public OldResult queryTxnDetailByHash(String txnHash) {
 
         Map<String, Object> txnInfo = transactionDetailMapper.selectTxnByHash(txnHash);
         if (Helper.isEmptyOrNull(txnInfo)) {
@@ -160,7 +169,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryAddressInfo(String address, int pageNumber, int pageSize) {
+    public OldResult queryAddressInfo(String address, int pageNumber, int pageSize) {
         if (address.length() != 34){
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
@@ -273,7 +282,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName) {
+    public OldResult queryAddressInfo(String address, int pageNumber, int pageSize, String assetName) {
 
         if (address.length() != 34){
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
@@ -340,7 +349,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int endTime) {
+    public OldResult queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int endTime) {
 
         if (address.length() != 34){
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
@@ -376,7 +385,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime) {
+    public OldResult queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime) {
 
         if (address.length() != 34){
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
@@ -413,7 +422,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryAddressInfoByTime(String address, String assetName, int beginTime) {
+    public OldResult queryAddressInfoByTime(String address, String assetName, int beginTime) {
 
         if (address.length() != 34){
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
@@ -440,7 +449,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Result queryAddressBalance(String address) {
+    public OldResult queryAddressBalance(String address) {
         if (address.length() != 34){
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
@@ -914,7 +923,7 @@ public class TransactionServiceImpl implements ITransactionService {
      * @return
      */
     @Override
-    public Result queryAddressInfoForExcel(String address) {
+    public OldResult queryAddressInfoForExcel(String address) {
 
         Map<String, Object> rs = new HashMap<>();
         try {

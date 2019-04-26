@@ -19,7 +19,7 @@
 
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.impl.OntIdServiceImpl;
 import com.github.ontio.util.Helper;
 import org.slf4j.Logger;
@@ -53,12 +53,12 @@ public class OntIdController {
      */
     @RequestMapping(value = "/ontidlist/{amount}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryOntIdList(@PathVariable("amount") int amount) {
+    public OldResult queryOntIdList(@PathVariable("amount") int amount) {
 
         logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         logger.info("amount:{}",amount);
 
-        Result rs = ontIdService.queryOntIdList(amount);
+        OldResult rs = ontIdService.queryOntIdList(amount);
         return rs;
     }
 
@@ -69,13 +69,13 @@ public class OntIdController {
      */
     @RequestMapping(value = "/ontidlist/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryOntIdListByPage(@PathVariable("pagesize") int pageSize,
-                                       @PathVariable("pagenumber") int pageNumber) {
+    public OldResult queryOntIdListByPage(@PathVariable("pagesize") int pageSize,
+                                          @PathVariable("pagenumber") int pageNumber) {
 
         logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         logger.info("pageSize:{}, pagenumber:{}", pageSize, pageNumber);
 
-        Result rs = ontIdService.queryOntIdList(pageSize, pageNumber);
+        OldResult rs = ontIdService.queryOntIdList(pageSize, pageNumber);
         return rs;
 
     }
@@ -89,14 +89,14 @@ public class OntIdController {
      */
     @RequestMapping(value = "/ontid/{ontid}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryOntIdDetail(@PathVariable("ontid") String ontId,
-                                   @PathVariable("pagesize") int pageSize,
-                                   @PathVariable("pagenumber") int pageNumber) {
+    public OldResult queryOntIdDetail(@PathVariable("ontid") String ontId,
+                                      @PathVariable("pagesize") int pageSize,
+                                      @PathVariable("pagenumber") int pageNumber) {
 
         logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         logger.info("ontId:{},pageSize:{},pageNumber", ontId, pageSize, pageNumber);
 
-        Result rs = ontIdService.queryOntIdDetail(ontId, pageSize, pageNumber);
+        OldResult rs = ontIdService.queryOntIdDetail(ontId, pageSize, pageNumber);
         return rs;
 
     }

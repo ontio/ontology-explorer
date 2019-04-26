@@ -19,45 +19,42 @@
 
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.Result;
-import com.github.ontio.service.impl.TransactionServiceImpl;
+import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.paramBean.ResponseBean;
+import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.Max;
 
 /**
  * @author zhouq
  * @version 1.0
  * @date 2018/3/15
  */
+@Validated
+@Slf4j
 @RestController
-@EnableAutoConfiguration
-@RequestMapping(value = "/api/v1/explorer/")
+@RequestMapping(value = "/v2/transactions")
 public class TransactionController {
-
-    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
     @Autowired
-    private TransactionServiceImpl transactionService;
+    private ITransactionService transactionService;
 
-    /**
-     * query the last few transactions
-     *
-     * @return
-     */
-    @RequestMapping(value = "/transactionlist/{amount}", method = RequestMethod.GET)
-    @ResponseBody
-    public Result queryTransactionList(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}", amount);
+    @ApiOperation(value = "Get latest transaction list")
+    @GetMapping()
+    public ResponseBean queryLatestTxs(@RequestParam("count") @Max(50) int count) {
 
-        Result rs = transactionService.queryTxnList(amount);
+        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        ResponseBean rs = transactionService.queryLatestTxs(count);
         return rs;
     }
 
@@ -68,13 +65,13 @@ public class TransactionController {
      */
     @RequestMapping(value = "/transactionlist/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryTxn(@PathVariable("pagesize") Integer pageSize,
-                           @PathVariable("pagenumber") Integer pageNumber) {
+    public OldResult queryTxn(@PathVariable("pagesize") Integer pageSize,
+                              @PathVariable("pagenumber") Integer pageNumber) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber:{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pageNumber:{}", pageSize, pageNumber);
 
-        Result rs = transactionService.queryTxnList(pageSize, pageNumber);
+        OldResult rs = transactionService.queryLatestTxs(pageSize, pageNumber);
         return rs;
     }
 
@@ -85,12 +82,12 @@ public class TransactionController {
      */
     @RequestMapping(value = "/transaction/{txnhash}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryTxnByHash(@PathVariable("txnhash") String txnHash) {
+    public OldResult queryTxnByHash(@PathVariable("txnhash") String txnHash) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("txnHash:{}", txnHash);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("txnHash:{}", txnHash);
 
-        Result rs = transactionService.queryTxnDetailByHash(txnHash);
+        OldResult rs = transactionService.queryTxnDetailByHash(txnHash);
         return rs;
     }
 
@@ -101,14 +98,14 @@ public class TransactionController {
      */
     @RequestMapping(value = "/address/{address}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressInfo(@PathVariable("address") String address,
-                                   @PathVariable("pagesize") int pageSize,
-                                   @PathVariable("pagenumber") int pageNumber) {
+    public OldResult queryAddressInfo(@PathVariable("address") String address,
+                                      @PathVariable("pagesize") int pageSize,
+                                      @PathVariable("pagenumber") int pageNumber) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},pagesize:{},pagenumber:{}", address, pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},pagesize:{},pagenumber:{}", address, pageSize, pageNumber);
 
-        Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize);
+        OldResult rs = transactionService.queryAddressInfo(address, pageNumber, pageSize);
         return rs;
     }
 
@@ -119,15 +116,15 @@ public class TransactionController {
      */
     @RequestMapping(value = "/address/{address}/{assetname}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressInfo(@PathVariable("address") String address,
-                                   @PathVariable("pagesize") int pageSize,
-                                   @PathVariable("pagenumber") int pageNumber,
-                                   @PathVariable("assetname") String assetName) {
+    public OldResult queryAddressInfo(@PathVariable("address") String address,
+                                      @PathVariable("pagesize") int pageSize,
+                                      @PathVariable("pagenumber") int pageNumber,
+                                      @PathVariable("assetname") String assetName) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},pagesize:{},pagenumber:{}, assetname:{}", address, pageSize, pageNumber, assetName);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},pagesize:{},pagenumber:{}, assetname:{}", address, pageSize, pageNumber, assetName);
 
-        Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize, assetName);
+        OldResult rs = transactionService.queryAddressInfo(address, pageNumber, pageSize, assetName);
         return rs;
     }
 
@@ -139,15 +136,15 @@ public class TransactionController {
      */
     @RequestMapping(value = "/address/timeandpage/{address}/{assetname}/{pagesize}/{endtime}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressInfoByTimeAndPage(@PathVariable("address") String address,
-                                         @PathVariable("pagesize") int pageSize,
-                                         @PathVariable("assetname") String assetName,
-                                         @PathVariable("endtime") int endTime) {
+    public OldResult queryAddressInfoByTimeAndPage(@PathVariable("address") String address,
+                                                   @PathVariable("pagesize") int pageSize,
+                                                   @PathVariable("assetname") String assetName,
+                                                   @PathVariable("endtime") int endTime) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},assetname:{},pageSize:{},endTime:{}", address, assetName, pageSize, endTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},assetname:{},pageSize:{},endTime:{}", address, assetName, pageSize, endTime);
 
-        Result rs = transactionService.queryAddressInfoByTimeAndPage(address, assetName, pageSize, endTime);
+        OldResult rs = transactionService.queryAddressInfoByTimeAndPage(address, assetName, pageSize, endTime);
         return rs;
     }
 
@@ -158,15 +155,15 @@ public class TransactionController {
      */
     @RequestMapping(value = "/address/time/{address}/{assetname}/{begintime}/{endtime}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressInfoByTime(@PathVariable("address") String address,
-                                         @PathVariable("begintime") int beginTime,
-                                         @PathVariable("assetname") String assetName,
-                                         @PathVariable("endtime") int endTime) {
+    public OldResult queryAddressInfoByTime(@PathVariable("address") String address,
+                                            @PathVariable("begintime") int beginTime,
+                                            @PathVariable("assetname") String assetName,
+                                            @PathVariable("endtime") int endTime) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},assetname:{},beginTime:{},endTime:{}", address, assetName, beginTime, endTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},assetname:{},beginTime:{},endTime:{}", address, assetName, beginTime, endTime);
 
-        Result rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime, endTime);
+        OldResult rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime, endTime);
         return rs;
     }
 
@@ -177,14 +174,14 @@ public class TransactionController {
      */
     @RequestMapping(value = "/address/time/{address}/{assetname}/{begintime}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressInfoByTime2(@PathVariable("address") String address,
-                                         @PathVariable("begintime") int beginTime,
-                                         @PathVariable("assetname") String assetName) {
+    public OldResult queryAddressInfoByTime2(@PathVariable("address") String address,
+                                             @PathVariable("begintime") int beginTime,
+                                             @PathVariable("assetname") String assetName) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},assetname:{},beginTime:{}", address, assetName, beginTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},assetname:{},beginTime:{}", address, assetName, beginTime);
 
-        Result rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime);
+        OldResult rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime);
         return rs;
     }
 
@@ -195,12 +192,12 @@ public class TransactionController {
      */
     @RequestMapping(value = "/address/balance/{address}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressBalance(@PathVariable("address") String address) {
+    public OldResult queryAddressBalance(@PathVariable("address") String address) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{}", address);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{}", address);
 
-        Result rs = transactionService.queryAddressBalance(address);
+        OldResult rs = transactionService.queryAddressBalance(address);
         return rs;
     }
 
@@ -211,11 +208,11 @@ public class TransactionController {
      */
 /*    @RequestMapping(value = "/address/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressList() {
+    public OldResult queryAddressList() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = transactionService.queryAddressList();
+        OldResult rs = transactionService.queryAddressList();
         return rs;
     }*/
 
@@ -226,11 +223,11 @@ public class TransactionController {
      */
     @RequestMapping(value = "/address/queryaddressinfo/{address}", method = RequestMethod.GET)
     @ResponseBody
-    public Result queryAddressInfo(@PathVariable("address") String address) {
+    public OldResult queryAddressInfo(@PathVariable("address") String address) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        Result rs = transactionService.queryAddressInfoForExcel(address);
+        OldResult rs = transactionService.queryAddressInfoForExcel(address);
         return rs;
     }
 }

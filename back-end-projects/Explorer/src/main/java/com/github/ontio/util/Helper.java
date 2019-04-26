@@ -19,7 +19,7 @@
 
 package com.github.ontio.util;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.paramBean.OldResult;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,8 +45,8 @@ public class Helper {
      * @param rs
      * @return
      */
-    public static Result result(String action, long error, String desc, String version, Object rs) {
-        Result rr = new Result();
+    public static OldResult result(String action, long error, String desc, String version, Object rs) {
+        OldResult rr = new OldResult();
         rr.Error = error;
         rr.Action = action;
         rr.Desc = desc;
@@ -54,6 +54,7 @@ public class Helper {
         rr.Result = rs;
         return rr;
     }
+
 
     /**
      * check param whether is null or ''
