@@ -24,7 +24,7 @@ package com.github.ontio.paramBean;
  * @author zhouq
  * @date 2018/2/27
  */
-public class Result {
+public class OldResult {
 
     public String Action;
 
@@ -38,12 +38,12 @@ public class Result {
 
     @Override
     public String toString() {
-        return "Result{" +
+        return "OldResult{" +
                 "Action='" + Action + '\'' +
                 ", Error=" + Error +
                 ", Desc='" + Desc + '\'' +
                 ", Version='" + Version + '\'' +
-                ", Result=" + Result +
+                ", OldResult=" + Result +
                 '}';
     }
 }
