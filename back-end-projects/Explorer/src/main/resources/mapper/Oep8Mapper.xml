@@ -14,4 +14,14 @@
     <result column="audit_flag" jdbcType="INTEGER" property="auditFlag" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+
+
+  <select id="selectAuditPassedOep8" resultType="java.util.Map" useCache="false">
+    select contract_hash as contractHash, GROUP_CONCAT(symbol) as symbol
+    from tbl_oep8
+    where audit_flag = 1
+    GROUP BY contract_hash
+  </select>
+
+
 </mapper>

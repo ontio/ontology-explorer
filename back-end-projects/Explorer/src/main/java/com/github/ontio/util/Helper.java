@@ -19,6 +19,7 @@
 
 package com.github.ontio.util;
 
+import com.github.ontio.model.common.OntIdEventEnum;
 import com.github.ontio.paramBean.OldResult;
 
 import java.io.BufferedReader;
@@ -74,6 +75,12 @@ public class Helper {
         return true;
     }
 
+
+    public static Boolean isNotEmptyOrNull(Object... params){
+        return !isEmptyOrNull(params);
+    }
+
+
     /**
      * merge byte[] head and byte[] tail ->byte[head+tail] rs
      *
@@ -101,13 +108,13 @@ public class Helper {
 
         String[] desArray = inputStr.split(SEPARATOR);
         String action = desArray[0];
-        if (OntIdEventDesType.REGISTERONTID.value().equals(action)) {
+        if (OntIdEventEnum.REGISTERONTID.value().equals(action)) {
             descriptionSb.append("register OntId");
-        } else if (OntIdEventDesType.PUBLICKEYOPE.value().equals(action)) {
+        } else if (OntIdEventEnum.PUBLICKEYOPE.value().equals(action)) {
             descriptionSb.append(desArray[1]);
             descriptionSb.append(" publicKey:");
             descriptionSb.append(desArray[3]);
-        } else if (OntIdEventDesType.ATTRIBUTEOPE.value().equals(action)) {
+        } else if (OntIdEventEnum.ATTRIBUTEOPE.value().equals(action)) {
             descriptionSb.append(desArray[1]);
             descriptionSb.append(" attribute:");
             String attrName = desArray[3];
@@ -116,7 +123,7 @@ public class Helper {
             } else {
                 descriptionSb.append(desArray[3]);
             }
-        } else if (OntIdEventDesType.RECOVERYOPE.value().equals(action)) {
+        } else if (OntIdEventEnum.RECOVERYOPE.value().equals(action)) {
             descriptionSb.append(desArray[1]);
             descriptionSb.append(" recovery:");
             descriptionSb.append(desArray[3]);

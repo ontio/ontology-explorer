@@ -17,14 +17,14 @@
  */
 
 
-package com.github.ontio.util;
+package com.github.ontio.model.common;
 
 /**
  * @author zhouq
  * @version 1.0
  * @date 2018/3/26
  */
-public enum OntIdEventDesType {
+public enum OntIdEventEnum {
 
 
     /**
@@ -50,7 +50,7 @@ public enum OntIdEventDesType {
 
     private String desc;
 
-    OntIdEventDesType(String desc) {
+    OntIdEventEnum(String desc) {
         this.desc = desc;
     }
 

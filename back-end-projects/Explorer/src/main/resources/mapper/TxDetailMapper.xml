@@ -23,4 +23,124 @@
     <result column="payer" jdbcType="VARCHAR" property="payer" />
     <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
   </resultMap>
+
+    <cache type="com.github.ontio.config.ExplorerRedisCache">
+        <property name="eviction" value="LRU" />
+        <property name="size" value="1024" />
+        <property name="readOnly" value="false" />
+    </cache>
+
+    <sql id="txBasicColumns">
+        tx_hash as txHash,
+        tx_type as txType,
+        tx_time as txTime,
+        block_height as blockHeight,
+        confirm_flag as confirmFlag,
+        block_index as blockIndex,
+        fee as fee
+    </sql>
+
+    <sql id="txDetailColumns">
+        tx_hash as txHash,
+        tx_type as txType,
+        tx_time as txTime,
+        block_height as blockHeight,
+        confirm_flag as confirmFlag,
+        block_index as blockIndex,
+        fee as fee,
+        description as description,
+        event_type as eventType
+    </sql>
+
+    <sql id="transferTxDetailColumns">
+        tx_hash as txHash,
+        tx_type as txType,
+        tx_time as txTime,
+        block_height as blockHeight,
+        confirm_flag as confirmFlag,
+        block_index as blockIndex,
+        fee as fee,
+		asset_name as assetName,
+		amount as amount,
+		to_address as toAddress,
+		from_address as fromAddress,
+		tx_index as txIndex
+    </sql>
+
+
+  <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxDetailDto">
+    select distinct <include refid="txBasicColumns" />
+    from tbl_tx_detail
+    order by block_height DESC
+      limit #{startIndex}, #{pageSize}
+  </select>
+
+
+    <select id="selectNonontidTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxDetailDto">
+        select distinct <include refid="txBasicColumns" />
+        from tbl_tx_detail
+        where event_type not in(2, 4)
+        order by block_height DESC
+        limit #{startIndex}, #{pageSize}
+    </select>
+
+
+    <select id="selectTxByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
+        select <include refid="txDetailColumns" />
+        from tbl_tx_detail
+        where tx_hash = #{txHash}
+        order by tx_index
+        limit 1
+    </select>
+
+    <select id="selectTransferTxDetailByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
+        select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description
+        from tbl_tx_detail
+        where tx_hash = #{txHash}
+        and event_type in (2,3)
+    </select>
+
+    <select id="selectLatestONTTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select tx_time as txTime
+        from tbl_tx_detail
+        where (from_address = #{address} or to_address = #{address})
+        and asset_name = 'ont'
+        order by block_height DESC
+        limit 1
+    </select>
+
+
+    <select id="selectTransferTxByFromAddr" parameterType="java.util.Map" resultType="java.util.Map">
+        select <include refid="transferTxDetailColumns"/>
+        from tbl_tx_detail
+        where from_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        and event_type in (2,3)
+        order by block_height DESC
+        limit #{startIndex}, #{pageSize}
+    </select>
+
+
+    <select id="selectTransferTxByToAddr" parameterType="java.util.Map" resultType="java.util.Map">
+        select <include refid="transferTxDetailColumns" />
+        from tbl_tx_detail
+        where to_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        and event_type in (2,3)
+        order by block_height DESC
+        limit #{startIndex}, #{pageSize}
+    </select>
+
+
+    <select id="selectTxCountByAddr" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        OR to_address = #{address}
+    </select>
+
 </mapper>

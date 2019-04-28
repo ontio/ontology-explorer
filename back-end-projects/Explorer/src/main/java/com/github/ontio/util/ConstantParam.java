@@ -64,15 +64,21 @@ public class ConstantParam {
      */
     public static final String ADD = "add";
 
-    /**
-     * ONG asset
-     */
-    public static final String ONG = "ong";
+
 
     /**
      * ONT asset
      */
     public static final String ONT = "ont";
+
+    /**
+     * ONG asset
+     */
+    public static final String ONG = "ong";
+
+    public static final String UNBOUND_ONG = "unboundong";
+
+    public static final String WAITBOUND_ONG = "waitboundong";
 
 
     public static final BigDecimal ZERO = new BigDecimal("0");
@@ -107,6 +113,19 @@ public class ConstantParam {
 
 
     public static final String []WEEK_ARR = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+
+
+    public static final String ASSET_TYPE_NATIVE = "native";
+
+    public static final String ASSET_TYPE_OEP4 = "oep4";
+
+    public static final String ASSET_TYPE_OEP5 = "oep5";
+
+    public static final String ASSET_TYPE_OEP8 = "oep8";
+
+    public static final Integer AUDIT_PASSED = 1;
+
+    public static final Integer AUDIT_UNPASSED = 0;
 
 
 }

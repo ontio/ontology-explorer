@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.OntIdMapper;
+import com.github.ontio.model.common.ClaimContextEnum;
 import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.IOntIdService;
 import com.github.ontio.util.*;
@@ -179,24 +180,24 @@ public class OntIdServiceImpl implements IOntIdService {
                 claimObj.put("IssuerOntId", issuer);
                 claimObj.put("ClaimContext", claimContext);
                 claimObj.put("ClaimId", attrKey.substring(ConstantParam.CLAIM.length(), attrKey.length()));
-                if (ClaimContextType.GITHUB_CLAIM.context().equals(claimContext)) {
+                if (ClaimContextEnum.GITHUB_CLAIM.context().equals(claimContext)) {
 
-                    claimObj.put("ContextDesc", ClaimContextType.GITHUB_CLAIM.desc());
-                } else if (ClaimContextType.TWITTER_CLAIM.context().equals(claimContext)) {
+                    claimObj.put("ContextDesc", ClaimContextEnum.GITHUB_CLAIM.desc());
+                } else if (ClaimContextEnum.TWITTER_CLAIM.context().equals(claimContext)) {
 
-                    claimObj.put("ContextDesc", ClaimContextType.TWITTER_CLAIM.desc());
-                } else if (ClaimContextType.FACEBOOK_CLAIM.context().equals(claimContext)) {
+                    claimObj.put("ContextDesc", ClaimContextEnum.TWITTER_CLAIM.desc());
+                } else if (ClaimContextEnum.FACEBOOK_CLAIM.context().equals(claimContext)) {
 
-                    claimObj.put("ContextDesc", ClaimContextType.FACEBOOK_CLAIM.desc());
-                } else if (ClaimContextType.LINKEDIN_CLAIM.context().equals(claimContext)) {
+                    claimObj.put("ContextDesc", ClaimContextEnum.FACEBOOK_CLAIM.desc());
+                } else if (ClaimContextEnum.LINKEDIN_CLAIM.context().equals(claimContext)) {
 
-                    claimObj.put("ContextDesc", ClaimContextType.LINKEDIN_CLAIM.desc());
-                } else if (ClaimContextType.EMPLOYMENT_CLAIM.context().equals(claimContext)) {
+                    claimObj.put("ContextDesc", ClaimContextEnum.LINKEDIN_CLAIM.desc());
+                } else if (ClaimContextEnum.EMPLOYMENT_CLAIM.context().equals(claimContext)) {
 
-                    claimObj.put("ContextDesc", ClaimContextType.EMPLOYMENT_CLAIM.desc());
-                } else if (ClaimContextType.CFCA_CLAIM.context().equals(claimContext)) {
+                    claimObj.put("ContextDesc", ClaimContextEnum.EMPLOYMENT_CLAIM.desc());
+                } else if (ClaimContextEnum.CFCA_CLAIM.context().equals(claimContext)) {
 
-                    claimObj.put("ContextDesc", ClaimContextType.CFCA_CLAIM.desc());
+                    claimObj.put("ContextDesc", ClaimContextEnum.CFCA_CLAIM.desc());
                 }
                 Map<String, Object> formatedAttrMap = new HashMap<>();
                 formatedAttrMap.put("Claim", claimObj);

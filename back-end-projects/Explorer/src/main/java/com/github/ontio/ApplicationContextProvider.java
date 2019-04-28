@@ -51,5 +51,25 @@ public class ApplicationContextProvider implements ApplicationContextAware {
         return (T) context.getBean(name);
     }
 
+    /**
+     * Get bean by class
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(Class<T> clazz) {
+        return context.getBean(clazz);
+    }
+
+    /**
+     * Get application context from everywhere
+     *
+     * @return
+     */
+    public static ApplicationContext getApplicationContext() {
+        return context;
+    }
+
 
 }
