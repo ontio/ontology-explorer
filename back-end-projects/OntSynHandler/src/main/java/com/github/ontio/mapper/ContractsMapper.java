@@ -1,4 +1,4 @@
-package com.github.ontio.dao;
+package com.github.ontio.mapper;
 
 import com.github.ontio.model.Contracts;
 import org.springframework.stereotype.Component;
