@@ -3,8 +3,7 @@ package com.github.ontio.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -17,11 +16,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @version 1.0
  * @date 2018/7/16
  */
-
+@Slf4j
 @Configuration
 public class RedisConfig {
-
-    private Logger logger = LoggerFactory.getLogger(RedisConfig.class);
 
     /**
      * 当我们的数据存储到Redis的时候，我们的键（key）和值（value）都是通过Spring提供的Serializer序列化到数据库的。RedisTemplate默认使用的是JdkSerializationRedisSerializer，StringRedisTemplate默认使用的是StringRedisSerializer。
@@ -31,7 +28,7 @@ public class RedisConfig {
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        logger.info("**********redisTemplate**************");
+        log.info("**********redisTemplate**************");
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 

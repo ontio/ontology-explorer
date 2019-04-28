@@ -37,11 +37,10 @@ import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.OntIdEventDesType;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -62,10 +61,9 @@ import java.util.concurrent.Future;
  * @version 1.0
  * @date 2018/3/13
  */
+@Slf4j
 @Component
 public class TxnHandlerThread {
-
-    private static final Logger logger = LoggerFactory.getLogger(TxnHandlerThread.class);
 
     private static Boolean OEP4TXN = false;
 
@@ -95,17 +93,17 @@ public class TxnHandlerThread {
         SqlSession session = sqlSessionTemplate.getSqlSessionFactory().openSession(ExecutorType.BATCH, false);
         try {
             String threadName = Thread.currentThread().getName();
-            logger.info("{} run--------blockHeight:{},txnHash:{}", threadName, blockHeight, txnJson.getString("Hash"));
+            log.info("{} run--------blockHeight:{},txnHash:{}", threadName, blockHeight, txnJson.getString("Hash"));
             handleOneTxn(session, txnJson, blockHeight, blockTime, indexInBlock);
             // 手动提交
             session.commit();
             // 清理缓存，防止溢出
             session.clearCache();
-            logger.info("{} end-------blockHeight:{},txnHash:{}", threadName, blockHeight, txnJson.getString("Hash"));
+            log.info("{} end-------blockHeight:{},txnHash:{}", threadName, blockHeight, txnJson.getString("Hash"));
 
             return new AsyncResult<String>("success");
         } catch (Exception e) {
-            logger.error("asyncHandleTxn error...", e);
+            log.error("asyncHandleTxn error...", e);
             session.rollback();
             throw e;
         } finally {
@@ -120,14 +118,14 @@ public class TxnHandlerThread {
         String txnHash = txnJson.getString("Hash");
         String payer = txnJson.getString("Payer");
         String calledContractHash = parseCalledContractHash(txnJson);
-        logger.info("####txnType:{}, txnHash:{}, payer:{}, calledContractHash:{}####", txnType, txnHash, payer, calledContractHash);
+        log.info("####txnType:{}, txnHash:{}, payer:{}, calledContractHash:{}####", txnType, txnHash, payer, calledContractHash);
 
         OEP4TXN = false;
         OEP5TXN = false;
         OEP8TXN = false;
         try {
             JSONObject eventObj = getEventObjByTxnHash(txnHash);
-            logger.info("eventObj:{}", eventObj.toJSONString());
+            log.info("eventObj:{}", eventObj.toJSONString());
             //eventstate 1:success 0:failed
             //confimflag 1:success 2:failed
             int confirmFlag = 1;
@@ -207,11 +205,11 @@ public class TxnHandlerThread {
                 }
             }
         } catch (RestfulException e) {
-            logger.error("handleOneTxn RestfulException...{}", e);
+            log.error("handleOneTxn RestfulException...{}", e);
             e.printStackTrace();
             throw e;
         } catch (Exception e) {
-            logger.error("handleOneTxn error...", e);
+            log.error("handleOneTxn error...", e);
             e.printStackTrace();
             throw e;
         }
@@ -368,7 +366,7 @@ public class TxnHandlerThread {
         }
 
         BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
-        logger.info("OEP8TransferTxn:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
+        log.info("OEP8TransferTxn:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
 
         Oep8TxnDetail oep8TxnDetailDAO = generateTransaction(fromAddress, toAddress, oep8Obj.getString("Name"), eventAmount, txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 3, contractAddress, payer, calledContractHash);
@@ -441,7 +439,7 @@ public class TxnHandlerThread {
             assetName = ((JSONObject) oep5Obj).getString("Name") + ": " + stateArray.get(3);
         }
 
-        logger.info("fromaddress:{}, toaddress:{}, dragonId:{}", fromAddress, toAddress, assetName);
+        log.info("fromaddress:{}, toaddress:{}, dragonId:{}", fromAddress, toAddress, assetName);
         Oep8TxnDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, new BigDecimal("1"), txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 3, contractAddress, payer, calledContractHash);
         if (!"transfer".equalsIgnoreCase(action)) {
@@ -509,7 +507,7 @@ public class TxnHandlerThread {
         String fromAddress = (String) stateList.get(1);
         String toAddress = (String) stateList.get(2);
         BigDecimal amount = new BigDecimal((stateList.get(3)).toString());
-        logger.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
+        log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
 
         Oep8TxnDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, amount, txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, eventType, contractAddress, payer, calledContractHash);
@@ -597,7 +595,7 @@ public class TxnHandlerThread {
                 String issuerOntId = new String(Helper.hexToBytes(stateList.getString(1)));
                 String action = new String(Helper.hexToBytes(stateList.getString(2)));
                 String claimId = new String(Helper.hexToBytes(stateList.getString(3)));
-                logger.info("####ClaimRecord:action:{}, issuerOntId:{}, claimid:{}#####", action, issuerOntId, claimId);
+                log.info("####ClaimRecord:action:{}, issuerOntId:{}, claimid:{}#####", action, issuerOntId, claimId);
                 sb.append(issuerOntId);
                 sb.append(action);
                 sb.append(claimId);
@@ -822,7 +820,7 @@ public class TxnHandlerThread {
 
             eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
         }
-        logger.info("OEP4TransferTxn:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
+        log.info("OEP4TransferTxn:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
 
         String assetName = oep4Obj.getString("Symbol");
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, oep4Obj.getInteger("Decimals"))));
@@ -852,14 +850,14 @@ public class TxnHandlerThread {
 
             descriptionSb.append(ontId);
             str = descriptionSb.toString();
-            logger.info("####Register OntId:{}", ontId);
+            log.info("####Register OntId:{}", ontId);
 
         } else if (OntIdEventDesType.PUBLICKEYOPE.value().equals(action)) {
 
             String op = stateList.getString(1);
             int publickeyNumber = stateList.getInteger(3);
             String publicKey = stateList.getString(4);
-            logger.info("####PublicKey op:{},keyNumber:{},publicKey:{}####", op, publickeyNumber, publicKey);
+            log.info("####PublicKey op:{},keyNumber:{},publicKey:{}####", op, publickeyNumber, publicKey);
 
             descriptionSb.append(op);
             descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
@@ -873,7 +871,7 @@ public class TxnHandlerThread {
         } else if (OntIdEventDesType.ATTRIBUTEOPE.value().equals(action)) {
 
             String op = stateList.getString(1);
-            logger.info("####Attribute op:{}####", op);
+            log.info("####Attribute op:{}####", op);
 
             descriptionSb.append(op);
             descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
@@ -882,7 +880,7 @@ public class TxnHandlerThread {
 
             if (ConstantParam.ADD.equals(op)) {
                 JSONArray attrNameArray = stateList.getJSONArray(3);
-                logger.info("####attrName:{}####", attrNameArray.toArray());
+                log.info("####attrName:{}####", attrNameArray.toArray());
                 for (Object obj :
                         attrNameArray) {
                     String attrName = (String) obj;
@@ -892,7 +890,7 @@ public class TxnHandlerThread {
                 }
             } else {
                 String attrName = stateList.getString(3);
-                logger.info("####attrName:{}####", attrName);
+                log.info("####attrName:{}####", attrName);
                 descriptionSb.append(attrName);
                 descriptionSb.append(ConstantParam.ONTID_SEPARATOR2);
             }
@@ -902,7 +900,7 @@ public class TxnHandlerThread {
 
             String op = stateList.getString(1);
             String address = Address.parse(stateList.getString(3)).toBase58();
-            logger.info("####Recovery op:{}, ontid:{}, address:{}####", op, ontId, address);
+            log.info("####Recovery op:{}, ontid:{}, address:{}####", op, ontId, address);
 
             descriptionSb.append(op);
             descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
@@ -930,7 +928,7 @@ public class TxnHandlerThread {
                 eventObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getSmartCodeEvent(txnHash);
                 break;
             } catch (ConnectorException ex) {
-                logger.error("getEventObjByTxnHash error, try again...restsful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                log.error("getEventObjByTxnHash error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
                 if (tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
@@ -941,7 +939,7 @@ public class TxnHandlerThread {
                     continue;
                 }
             } catch (IOException ex) {
-                logger.error("getEventObjByTxnHash thread can't work,error {} ", ex);
+                log.error("getEventObjByTxnHash thread can't work,error {} ", ex);
                 throw new Exception(ex);
             }
         }
@@ -961,7 +959,7 @@ public class TxnHandlerThread {
             ConstantParam.MASTERNODE_INDEX = 0;
         }
         ConstantParam.MASTERNODE_RESTFULURL = ConstantParam.NODE_RESTFULURLLIST.get(ConstantParam.MASTERNODE_INDEX);
-        logger.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
+        log.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
@@ -973,7 +971,7 @@ public class TxnHandlerThread {
         DeployCode deployCodeObj = (DeployCode) ConstantParam.ONT_SDKSERVICE.getConnect().getTransaction(txnHash);
         String code = Helper.toHexString(deployCodeObj.code);
         String contractAddress = Address.AddressFromVmCode(code).toHexString();
-        logger.info("smartcontract codehash:{}", contractAddress);
+        log.info("smartcontract codehash:{}", contractAddress);
         JSONObject contractObj = new JSONObject();
         contractObj.put("contractAddress", contractAddress);
         contractObj.put("Name", "");
@@ -982,10 +980,10 @@ public class TxnHandlerThread {
         try {
             contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractAddress);
             contractObj.put("contractAddress", contractAddress);
-            logger.info("smartcontract obj:{}", contractObj.toJSONString());
+            log.info("smartcontract obj:{}", contractObj.toJSONString());
             contractObj.remove("Code");
         } catch (Exception e) {
-            logger.error("error...", e);
+            log.error("error...", e);
         }
         return contractObj;
     }
@@ -1012,7 +1010,7 @@ public class TxnHandlerThread {
 
             return JSON.toJSONString(jsonUrlMap);
         } catch (Exception e) {
-            logger.error("getAddressOep4Balance error...", e);
+            log.error("getAddressOep4Balance error...", e);
             return "";
         }
     }

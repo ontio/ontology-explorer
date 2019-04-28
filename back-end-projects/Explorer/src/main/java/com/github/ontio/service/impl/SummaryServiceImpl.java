@@ -11,9 +11,8 @@ import com.github.ontio.model.DailySummary;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ISummaryService;
 import com.github.ontio.util.*;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +29,10 @@ import static java.math.BigDecimal.ROUND_HALF_DOWN;
  * @version 1.0
  * @date 2018/12/14
  */
+@Slf4j
 @Service("SummaryService")
 @MapperScan("com.github.ontio.dao")
 public class SummaryServiceImpl implements ISummaryService {
-    private static final Logger logger = LoggerFactory.getLogger(CurrentServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
@@ -93,7 +92,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result querySummary(int amount) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap();
 
         // 节点数
@@ -144,7 +143,7 @@ public class SummaryServiceImpl implements ISummaryService {
     @Override
     public Result summaryAllInfo() {
 
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         if (!configParam.EXPLORER_DAILY_SCHEDULE.equalsIgnoreCase("true")) {
             return Helper.result("SummaryAllInfo", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, null);
         }
@@ -375,7 +374,7 @@ public class SummaryServiceImpl implements ISummaryService {
                 contractSummary.setScore(score);
             }
         } catch (Exception e) {
-            logger.error("calculate contract daily score error...", e);
+            log.error("calculate contract daily score error...", e);
         }
 
     }
@@ -443,7 +442,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result queryTps() {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("CurrentTps", queryCurrentTps());
         resultMap.put("MaxTps", 10000);
@@ -472,7 +471,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result querySummary(String type, int startTime, int endTime) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> paramMap = new HashMap();
         paramMap.put("startTime", startTime);
         paramMap.put("endTime", endTime);
@@ -568,7 +567,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result queryContract(String contractHash, String type, int startTime, int endTime) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> resultMap = new HashMap();
         resultMap.put("SummaryList", new ArrayList<>());
         resultMap.put("TxCountSum", 0);
@@ -670,7 +669,7 @@ public class SummaryServiceImpl implements ISummaryService {
      */
     @Override
     public Result queryProjectInfo(String project, String type, int startTime, int endTime) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         List<Contracts> contractsList = contractsMapper.selectAllContractByProject(project);
         Map<String, Object> resultMap = new HashMap();
         resultMap.put("SummaryList", new ArrayList<>());
@@ -752,7 +751,7 @@ public class SummaryServiceImpl implements ISummaryService {
         paramMap.put("count", 20);
         try {
             String response = Helper.sendGet(configParam.GOSERVER_DOMAIN + ConstantParam.GO_TOTALSUPPLY_URL, paramMap);
-            logger.info("totalsupply go response:{}", response);
+            log.info("totalsupply go response:{}", response);
             JSONObject responseObj = JSONObject.parseObject(response);
             JSONArray addrArray = responseObj.getJSONArray("result");
             for (Object temp :
@@ -765,7 +764,7 @@ public class SummaryServiceImpl implements ISummaryService {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("error...", e);
+            log.error("error...", e);
         }
 
         return Helper.result("QueryTotalSupply", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, new BigDecimal("1").subtract(specialAmount));
@@ -783,7 +782,7 @@ public class SummaryServiceImpl implements ISummaryService {
         paramMap.put("count", 20);
         try {
             String response = Helper.sendGet(configParam.GOSERVER_DOMAIN + ConstantParam.GO_TOTALSUPPLY_URL, paramMap);
-            logger.info("totalsupply go response:{}", response);
+            log.info("totalsupply go response:{}", response);
             JSONObject responseObj = JSONObject.parseObject(response);
             JSONArray addrArray = responseObj.getJSONArray("result");
             for (Object temp :
@@ -796,7 +795,7 @@ public class SummaryServiceImpl implements ISummaryService {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("error...", e);
+            log.error("error...", e);
         }
 
         //其他地址，即流通量
