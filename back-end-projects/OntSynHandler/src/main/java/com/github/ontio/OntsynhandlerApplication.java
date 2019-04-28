@@ -1,9 +1,8 @@
 package com.github.ontio;
 
 import com.github.ontio.utils.ConfigParam;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,29 +14,28 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-@SpringBootApplication
+@Slf4j
 @EnableAsync
+@SpringBootApplication
 @EnableTransactionManagement
 @MapperScan(value = "com.github.ontio.dao")
 public class OntsynhandlerApplication {
 
-	private static final Logger logger = LoggerFactory.getLogger(OntsynhandlerApplication.class);
-
-	@Autowired
-	private ConfigParam configParam;
+    @Autowired
+    private ConfigParam configParam;
 
 
-	@Bean
-	public AsyncTaskExecutor taskExecutor() {
-		logger.info("########taskExecutor#########");
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setMaxPoolSize(configParam.THREADPOOLSIZE_MAX);
-		executor.setCorePoolSize(configParam.THREADPOOLSIZE_CORE);
-		executor.setQueueCapacity(configParam.THREADPOOLSIZE_QUEUE);
-		executor.setThreadNamePrefix("TxnHandlerThread--");
-		executor.setKeepAliveSeconds(configParam.THREADPOOLSIZE_KEEPALIVE_SECOND);
+    @Bean
+    public AsyncTaskExecutor taskExecutor() {
+        log.info("########taskExecutor#########");
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setMaxPoolSize(configParam.THREADPOOLSIZE_MAX);
+        executor.setCorePoolSize(configParam.THREADPOOLSIZE_CORE);
+        executor.setQueueCapacity(configParam.THREADPOOLSIZE_QUEUE);
+        executor.setThreadNamePrefix("TxnHandlerThread--");
+        executor.setKeepAliveSeconds(configParam.THREADPOOLSIZE_KEEPALIVE_SECOND);
 
-		// Rejection policies
+        // Rejection policies
 /*		executor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
 			@Override
 			public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
@@ -45,17 +43,15 @@ public class OntsynhandlerApplication {
 				// .....
 			}
 		});*/
-		//调用者的线程会执行该任务,如果执行器已关闭,则丢弃
-		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-		executor.initialize();
+        //调用者的线程会执行该任务,如果执行器已关闭,则丢弃
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
 
-		return executor;
-	}
-
-
+        return executor;
+    }
 
 
-	public static void main(String[] args) {
-		SpringApplication.run(OntsynhandlerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(OntsynhandlerApplication.class, args);
+    }
 }

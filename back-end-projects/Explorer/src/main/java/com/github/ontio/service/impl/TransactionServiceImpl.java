@@ -26,9 +26,8 @@ import com.github.ontio.model.OntId;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.*;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +40,10 @@ import java.util.*;
  * @version 1.0
  * @date 2018/2/27
  */
+@Slf4j
 @Service("TransactionService")
 @MapperScan("com.github.ontio.dao")
 public class TransactionServiceImpl implements ITransactionService {
-
-    private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
@@ -122,7 +120,7 @@ public class TransactionServiceImpl implements ITransactionService {
         txnInfo.put("Fee", fee.toPlainString());
 
         String desc = (String) txnInfo.get("Description");
-        logger.info("txn desc:{}", desc);
+        log.info("txn desc:{}", desc);
         if (ConstantParam.TRANSFER_OPE.equals(desc) || ConstantParam.AUTH_OPE.equals(desc)) {
 
             List<Map> txnDetailList = transactionDetailMapper.selectTransferTxnDetailByHash(txnHash);
@@ -147,7 +145,7 @@ public class TransactionServiceImpl implements ITransactionService {
             OntId ontIdInfo = ontIdMapper.selectByPrimaryKey(txnHash);
             String ontId = ontIdInfo.getOntid();
             String ontIdDes = ontIdInfo.getDescription();
-            logger.info("ontId:{}, description:{}", ontId, ontIdDes);
+            log.info("ontId:{}, description:{}", ontId, ontIdDes);
             ontIdDes = Helper.templateOntIdOperation(ontIdDes);
 
             Map temp = new HashMap();
@@ -721,7 +719,7 @@ public class TransactionServiceImpl implements ITransactionService {
         }
 
         long now = System.currentTimeMillis() / 1000L;
-        logger.info("txntime:{},now:{}", txntime, now);
+        log.info("txntime:{},now:{}", txntime, now);
 
         BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txntime)).multiply(configParam.ONG_SECOND_GENERATE);
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);

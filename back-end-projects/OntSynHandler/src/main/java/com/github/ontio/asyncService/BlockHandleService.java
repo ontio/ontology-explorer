@@ -28,8 +28,7 @@ import com.github.ontio.model.Current;
 import com.github.ontio.thread.TxnHandlerThread;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,10 +43,9 @@ import java.util.concurrent.Future;
  * @version 1.0
  * @date 2018/3/14
  */
+@Slf4j
 @Service
 public class BlockHandleService {
-
-    private static final Logger logger = LoggerFactory.getLogger(BlockHandleService.class);
 
     @Autowired
     private BlockMapper blockMapper;
@@ -72,7 +70,7 @@ public class BlockHandleService {
         int blockTime = blockHeader.getInteger("Timestamp");
         JSONArray txnArray = blockJson.getJSONArray("Transactions");
         int txnNum = txnArray.size();
-        logger.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
+        log.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
 
         ConstantParam.ONEBLOCK_ONTID_AMOUNT = 0;
         ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT = 0;
@@ -102,7 +100,7 @@ public class BlockHandleService {
         updateCurrent(blockHeight, txnCount + txnNum,
                 ontIdCount + ConstantParam.ONEBLOCK_ONTID_AMOUNT, nonOntIdTxnCount + txnNum - ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT);
 
-        logger.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
+        log.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
     }
 
     @Transactional(rollbackFor = Exception.class)
