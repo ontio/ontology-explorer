@@ -7,8 +7,7 @@ import com.github.ontio.model.Contracts;
 import com.github.ontio.service.impl.SummaryServiceImpl;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,11 +24,10 @@ import java.util.Map;
  * @version 1.0
  * @date 2018/12/6
  */
+@Slf4j
 @Component
 @EnableScheduling
 public class DailyInfoSchedule {
-
-    private static final Logger logger = LoggerFactory.getLogger(DailyInfoSchedule.class);
 
     private static final String CLASS_NAME = DailyInfoSchedule.class.getSimpleName();
 
@@ -59,7 +57,7 @@ public class DailyInfoSchedule {
      */
     @Scheduled(cron = "0 5 0 * * *")
     public void UpdateDailyInfo() {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         summaryService.summaryAllInfo();
     }
@@ -69,7 +67,7 @@ public class DailyInfoSchedule {
      */
     @Scheduled(cron = "0 0/10 * * * *")
     public void UpdateContractInfo() {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         try {
             Integer startTime = dailySummaryMapper.selectMaxTime();
@@ -92,7 +90,7 @@ public class DailyInfoSchedule {
                 String type = contracts.getType();
                 String contractHash = contracts.getContract();
                 //String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse(contractHash)).toBase58();
-                logger.info("type:{}, contractHash:{}", type, contractHash);
+                log.info("type:{}, contractHash:{}", type, contractHash);
                 //查询合约到目前为止的统计数据
                 ContractSummary contractSummary = contractSummaryMapper.selectContractSummary(contractHash);
                 if (contractSummary == null) {
@@ -146,7 +144,7 @@ public class DailyInfoSchedule {
 
             contractsMapper.banchUpdateByPrimaryKeySelective(contractList);
         } catch (Exception e) {
-            logger.error("UpdateContractInfo error...", e);
+            log.error("UpdateContractInfo error...", e);
         }
     }
 }
