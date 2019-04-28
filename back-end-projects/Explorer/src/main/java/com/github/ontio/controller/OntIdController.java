@@ -22,8 +22,7 @@ package com.github.ontio.controller;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.OntIdServiceImpl;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +32,11 @@ import org.springframework.web.bind.annotation.*;
  * @version 1.0
  * @date 2018/3/15
  */
+@Slf4j
 @RestController
 @EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer/")
 public class OntIdController {
-
-    private static final Logger logger = LoggerFactory.getLogger(OntIdController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -55,8 +53,8 @@ public class OntIdController {
     @ResponseBody
     public Result queryOntIdList(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}",amount);
+        log.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        log.info("amount:{}",amount);
 
         Result rs = ontIdService.queryOntIdList(amount);
         return rs;
@@ -72,8 +70,8 @@ public class OntIdController {
     public Result queryOntIdListByPage(@PathVariable("pagesize") int pageSize,
                                        @PathVariable("pagenumber") int pageNumber) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pagenumber:{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pagenumber:{}", pageSize, pageNumber);
 
         Result rs = ontIdService.queryOntIdList(pageSize, pageNumber);
         return rs;
@@ -93,8 +91,8 @@ public class OntIdController {
                                    @PathVariable("pagesize") int pageSize,
                                    @PathVariable("pagenumber") int pageNumber) {
 
-        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
-        logger.info("ontId:{},pageSize:{},pageNumber", ontId, pageSize, pageNumber);
+        log.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        log.info("ontId:{},pageSize:{},pageNumber", ontId, pageSize, pageNumber);
 
         Result rs = ontIdService.queryOntIdDetail(ontId, pageSize, pageNumber);
         return rs;

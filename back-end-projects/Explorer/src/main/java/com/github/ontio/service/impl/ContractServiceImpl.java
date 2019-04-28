@@ -11,23 +11,18 @@ import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
 
-/**
- * @author
- * @date
- */
+@Slf4j
 @Service("ContractService")
 @MapperScan("com.github.ontio.dao")
 public class ContractServiceImpl implements IContractService {
-    private static final Logger logger = LoggerFactory.getLogger(CurrentServiceImpl.class);
 
     private static final String CLASS_NAME = ContractServiceImpl.class.getSimpleName();
 
@@ -62,7 +57,7 @@ public class ContractServiceImpl implements IContractService {
 
     @Override
     public Result queryContract(Integer pageSize, Integer pageNumber) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
@@ -92,7 +87,7 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryContractByHash(String contractHash, int pageSize, int pageNumber) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Map<String, Object> rs = getResultMap(contractHash, "", "", pageSize, pageNumber);
 
@@ -186,7 +181,7 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryOEPContract(String type, int pageSize, int pageNumber) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("Start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
@@ -249,7 +244,7 @@ public class ContractServiceImpl implements IContractService {
      */
     @Override
     public Result queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber) {
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         Map<String, Object> rs = getResultMap(contractHash, type, tokenName, pageSize, pageNumber);
         if (rs == null) {
             return Helper.result("QueryOEPContractByHash", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
@@ -327,7 +322,7 @@ public class ContractServiceImpl implements IContractService {
         } else {
             //一个project可能会有多个合约
             Set<Object> allProjectSet = new HashSet<>();
-            allContractInfoList.forEach(item->allProjectSet.add(item.get("Project")));
+            allContractInfoList.forEach(item -> allProjectSet.add(item.get("Project")));
 
             List<String> allContractHashList = new ArrayList<>();
             allContractInfoList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));
@@ -414,7 +409,7 @@ public class ContractServiceImpl implements IContractService {
         } else {
             //一个project可能会有多个合约
             Set<Object> allProjectSet = new HashSet<>();
-            allContractInfoList.forEach(item->allProjectSet.add(item.get("Project")));
+            allContractInfoList.forEach(item -> allProjectSet.add(item.get("Project")));
 
             List<String> allContractHashList = new ArrayList<>();
             allContractInfoList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));

@@ -23,8 +23,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.CurrentServiceImpl;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +33,11 @@ import org.springframework.web.bind.annotation.*;
  * @version 1.0
  * @date 2018/2/27
  */
+@Slf4j
 @RestController
 @EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer")
 public class CurrentController {
-    private static final Logger logger = LoggerFactory.getLogger(CurrentController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -54,7 +53,7 @@ public class CurrentController {
     @ResponseBody
     public Result querySummaryInfo() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = currentService.querySummaryInfo();
         return rs;
@@ -69,15 +68,15 @@ public class CurrentController {
     @ResponseBody
     public String detection() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         return "success";
     }
 
     @RequestMapping(value = "/contract/registerContractInfo", method = RequestMethod.POST)
     public Result registerContractInfo(@RequestBody JSONObject reqObj) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("####reqObj:{}", reqObj.toJSONString());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####reqObj:{}", reqObj.toJSONString());
 
         Result rs = currentService.registerContractInfo(reqObj);
         return rs;
@@ -91,7 +90,7 @@ public class CurrentController {
     @RequestMapping(value = "/marketing/info", method = RequestMethod.GET)
     public Result queryMarketingInfo() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = currentService.queryMarketingInfo();
         return rs;
