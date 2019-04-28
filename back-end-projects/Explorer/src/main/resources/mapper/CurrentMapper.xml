@@ -10,4 +10,13 @@
     <result column="ontid_count" jdbcType="INTEGER" property="ontidCount" />
     <result column="nonontid_tx_count" jdbcType="INTEGER" property="nonontidTxCount" />
   </resultMap>
+
+
+  <cache type="com.github.ontio.config.ExplorerRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+
 </mapper>

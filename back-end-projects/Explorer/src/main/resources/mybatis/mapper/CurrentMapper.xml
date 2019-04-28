@@ -3,10 +3,10 @@
 <mapper namespace="com.github.ontio.dao.CurrentMapper">
 
   <cache type="com.github.ontio.config.ExplorerRedisCache">
-    <property name="eviction" value="LRU" />
-    <property name="size" value="1024" />
-    <property name="readOnly" value="false" />
-  </cache>
+  <property name="eviction" value="LRU" />
+  <property name="size" value="1024" />
+  <property name="readOnly" value="false" />
+</cache>
 
   <resultMap id="BaseResultMap" type="com.github.ontio.model.Current">
     <result column="height" jdbcType="INTEGER" property="height" />

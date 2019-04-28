@@ -22,5 +22,7 @@ public class ResponseBean {
         this.result = result;
     }
 
+    public ResponseBean(){}
+
 
 }

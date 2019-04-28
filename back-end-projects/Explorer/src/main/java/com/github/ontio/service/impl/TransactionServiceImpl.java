@@ -20,10 +20,17 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.*;
+import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.model.OntId;
+import com.github.ontio.model.common.EventTypeEnum;
+import com.github.ontio.model.common.PageResponseDto;
+import com.github.ontio.model.dto.CurrentDto;
+import com.github.ontio.model.dto.OntidTxDetailDto;
+import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.paramBean.ResponseBean;
 import com.github.ontio.service.ITransactionService;
@@ -31,9 +38,7 @@ import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.util.OntologySDKService;
-import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,16 +52,18 @@ import java.util.*;
  * @date 2018/2/27
  */
 @Service("TransactionService")
-@MapperScan("com.github.ontio.dao")
+@Slf4j
 public class TransactionServiceImpl implements ITransactionService {
-
-    private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
 
     @Autowired
     private TxDetailMapper txDetailMapper;
+    @Autowired
+    private com.github.ontio.mapper.CurrentMapper currentMapper;
+    @Autowired
+    private OntidTxDetailMapper ontidTxDetailMapper;
 
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
@@ -69,8 +76,6 @@ public class TransactionServiceImpl implements ITransactionService {
     @Autowired
     private OntIdMapper ontIdMapper;
     @Autowired
-    private CurrentMapper currentMapper;
-    @Autowired
     private ConfigParam configParam;
 
     private OntologySDKService sdk;
@@ -82,41 +87,87 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public ResponseBean queryLatestTxs(int amount) {
+    public ResponseBean queryLatestTxs(int count) {
 
-        List<Map> txnList = transactionDetailMapper.selectTxnWithoutOntId(0, amount);
-        for (Map map :
-                txnList) {
-            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
-        }
+        List<TxDetailDto> txDetails = txDetailMapper.selectTxsByPage(0, count);
 
-        Map<String, Object> rs = new HashMap();
-        rs.put("TxnList", txnList);
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(),  rs);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetails);
     }
 
     @Override
-    public OldResult queryLatestTxs(int pageSize, int pageNumber) {
-
-        if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
-            return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
-        }
+    public ResponseBean queryTxsByPage(int pageNumber, int pageSize) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
-        List<Map> txnList = transactionDetailMapper.selectTxnWithoutOntId(start, pageSize);
-        for (Map map :
-                txnList) {
-            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
+
+        List<TxDetailDto> txDetails = txDetailMapper.selectTxsByPage(start, pageSize);
+
+        List<CurrentDto> currentDtos = currentMapper.selectAll();
+
+        PageResponseDto pageResponseDto = new PageResponseDto(txDetails, currentDtos.get(0).getTxCount());
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseDto);
+    }
+
+    @Override
+    public ResponseBean queryLatestNonontidTxs(int count) {
+
+        List<TxDetailDto> txDetails = txDetailMapper.selectNonontidTxsByPage(0, count);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetails);
+    }
+
+    @Override
+    public ResponseBean queryNonontidTxsByPage(int pageNumber, int pageSize) {
+
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+
+        List<TxDetailDto> txDetails = txDetailMapper.selectNonontidTxsByPage(start, pageSize);
+
+        List<CurrentDto> currentDtos = currentMapper.selectAll();
+
+        PageResponseDto pageResponseDto = new PageResponseDto(txDetails, currentDtos.get(0).getNonontidTxCount());
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseDto);
+    }
+
+    @Override
+    public ResponseBean queryTxDetailByHash(String txHash) {
+
+        TxDetailDto txDetailDto = txDetailMapper.selectTxByHash(txHash);
+        if (Helper.isEmptyOrNull(txDetailDto)) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
 
-        Map map = currentMapper.selectSummaryInfo();
+        JSONObject detailObj = new JSONObject();
+        int eventType = txDetailDto.getEventType();
+        if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType) {
 
-        Map<String, Object> rs = new HashMap();
-        rs.put("TxnList", txnList);
-        rs.put("Total", (Integer) map.get("NonOntIdTxnCount"));
+            List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
+            for (TxDetailDto dto :
+                    txDetailDtos) {
+                String assetName = dto.getAssetName();
+                if (ConstantParam.ONG.equals(assetName)) {
+                    dto.setAmount(dto.getAmount().divide(ConstantParam.ONG_TOTAL));
+                }
+            }
 
-        return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+            detailObj.put("transfers", txDetailDtos);
+        } else if (EventTypeEnum.Ontid.getType() == eventType) {
+
+            OntidTxDetailDto ontidTxDetailDtoTemp = OntidTxDetailDto.builder()
+                    .txHash(txHash)
+                    .build();
+
+            OntidTxDetailDto ontidTxDetailDto = ontidTxDetailMapper.selectOne(ontidTxDetailDtoTemp);
+
+            String ontIdDes = Helper.templateOntIdOperation(ontidTxDetailDto.getDescription());
+
+            detailObj.put("ontid", ontidTxDetailDto.getOntid());
+            detailObj.put("description", ontIdDes);
+        }
+        txDetailDto.setDetail(detailObj);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetailDto);
     }
 
     @Override
@@ -131,7 +182,7 @@ public class TransactionServiceImpl implements ITransactionService {
         txnInfo.put("Fee", fee.toPlainString());
 
         String desc = (String) txnInfo.get("Description");
-        logger.info("txn desc:{}", desc);
+        log.info("txn desc:{}", desc);
         if (ConstantParam.TRANSFER_OPE.equals(desc) || ConstantParam.AUTH_OPE.equals(desc)) {
 
             List<Map> txnDetailList = transactionDetailMapper.selectTransferTxnDetailByHash(txnHash);
@@ -156,7 +207,7 @@ public class TransactionServiceImpl implements ITransactionService {
             OntId ontIdInfo = ontIdMapper.selectByPrimaryKey(txnHash);
             String ontId = ontIdInfo.getOntid();
             String ontIdDes = ontIdInfo.getDescription();
-            logger.info("ontId:{}, description:{}", ontId, ontIdDes);
+            log.info("ontId:{}, description:{}", ontId, ontIdDes);
             ontIdDes = Helper.templateOntIdOperation(ontIdDes);
 
             Map temp = new HashMap();
@@ -170,7 +221,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public OldResult queryAddressInfo(String address, int pageNumber, int pageSize) {
-        if (address.length() != 34){
+        if (address.length() != 34) {
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
 
@@ -284,7 +335,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public OldResult queryAddressInfo(String address, int pageNumber, int pageSize, String assetName) {
 
-        if (address.length() != 34){
+        if (address.length() != 34) {
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
 
@@ -351,7 +402,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public OldResult queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int endTime) {
 
-        if (address.length() != 34){
+        if (address.length() != 34) {
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
 
@@ -363,7 +414,7 @@ public class TransactionServiceImpl implements ITransactionService {
         List<Map> dbTxnList = new ArrayList<>();
 
         if ("dragon".equals(assetName)) {
-            parmMap.put("AssetName", assetName+ "%");
+            parmMap.put("AssetName", assetName + "%");
             dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTimePageDragon(parmMap);
         } else {
             parmMap.put("AssetName", assetName);
@@ -387,7 +438,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public OldResult queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime) {
 
-        if (address.length() != 34){
+        if (address.length() != 34) {
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
 
@@ -400,7 +451,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
         List<Map> dbTxnList = new ArrayList<>();
         if ("dragon".equals(assetName)) {
-            parmMap.put("AssetName", assetName+ "%");
+            parmMap.put("AssetName", assetName + "%");
             dbTxnList = transactionDetailMapper.selectTxnByAddressInfoAndTimeDragon(parmMap);
         } else {
             parmMap.put("AssetName", assetName);
@@ -424,7 +475,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public OldResult queryAddressInfoByTime(String address, String assetName, int beginTime) {
 
-        if (address.length() != 34){
+        if (address.length() != 34) {
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
 
@@ -450,7 +501,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public OldResult queryAddressBalance(String address) {
-        if (address.length() != 34){
+        if (address.length() != 34) {
             return Helper.result("QueryAddressInfo", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
         }
 
@@ -468,12 +519,12 @@ public class TransactionServiceImpl implements ITransactionService {
     private List getAddressBalance(String address, String assetName) {
 
         List<Object> balanceList = new ArrayList<>();
-        if (address.length() != 34){
+        if (address.length() != 34) {
             return balanceList;
         }
 
         initSDK();
-        Map<String, Object> balanceMap = sdk.getAddressBalance(address);
+        Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
 
         if (Helper.isEmptyOrNull(assetName) || ConstantParam.ONG.equals(assetName)) {
 
@@ -523,8 +574,8 @@ public class TransactionServiceImpl implements ITransactionService {
         List<Map> oep4s = oep4Mapper.selectAllKeyInfo();
         for (Map map : oep4s) {
             String contract = (String) map.get("Contract");
-            BigDecimal balance = new BigDecimal(sdk.getAddressOep4Balance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal) map.get("Decimals")).intValue())));
-            if (balance.equals(new BigDecimal(0))){
+            BigDecimal balance = new BigDecimal(sdk.getOep4AssetBalance(address, contract)).divide(new BigDecimal(Math.pow(10, ((BigDecimal) map.get("Decimals")).intValue())));
+            if (balance.equals(new BigDecimal(0))) {
                 continue;
             }
 
@@ -540,8 +591,8 @@ public class TransactionServiceImpl implements ITransactionService {
         List<Map> oep5s = oep5Mapper.selectAllKeyInfo();
         for (Map map : oep5s) {
             String contract = (String) map.get("Contract");
-            BigDecimal balance = new BigDecimal(sdk.getAddressOep5Balance(address, contract));
-            if (balance.equals(new BigDecimal(0))){
+            BigDecimal balance = new BigDecimal(sdk.getOep5AssetBalance(address, contract));
+            if (balance.equals(new BigDecimal(0))) {
                 continue;
             }
 
@@ -558,14 +609,14 @@ public class TransactionServiceImpl implements ITransactionService {
         for (Map map : oep8s) {
             String contract = (String) map.get("Contract");
             String symbol = (String) map.get("Symbol");
-            if(symbol.startsWith("pumpkin")){
+            if (symbol.startsWith("pumpkin")) {
                 continue;
             }
 
-            JSONArray balanceArray = sdk.getAddressOpe8Balance(address, contract);
+            JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contract);
             String[] symbols = symbol.split(",");
-            for (int i = 0; i < symbols.length; i++){
-                if (Integer.parseInt((String) balanceArray.get(i)) == 0){
+            for (int i = 0; i < symbols.length; i++) {
+                if (Integer.parseInt((String) balanceArray.get(i)) == 0) {
                     continue;
                 }
 
@@ -591,7 +642,7 @@ public class TransactionServiceImpl implements ITransactionService {
      */
     private List getPumpkinBalance(OntologySDKService sdkService, List<Object> balanceList, String address, String assetName) {
 
-        JSONArray oep8Balance = sdkService.getAddressOpe8Balance(address, configParam.OEP8_PUMPKIN_CODEHASH);
+        JSONArray oep8Balance = sdkService.getOpe8AssetBalance(address, configParam.OEP8_PUMPKIN_CODEHASH);
 
         int pumpkinTotal = 0;
         for (Object obj :
@@ -730,7 +781,7 @@ public class TransactionServiceImpl implements ITransactionService {
         }
 
         long now = System.currentTimeMillis() / 1000L;
-        logger.info("txntime:{},now:{}", txntime, now);
+        log.info("txntime:{},now:{}", txntime, now);
 
         BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txntime)).multiply(configParam.ONG_SECOND_GENERATE);
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
@@ -762,7 +813,7 @@ public class TransactionServiceImpl implements ITransactionService {
             }
 
             String txnhash = (String) map.get("TxnHash");
-            // logger.info("txnhash:{}", txnhash);
+            // log.info("txnhash:{}", txnhash);
             if (txnInfoMap.containsKey(txnhash)) {
                 //自己给自己转账，sql会查询出两条记录.
                 if (previousTxnIndex != (Integer) map.get("TxnIndex")) {
@@ -872,7 +923,7 @@ public class TransactionServiceImpl implements ITransactionService {
             }
 
             String txnhash = (String) map.get("TxnHash");
-            //   logger.info("txnhash:{}", txnhash);
+            //   log.info("txnhash:{}", txnhash);
 
             if (txnhash.equals(previousTxnHash)) {
                 //自己给自己转账，sql会查询出两条记录.
@@ -919,6 +970,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
     /**
      * 查询地址所有交易
+     *
      * @param address
      * @return
      */
@@ -938,15 +990,13 @@ public class TransactionServiceImpl implements ITransactionService {
 
                 if (ConstantParam.ONG.equals(map.get("AssetName"))) {
                     map.put("Amount", ((BigDecimal) map.get("Amount")).divide(ConstantParam.ONT_TOTAL).toPlainString());
-                }
-                else{
+                } else {
                     map.put("Amount", ((BigDecimal) map.get("Amount")).toPlainString());
                 }
             }
 
             rs.put("TxnList", list);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

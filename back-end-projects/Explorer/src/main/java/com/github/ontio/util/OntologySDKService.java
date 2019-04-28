@@ -92,19 +92,16 @@ public class OntologySDKService {
      * @param address
      * @return
      */
-    public Map getAddressBalance(String address) {
+    public Map getNativeAssetBalance(String address) {
         Map<String, Object> balanceMap = new HashMap<>();
-        OntSdk ontSdk = getOntSdk();
         try {
+            OntSdk ontSdk = getOntSdk();
             balanceMap = (Map) ontSdk.getConnect().getBalance(address);
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
-            e.printStackTrace();
+            logger.error("getNativeAssetBalance error...", e);
             balanceMap.put("ong", "0");
             balanceMap.put("ont", "0");
-            return balanceMap;
         }
-
         return balanceMap;
     }
 
@@ -114,13 +111,13 @@ public class OntologySDKService {
      * @param address
      * @return
      */
-    public String getAddressOep4Balance(String address, String contractAddr) {
-        OntSdk ontSdk = getOep4OntSdk(contractAddr);
+    public String getOep4AssetBalance(String address, String contractHash) {
+        OntSdk ontSdk = getOep4OntSdk(contractHash);
         try {
             String balance = ontSdk.neovm().oep4().queryBalanceOf(address);
             return balance;
         } catch (Exception e) {
-            logger.error("getAddressOep4Balance error...", e);
+            logger.error("getOep4AssetBalance error...", e);
             return "0";
         }
     }
@@ -131,13 +128,13 @@ public class OntologySDKService {
      * @param address
      * @return
      */
-    public String getAddressOep5Balance(String address, String contractAddr) {
+    public String getOep5AssetBalance(String address, String contractAddr) {
         OntSdk ontSdk = getOep5OntSdk(contractAddr);
         try {
             String balance = ontSdk.neovm().oep5().queryBalanceOf(address);
             return balance;
         } catch (Exception e) {
-            logger.error("getAddressOep4Balance error...", e);
+            logger.error("getOep4AssetBalance error...", e);
             return "0";
         }
     }
@@ -148,28 +145,15 @@ public class OntologySDKService {
      * @param address
      * @return
      */
-    public JSONArray getAddressOpe8Balance(String address, String codeHash) {
+    public JSONArray getOpe8AssetBalance(String address, String codeHash) {
         JSONArray balanceArray = new JSONArray();
         try {
             OntSdk ontSdk = getOep8OntSdk(codeHash);
             String balance = ontSdk.neovm().oep8().balancesOf(address);
             balanceArray = JSON.parseArray(balance);
         } catch (Exception e) {
-            logger.error("getAddressOpe8Balance error...", e);
-            e.printStackTrace();
-
-            balanceArray = new JSONArray();
-            balanceArray.add("0");
-            balanceArray.add("0");
-            balanceArray.add("0");
-            balanceArray.add("0");
-            balanceArray.add("0");
-            balanceArray.add("0");
-            balanceArray.add("0");
-            balanceArray.add("0");
-            return balanceArray;
+            logger.error("getOpe8AssetBalance error...", e);
         }
-
         return balanceArray;
     }
 
@@ -185,7 +169,7 @@ public class OntologySDKService {
             String unboundOng = ontSdk.nativevm().ong().unboundOng(address);
             return new BigDecimal(unboundOng).divide(ConstantParam.ONT_TOTAL).toPlainString();
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            logger.error("getNativeAssetBalance error...", e);
             e.printStackTrace();
             return null;
         }
@@ -203,10 +187,10 @@ public class OntologySDKService {
             oep4Obj.put("Name", name);
             oep4Obj.put("Symbol", symbol);
             oep4Obj.put("TotalSupply", total);
-            oep4Obj.put("Decimal",decimal);
+            oep4Obj.put("Decimal", decimal);
             return oep4Obj;
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            logger.error("getNativeAssetBalance error...", e);
             e.printStackTrace();
             return null;
         }
@@ -226,7 +210,7 @@ public class OntologySDKService {
 
             return oep5Obj;
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            logger.error("getNativeAssetBalance error...", e);
             e.printStackTrace();
             return null;
         }
@@ -238,7 +222,7 @@ public class OntologySDKService {
         return wm;
     }
 
-    private OntSdk getOep8OntSdk(String codeHash) throws Exception{
+    private OntSdk getOep8OntSdk(String codeHash) throws Exception {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(configParam.MASTERNODE_RESTFUL_URL);
         wm.neovm().oep8().setContractAddress(codeHash);
@@ -266,7 +250,7 @@ public class OntologySDKService {
             String[] names = new String[tokenIds.length];
             String[] symbols = new String[tokenIds.length];
             String[] totalSupplys = new String[tokenIds.length];
-            for(int i = 0; i < tokenIds.length; i++){
+            for (int i = 0; i < tokenIds.length; i++) {
                 names[i] = ontSdk.neovm().oep8().queryName(Helper.hexToBytes(tokenIds[i]));
                 symbols[i] = ontSdk.neovm().oep8().querySymbol(Helper.hexToBytes(tokenIds[i]));
                 totalSupplys[i] = ontSdk.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenIds[i]));
@@ -278,7 +262,7 @@ public class OntologySDKService {
             oep4Obj.put("TotalSupply", totalSupplys);
             return oep4Obj;
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            logger.error("getNativeAssetBalance error...", e);
             e.printStackTrace();
             return null;
         }
