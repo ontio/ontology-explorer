@@ -1,0 +1,66 @@
+spring:
+  jpa:
+    database: MYSQL
+  messages:
+    encoding: UTF-8
+  http:
+    encoding:
+      charset: UTF-8
+  datasource:
+    url: jdbc:mysql://localhost:3306/explorer?serverTimezone=UTC
+    username: root
+    password: ${MYSQL_TEST_PASSWORD}
+    initialization-mode: always
+  redis:
+    host: 192.168.99.100
+    port: 6379
+    password: ${REDIS_PASSWORD}
+    timeout: 15000
+    database: 0
+
+mybatis:
+  check-config-location: true
+  mapper-locations: classpath:/mybatis/mapper/*Mapper.xml
+  type-aliases-package: com.ont.controller
+  type-handlers-package: com.ont.handler
+  configuration:
+    map-underscore-to-camel-case: true
+
+server:
+  port: 8090
+  tomcat:
+    uri-encoding: UTF-8
+
+config:
+  threadPool:
+    max: 16
+    core: 8
+    queue: 8
+    keepalive: 60
+  node:
+    interruptTime: 10
+    waitForBlockTime: 30
+  main:
+    node: http://dappnode${random.int[1,5]}.ont.io:20334
+    host: http://dappnode
+    abs_path: .ont.io:20334
+    node_index: 1
+    node_count: 4
+  polaris:
+    node: http://polaris${random.int[1,6]}.ont.io:20334
+    host: http://polaris
+    abs_path: .ont.io:20334
+    node_index: 1
+    node_count: 5
+  block:
+    interval: 6000
+  contract:
+    ont: 0100000000000000000000000000000000000000
+    ong: 0200000000000000000000000000000000000000
+    ontId: 0300000000000000000000000000000000000000
+    auth: 0600000000000000000000000000000000000000
+    claimRecord: 36bb5c053b6b839c8f6b923fe852f91239b9fccc
+    pumpkin: b2ae73193b07043e75de65edd4ad74b0fa6148b3
+    dragon: 3d9dee93447a024de49925ec64b39178c4ae4525
+
+
