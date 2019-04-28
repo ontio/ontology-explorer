@@ -22,8 +22,7 @@ package com.github.ontio.controller;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.TransactionServiceImpl;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +32,11 @@ import org.springframework.web.bind.annotation.*;
  * @version 1.0
  * @date 2018/3/15
  */
+@Slf4j
 @RestController
 @EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer/")
 public class TransactionController {
-
-    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -54,8 +52,8 @@ public class TransactionController {
     @ResponseBody
     public Result queryTransactionList(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}", amount);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("amount:{}", amount);
 
         Result rs = transactionService.queryTxnList(amount);
         return rs;
@@ -71,8 +69,8 @@ public class TransactionController {
     public Result queryTxn(@PathVariable("pagesize") Integer pageSize,
                            @PathVariable("pagenumber") Integer pageNumber) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber:{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pageNumber:{}", pageSize, pageNumber);
 
         Result rs = transactionService.queryTxnList(pageSize, pageNumber);
         return rs;
@@ -87,8 +85,8 @@ public class TransactionController {
     @ResponseBody
     public Result queryTxnByHash(@PathVariable("txnhash") String txnHash) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("txnHash:{}", txnHash);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("txnHash:{}", txnHash);
 
         Result rs = transactionService.queryTxnDetailByHash(txnHash);
         return rs;
@@ -105,8 +103,8 @@ public class TransactionController {
                                    @PathVariable("pagesize") int pageSize,
                                    @PathVariable("pagenumber") int pageNumber) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},pagesize:{},pagenumber:{}", address, pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},pagesize:{},pagenumber:{}", address, pageSize, pageNumber);
 
         Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize);
         return rs;
@@ -124,8 +122,8 @@ public class TransactionController {
                                    @PathVariable("pagenumber") int pageNumber,
                                    @PathVariable("assetname") String assetName) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},pagesize:{},pagenumber:{}, assetname:{}", address, pageSize, pageNumber, assetName);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},pagesize:{},pagenumber:{}, assetname:{}", address, pageSize, pageNumber, assetName);
 
         Result rs = transactionService.queryAddressInfo(address, pageNumber, pageSize, assetName);
         return rs;
@@ -144,8 +142,8 @@ public class TransactionController {
                                          @PathVariable("assetname") String assetName,
                                          @PathVariable("endtime") int endTime) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},assetname:{},pageSize:{},endTime:{}", address, assetName, pageSize, endTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},assetname:{},pageSize:{},endTime:{}", address, assetName, pageSize, endTime);
 
         Result rs = transactionService.queryAddressInfoByTimeAndPage(address, assetName, pageSize, endTime);
         return rs;
@@ -163,8 +161,8 @@ public class TransactionController {
                                          @PathVariable("assetname") String assetName,
                                          @PathVariable("endtime") int endTime) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},assetname:{},beginTime:{},endTime:{}", address, assetName, beginTime, endTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},assetname:{},beginTime:{},endTime:{}", address, assetName, beginTime, endTime);
 
         Result rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime, endTime);
         return rs;
@@ -181,8 +179,8 @@ public class TransactionController {
                                          @PathVariable("begintime") int beginTime,
                                          @PathVariable("assetname") String assetName) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{},assetname:{},beginTime:{}", address, assetName, beginTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{},assetname:{},beginTime:{}", address, assetName, beginTime);
 
         Result rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime);
         return rs;
@@ -197,8 +195,8 @@ public class TransactionController {
     @ResponseBody
     public Result queryAddressBalance(@PathVariable("address") String address) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("address:{}", address);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("address:{}", address);
 
         Result rs = transactionService.queryAddressBalance(address);
         return rs;
@@ -228,7 +226,7 @@ public class TransactionController {
     @ResponseBody
     public Result queryAddressInfo(@PathVariable("address") String address) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = transactionService.queryAddressInfoForExcel(address);
         return rs;

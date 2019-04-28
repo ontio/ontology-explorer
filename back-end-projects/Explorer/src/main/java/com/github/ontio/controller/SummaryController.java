@@ -3,8 +3,7 @@ package com.github.ontio.controller;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.SummaryServiceImpl;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +13,11 @@ import org.springframework.web.bind.annotation.*;
  * @version 1.0
  * @date 2018/12/17
  */
+@Slf4j
 @RestController
 @EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer")
 public class SummaryController {
-
-    private static final Logger logger = LoggerFactory.getLogger(SummaryController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -34,7 +32,7 @@ public class SummaryController {
     @RequestMapping(value = "/summaryAllInfo", method = RequestMethod.POST)
     @ResponseBody
     public Result summaryAllInfo() {
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = summaryService.summaryAllInfo();
         return rs;
@@ -49,7 +47,7 @@ public class SummaryController {
     @ResponseBody
     public Result querySummary(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = summaryService.querySummary(amount);
         return rs;
@@ -62,7 +60,7 @@ public class SummaryController {
     @RequestMapping(value = "/summary/tps", method = RequestMethod.GET)
     public Result queryTps() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = summaryService.queryTps();
         return rs;
@@ -78,7 +76,7 @@ public class SummaryController {
                                    @PathVariable("starttime") int startTime,
                                    @PathVariable("endtime") int endTime) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = summaryService.queryProjectInfo(project, type, startTime, endTime);
         return rs;
@@ -96,8 +94,8 @@ public class SummaryController {
                                @PathVariable("starttime") int startTime,
                                @PathVariable("endtime") int endTime) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("####startTime:{}, endTime:{}", startTime, endTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####startTime:{}, endTime:{}", startTime, endTime);
 
         Result rs = summaryService.querySummary(type, startTime, endTime);
         return rs;
@@ -118,8 +116,8 @@ public class SummaryController {
                                 @PathVariable("starttime") int startTime,
                                 @PathVariable("endtime") int endTime) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("####startTime:{}, endTime:{}", startTime, endTime);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####startTime:{}, endTime:{}", startTime, endTime);
 
         Result rs = summaryService.queryContract(contractHash, type, startTime, endTime);
         return rs;
@@ -133,7 +131,7 @@ public class SummaryController {
     @GetMapping(value = "/summary/totalsupply")
     public Result queryTotalSupply() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = summaryService.queryTotalSupply();
         return rs;
@@ -147,7 +145,7 @@ public class SummaryController {
     @GetMapping(value = "/summary/native/totalsupply")
     public Result queryNativeTotalSupply() {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         Result rs = summaryService.queryNativeTotalSupply();
         return rs;

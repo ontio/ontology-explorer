@@ -26,8 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ConfigParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,10 +38,9 @@ import java.util.Map;
  * @author zhouq
  * @date 2018/2/27
  */
-
+@Slf4j
 @Component
 public class OntologySDKService {
-    private static final Logger logger = LoggerFactory.getLogger(OntologySDKService.class);
 
     private static OntologySDKService instance = null;
 
@@ -66,7 +64,7 @@ public class OntologySDKService {
         try {
             ddoStr = ontSdk.nativevm().ontId().sendGetDDO(ontId);
         } catch (Exception e) {
-            logger.error("get ddo error...", e);
+            log.error("get ddo error...", e);
             e.printStackTrace();
         }
 
@@ -79,7 +77,7 @@ public class OntologySDKService {
         try {
             nodeCount = ontSdk.getConnect().getNodeCount();
         } catch (Exception e) {
-            logger.error("get nodecount error...", e);
+            log.error("get nodecount error...", e);
             e.printStackTrace();
         }
 
@@ -98,7 +96,7 @@ public class OntologySDKService {
         try {
             balanceMap = (Map) ontSdk.getConnect().getBalance(address);
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            log.error("getAddressBalance error...", e);
             e.printStackTrace();
             balanceMap.put("ong", "0");
             balanceMap.put("ont", "0");
@@ -120,7 +118,7 @@ public class OntologySDKService {
             String balance = ontSdk.neovm().oep4().queryBalanceOf(address);
             return balance;
         } catch (Exception e) {
-            logger.error("getAddressOep4Balance error...", e);
+            log.error("getAddressOep4Balance error...", e);
             return "0";
         }
     }
@@ -137,7 +135,7 @@ public class OntologySDKService {
             String balance = ontSdk.neovm().oep5().queryBalanceOf(address);
             return balance;
         } catch (Exception e) {
-            logger.error("getAddressOep4Balance error...", e);
+            log.error("getAddressOep4Balance error...", e);
             return "0";
         }
     }
@@ -155,7 +153,7 @@ public class OntologySDKService {
             String balance = ontSdk.neovm().oep8().balancesOf(address);
             balanceArray = JSON.parseArray(balance);
         } catch (Exception e) {
-            logger.error("getAddressOpe8Balance error...", e);
+            log.error("getAddressOpe8Balance error...", e);
             e.printStackTrace();
 
             balanceArray = new JSONArray();
@@ -185,7 +183,7 @@ public class OntologySDKService {
             String unboundOng = ontSdk.nativevm().ong().unboundOng(address);
             return new BigDecimal(unboundOng).divide(ConstantParam.ONT_TOTAL).toPlainString();
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            log.error("getAddressBalance error...", e);
             e.printStackTrace();
             return null;
         }
@@ -206,7 +204,7 @@ public class OntologySDKService {
             oep4Obj.put("Decimal",decimal);
             return oep4Obj;
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            log.error("getAddressBalance error...", e);
             e.printStackTrace();
             return null;
         }
@@ -226,7 +224,7 @@ public class OntologySDKService {
 
             return oep5Obj;
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            log.error("getAddressBalance error...", e);
             e.printStackTrace();
             return null;
         }
@@ -278,7 +276,7 @@ public class OntologySDKService {
             oep4Obj.put("TotalSupply", totalSupplys);
             return oep4Obj;
         } catch (Exception e) {
-            logger.error("getAddressBalance error...", e);
+            log.error("getAddressBalance error...", e);
             e.printStackTrace();
             return null;
         }
