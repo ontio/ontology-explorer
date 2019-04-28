@@ -18,14 +18,14 @@
 
 
 
-package com.github.ontio.util;
+package com.github.ontio.model.common;
 
 /**
  * @author zhouq
  * @version 1.0
  * @date 2018/3/27
  */
-public enum ClaimContextType {
+public enum ClaimContextEnum {
 
 
     GITHUB_CLAIM("claim:github_authentication", "github authentication claim"),
@@ -44,7 +44,7 @@ public enum ClaimContextType {
 
     private String context;
 
-    ClaimContextType(String context, String desc) {
+    ClaimContextEnum(String context, String desc) {
         this.context = context;
         this.desc = desc;
     }

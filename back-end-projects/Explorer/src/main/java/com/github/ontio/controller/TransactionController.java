@@ -19,7 +19,6 @@
 
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.paramBean.ResponseBean;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.Helper;
@@ -30,6 +29,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * @author zhouq
@@ -39,17 +39,21 @@ import javax.validation.constraints.Max;
 @Validated
 @Slf4j
 @RestController
-@RequestMapping(value = "/v2/transactions")
+@RequestMapping(value = "/v2")
 public class TransactionController {
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
+    private final ITransactionService transactionService;
+
     @Autowired
-    private ITransactionService transactionService;
+    public TransactionController(ITransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
 
     @ApiOperation(value = "Get latest transaction list")
-    @GetMapping()
+    @GetMapping(value = "/latest-transactions")
     public ResponseBean queryLatestTxs(@RequestParam("count") @Max(50) int count) {
 
         log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
@@ -58,176 +62,48 @@ public class TransactionController {
         return rs;
     }
 
-    /**
-     * query transactions by page
-     *
-     * @return
-     */
-    @RequestMapping(value = "/transactionlist/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryTxn(@PathVariable("pagesize") Integer pageSize,
-                              @PathVariable("pagenumber") Integer pageNumber) {
+    @ApiOperation(value = "Get transaction list by page")
+    @GetMapping(value = "/transactions")
+    public ResponseBean queryTxsByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
+                                       @RequestParam("page_number") @Min(1) Integer pageNumber) {
 
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("pageSize:{}, pageNumber:{}", pageSize, pageNumber);
+        log.info("###{}.{} begin...pageSize:{},pageNumber:{}", CLASS_NAME, Helper.currentMethod(), pageSize, pageNumber);
 
-        OldResult rs = transactionService.queryLatestTxs(pageSize, pageNumber);
+        ResponseBean rs = transactionService.queryTxsByPage(pageNumber, pageSize);
         return rs;
     }
 
-    /**
-     * query transaction by txnhash
-     *
-     * @return
-     */
-    @RequestMapping(value = "/transaction/{txnhash}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryTxnByHash(@PathVariable("txnhash") String txnHash) {
+    @ApiOperation(value = "Get latest nonontid transaction list")
+    @GetMapping(value = "/latest-nonontid-transactions")
+    public ResponseBean queryLatestNonontidTxs(@RequestParam("count") @Max(50) int count) {
 
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("txnHash:{}", txnHash);
+        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        OldResult rs = transactionService.queryTxnDetailByHash(txnHash);
+        ResponseBean rs = transactionService.queryLatestNonontidTxs(count);
         return rs;
     }
 
-    /**
-     * query asset balance and transactions by address
-     *
-     * @return
-     */
-    @RequestMapping(value = "/address/{address}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressInfo(@PathVariable("address") String address,
-                                      @PathVariable("pagesize") int pageSize,
-                                      @PathVariable("pagenumber") int pageNumber) {
+    @ApiOperation(value = "Get nonontid transaction list by page")
+    @GetMapping(value = "/nonontid-transactions")
+    public ResponseBean queryNonontidTxsByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
+                                               @RequestParam("page_number") @Min(1) Integer pageNumber) {
 
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("address:{},pagesize:{},pagenumber:{}", address, pageSize, pageNumber);
+        log.info("###{}.{} begin...pageSize:{},pageNumber:{}", CLASS_NAME, Helper.currentMethod(), pageSize, pageNumber);
 
-        OldResult rs = transactionService.queryAddressInfo(address, pageNumber, pageSize);
+        ResponseBean rs = transactionService.queryNonontidTxsByPage(pageNumber, pageSize);
         return rs;
     }
 
-    /**
-     * query the specially asset balance and transactions
-     *
-     * @return
-     */
-    @RequestMapping(value = "/address/{address}/{assetname}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressInfo(@PathVariable("address") String address,
-                                      @PathVariable("pagesize") int pageSize,
-                                      @PathVariable("pagenumber") int pageNumber,
-                                      @PathVariable("assetname") String assetName) {
 
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("address:{},pagesize:{},pagenumber:{}, assetname:{}", address, pageSize, pageNumber, assetName);
+    @ApiOperation(value = "Get transaction detail by txhash")
+    @GetMapping(value = "/transactions/{tx_hash}")
+    public ResponseBean queryTxnByHash(@PathVariable("tx_hash") String txHash) {
 
-        OldResult rs = transactionService.queryAddressInfo(address, pageNumber, pageSize, assetName);
+        log.info("###{}.{} begin...txHash:{}", CLASS_NAME, Helper.currentMethod(),txHash);
+
+        ResponseBean rs = transactionService.queryTxDetailByHash(txHash);
         return rs;
     }
 
-    /**
-     * query the specially asset balance and transactions
-     * ONTO use
-     *
-     * @return
-     */
-    @RequestMapping(value = "/address/timeandpage/{address}/{assetname}/{pagesize}/{endtime}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressInfoByTimeAndPage(@PathVariable("address") String address,
-                                                   @PathVariable("pagesize") int pageSize,
-                                                   @PathVariable("assetname") String assetName,
-                                                   @PathVariable("endtime") int endTime) {
 
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("address:{},assetname:{},pageSize:{},endTime:{}", address, assetName, pageSize, endTime);
-
-        OldResult rs = transactionService.queryAddressInfoByTimeAndPage(address, assetName, pageSize, endTime);
-        return rs;
-    }
-
-    /**
-     * query the specially asset balance and transactions
-     * ONTO use
-     * @return
-     */
-    @RequestMapping(value = "/address/time/{address}/{assetname}/{begintime}/{endtime}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressInfoByTime(@PathVariable("address") String address,
-                                            @PathVariable("begintime") int beginTime,
-                                            @PathVariable("assetname") String assetName,
-                                            @PathVariable("endtime") int endTime) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("address:{},assetname:{},beginTime:{},endTime:{}", address, assetName, beginTime, endTime);
-
-        OldResult rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime, endTime);
-        return rs;
-    }
-
-    /**
-     * query the specially asset balance and transactions
-     *
-     * @return
-     */
-    @RequestMapping(value = "/address/time/{address}/{assetname}/{begintime}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressInfoByTime2(@PathVariable("address") String address,
-                                             @PathVariable("begintime") int beginTime,
-                                             @PathVariable("assetname") String assetName) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("address:{},assetname:{},beginTime:{}", address, assetName, beginTime);
-
-        OldResult rs = transactionService.queryAddressInfoByTime(address, assetName, beginTime);
-        return rs;
-    }
-
-    /**
-     * query the balance
-     *
-     * @return
-     */
-    @RequestMapping(value = "/address/balance/{address}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressBalance(@PathVariable("address") String address) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("address:{}", address);
-
-        OldResult rs = transactionService.queryAddressBalance(address);
-        return rs;
-    }
-
-    /**
-     * query all address information
-     *
-     * @return
-     */
-/*    @RequestMapping(value = "/address/list", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressList() {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = transactionService.queryAddressList();
-        return rs;
-    }*/
-
-    /**
-     * query all address information
-     *
-     * @return
-     */
-    @RequestMapping(value = "/address/queryaddressinfo/{address}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryAddressInfo(@PathVariable("address") String address) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = transactionService.queryAddressInfoForExcel(address);
-        return rs;
-    }
 }

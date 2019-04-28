@@ -1,9 +1,16 @@
 package com.github.ontio.model.dao;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import javax.persistence.*;
 
 @Table(name = "tbl_ontid_tx_detail")
+@NoArgsConstructor
+@AllArgsConstructor
 public class OntidTxDetail {
     /**
      * 交易hash

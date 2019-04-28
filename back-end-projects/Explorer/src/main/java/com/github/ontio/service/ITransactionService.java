@@ -30,6 +30,39 @@ import com.github.ontio.paramBean.ResponseBean;
 public interface ITransactionService {
 
     /**
+     * query latest transactions
+     *
+     * @return
+     */
+    ResponseBean queryLatestTxs(int count);
+
+    /**
+     * query latest transactions
+     *
+     * @return
+     */
+    ResponseBean queryTxsByPage(int pageNumber, int pageSize);
+
+    /**
+     * query latest transactions
+     *
+     * @return
+     */
+    ResponseBean queryLatestNonontidTxs(int count);
+
+    /**
+     * query latest transactions
+     *
+     * @return
+     */
+    ResponseBean queryNonontidTxsByPage(int pageNumber, int pageSize);
+
+
+    ResponseBean queryTxDetailByHash(String txHash);
+
+
+
+    /**
      * query txn by txid
      *
      * @param txid
@@ -37,21 +70,9 @@ public interface ITransactionService {
      */
     OldResult queryTxnDetailByHash(String txid);
 
-    /**
-     * query latest transactions
-     *
-     * @return
-     */
-    ResponseBean queryLatestTxs(int amount);
 
-    /**
-     * query txn by page
-     *
-     * @param pageSize
-     * @param pageNumber
-     * @return
-     */
-    OldResult queryLatestTxs(int pageSize, int pageNumber);
+
+
 
     /**
      *  query asset balance and transactions
