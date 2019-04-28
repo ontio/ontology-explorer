@@ -20,6 +20,7 @@
 package com.github.ontio.utils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 
@@ -29,89 +30,90 @@ import org.springframework.stereotype.Service;
  */
 
 @Service("ConfigParam")
+@ConfigurationProperties(prefix = "config")
 public class ConfigParam {
 
 
     /**
      * ontology blockchain restful url
      */
-    @Value("${masternode.restful.url}")
+    @Value("${config.main.node}")
     public String MASTERNODE_RESTFUL_URL;
 
     /**
      * the amount of the ontology blockchain nodes in properties
      */
-    @Value("${node.amount}")
+    @Value("${config.main.node_count}")
     public int NODE_AMOUNT;
 
     /**
      * the interval for waiting block generation
      */
-    @Value("${block.interval}")
+    @Value("${config.block.interval}")
     public int BLOCK_INTERVAL;
 
     /**
      * each node fault tolerance maximum time.
      */
-    @Value("${node.interruptTime.max}")
+    @Value("${config.node.interruptTime}")
     public int NODE_INTERRUPTTIME_MAX;
 
     /**
      * the maximum time of each node for waiting for generating block
      */
-    @Value("${node.waitForBlockTime.max}")
+    @Value("${config.node.waitForBlockTime}")
     public int NODE_WAITFORBLOCKTIME_MAX;
 
     /**
      * ontology blockchain ontId smartcontract codehash
      */
-    @Value("${ontId.codeHash}")
+    @Value("${config.contract.ontId}")
     public String ONTID_CODEHASH;
 
 
     /**
      * ontology blockchain record smartcontract codehash
      */
-    @Value("${claimRecord.codeHash}")
+    @Value("${config.contract.claimRecord}")
     public String CLAIMRECORD_CODEHASH;
 
     /**
      * ontology blockchain ONT asset smartcontract codehash
      */
-    @Value("${asset.ont.codeHash}")
+    @Value("${config.contract.ont}")
     public String ASSET_ONT_CODEHASH;
 
     /**
      * ontology blockchain ONG asset smartcontract codehash
      */
-    @Value("${asset.ong.codeHash}")
+    @Value("${config.contract.ong}")
     public String ASSET_ONG_CODEHASH;
 
 
 
-    @Value("${oep8.pumpkin.codeHash}")
+    @Value("${config.contract.pumpkin}")
     public String OEP8_PUMPKIN_CODEHASH;
 
-    @Value("${dragon.codeHash}")
+    @Value("${config.contract.dragon}")
     public String DRAGON_CODEHASH;
 
 
     /**
      * ontology blockchainauth smartcontract codehash
      */
-    @Value("${auth.codeHash}")
+    @Value("${config.contract.auth}")
     public String AUTH_CODEHASH;
 
-    @Value("${threadPoolSize.max}")
+    @Value("${config.threadPool.max}")
     public int THREADPOOLSIZE_MAX;
 
-    @Value("${threadPoolSize.core}")
+    @Value("${config.threadPool.core}")
     public int THREADPOOLSIZE_CORE;
 
-    @Value("${threadPoolSize.queue}")
+    @Value("${config.threadPool.queue}")
     public int THREADPOOLSIZE_QUEUE;
 
-    @Value("${threadPoolSize.keepalive.second}")
+    @Value("${config.threadPool.keepalive}")
     public int THREADPOOLSIZE_KEEPALIVE_SECOND;
 
 }
