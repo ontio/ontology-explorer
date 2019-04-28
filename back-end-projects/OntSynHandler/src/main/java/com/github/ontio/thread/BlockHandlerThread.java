@@ -26,8 +26,7 @@ import com.github.ontio.dao.*;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -42,11 +41,10 @@ import java.util.Map;
  * @version 1.0
  * @date 2018/3/13
  */
+@Slf4j
 @Component("BlockHandlerThread")
 @Scope("prototype")
 public class BlockHandlerThread extends Thread {
-
-    private static final Logger logger = LoggerFactory.getLogger(BlockHandlerThread.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -82,7 +80,7 @@ public class BlockHandlerThread extends Thread {
      */
     @Override
     public void run() {
-        logger.info("========{}.run=======", CLASS_NAME);
+        log.info("========{}.run=======", CLASS_NAME);
         try {
             ConstantParam.MASTERNODE_RESTFULURL = configParam.MASTERNODE_RESTFUL_URL;
             //初始化node列表
@@ -96,18 +94,18 @@ public class BlockHandlerThread extends Thread {
                 initOepContractConstantInfo();
 
                 int remoteBlockHieght = getRemoteBlockHeight();
-                logger.info("######remote blockheight:{}", remoteBlockHieght);
+                log.info("######remote blockheight:{}", remoteBlockHieght);
 
                 Integer dbBlockHeight = currentMapper.selectDBHeight();
-                logger.info("######db blockheight:{}", dbBlockHeight);
+                log.info("######db blockheight:{}", dbBlockHeight);
 
                 //wait for generating block
                 if (dbBlockHeight >= remoteBlockHieght) {
-                    logger.info("+++++++++wait for block+++++++++");
+                    log.info("+++++++++wait for block+++++++++");
                     try {
                         Thread.sleep(configParam.BLOCK_INTERVAL);
                     } catch (InterruptedException e) {
-                        logger.error("error...", e);
+                        log.error("error...", e);
                         e.printStackTrace();
                     }
                     oneBlockTryTime++;
@@ -147,13 +145,13 @@ public class BlockHandlerThread extends Thread {
                     long time1 = System.currentTimeMillis();
                     blockManagementService.handleOneBlock(blockJson);
                     long time2 = System.currentTimeMillis();
-                    logger.info("handle block {} used time:{}", tHeight, (time2-time1));
+                    log.info("handle block {} used time:{}", tHeight, (time2-time1));
                 }
 
             }
 
         } catch (Exception e) {
-            logger.error("Exception occured，Synchronization thread can't work,error ...", e);
+            log.error("Exception occured，Synchronization thread can't work,error ...", e);
         }
     }
 
@@ -207,7 +205,7 @@ public class BlockHandlerThread extends Thread {
                 remoteHeight = ConstantParam.ONT_SDKSERVICE.getConnect().getBlockHeight();
                 break;
             } catch (ConnectorException ex) {
-                logger.error("getBlockHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                log.error("getBlockHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
                 if (tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
@@ -218,7 +216,7 @@ public class BlockHandlerThread extends Thread {
                     continue;
                 }
             } catch (IOException e) {
-                logger.error("get blockheight thread can't work,error {} ", e);
+                log.error("get blockheight thread can't work,error {} ", e);
                 throw new Exception(e);
             }
         }
@@ -240,7 +238,7 @@ public class BlockHandlerThread extends Thread {
                 block = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getBlockJson(height);
                 break;
             } catch (ConnectorException ex) {
-                logger.error("getBlockJsonByHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                log.error("getBlockJsonByHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
                 if (tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
@@ -251,7 +249,7 @@ public class BlockHandlerThread extends Thread {
                     continue;
                 }
             } catch (IOException ex) {
-                logger.error("getBlockJsonByHeight thread can't work,error {} ", ex);
+                log.error("getBlockJsonByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
             }
         }
@@ -274,7 +272,7 @@ public class BlockHandlerThread extends Thread {
                 nextBookKeeper = blockJson.getJSONObject("Header").getString("NextBookkeeper");
                 break;
             } catch (ConnectorException ex) {
-                logger.error("getBlockBookKeeperByHeight error, try again...restsful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                log.error("getBlockBookKeeperByHeight error, try again...restsful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
                 if (tryTime % configParam.NODE_INTERRUPTTIME_MAX == 0) {
                     switchNode();
                     tryTime++;
@@ -285,7 +283,7 @@ public class BlockHandlerThread extends Thread {
                     continue;
                 }
             } catch (IOException ex) {
-                logger.error("getBlockBookKeeperByHeight thread can't work,error {} ", ex);
+                log.error("getBlockBookKeeperByHeight thread can't work,error {} ", ex);
                 throw new Exception(ex);
             }
         }
@@ -303,7 +301,7 @@ public class BlockHandlerThread extends Thread {
             ConstantParam.MASTERNODE_INDEX = 0;
         }
         ConstantParam.MASTERNODE_RESTFULURL = ConstantParam.NODE_RESTFULURLLIST.get(ConstantParam.MASTERNODE_INDEX);
-        logger.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
+        log.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(ConstantParam.MASTERNODE_RESTFULURL);

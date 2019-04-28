@@ -3,22 +3,16 @@ package com.github.ontio.controller;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.ContractServiceImpl;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author king
- * @version 1.0
- * @date 12.6
- */
+@Slf4j
 @RestController
 @EnableAspectJAutoProxy
 @RequestMapping(value = "/api/v1/explorer")
 public class ContractController {
-    private static final Logger logger = LoggerFactory.getLogger(ContractController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -33,9 +27,8 @@ public class ContractController {
     @RequestMapping(value = "contract/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     public Result contracts(@PathVariable("pagesize") int pagesize,
                             @PathVariable("pagenumber") int pagenumber){
-        Result rs = contractService.queryContract(pagesize, pagenumber);
 
-        return rs;
+        return contractService.queryContract(pagesize, pagenumber);
     }
 
     /**
@@ -52,14 +45,12 @@ public class ContractController {
                                          @PathVariable("pagenumber") Integer pageNumber,
                                          @PathVariable("pagesize") Integer pageSize) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
         if (contractHash.isEmpty()){
             return null;
         }
-
-        Result rs = contractService.queryContractByHash(contractHash, pageSize, pageNumber);
-        return rs;
+        return contractService.queryContractByHash(contractHash, pageSize, pageNumber);
     }
 
     /**
@@ -74,14 +65,12 @@ public class ContractController {
                                     @PathVariable("pagenumber") Integer pageNumber,
                                     @PathVariable("pagesize") Integer pageSize){
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
         if (type.isEmpty()){
             return null;
         }
-
-        Result rs = contractService.queryOEPContract(type, pageSize, pageNumber);
-        return rs;
+        return contractService.queryOEPContract(type, pageSize, pageNumber);
     }
 
     /**
@@ -98,14 +87,12 @@ public class ContractController {
                                          @PathVariable("pagenumber") Integer pageNumber,
                                          @PathVariable("pagesize") Integer pageSize){
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
         if (type.isEmpty() || contracthash.isEmpty()){
             return null;
         }
-
-        Result rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, "", pageSize, pageNumber);
-        return rs;
+        return contractService.queryOEPContractByHashAndTokenName(contracthash, type, "", pageSize, pageNumber);
     }
 
     /**
@@ -124,14 +111,12 @@ public class ContractController {
                                                    @PathVariable("pagenumber") Integer pageNumber,
                                                    @PathVariable("pagesize") Integer pageSize){
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
         if (type.isEmpty() || contracthash.isEmpty()){
             return null;
         }
-
-        Result rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
-        return rs;
+        return contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
     }
 
 
@@ -144,10 +129,9 @@ public class ContractController {
     @GetMapping(value = "/contract/dappstore/{pagesize}/{pagenumber}")
     public Result queryDappstoreContractInfo(@PathVariable("pagesize") Integer pageSize, @PathVariable("pagenumber") Integer pageNumber){
 
-        logger.info("####{}.{} begin...pagesize:{},pagenumber:{}", CLASS_NAME, Helper.currentMethod(),pageSize, pageNumber);
+        log.info("####{}.{} begin...pagesize:{},pagenumber:{}", CLASS_NAME, Helper.currentMethod(),pageSize, pageNumber);
 
-        Result rs = contractService.queryDappstoreContractInfo(pageSize, pageNumber);
-        return rs;
+        return contractService.queryDappstoreContractInfo(pageSize, pageNumber);
     }
 
 
@@ -157,12 +141,7 @@ public class ContractController {
      */
     @GetMapping(value = "/contract/dappstore/24h/summary")
     public Result queryDappstoreContract24hSummary(){
-
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        Result rs = contractService.queryDappstore24hSummary();
-        return rs;
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        return contractService.queryDappstore24hSummary();
     }
-
-
 }

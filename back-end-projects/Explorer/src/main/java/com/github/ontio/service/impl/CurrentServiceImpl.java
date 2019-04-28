@@ -28,9 +28,8 @@ import com.github.ontio.config.ConfigParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.util.OntologySDKService;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,10 +41,10 @@ import java.util.*;
  * @version 1.0
  * @date 2018/2/27
  */
+@Slf4j
 @Service("CurrentService")
 @MapperScan("com.github.ontio.dao")
 public class CurrentServiceImpl implements ICurrentService {
-    private static final Logger logger = LoggerFactory.getLogger(CurrentServiceImpl.class);
 
     private static final String VERSION = "1.0";
 

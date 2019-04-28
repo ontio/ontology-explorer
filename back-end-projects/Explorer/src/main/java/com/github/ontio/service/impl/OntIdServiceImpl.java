@@ -28,9 +28,8 @@ import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.IOntIdService;
 import com.github.ontio.util.*;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,11 +44,10 @@ import java.util.Map;
  * @version 1.0
  * @date 2018/2/27
  */
+@Slf4j
 @Service("OntIdService")
 @MapperScan("com.github.ontio.dao")
 public class OntIdServiceImpl implements IOntIdService {
-
-    private static final Logger logger = LoggerFactory.getLogger(OntIdServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
@@ -97,7 +95,7 @@ public class OntIdServiceImpl implements IOntIdService {
         }
 
         Map currentMap = currentMapper.selectSummaryInfo();
-        int count = (Integer)currentMap.get("TxnCount") - (Integer) currentMap.get("NonOntIdTxnCount");
+        int count = (Integer) currentMap.get("TxnCount") - (Integer) currentMap.get("NonOntIdTxnCount");
 
         Map<String, Object> rs = new HashMap<>();
         rs.put("OntIdList", ontIdList);
@@ -132,7 +130,7 @@ public class OntIdServiceImpl implements IOntIdService {
 
         initSDK();
         String ddoStr = sdkService.getDDO(ontId);
-        logger.info("{} query ddo info:{}", ontId, ddoStr);
+        log.info("{} query ddo info:{}", ontId, ddoStr);
 
         JSONObject ddoObj = JSON.parseObject(ddoStr);
         if (ddoObj.containsKey("Attributes")) {
@@ -168,9 +166,9 @@ public class OntIdServiceImpl implements IOntIdService {
             //standard claim attribute
             if (attrKey.startsWith(ConstantParam.CLAIM)) {
 
-                logger.info("Attributes contains claim");
+                log.info("Attributes contains claim");
                 String attrValue = attrObj.getString("Value");
-                logger.info("attrValue:{}", attrValue);
+                log.info("attrValue:{}", attrValue);
                 JSONObject attrValueObj = JSON.parseObject(attrValue);
                 String claimContext = attrValueObj.getString("Context");
                 String issuer = attrValueObj.getString("Issuer");
