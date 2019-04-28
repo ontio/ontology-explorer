@@ -18,32 +18,25 @@
 
 
 
-package com.github.ontio.paramBean;
+package com.github.ontio.mapper;
 
-/**
- * @author zhouq
- * @date 2018/2/27
- */
-public class Result {
+import com.github.ontio.model.Block;
+import org.springframework.stereotype.Component;
 
-    public String Action;
+@Component
+public interface BlockMapper {
+    int deleteByPrimaryKey(Integer height);
 
-    public Long Error;
+    int insert(Block record);
 
-    public String Desc;
+    int insertSelective(Block record);
 
-    public String Version;
+    Block selectByPrimaryKey(Integer height);
 
-    public Object Result;
+    int updateByPrimaryKeySelective(Block record);
 
-    @Override
-    public String toString() {
-        return "Result{" +
-                "Action='" + Action + '\'' +
-                ", Error=" + Error +
-                ", Desc='" + Desc + '\'' +
-                ", Version='" + Version + '\'' +
-                ", Result=" + Result +
-                '}';
-    }
+    int updateByPrimaryKey(Block record);
+
+    void updateNextBlockHash(String blockHash, int height);
+
 }
