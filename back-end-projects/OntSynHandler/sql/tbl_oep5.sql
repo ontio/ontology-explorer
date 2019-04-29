@@ -20,10 +20,10 @@ CREATE TABLE `tbl_oep5`
 (
     `contract_hash` varchar(255) NOT NULL DEFAULT '' COMMENT '合约hash值',
     `name`          varchar(255) NOT NULL DEFAULT '' COMMENT 'OEP5代币名称',
-    `total_supply`  BIGINT       NOT NULL COMMENT 'OEP5代币总量',
+    `total_supply`  varchar(255) NOT NULL COMMENT 'OEP5代币总量',
     `symbol`        varchar(255) NOT NULL DEFAULT '' COMMENT 'OEP5代币符号',
     `create_time`   datetime     NOT NULL COMMENT '创建时间，yyyy-MM-dd',
-    `audit_flag`    int(11)      NOT NULL COMMENT '审核标识，1：审核通过 0：未审核',
+    `audit_flag`    bool         NOT NULL COMMENT '审核标识，1：审核通过 0：未审核',
     `update_time`   datetime              DEFAULT NULL COMMENT '更新时间，yyyy-MM-dd',
     PRIMARY KEY (`contract_hash`)
 ) ENGINE = InnoDB
