@@ -30,7 +30,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
@@ -178,6 +182,7 @@
 					<dependency>
 						<groupId>tk.mybatis</groupId>
 						<artifactId>mapper-spring-boot-starter</artifactId>
+						<version>1.2.4</version>
 					</dependency>
 				</dependencies>
 			</plugin>
