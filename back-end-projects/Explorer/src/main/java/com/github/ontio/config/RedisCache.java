@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 @Component
 @Slf4j
-public class ExplorerRedisCache implements Cache {
+public class RedisCache implements Cache {
     
     // 读写锁
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
@@ -33,7 +33,7 @@ public class ExplorerRedisCache implements Cache {
 
     private String id = "defaultrediscacheid001";
 
-    public ExplorerRedisCache(final String id) {
+    public RedisCache(final String id) {
 
         log.info("##init ExplorerRedisCache, Cache id:{}##", id);
         if (id == null) {
@@ -42,7 +42,7 @@ public class ExplorerRedisCache implements Cache {
         this.id = id;
     }
 
-    public ExplorerRedisCache() {
+    public RedisCache() {
         log.info("##init ExplorerRedisCache with default Cache id:{}##", this.id);
     }
 

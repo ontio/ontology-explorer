@@ -1,4 +1,4 @@
-package com.github.ontio.blocksync.config;
+package com.github.ontio.config;
 
 /**
  * @author zhouq
