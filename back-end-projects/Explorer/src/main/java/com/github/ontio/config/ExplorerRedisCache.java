@@ -1,9 +1,6 @@
 package com.github.ontio.config;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.ApplicationContextProvider;
-import com.github.ontio.util.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.cache.Cache;
 import org.springframework.dao.DataAccessException;
@@ -26,7 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Component
 @Slf4j
 public class ExplorerRedisCache implements Cache {
-
+    
     // 读写锁
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
@@ -57,12 +54,13 @@ public class ExplorerRedisCache implements Cache {
 
     @Override
     public void putObject(Object key, Object value) {
-        log.info("##putObject. key:{}, value:{}##", key.toString(), JSONObject.toJSONString(value));
+        log.info("##putObject. key:{}, value:{}##", key, value);
         //RedisTemplate redisTemplate = getRedisTemplate();
+
         if (value != null) {
-            // 向Redis中添加数据，value都转成jsonstring指定有效时间
-            redisTemplate.opsForValue().set(key.toString(), JSONObject.toJSONString(value), 1, TimeUnit.MINUTES);
-            //redisTemplate.opsForValue().set(key.toString(), value, 1, TimeUnit.MINUTES);
+            // 向Redis中添加数据，有效时间是2天
+           // redisTemplate.opsForValue().set(key.toString(), JSONObject.toJSONString(value), 1, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(key.toString(), value, 3, TimeUnit.MINUTES);
         }
     }
 
@@ -72,14 +70,16 @@ public class ExplorerRedisCache implements Cache {
         try {
             //RedisTemplate redisTemplate = getRedisTemplate();
             if (key != null) {
-                Object obj = redisTemplate.opsForValue().get(key.toString());
-                if(obj instanceof JSONArray){
+/*                String obj = (String)redisTemplate.opsForValue().get(key.toString());
+                return  JSONArray.parseArray(obj);*/
+/*                if(obj instanceof JSONArray){
                     return JSONArray.parseArray((String) obj);
                 }else if(obj instanceof JSONObject){
                     return JSONObject.parseObject((String) obj);
-                }
-               // Object obj = redisTemplate.opsForValue().get(key.toString());
-                log.info("redis value:{}", JacksonUtil.beanToJSonStr(obj));
+                }*/
+                Object obj = redisTemplate.opsForValue().get(key.toString());
+                return  obj;
+                //log.info("redis value:{}", JacksonUtil.beanToJSonStr(obj));
             }
         } catch (Exception e) {
             log.error("redis error... ", e);
@@ -89,7 +89,6 @@ public class ExplorerRedisCache implements Cache {
 
     /**
      * 批量删除对应的value
-     *
      * @param keys
      */
     public void remove(final String... keys) {
@@ -102,6 +101,7 @@ public class ExplorerRedisCache implements Cache {
     @Override
     public Object removeObject(Object key) {
         //RedisTemplate redisTemplate = getRedisTemplate();
+
         log.info("##removeObject. key:{}##", key.toString());
         try {
             if (key != null) {
@@ -114,12 +114,13 @@ public class ExplorerRedisCache implements Cache {
 
     @Override
     public void clear() {
-        log.info("clear Redis Cache,this.id:{}", this.id);
+        log.info("clear Redis Cache,this.id:{}",this.id);
         //RedisTemplate redisTemplate = getRedisTemplate();
+
         try {
             Set<String> keys = redisTemplate.keys("*:" + this.id + "*");
             if (!CollectionUtils.isEmpty(keys)) {
-                log.info("keys:{}", keys);
+                log.info("keys:{}",keys);
                 redisTemplate.delete(keys);
             }
         } catch (Exception e) {
