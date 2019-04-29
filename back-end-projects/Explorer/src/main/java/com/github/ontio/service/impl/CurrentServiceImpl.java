@@ -43,7 +43,7 @@ import java.util.*;
  */
 @Slf4j
 @Service("CurrentService")
-@MapperScan("com.github.ontio.dao")
+@MapperScan("com.github.ontio.mapper")
 public class CurrentServiceImpl implements ICurrentService {
 
     private static final String VERSION = "1.0";
