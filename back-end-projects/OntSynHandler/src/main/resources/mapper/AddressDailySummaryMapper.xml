@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.github.ontio.blocksync.mapper.Oep5DragonMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep5Dragon">
+<mapper namespace="com.github.ontio.blocksync.mapper.AddressDailySummaryMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.AddressDailySummary">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="time" jdbcType="INTEGER" property="time" />
     <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
-    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
-    <result column="json_url" jdbcType="VARCHAR" property="jsonUrl" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
   </resultMap>
 </mapper>
