@@ -26,7 +26,6 @@ import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.*;
  * @date 2018/2/27
  */
 @Slf4j
-@EnableAutoConfiguration
 @RestController
 @RequestMapping(value = "/api/v1/explorer")
 public class BlockController {
