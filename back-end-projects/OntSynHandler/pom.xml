@@ -93,6 +93,16 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${springfox.version}</version>
 		</dependency>
+		<!---->
+        <!-- https://mvnrepository.com/artifact/tk.mybatis/mapper -->
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -106,9 +116,9 @@
 				<version>1.3.6</version>
 				<configuration>
 					<configurationFile>
-						src/main/resources/generatorConfig.xml
+						src/main/resources/generator/generatorConfig.xml
 					</configurationFile>
-					<overwrite>false</overwrite>
+					<overwrite>true</overwrite>
 					<verbose>true</verbose>
 				</configuration>
 				<dependencies>
