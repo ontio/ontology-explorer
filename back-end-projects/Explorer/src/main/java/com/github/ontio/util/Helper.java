@@ -76,8 +76,17 @@ public class Helper {
     }
 
 
-    public static Boolean isNotEmptyOrNull(Object... params){
+    public static Boolean isNotEmptyOrNull(Object... params) {
         return !isEmptyOrNull(params);
+    }
+
+
+    public static Boolean isTimeRangeExceedLimit(Integer beginTime, Integer endTime) {
+
+        if ((endTime - beginTime) > (30 * 24 * 60 * 60)) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -140,12 +149,13 @@ public class Helper {
 
     /**
      * get请求
+     *
      * @param urlParam
      * @param params
      * @return
      * @throws IOException
      */
-    public static String sendGet(String urlParam, Map<String,Object> params) throws IOException {
+    public static String sendGet(String urlParam, Map<String, Object> params) throws IOException {
 
         // 构建请求参数
         StringBuffer sbParams = new StringBuffer();
@@ -199,8 +209,6 @@ public class Helper {
         }
 
     }
-
-
 
 
 }
