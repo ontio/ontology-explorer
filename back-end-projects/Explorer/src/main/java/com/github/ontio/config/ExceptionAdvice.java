@@ -1,7 +1,7 @@
 package com.github.ontio.config;
 
 import com.github.ontio.exception.ExplorerException;
-import com.github.ontio.paramBean.ResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
