@@ -28,8 +28,8 @@ public interface Oep5Mapper {
         "create_time, audit_flag, ",
         "update_time)",
         "values (#{contractHash,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, ",
-        "#{totalSupply,jdbcType=DECIMAL}, #{symbol,jdbcType=VARCHAR}, ",
-        "#{createTime,jdbcType=TIMESTAMP}, #{auditFlag,jdbcType=INTEGER}, ",
+        "#{totalSupply,jdbcType=VARCHAR}, #{symbol,jdbcType=VARCHAR}, ",
+        "#{createTime,jdbcType=TIMESTAMP}, #{auditFlag,jdbcType=BIT}, ",
         "#{updateTime,jdbcType=TIMESTAMP})"
     })
     int insert(Oep5 record);
@@ -58,10 +58,10 @@ public interface Oep5Mapper {
     @Update({
         "update tbl_oep5",
         "set name = #{name,jdbcType=VARCHAR},",
-          "total_supply = #{totalSupply,jdbcType=DECIMAL},",
+          "total_supply = #{totalSupply,jdbcType=VARCHAR},",
           "symbol = #{symbol,jdbcType=VARCHAR},",
           "create_time = #{createTime,jdbcType=TIMESTAMP},",
-          "audit_flag = #{auditFlag,jdbcType=INTEGER},",
+          "audit_flag = #{auditFlag,jdbcType=BIT},",
           "update_time = #{updateTime,jdbcType=TIMESTAMP}",
         "where contract_hash = #{contractHash,jdbcType=VARCHAR}"
     })

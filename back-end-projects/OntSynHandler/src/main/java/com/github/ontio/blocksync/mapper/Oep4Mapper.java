@@ -28,9 +28,9 @@ public interface Oep4Mapper {
         "decimals, create_time, ",
         "audit_flag, update_time)",
         "values (#{contractHash,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, ",
-        "#{totalSupply,jdbcType=DECIMAL}, #{symbol,jdbcType=VARCHAR}, ",
+        "#{totalSupply,jdbcType=VARCHAR}, #{symbol,jdbcType=VARCHAR}, ",
         "#{decimals,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, ",
-        "#{auditFlag,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP})"
+        "#{auditFlag,jdbcType=BIT}, #{updateTime,jdbcType=TIMESTAMP})"
     })
     int insert(Oep4 record);
 
@@ -59,11 +59,11 @@ public interface Oep4Mapper {
     @Update({
         "update tbl_oep4",
         "set name = #{name,jdbcType=VARCHAR},",
-          "total_supply = #{totalSupply,jdbcType=DECIMAL},",
+          "total_supply = #{totalSupply,jdbcType=VARCHAR},",
           "symbol = #{symbol,jdbcType=VARCHAR},",
           "decimals = #{decimals,jdbcType=INTEGER},",
           "create_time = #{createTime,jdbcType=TIMESTAMP},",
-          "audit_flag = #{auditFlag,jdbcType=INTEGER},",
+          "audit_flag = #{auditFlag,jdbcType=BIT},",
           "update_time = #{updateTime,jdbcType=TIMESTAMP}",
         "where contract_hash = #{contractHash,jdbcType=VARCHAR}"
     })
