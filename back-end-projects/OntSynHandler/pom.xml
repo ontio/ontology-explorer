@@ -106,9 +106,9 @@
 				<version>1.3.6</version>
 				<configuration>
 					<configurationFile>
-						src/main/resources/generator/generatorConfig.xml
+						src/main/resources/generatorConfig.xml
 					</configurationFile>
-					<overwrite>true</overwrite>
+					<overwrite>false</overwrite>
 					<verbose>true</verbose>
 				</configuration>
 				<dependencies>
@@ -120,7 +120,7 @@
 					<dependency>
 						<groupId>tk.mybatis</groupId>
 						<artifactId>mapper-spring-boot-starter</artifactId>
-						<version>4.1.5</version>
+						<version>1.2.4</version>
 					</dependency>
 				</dependencies>
 			</plugin>
