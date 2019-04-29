@@ -4,6 +4,8 @@ import com.github.ontio.blocksync.model.Oep8;
 import com.github.ontio.blocksync.model.Oep8Example;
 import com.github.ontio.blocksync.model.Oep8Key;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -81,4 +83,11 @@ public interface Oep8Mapper {
             "and token_id = #{tokenId,jdbcType=VARCHAR}"
     })
     int updateTotalSupply(Oep8 oep8);
+
+    @Select({
+            "select name, symbol, decimals",
+            "from tbl_oep8",
+            "where audit_flag = 1"
+    })
+    List<Map> selectApprovedKeyInfo();
 }
