@@ -13,27 +13,56 @@ public class Current implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Current(Integer blockHeight, Integer txCount, Integer ontidCount, Integer nonontidTxCount) {
-        this.blockHeight = blockHeight;
-        this.txCount = txCount;
-        this.ontidCount = ontidCount;
-        this.nonontidTxCount = nonontidTxCount;
-    }
-
     public Integer getBlockHeight() {
         return blockHeight;
+    }
+
+    public Current withBlockHeight(Integer blockHeight) {
+        this.setBlockHeight(blockHeight);
+        return this;
+    }
+
+    public void setBlockHeight(Integer blockHeight) {
+        this.blockHeight = blockHeight;
     }
 
     public Integer getTxCount() {
         return txCount;
     }
 
+    public Current withTxCount(Integer txCount) {
+        this.setTxCount(txCount);
+        return this;
+    }
+
+    public void setTxCount(Integer txCount) {
+        this.txCount = txCount;
+    }
+
     public Integer getOntidCount() {
         return ontidCount;
     }
 
+    public Current withOntidCount(Integer ontidCount) {
+        this.setOntidCount(ontidCount);
+        return this;
+    }
+
+    public void setOntidCount(Integer ontidCount) {
+        this.ontidCount = ontidCount;
+    }
+
     public Integer getNonontidTxCount() {
         return nonontidTxCount;
+    }
+
+    public Current withNonontidTxCount(Integer nonontidTxCount) {
+        this.setNonontidTxCount(nonontidTxCount);
+        return this;
+    }
+
+    public void setNonontidTxCount(Integer nonontidTxCount) {
+        this.nonontidTxCount = nonontidTxCount;
     }
 
     @Override

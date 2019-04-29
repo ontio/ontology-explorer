@@ -46,107 +46,264 @@ public class Contract implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Contract(String contractHash, String name, Integer createTime, Integer updateTime, Integer auditFlag, String contactInfo, String description, String type, String logo, String creator, Integer addressCount, Integer txCount, BigDecimal ontSum, BigDecimal ongSum, String tokenSum, String category, String dappName, Integer dappstoreFlag, BigDecimal totalReward, BigDecimal lastweekReward) {
-        this.contractHash = contractHash;
-        this.name = name;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-        this.auditFlag = auditFlag;
-        this.contactInfo = contactInfo;
-        this.description = description;
-        this.type = type;
-        this.logo = logo;
-        this.creator = creator;
-        this.addressCount = addressCount;
-        this.txCount = txCount;
-        this.ontSum = ontSum;
-        this.ongSum = ongSum;
-        this.tokenSum = tokenSum;
-        this.category = category;
-        this.dappName = dappName;
-        this.dappstoreFlag = dappstoreFlag;
-        this.totalReward = totalReward;
-        this.lastweekReward = lastweekReward;
-    }
-
     public String getContractHash() {
         return contractHash;
+    }
+
+    public Contract withContractHash(String contractHash) {
+        this.setContractHash(contractHash);
+        return this;
+    }
+
+    public void setContractHash(String contractHash) {
+        this.contractHash = contractHash == null ? null : contractHash.trim();
     }
 
     public String getName() {
         return name;
     }
 
+    public Contract withName(String name) {
+        this.setName(name);
+        return this;
+    }
+
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
+    }
+
     public Integer getCreateTime() {
         return createTime;
+    }
+
+    public Contract withCreateTime(Integer createTime) {
+        this.setCreateTime(createTime);
+        return this;
+    }
+
+    public void setCreateTime(Integer createTime) {
+        this.createTime = createTime;
     }
 
     public Integer getUpdateTime() {
         return updateTime;
     }
 
+    public Contract withUpdateTime(Integer updateTime) {
+        this.setUpdateTime(updateTime);
+        return this;
+    }
+
+    public void setUpdateTime(Integer updateTime) {
+        this.updateTime = updateTime;
+    }
+
     public Integer getAuditFlag() {
         return auditFlag;
+    }
+
+    public Contract withAuditFlag(Integer auditFlag) {
+        this.setAuditFlag(auditFlag);
+        return this;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
     }
 
     public String getContactInfo() {
         return contactInfo;
     }
 
+    public Contract withContactInfo(String contactInfo) {
+        this.setContactInfo(contactInfo);
+        return this;
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo == null ? null : contactInfo.trim();
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public Contract withDescription(String description) {
+        this.setDescription(description);
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
     }
 
     public String getType() {
         return type;
     }
 
+    public Contract withType(String type) {
+        this.setType(type);
+        return this;
+    }
+
+    public void setType(String type) {
+        this.type = type == null ? null : type.trim();
+    }
+
     public String getLogo() {
         return logo;
+    }
+
+    public Contract withLogo(String logo) {
+        this.setLogo(logo);
+        return this;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo == null ? null : logo.trim();
     }
 
     public String getCreator() {
         return creator;
     }
 
+    public Contract withCreator(String creator) {
+        this.setCreator(creator);
+        return this;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator == null ? null : creator.trim();
+    }
+
     public Integer getAddressCount() {
         return addressCount;
+    }
+
+    public Contract withAddressCount(Integer addressCount) {
+        this.setAddressCount(addressCount);
+        return this;
+    }
+
+    public void setAddressCount(Integer addressCount) {
+        this.addressCount = addressCount;
     }
 
     public Integer getTxCount() {
         return txCount;
     }
 
+    public Contract withTxCount(Integer txCount) {
+        this.setTxCount(txCount);
+        return this;
+    }
+
+    public void setTxCount(Integer txCount) {
+        this.txCount = txCount;
+    }
+
     public BigDecimal getOntSum() {
         return ontSum;
+    }
+
+    public Contract withOntSum(BigDecimal ontSum) {
+        this.setOntSum(ontSum);
+        return this;
+    }
+
+    public void setOntSum(BigDecimal ontSum) {
+        this.ontSum = ontSum;
     }
 
     public BigDecimal getOngSum() {
         return ongSum;
     }
 
+    public Contract withOngSum(BigDecimal ongSum) {
+        this.setOngSum(ongSum);
+        return this;
+    }
+
+    public void setOngSum(BigDecimal ongSum) {
+        this.ongSum = ongSum;
+    }
+
     public String getTokenSum() {
         return tokenSum;
+    }
+
+    public Contract withTokenSum(String tokenSum) {
+        this.setTokenSum(tokenSum);
+        return this;
+    }
+
+    public void setTokenSum(String tokenSum) {
+        this.tokenSum = tokenSum == null ? null : tokenSum.trim();
     }
 
     public String getCategory() {
         return category;
     }
 
+    public Contract withCategory(String category) {
+        this.setCategory(category);
+        return this;
+    }
+
+    public void setCategory(String category) {
+        this.category = category == null ? null : category.trim();
+    }
+
     public String getDappName() {
         return dappName;
+    }
+
+    public Contract withDappName(String dappName) {
+        this.setDappName(dappName);
+        return this;
+    }
+
+    public void setDappName(String dappName) {
+        this.dappName = dappName == null ? null : dappName.trim();
     }
 
     public Integer getDappstoreFlag() {
         return dappstoreFlag;
     }
 
+    public Contract withDappstoreFlag(Integer dappstoreFlag) {
+        this.setDappstoreFlag(dappstoreFlag);
+        return this;
+    }
+
+    public void setDappstoreFlag(Integer dappstoreFlag) {
+        this.dappstoreFlag = dappstoreFlag;
+    }
+
     public BigDecimal getTotalReward() {
         return totalReward;
     }
 
+    public Contract withTotalReward(BigDecimal totalReward) {
+        this.setTotalReward(totalReward);
+        return this;
+    }
+
+    public void setTotalReward(BigDecimal totalReward) {
+        this.totalReward = totalReward;
+    }
+
     public BigDecimal getLastweekReward() {
         return lastweekReward;
+    }
+
+    public Contract withLastweekReward(BigDecimal lastweekReward) {
+        this.setLastweekReward(lastweekReward);
+        return this;
+    }
+
+    public void setLastweekReward(BigDecimal lastweekReward) {
+        this.lastweekReward = lastweekReward;
     }
 
     @Override
