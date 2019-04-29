@@ -6,7 +6,6 @@ import com.github.ontio.util.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
  * @date 2018/12/17
  */
 @RestController
-@EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer")
 public class SummaryController {
 

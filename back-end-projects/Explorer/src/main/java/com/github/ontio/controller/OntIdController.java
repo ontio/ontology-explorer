@@ -24,7 +24,6 @@ import com.github.ontio.service.impl.OntIdServiceImpl;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@EnableAutoConfiguration
 @RequestMapping(value = "/api/v1/explorer/")
 public class OntIdController {
 
