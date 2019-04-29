@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.github.ontio.blocksync.mapper.Oep4Mapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep4">
+<mapper namespace="com.github.ontio.mapper.Oep4Mapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Oep4">
     <!--
       WARNING - @mbg.generated
     -->
