@@ -440,6 +440,2196 @@
     </if>
   </select>
   <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <id column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="txs_root" jdbcType="VARCHAR" property="txsRoot" />
+    <result column="block_time" jdbcType="INTEGER" property="blockTime" />
+    <result column="consensus_data" jdbcType="VARCHAR" property="consensusData" />
+    <result column="bookkeepers" jdbcType="VARCHAR" property="bookkeepers" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="block_size" jdbcType="INTEGER" property="blockSize" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    block_height, block_hash, txs_root, block_time, consensus_data, bookkeepers, tx_count, 
+    block_size
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        block_height,
+      </if>
+      <if test="blockHash != null">
+        block_hash,
+      </if>
+      <if test="txsRoot != null">
+        txs_root,
+      </if>
+      <if test="blockTime != null">
+        block_time,
+      </if>
+      <if test="consensusData != null">
+        consensus_data,
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="blockSize != null">
+        block_size,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        #{blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="blockHash != null">
+        #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        #{blockSize,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.blockHeight != null">
+        block_height = #{record.blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockHash != null">
+        block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txsRoot != null">
+        txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockTime != null">
+        block_time = #{record.blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.consensusData != null">
+        consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookkeepers != null">
+        bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockSize != null">
+        block_size = #{record.blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set block_height = #{record.blockHeight,jdbcType=INTEGER},
+      block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      block_time = #{record.blockTime,jdbcType=INTEGER},
+      consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      block_size = #{record.blockSize,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Block">
+    update tbl_block
+    <set>
+      <if test="blockHash != null">
+        block_hash = #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        txs_root = #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        block_time = #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        consensus_data = #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers = #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        block_size = #{blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    where block_height = #{blockHeight,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <result column="hash" jdbcType="VARCHAR" property="hash" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="prev_block" jdbcType="VARCHAR" property="prevBlock" />
+    <result column="block_root" jdbcType="VARCHAR" property="blockRoot" />
+    <result column="time_stamp" jdbcType="BIGINT" property="timeStamp" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    hash, version, prev_block, block_root, time_stamp
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        hash,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="prevBlock != null">
+        prev_block,
+      </if>
+      <if test="blockRoot != null">
+        block_root,
+      </if>
+      <if test="timeStamp != null">
+        time_stamp,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="prevBlock != null">
+        #{prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="blockRoot != null">
+        #{blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="timeStamp != null">
+        #{timeStamp,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.hash != null">
+        hash = #{record.hash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.prevBlock != null">
+        prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockRoot != null">
+        block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.timeStamp != null">
+        time_stamp = #{record.timeStamp,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set hash = #{record.hash,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=INTEGER},
+      prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      time_stamp = #{record.timeStamp,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <id column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="txs_root" jdbcType="VARCHAR" property="txsRoot" />
+    <result column="block_time" jdbcType="INTEGER" property="blockTime" />
+    <result column="consensus_data" jdbcType="VARCHAR" property="consensusData" />
+    <result column="bookkeepers" jdbcType="VARCHAR" property="bookkeepers" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="block_size" jdbcType="INTEGER" property="blockSize" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    block_height, block_hash, txs_root, block_time, consensus_data, bookkeepers, tx_count, 
+    block_size
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        block_height,
+      </if>
+      <if test="blockHash != null">
+        block_hash,
+      </if>
+      <if test="txsRoot != null">
+        txs_root,
+      </if>
+      <if test="blockTime != null">
+        block_time,
+      </if>
+      <if test="consensusData != null">
+        consensus_data,
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="blockSize != null">
+        block_size,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        #{blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="blockHash != null">
+        #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        #{blockSize,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.blockHeight != null">
+        block_height = #{record.blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockHash != null">
+        block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txsRoot != null">
+        txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockTime != null">
+        block_time = #{record.blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.consensusData != null">
+        consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookkeepers != null">
+        bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockSize != null">
+        block_size = #{record.blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set block_height = #{record.blockHeight,jdbcType=INTEGER},
+      block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      block_time = #{record.blockTime,jdbcType=INTEGER},
+      consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      block_size = #{record.blockSize,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Block">
+    update tbl_block
+    <set>
+      <if test="blockHash != null">
+        block_hash = #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        txs_root = #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        block_time = #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        consensus_data = #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers = #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        block_size = #{blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    where block_height = #{blockHeight,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <result column="hash" jdbcType="VARCHAR" property="hash" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="prev_block" jdbcType="VARCHAR" property="prevBlock" />
+    <result column="block_root" jdbcType="VARCHAR" property="blockRoot" />
+    <result column="time_stamp" jdbcType="BIGINT" property="timeStamp" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    hash, version, prev_block, block_root, time_stamp
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        hash,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="prevBlock != null">
+        prev_block,
+      </if>
+      <if test="blockRoot != null">
+        block_root,
+      </if>
+      <if test="timeStamp != null">
+        time_stamp,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="prevBlock != null">
+        #{prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="blockRoot != null">
+        #{blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="timeStamp != null">
+        #{timeStamp,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.hash != null">
+        hash = #{record.hash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.prevBlock != null">
+        prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockRoot != null">
+        block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.timeStamp != null">
+        time_stamp = #{record.timeStamp,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set hash = #{record.hash,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=INTEGER},
+      prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      time_stamp = #{record.timeStamp,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <id column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="txs_root" jdbcType="VARCHAR" property="txsRoot" />
+    <result column="block_time" jdbcType="INTEGER" property="blockTime" />
+    <result column="consensus_data" jdbcType="VARCHAR" property="consensusData" />
+    <result column="bookkeepers" jdbcType="VARCHAR" property="bookkeepers" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="block_size" jdbcType="INTEGER" property="blockSize" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    block_height, block_hash, txs_root, block_time, consensus_data, bookkeepers, tx_count, 
+    block_size
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        block_height,
+      </if>
+      <if test="blockHash != null">
+        block_hash,
+      </if>
+      <if test="txsRoot != null">
+        txs_root,
+      </if>
+      <if test="blockTime != null">
+        block_time,
+      </if>
+      <if test="consensusData != null">
+        consensus_data,
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="blockSize != null">
+        block_size,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        #{blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="blockHash != null">
+        #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        #{blockSize,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.blockHeight != null">
+        block_height = #{record.blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockHash != null">
+        block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txsRoot != null">
+        txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockTime != null">
+        block_time = #{record.blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.consensusData != null">
+        consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookkeepers != null">
+        bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockSize != null">
+        block_size = #{record.blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set block_height = #{record.blockHeight,jdbcType=INTEGER},
+      block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      block_time = #{record.blockTime,jdbcType=INTEGER},
+      consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      block_size = #{record.blockSize,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Block">
+    update tbl_block
+    <set>
+      <if test="blockHash != null">
+        block_hash = #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        txs_root = #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        block_time = #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        consensus_data = #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers = #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        block_size = #{blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    where block_height = #{blockHeight,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <result column="hash" jdbcType="VARCHAR" property="hash" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="prev_block" jdbcType="VARCHAR" property="prevBlock" />
+    <result column="block_root" jdbcType="VARCHAR" property="blockRoot" />
+    <result column="time_stamp" jdbcType="BIGINT" property="timeStamp" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    hash, version, prev_block, block_root, time_stamp
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        hash,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="prevBlock != null">
+        prev_block,
+      </if>
+      <if test="blockRoot != null">
+        block_root,
+      </if>
+      <if test="timeStamp != null">
+        time_stamp,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="prevBlock != null">
+        #{prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="blockRoot != null">
+        #{blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="timeStamp != null">
+        #{timeStamp,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.hash != null">
+        hash = #{record.hash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.prevBlock != null">
+        prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockRoot != null">
+        block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.timeStamp != null">
+        time_stamp = #{record.timeStamp,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set hash = #{record.hash,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=INTEGER},
+      prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      time_stamp = #{record.timeStamp,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <id column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="txs_root" jdbcType="VARCHAR" property="txsRoot" />
+    <result column="block_time" jdbcType="INTEGER" property="blockTime" />
+    <result column="consensus_data" jdbcType="VARCHAR" property="consensusData" />
+    <result column="bookkeepers" jdbcType="VARCHAR" property="bookkeepers" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="block_size" jdbcType="INTEGER" property="blockSize" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    block_height, block_hash, txs_root, block_time, consensus_data, bookkeepers, tx_count, 
+    block_size
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        block_height,
+      </if>
+      <if test="blockHash != null">
+        block_hash,
+      </if>
+      <if test="txsRoot != null">
+        txs_root,
+      </if>
+      <if test="blockTime != null">
+        block_time,
+      </if>
+      <if test="consensusData != null">
+        consensus_data,
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="blockSize != null">
+        block_size,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        #{blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="blockHash != null">
+        #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        #{blockSize,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.blockHeight != null">
+        block_height = #{record.blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockHash != null">
+        block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txsRoot != null">
+        txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockTime != null">
+        block_time = #{record.blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.consensusData != null">
+        consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookkeepers != null">
+        bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockSize != null">
+        block_size = #{record.blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set block_height = #{record.blockHeight,jdbcType=INTEGER},
+      block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      block_time = #{record.blockTime,jdbcType=INTEGER},
+      consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      block_size = #{record.blockSize,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Block">
+    update tbl_block
+    <set>
+      <if test="blockHash != null">
+        block_hash = #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        txs_root = #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        block_time = #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        consensus_data = #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers = #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        block_size = #{blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    where block_height = #{blockHeight,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <result column="hash" jdbcType="VARCHAR" property="hash" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="prev_block" jdbcType="VARCHAR" property="prevBlock" />
+    <result column="block_root" jdbcType="VARCHAR" property="blockRoot" />
+    <result column="time_stamp" jdbcType="BIGINT" property="timeStamp" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    hash, version, prev_block, block_root, time_stamp
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        hash,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="prevBlock != null">
+        prev_block,
+      </if>
+      <if test="blockRoot != null">
+        block_root,
+      </if>
+      <if test="timeStamp != null">
+        time_stamp,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="prevBlock != null">
+        #{prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="blockRoot != null">
+        #{blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="timeStamp != null">
+        #{timeStamp,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.hash != null">
+        hash = #{record.hash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.prevBlock != null">
+        prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockRoot != null">
+        block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.timeStamp != null">
+        time_stamp = #{record.timeStamp,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set hash = #{record.hash,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=INTEGER},
+      prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      time_stamp = #{record.timeStamp,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <id column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="txs_root" jdbcType="VARCHAR" property="txsRoot" />
+    <result column="block_time" jdbcType="INTEGER" property="blockTime" />
+    <result column="consensus_data" jdbcType="VARCHAR" property="consensusData" />
+    <result column="bookkeepers" jdbcType="VARCHAR" property="bookkeepers" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="block_size" jdbcType="INTEGER" property="blockSize" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    block_height, block_hash, txs_root, block_time, consensus_data, bookkeepers, tx_count, 
+    block_size
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        block_height,
+      </if>
+      <if test="blockHash != null">
+        block_hash,
+      </if>
+      <if test="txsRoot != null">
+        txs_root,
+      </if>
+      <if test="blockTime != null">
+        block_time,
+      </if>
+      <if test="consensusData != null">
+        consensus_data,
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="blockSize != null">
+        block_size,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blockHeight != null">
+        #{blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="blockHash != null">
+        #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        #{blockSize,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.blockHeight != null">
+        block_height = #{record.blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockHash != null">
+        block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txsRoot != null">
+        txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockTime != null">
+        block_time = #{record.blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.consensusData != null">
+        consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bookkeepers != null">
+        bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockSize != null">
+        block_size = #{record.blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set block_height = #{record.blockHeight,jdbcType=INTEGER},
+      block_hash = #{record.blockHash,jdbcType=VARCHAR},
+      txs_root = #{record.txsRoot,jdbcType=VARCHAR},
+      block_time = #{record.blockTime,jdbcType=INTEGER},
+      consensus_data = #{record.consensusData,jdbcType=VARCHAR},
+      bookkeepers = #{record.bookkeepers,jdbcType=VARCHAR},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      block_size = #{record.blockSize,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Block">
+    update tbl_block
+    <set>
+      <if test="blockHash != null">
+        block_hash = #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txsRoot != null">
+        txs_root = #{txsRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTime != null">
+        block_time = #{blockTime,jdbcType=INTEGER},
+      </if>
+      <if test="consensusData != null">
+        consensus_data = #{consensusData,jdbcType=VARCHAR},
+      </if>
+      <if test="bookkeepers != null">
+        bookkeepers = #{bookkeepers,jdbcType=VARCHAR},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="blockSize != null">
+        block_size = #{blockSize,jdbcType=INTEGER},
+      </if>
+    </set>
+    where block_height = #{blockHeight,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
+    <result column="hash" jdbcType="VARCHAR" property="hash" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="prev_block" jdbcType="VARCHAR" property="prevBlock" />
+    <result column="block_root" jdbcType="VARCHAR" property="blockRoot" />
+    <result column="time_stamp" jdbcType="BIGINT" property="timeStamp" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    hash, version, prev_block, block_root, time_stamp
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.BlockExample">
+    delete from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Block">
+    insert into tbl_block
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        hash,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="prevBlock != null">
+        prev_block,
+      </if>
+      <if test="blockRoot != null">
+        block_root,
+      </if>
+      <if test="timeStamp != null">
+        time_stamp,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="hash != null">
+        #{hash,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="prevBlock != null">
+        #{prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="blockRoot != null">
+        #{blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="timeStamp != null">
+        #{timeStamp,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.BlockExample" resultType="java.lang.Long">
+    select count(*) from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_block
+    <set>
+      <if test="record.hash != null">
+        hash = #{record.hash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.prevBlock != null">
+        prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockRoot != null">
+        block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      </if>
+      <if test="record.timeStamp != null">
+        time_stamp = #{record.timeStamp,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_block
+    set hash = #{record.hash,jdbcType=VARCHAR},
+      version = #{record.version,jdbcType=INTEGER},
+      prev_block = #{record.prevBlock,jdbcType=VARCHAR},
+      block_root = #{record.blockRoot,jdbcType=VARCHAR},
+      time_stamp = #{record.timeStamp,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.BlockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_block
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Block">
     <constructor>
       <idArg column="block_height" javaType="java.lang.Integer" jdbcType="INTEGER" />
       <arg column="block_hash" javaType="java.lang.String" jdbcType="VARCHAR" />

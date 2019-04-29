@@ -1,8 +1,8 @@
 package com.github.ontio.blocksync.mapper;
 
-import com.github.ontio.blocksync.model.Oep5TxDetail;
-import com.github.ontio.blocksync.model.Oep5TxDetailExample;
-import com.github.ontio.blocksync.model.Oep5TxDetailKey;
+import com.github.ontio.blocksync.model.TxDetailDaily;
+import com.github.ontio.blocksync.model.TxDetailDailyExample;
+import com.github.ontio.blocksync.model.TxDetailDailyKey;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -12,20 +12,20 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.session.RowBounds;
 
-public interface Oep5TxDetailMapper {
-    long countByExample(Oep5TxDetailExample example);
+public interface TxDetailDailyMapper {
+    long countByExample(TxDetailDailyExample example);
 
-    int deleteByExample(Oep5TxDetailExample example);
+    int deleteByExample(TxDetailDailyExample example);
 
     @Delete({
-        "delete from tbl_oep5_tx_detail",
+        "delete from tbl_tx_detail_daily",
         "where tx_hash = #{txHash,jdbcType=VARCHAR}",
           "and tx_index = #{txIndex,jdbcType=INTEGER}"
     })
-    int deleteByPrimaryKey(Oep5TxDetailKey key);
+    int deleteByPrimaryKey(TxDetailDailyKey key);
 
     @Insert({
-        "insert into tbl_oep5_tx_detail (tx_hash, tx_index, ",
+        "insert into tbl_tx_detail_daily (tx_hash, tx_index, ",
         "tx_type, tx_time, ",
         "block_height, amount, ",
         "fee, asset_name, ",
@@ -44,34 +44,34 @@ public interface Oep5TxDetailMapper {
         "#{contractHash,jdbcType=VARCHAR}, #{payer,jdbcType=VARCHAR}, ",
         "#{calledContractHash,jdbcType=VARCHAR})"
     })
-    int insert(Oep5TxDetail record);
+    int insert(TxDetailDaily record);
 
-    int insertSelective(Oep5TxDetail record);
+    int insertSelective(TxDetailDaily record);
 
-    List<Oep5TxDetail> selectByExampleWithRowbounds(Oep5TxDetailExample example, RowBounds rowBounds);
+    List<TxDetailDaily> selectByExampleWithRowbounds(TxDetailDailyExample example, RowBounds rowBounds);
 
-    List<Oep5TxDetail> selectByExample(Oep5TxDetailExample example);
+    List<TxDetailDaily> selectByExample(TxDetailDailyExample example);
 
     @Select({
         "select",
         "tx_hash, tx_index, tx_type, tx_time, block_height, amount, fee, asset_name, ",
         "from_address, to_address, description, block_index, confirm_flag, event_type, ",
         "contract_hash, payer, called_contract_hash",
-        "from tbl_oep5_tx_detail",
+        "from tbl_tx_detail_daily",
         "where tx_hash = #{txHash,jdbcType=VARCHAR}",
           "and tx_index = #{txIndex,jdbcType=INTEGER}"
     })
-    @ResultMap("com.github.ontio.blocksync.mapper.Oep5TxDetailMapper.BaseResultMap")
-    Oep5TxDetail selectByPrimaryKey(Oep5TxDetailKey key);
+    @ResultMap("com.github.ontio.blocksync.mapper.TxDetailDailyMapper.BaseResultMap")
+    TxDetailDaily selectByPrimaryKey(TxDetailDailyKey key);
 
-    int updateByExampleSelective(@Param("record") Oep5TxDetail record, @Param("example") Oep5TxDetailExample example);
+    int updateByExampleSelective(@Param("record") TxDetailDaily record, @Param("example") TxDetailDailyExample example);
 
-    int updateByExample(@Param("record") Oep5TxDetail record, @Param("example") Oep5TxDetailExample example);
+    int updateByExample(@Param("record") TxDetailDaily record, @Param("example") TxDetailDailyExample example);
 
-    int updateByPrimaryKeySelective(Oep5TxDetail record);
+    int updateByPrimaryKeySelective(TxDetailDaily record);
 
     @Update({
-        "update tbl_oep5_tx_detail",
+        "update tbl_tx_detail_daily",
         "set tx_type = #{txType,jdbcType=INTEGER},",
           "tx_time = #{txTime,jdbcType=INTEGER},",
           "block_height = #{blockHeight,jdbcType=INTEGER},",
@@ -90,19 +90,19 @@ public interface Oep5TxDetailMapper {
         "where tx_hash = #{txHash,jdbcType=VARCHAR}",
           "and tx_index = #{txIndex,jdbcType=INTEGER}"
     })
-    int updateByPrimaryKey(Oep5TxDetail record);
+    int updateByPrimaryKey(TxDetailDaily record);
 
     // Self-defined mapper
 
     @Select({
             "select count(*)",
-            "from tbl_oep5_tx_detail",
+            "from tbl_tx_detail_daily",
             "where height = #{height,jdbcType=INTEGER}"
     })
     int selectCountByHeight(Integer height);
 
     @Delete({
-            "delete from tbl_oep5_tx_detail",
+            "delete from tbl_tx_detail_daily",
             "where height = #{height,jdbcType=INTEGER}"
     })
     int deleteByHeight(Integer height);

@@ -23,10 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
-import com.github.ontio.blocksync.model.Oep5;
-import com.github.ontio.blocksync.model.Oep5Dragon;
-import com.github.ontio.blocksync.model.Oep8;
-import com.github.ontio.blocksync.model.Oep8TxDetail;
+import com.github.ontio.blocksync.model.*;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.DeployCode;
@@ -355,7 +352,7 @@ public class TxnHandlerThread {
             oep8.setContractHash(contractAddress);
             oep8.setTokenId((String) stateArray.get(3));
             ConstantParam.ONT_SDKSERVICE.neovm().oep8().setContractAddress(contractAddress);
-            oep8.setTotalSupply(new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId))));
+            oep8.setTotalSupply(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
             //TODO 南瓜合成交易，金南瓜会减少
 
             oep8Mapper.updateTotalSupply(oep8);
@@ -456,7 +453,7 @@ public class TxnHandlerThread {
             Oep5 oep5 = new Oep5();
             oep5.setContractHash(contractAddress);
             ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
-            oep5.setTotalSupply(new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply()));
+            oep5.setTotalSupply(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
 
             oep5Mapper.updateByPrimaryKeySelective(oep5);
         }
@@ -485,10 +482,10 @@ public class TxnHandlerThread {
                                    BigDecimal gasConsumed, int indexInTxn, int notifyListSize, int confirmFlag,
                                    String payer, String calledContractHash) throws Exception {
         if (stateList.size() < 3) {
-            Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
+            Oep8TxDetail oep8TxDetail = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTxn, 1, contractAddress, payer, calledContractHash);
-            session.insert("TransactionDetailMapper.insertSelective", transactionDetailDO);
-            session.insert("TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
+            session.insert("TransactionDetailMapper.insertSelective", oep8TxDetail);
+            session.insert("TransactionDetailDailyMapper.insertSelective", oep8TxDetail);
             return;
         }
 
@@ -512,14 +509,14 @@ public class TxnHandlerThread {
         BigDecimal amount = new BigDecimal((stateList.get(3)).toString());
         log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
 
-        Oep8TxnDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, amount, txnType, txnHash, blockHeight,
+        Oep8TxDetail oep8TxDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, eventType, contractAddress, payer, calledContractHash);
 
-        session.insert("TransactionDetailMapper.insertSelective", transactionDetailDO);
-        session.insert("TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
+        session.insert("TransactionDetailMapper.insertSelective", oep8TxDetail);
+        session.insert("TransactionDetailDailyMapper.insertSelective", oep8TxDetail);
         // OEP交易的手续费入库
         if (configParam.ASSET_ONG_CODEHASH.equals(contractAddress) && (OEP4TXN || OEP5TXN || OEP8TXN)) {
-            insertSelectiveChoise(session, transactionDetailDO);
+            insertSelectiveChoise(session, oep8TxDetail);
         }
     }
 
@@ -552,11 +549,11 @@ public class TxnHandlerThread {
         String descriptionStr = formatOntIdOperation(ontId, action, stateList);
 
         OntId ontIdDO = new OntId();
-        ontIdDO.setHeight(blockHeight);
-        ontIdDO.setTxnhash(txnHash);
-        ontIdDO.setTxntype(txnType);
+        ontIdDO.setBlockHeight(blockHeight);
+        ontIdDO.setTxHash(txnHash);
+        ontIdDO.setTxType(txnType);
         ontIdDO.setDescription(descriptionStr);
-        ontIdDO.setTxntime(blockTime);
+        ontIdDO.setTxTime(blockTime);
         ontIdDO.setOntid(ontId);
         ontIdDO.setFee(gasConsumed);
         session.insert("OntIdMapper.insertSelective", ontIdDO);
@@ -635,24 +632,24 @@ public class TxnHandlerThread {
                                              String action, BigDecimal gasConsumed, int indexInTxn, int eventType, String contractAddress,
                                              String payer, String calledContractHash) {
 
-        Oep8TxnDetail txDetail = new Oep8TxnDetail();
-        txDetail.setFromaddress(fromAddress);
-        txDetail.setToaddress(toAddress);
-        txDetail.setAssetname(assetName);
+        Oep8TxDetail txDetail = new Oep8TxDetail();
+        txDetail.setFromAddress(fromAddress);
+        txDetail.setToAddress(toAddress);
+        txDetail.setAssetName(assetName);
         txDetail.setDescription(action);
         txDetail.setFee(gasConsumed);
-        txDetail.setHeight(blockHeight);
-        txDetail.setBlockindex(indexInBlock);
-        txDetail.setTxnhash(txnHash);
-        txDetail.setTxntype(txnType);
-        txDetail.setTxntime(blockTime);
+        txDetail.setBlockHeight(blockHeight);
+        txDetail.setBlockIndex(indexInBlock);
+        txDetail.setTxHash(txnHash);
+        txDetail.setTxType(txnType);
+        txDetail.setTxTime(blockTime);
         txDetail.setAmount(account);
-        txDetail.setTxnindex(indexInTxn);
-        txDetail.setConfirmflag(confirmFlag);
-        txDetail.setEventtype(eventType);
-        txDetail.setContracthash(contractAddress);
+        txDetail.setTxIndex(indexInTxn);
+        txDetail.setConfirmFlag(confirmFlag);
+        txDetail.setEventType(eventType);
+        txDetail.setContractHash(contractAddress);
         txDetail.setPayer(payer);
-        txDetail.setCalledcontracthash(calledContractHash);
+        txDetail.setCalledContractHash(calledContractHash);
 
         return txDetail;
     }
@@ -679,33 +676,30 @@ public class TxnHandlerThread {
                                     int indexInBlock, int confirmFlag, String action, BigDecimal gasConsumed, int indexInTxn,
                                     int eventType, String contractAddress, String payer, String calledContractHash) throws Exception {
 
-        Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", ConstantParam.ZERO, txnType, txnHash, blockHeight,
+        Oep8TxDetail oep8TxDetail = generateTransaction("", "", "", ConstantParam.ZERO, txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, eventType, contractAddress, payer, calledContractHash);
 
-        session.insert("TransactionDetailMapper.insertSelective", transactionDetailDO);
-        session.insert("TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
+        session.insert("TransactionDetailMapper.insertSelective", oep8TxDetail);
+        session.insert("TransactionDetailDailyMapper.insertSelective", oep8TxDetail);
 
         // OEP合约交易理应插入分表
         if (OEP4TXN || OEP5TXN || OEP8TXN) {
-            insertSelectiveChoise(session, transactionDetailDO);
+            insertSelectiveChoise(session, oep8TxDetail);
         }
     }
 
     /**
      * 插入交易记录到对应的oep交易详情表
-     *
-     * @param session
-     * @param transactionDetailDO
      */
-    private void insertSelectiveChoise(SqlSession session, Oep8TxnDetail transactionDetailDO) {
+    private void insertSelectiveChoise(SqlSession session, Oep8TxDetail oep8TxDetail) {
         // OEP交易应该入库对应的分表
         if (OEP8TXN) {
-            transactionDetailDO.setTokenname("");
-            session.insert("Oep8TxnDetailMapper.insertSelective", transactionDetailDO);
+            oep8TxDetail.setAssetName("");
+            session.insert("Oep8TxnDetailMapper.insertSelective", oep8TxDetail);
         } else if (OEP5TXN) {
-            session.insert("Oep5TxnDetailMapper.insertSelective", transactionDetailDO);
+            session.insert("Oep5TxnDetailMapper.insertSelective", oep8TxDetail);
         } else {
-            session.insert("Oep4TxnDetailMapper.insertSelective", transactionDetailDO);
+            session.insert("Oep4TxnDetailMapper.insertSelective", oep8TxDetail);
         }
     }
 
@@ -718,25 +712,24 @@ public class TxnHandlerThread {
      * @param player
      */
     private void insertContratInfo(String contractAddress, int blockTime, JSONObject contractObj, String player) {
-        Contracts contracts = new Contracts();
-        contracts.setProject("");
-        contracts.setContract(contractAddress);
-        contracts.setName(contractObj.getString("Name"));
-        contracts.setDescription(contractObj.getString("Description"));
-        contracts.setAbi("");
-        contracts.setCode("");
-        contracts.setTxcount(0);
-        contracts.setCreatetime(blockTime);
-        contracts.setUpdatetime(blockTime);
-        contracts.setAuditflag(0);
-        contracts.setCreator(player);
-        contracts.setAddresscount(0);
-        contracts.setOntcount(new BigDecimal(0));
-        contracts.setOngcount(new BigDecimal(0));
-        contracts.setTokencount(JSON.toJSONString(new ArrayList<>()));
-        contracts.setDappstoreflag(ConstantParam.DAPPSTOREFLAG_NO);
-        contracts.setCategory("");
-        contractsMapper.insertSelective(contracts);
+        ContractWithBLOBs contract = new ContractWithBLOBs();
+        contract.setContractHash(contractAddress);
+        contract.setName(contractObj.getString("Name"));
+        contract.setDescription(contractObj.getString("Description"));
+        contract.setAbi("");
+        contract.setCode("");
+        contract.setTxCount(0);
+        contract.setCreateTime(blockTime);
+        contract.setUpdateTime(blockTime);
+        contract.setAuditFlag(0);
+        contract.setCreator(player);
+        contract.setAddressCount(0);
+        contract.setOntSum(new BigDecimal(0));
+        contract.setOngSum(new BigDecimal(0));
+        contract.setTokenSum(JSON.toJSONString(new ArrayList<>()));
+        contract.setDappstoreFlag(ConstantParam.DAPPSTOREFLAG_NO);
+        contract.setCategory("");
+        contractMapper.insertSelective(contract);
     }
 
     /**
@@ -788,11 +781,11 @@ public class TxnHandlerThread {
                                        int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTxn, int confirmFlag,
                                        JSONObject oep4Obj, String contractHash, String payer, String calledContractHash) throws Exception {
         if (stateArray.size() < 3) {
-            Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
+            Oep8TxDetail oep8TxDetail = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTxn, 1, contractHash, payer, calledContractHash);
-            session.insert("TransactionDetailMapper.insertSelective", transactionDetailDO);
-            session.insert("TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
-            session.insert("Oep4TxnDetailMapper.insertSelective", transactionDetailDO);
+            session.insert("TransactionDetailMapper.insertSelective", oep8TxDetail);
+            session.insert("TransactionDetailDailyMapper.insertSelective", oep8TxDetail);
+            session.insert("Oep4TxnDetailMapper.insertSelective", oep8TxDetail);
             return;
         }
 
@@ -827,12 +820,12 @@ public class TxnHandlerThread {
 
         String assetName = oep4Obj.getString("Symbol");
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, oep4Obj.getInteger("Decimals"))));
-        Oep8TxnDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, amount, txnType, txnHash, blockHeight,
+        Oep8TxDetail oep8TxDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, "transfer", gasConsumed, indexInTxn, 3, contractHash, payer, calledContractHash);
 
-        session.insert("TransactionDetailMapper.insertSelective", transactionDetailDO);
-        session.insert("TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
-        session.insert("Oep4TxnDetailMapper.insertSelective", transactionDetailDO);
+        session.insert("TransactionDetailMapper.insertSelective", oep8TxDetail);
+        session.insert("TransactionDetailDailyMapper.insertSelective", oep8TxDetail);
+        session.insert("Oep4TxnDetailMapper.insertSelective", oep8TxDetail);
     }
 
     /**

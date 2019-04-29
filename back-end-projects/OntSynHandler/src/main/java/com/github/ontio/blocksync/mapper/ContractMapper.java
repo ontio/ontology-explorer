@@ -4,6 +4,8 @@ import com.github.ontio.blocksync.model.Contract;
 import com.github.ontio.blocksync.model.ContractExample;
 import com.github.ontio.blocksync.model.ContractWithBLOBs;
 import java.util.List;
+
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -134,10 +136,9 @@ public interface ContractMapper {
     // Self-defined mapper
 
     @Select({
-        "select count(*)",
-        "from tbl_contract",
-        "where contract_hash = #{contractHash,jdbcType=VARCHAR}"
+            "select count(*)",
+            "from tbl_contract",
+            "where contract_hash = #{contractHash,jdbcType=VARCHAR}"
     })
-    @ResultMap("java.lang.Integer")
-    int selectCountByContractHash(String contractHash);
+    Integer selectCountByContractHash(String contractHash);
 }
