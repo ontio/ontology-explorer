@@ -71,4 +71,14 @@ public interface Oep8Mapper {
           "and token_id = #{tokenId,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(Oep8 record);
+
+    // Self-defined mapper
+
+    @Update({
+        "update tbl_oep8",
+        "set total_supply = #{totalSupply,jdbcType=DECIMAL},",
+        "where contract_hash = #{contractHash,jdbcType=VARCHAR}",
+        "and token_id = #{tokenId,jdbcType=VARCHAR}"
+    })
+    int updateTotalSupply(Oep8 oep8);
 }

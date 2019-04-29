@@ -130,4 +130,14 @@ public interface ContractMapper {
         "where contract_hash = #{contractHash,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(Contract record);
+
+    // Self-defined mapper
+
+    @Select({
+        "select count(*)",
+        "from tbl_contract",
+        "where contract_hash = #{contractHash,jdbcType=VARCHAR}"
+    })
+    @ResultMap("java.lang.Integer")
+    int selectCountByContractHash(String contractHash);
 }

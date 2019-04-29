@@ -23,6 +23,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.blocksync.model.Oep5;
+import com.github.ontio.blocksync.model.Oep5Dragon;
 import com.github.ontio.blocksync.model.Oep8;
 import com.github.ontio.blocksync.model.Oep8TxDetail;
 import com.github.ontio.common.Address;
@@ -401,7 +403,7 @@ public class TxnHandlerThread {
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
         if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
-            Oep8TxnDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
+            Oep8TxDetail transactionDetailDO = generateTransaction("", "", "", new BigDecimal("0"), txnType, txnHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 1, contractAddress, payer, calledContractHash);
             session.insert("TransactionDetailMapper.insertSelective", transactionDetailDO);
             session.insert("TransactionDetailDailyMapper.insertSelective", transactionDetailDO);
@@ -428,9 +430,9 @@ public class TxnHandlerThread {
                 toAddress = "";
 
                 Oep5Dragon oep5Dragon = new Oep5Dragon();
-                oep5Dragon.setContract(contractAddress);
-                oep5Dragon.setAssertname("HyperDragons: " + dragonId);
-                oep5Dragon.setJsonurl(getDragonUrl(contractAddress, dragonId));
+                oep5Dragon.setContractHash(contractAddress);
+                oep5Dragon.setAssetName("HyperDragons: " + dragonId);
+                oep5Dragon.setJsonUrl(getDragonUrl(contractAddress, dragonId));
                 session.insert("Oep5DragonMapper.insertSelective", oep5Dragon);
             } else {
                 dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
@@ -441,7 +443,7 @@ public class TxnHandlerThread {
         }
 
         log.info("fromaddress:{}, toaddress:{}, dragonId:{}", fromAddress, toAddress, assetName);
-        Oep8TxnDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, new BigDecimal("1"), txnType, txnHash, blockHeight,
+        Oep8TxDetail transactionDetailDO = generateTransaction(fromAddress, toAddress, assetName, new BigDecimal("1"), txnType, txnHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTxn, 3, contractAddress, payer, calledContractHash);
         if (!"transfer".equalsIgnoreCase(action)) {
             transactionDetailDO.setAmount(ConstantParam.ZERO);
@@ -452,9 +454,9 @@ public class TxnHandlerThread {
         session.insert("Oep5TxnDetailMapper.insertSelective", transactionDetailDO);
         if ("birth".equalsIgnoreCase(action) && oep5Obj != null) {
             Oep5 oep5 = new Oep5();
-            oep5.setContract(contractAddress);
+            oep5.setContractHash(contractAddress);
             ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
-            oep5.setTotalsupply(new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply()));
+            oep5.setTotalSupply(new BigDecimal(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply()));
 
             oep5Mapper.updateByPrimaryKeySelective(oep5);
         }
