@@ -1,7 +1,6 @@
 package com.github.ontio.blocksync.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class ContractWithBLOBs extends Contract implements Serializable {
     private String abi;
@@ -12,23 +11,43 @@ public class ContractWithBLOBs extends Contract implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public ContractWithBLOBs(String contractHash, String name, Integer createTime, Integer updateTime, Integer auditFlag, String contactInfo, String description, String type, String logo, String creator, Integer addressCount, Integer txCount, BigDecimal ontSum, BigDecimal ongSum, String tokenSum, String category, String dappName, Integer dappstoreFlag, BigDecimal totalReward, BigDecimal lastweekReward, String abi, String code, String sourceCode) {
-        super(contractHash, name, createTime, updateTime, auditFlag, contactInfo, description, type, logo, creator, addressCount, txCount, ontSum, ongSum, tokenSum, category, dappName, dappstoreFlag, totalReward, lastweekReward);
-        this.abi = abi;
-        this.code = code;
-        this.sourceCode = sourceCode;
-    }
-
     public String getAbi() {
         return abi;
+    }
+
+    public ContractWithBLOBs withAbi(String abi) {
+        this.setAbi(abi);
+        return this;
+    }
+
+    public void setAbi(String abi) {
+        this.abi = abi == null ? null : abi.trim();
     }
 
     public String getCode() {
         return code;
     }
 
+    public ContractWithBLOBs withCode(String code) {
+        this.setCode(code);
+        return this;
+    }
+
+    public void setCode(String code) {
+        this.code = code == null ? null : code.trim();
+    }
+
     public String getSourceCode() {
         return sourceCode;
+    }
+
+    public ContractWithBLOBs withSourceCode(String sourceCode) {
+        this.setSourceCode(sourceCode);
+        return this;
+    }
+
+    public void setSourceCode(String sourceCode) {
+        this.sourceCode = sourceCode == null ? null : sourceCode.trim();
     }
 
     @Override

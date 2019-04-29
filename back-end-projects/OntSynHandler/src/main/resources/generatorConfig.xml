@@ -32,7 +32,7 @@
             <property name="constructorBased" value="false"/>
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
-            <property name="immutable" value="true"/>
+            <property name="immutable" value="false"/>
         </javaModelGenerator>
 
         <sqlMapGenerator targetPackage="mapper"

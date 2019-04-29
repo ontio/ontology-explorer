@@ -19,38 +19,82 @@ public class Oep8 extends Oep8Key implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Oep8(String contractHash, String tokenId, String name, BigDecimal totalSupply, String symbol, Date createTime, Integer auditFlag, Date updateTime) {
-        super(contractHash, tokenId);
-        this.name = name;
-        this.totalSupply = totalSupply;
-        this.symbol = symbol;
-        this.createTime = createTime;
-        this.auditFlag = auditFlag;
-        this.updateTime = updateTime;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public Oep8 withName(String name) {
+        this.setName(name);
+        return this;
+    }
+
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
     }
 
     public BigDecimal getTotalSupply() {
         return totalSupply;
     }
 
+    public Oep8 withTotalSupply(BigDecimal totalSupply) {
+        this.setTotalSupply(totalSupply);
+        return this;
+    }
+
+    public void setTotalSupply(BigDecimal totalSupply) {
+        this.totalSupply = totalSupply;
+    }
+
     public String getSymbol() {
         return symbol;
+    }
+
+    public Oep8 withSymbol(String symbol) {
+        this.setSymbol(symbol);
+        return this;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol == null ? null : symbol.trim();
     }
 
     public Date getCreateTime() {
         return createTime;
     }
 
+    public Oep8 withCreateTime(Date createTime) {
+        this.setCreateTime(createTime);
+        return this;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
     public Integer getAuditFlag() {
         return auditFlag;
     }
 
+    public Oep8 withAuditFlag(Integer auditFlag) {
+        this.setAuditFlag(auditFlag);
+        return this;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
+    }
+
     public Date getUpdateTime() {
         return updateTime;
+    }
+
+    public Oep8 withUpdateTime(Date updateTime) {
+        this.setUpdateTime(updateTime);
+        return this;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     @Override

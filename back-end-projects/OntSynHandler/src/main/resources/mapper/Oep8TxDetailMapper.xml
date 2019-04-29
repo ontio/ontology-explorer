@@ -2,6 +2,373 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.blocksync.mapper.Oep8TxDetailMapper">
   <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep8TxDetail">
+    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
+    <id column="tx_index" jdbcType="INTEGER" property="txIndex" />
+    <result column="tx_type" jdbcType="INTEGER" property="txType" />
+    <result column="tx_time" jdbcType="INTEGER" property="txTime" />
+    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
+    <result column="from_address" jdbcType="VARCHAR" property="fromAddress" />
+    <result column="to_address" jdbcType="VARCHAR" property="toAddress" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
+    <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
+    <result column="event_type" jdbcType="INTEGER" property="eventType" />
+    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    tx_hash, tx_index, tx_type, tx_time, block_height, amount, fee, asset_name, from_address, 
+    to_address, description, block_index, confirm_flag, event_type, contract_hash, payer, 
+    called_contract_hash
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.Oep8TxDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep8_tx_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.Oep8TxDetailExample">
+    delete from tbl_oep8_tx_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Oep8TxDetail">
+    insert into tbl_oep8_tx_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="txHash != null">
+        tx_hash,
+      </if>
+      <if test="txIndex != null">
+        tx_index,
+      </if>
+      <if test="txType != null">
+        tx_type,
+      </if>
+      <if test="txTime != null">
+        tx_time,
+      </if>
+      <if test="blockHeight != null">
+        block_height,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+      <if test="assetName != null">
+        asset_name,
+      </if>
+      <if test="fromAddress != null">
+        from_address,
+      </if>
+      <if test="toAddress != null">
+        to_address,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="blockIndex != null">
+        block_index,
+      </if>
+      <if test="confirmFlag != null">
+        confirm_flag,
+      </if>
+      <if test="eventType != null">
+        event_type,
+      </if>
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="payer != null">
+        payer,
+      </if>
+      <if test="calledContractHash != null">
+        called_contract_hash,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="txHash != null">
+        #{txHash,jdbcType=VARCHAR},
+      </if>
+      <if test="txIndex != null">
+        #{txIndex,jdbcType=INTEGER},
+      </if>
+      <if test="txType != null">
+        #{txType,jdbcType=INTEGER},
+      </if>
+      <if test="txTime != null">
+        #{txTime,jdbcType=INTEGER},
+      </if>
+      <if test="blockHeight != null">
+        #{blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="assetName != null">
+        #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="fromAddress != null">
+        #{fromAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="toAddress != null">
+        #{toAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="blockIndex != null">
+        #{blockIndex,jdbcType=INTEGER},
+      </if>
+      <if test="confirmFlag != null">
+        #{confirmFlag,jdbcType=INTEGER},
+      </if>
+      <if test="eventType != null">
+        #{eventType,jdbcType=INTEGER},
+      </if>
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="payer != null">
+        #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="calledContractHash != null">
+        #{calledContractHash,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.Oep8TxDetailExample" resultType="java.lang.Long">
+    select count(*) from tbl_oep8_tx_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_oep8_tx_detail
+    <set>
+      <if test="record.txHash != null">
+        tx_hash = #{record.txHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.txIndex != null">
+        tx_index = #{record.txIndex,jdbcType=INTEGER},
+      </if>
+      <if test="record.txType != null">
+        tx_type = #{record.txType,jdbcType=INTEGER},
+      </if>
+      <if test="record.txTime != null">
+        tx_time = #{record.txTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.blockHeight != null">
+        block_height = #{record.blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.amount != null">
+        amount = #{record.amount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.fee != null">
+        fee = #{record.fee,jdbcType=DECIMAL},
+      </if>
+      <if test="record.assetName != null">
+        asset_name = #{record.assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fromAddress != null">
+        from_address = #{record.fromAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.toAddress != null">
+        to_address = #{record.toAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.blockIndex != null">
+        block_index = #{record.blockIndex,jdbcType=INTEGER},
+      </if>
+      <if test="record.confirmFlag != null">
+        confirm_flag = #{record.confirmFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.eventType != null">
+        event_type = #{record.eventType,jdbcType=INTEGER},
+      </if>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payer != null">
+        payer = #{record.payer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.calledContractHash != null">
+        called_contract_hash = #{record.calledContractHash,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_oep8_tx_detail
+    set tx_hash = #{record.txHash,jdbcType=VARCHAR},
+      tx_index = #{record.txIndex,jdbcType=INTEGER},
+      tx_type = #{record.txType,jdbcType=INTEGER},
+      tx_time = #{record.txTime,jdbcType=INTEGER},
+      block_height = #{record.blockHeight,jdbcType=INTEGER},
+      amount = #{record.amount,jdbcType=DECIMAL},
+      fee = #{record.fee,jdbcType=DECIMAL},
+      asset_name = #{record.assetName,jdbcType=VARCHAR},
+      from_address = #{record.fromAddress,jdbcType=VARCHAR},
+      to_address = #{record.toAddress,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      block_index = #{record.blockIndex,jdbcType=INTEGER},
+      confirm_flag = #{record.confirmFlag,jdbcType=INTEGER},
+      event_type = #{record.eventType,jdbcType=INTEGER},
+      contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      payer = #{record.payer,jdbcType=VARCHAR},
+      called_contract_hash = #{record.calledContractHash,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Oep8TxDetail">
+    update tbl_oep8_tx_detail
+    <set>
+      <if test="txType != null">
+        tx_type = #{txType,jdbcType=INTEGER},
+      </if>
+      <if test="txTime != null">
+        tx_time = #{txTime,jdbcType=INTEGER},
+      </if>
+      <if test="blockHeight != null">
+        block_height = #{blockHeight,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="assetName != null">
+        asset_name = #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="fromAddress != null">
+        from_address = #{fromAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="toAddress != null">
+        to_address = #{toAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="blockIndex != null">
+        block_index = #{blockIndex,jdbcType=INTEGER},
+      </if>
+      <if test="confirmFlag != null">
+        confirm_flag = #{confirmFlag,jdbcType=INTEGER},
+      </if>
+      <if test="eventType != null">
+        event_type = #{eventType,jdbcType=INTEGER},
+      </if>
+      <if test="contractHash != null">
+        contract_hash = #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="payer != null">
+        payer = #{payer,jdbcType=VARCHAR},
+      </if>
+      <if test="calledContractHash != null">
+        called_contract_hash = #{calledContractHash,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where tx_hash = #{txHash,jdbcType=VARCHAR}
+      and tx_index = #{txIndex,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.Oep8TxDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep8_tx_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep8TxDetail">
     <constructor>
       <idArg column="tx_hash" javaType="java.lang.String" jdbcType="VARCHAR" />
       <idArg column="tx_index" javaType="java.lang.Integer" jdbcType="INTEGER" />
