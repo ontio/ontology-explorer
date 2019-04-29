@@ -43,7 +43,7 @@
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
-        <javaClientGenerator type="MIXEDMAPPER"
+        <javaClientGenerator type="XMLMAPPER"
                              targetPackage="com.github.ontio.blocksync.mapper"
                              targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
