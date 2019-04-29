@@ -25,14 +25,13 @@ import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.*;
 import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.mapper.TxDetailMapper;
-import com.github.ontio.model.OntId;
 import com.github.ontio.model.common.EventTypeEnum;
-import com.github.ontio.model.common.PageResponseDto;
+import com.github.ontio.model.common.PageResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.OntidTxDetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.paramBean.OldResult;
-import com.github.ontio.paramBean.ResponseBean;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -43,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -103,9 +101,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
         List<CurrentDto> currentDtos = currentMapper.selectAll();
 
-        PageResponseDto pageResponseDto = new PageResponseDto(txDetails, currentDtos.get(0).getTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDtos.get(0).getTxCount());
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseDto);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
     @Override
@@ -125,9 +123,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
         List<CurrentDto> currentDtos = currentMapper.selectAll();
 
-        PageResponseDto pageResponseDto = new PageResponseDto(txDetails, currentDtos.get(0).getNonontidTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDtos.get(0).getNonontidTxCount());
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseDto);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
     @Override
@@ -140,20 +138,21 @@ public class TransactionServiceImpl implements ITransactionService {
 
         JSONObject detailObj = new JSONObject();
         int eventType = txDetailDto.getEventType();
+        //转账or权限交易，获取转账详情
         if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType) {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
             for (TxDetailDto dto :
                     txDetailDtos) {
+                //ONG转换好精度给前端
                 String assetName = dto.getAssetName();
                 if (ConstantParam.ONG.equals(assetName)) {
                     dto.setAmount(dto.getAmount().divide(ConstantParam.ONG_TOTAL));
                 }
             }
-
             detailObj.put("transfers", txDetailDtos);
         } else if (EventTypeEnum.Ontid.getType() == eventType) {
-
+            //ONTID交易获取ONTID动作详情
             OntidTxDetailDto ontidTxDetailDtoTemp = OntidTxDetailDto.builder()
                     .txHash(txHash)
                     .build();
@@ -170,54 +169,6 @@ public class TransactionServiceImpl implements ITransactionService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetailDto);
     }
 
-    @Override
-    public OldResult queryTxnDetailByHash(String txnHash) {
-
-        Map<String, Object> txnInfo = transactionDetailMapper.selectTxnByHash(txnHash);
-        if (Helper.isEmptyOrNull(txnInfo)) {
-            return Helper.result("QueryTransaction", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
-        }
-
-        BigDecimal fee = (BigDecimal) txnInfo.get("Fee");
-        txnInfo.put("Fee", fee.toPlainString());
-
-        String desc = (String) txnInfo.get("Description");
-        log.info("txn desc:{}", desc);
-        if (ConstantParam.TRANSFER_OPE.equals(desc) || ConstantParam.AUTH_OPE.equals(desc)) {
-
-            List<Map> txnDetailList = transactionDetailMapper.selectTransferTxnDetailByHash(txnHash);
-            for (Map map :
-                    txnDetailList) {
-                BigDecimal amount = (BigDecimal) map.get("Amount");
-                String assetName = (String) map.get("AssetName");
-                //转换string给前端显示
-                if (ConstantParam.ONG.equals(assetName)) {
-                    //ONG 精度格式化
-                    map.put("Amount", amount.divide(ConstantParam.ONT_TOTAL).toPlainString());
-                } else {
-                    map.put("Amount", amount.toPlainString());
-                }
-            }
-
-            Map<String, Object> detailMap = new HashMap<>();
-            detailMap.put("TransferList", txnDetailList);
-            txnInfo.put("Detail", detailMap);
-        } else if (desc.startsWith(ConstantParam.ONTID_OPE_PREFIX)) {
-
-            OntId ontIdInfo = ontIdMapper.selectByPrimaryKey(txnHash);
-            String ontId = ontIdInfo.getOntid();
-            String ontIdDes = ontIdInfo.getDescription();
-            log.info("ontId:{}, description:{}", ontId, ontIdDes);
-            ontIdDes = Helper.templateOntIdOperation(ontIdDes);
-
-            Map temp = new HashMap();
-            temp.put("OntId", ontId);
-            temp.put("Description", ontIdDes);
-            txnInfo.put("Detail", temp);
-        }
-
-        return Helper.result("QueryTransaction", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, txnInfo);
-    }
 
     @Override
     public OldResult queryAddressInfo(String address, int pageNumber, int pageSize) {
@@ -968,38 +919,5 @@ public class TransactionServiceImpl implements ITransactionService {
         return formattedTxnList;
     }
 
-    /**
-     * 查询地址所有交易
-     *
-     * @param address
-     * @return
-     */
-    @Override
-    public OldResult queryAddressInfoForExcel(String address) {
 
-        Map<String, Object> rs = new HashMap<>();
-        try {
-            Map paramMap = new HashMap();
-            paramMap.put("Address", address);
-            List<Map> list = transactionDetailMapper.selectTxnByAddress(paramMap);
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            for (Map map : list) {
-                map.put("TxnTime", simpleDateFormat.format(new Date(Long.valueOf(map.get("TxnTime").toString()) * 1000)));
-                map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
-
-                if (ConstantParam.ONG.equals(map.get("AssetName"))) {
-                    map.put("Amount", ((BigDecimal) map.get("Amount")).divide(ConstantParam.ONT_TOTAL).toPlainString());
-                } else {
-                    map.put("Amount", ((BigDecimal) map.get("Amount")).toPlainString());
-                }
-            }
-
-            rs.put("TxnList", list);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Helper.result("QueryAddressInfoForExcel", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
-    }
 }

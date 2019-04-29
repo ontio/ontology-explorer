@@ -6,11 +6,11 @@ import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
 import com.github.ontio.mapper.TxDetailMapper;
-import com.github.ontio.model.common.PageResponseDto;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
 import com.github.ontio.model.dto.BalanceDto;
-import com.github.ontio.paramBean.ResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IAddressService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -263,10 +263,10 @@ public class AddressServiceImpl implements IAddressService {
             }
         }
 
-        PageResponseDto pageResponseDto = new PageResponseDto();
-        pageResponseDto.setRecords(returnTxnList);
+        PageResponseBean pageResponseBean = new PageResponseBean();
+        pageResponseBean.setRecords(returnTxnList);
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseDto);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
     /**
