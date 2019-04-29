@@ -1,4 +1,4 @@
-package com.github.ontio.paramBean;
+package com.github.ontio.model.common;
 
 import lombok.Data;
 
