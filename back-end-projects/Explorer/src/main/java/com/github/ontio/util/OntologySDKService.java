@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Helper;
-import com.github.ontio.config.ConfigParam;
+import com.github.ontio.blocksync.config.ConfigParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
