@@ -65,6 +65,7 @@ public class RedisConfig{
         template.setDefaultSerializer(serializer);
         return template;*/
 
+
     }
 
 }
