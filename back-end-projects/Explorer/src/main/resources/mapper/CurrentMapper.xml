@@ -12,7 +12,7 @@
   </resultMap>
 
 
-  <cache type="com.github.ontio.config.ExplorerRedisCache">
+  <cache type="com.github.ontio.config.RedisCache">
     <property name="eviction" value="LRU" />
     <property name="size" value="1024" />
     <property name="readOnly" value="false" />

@@ -24,7 +24,7 @@ import com.github.ontio.dao.*;
 import com.github.ontio.model.*;
 import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.ICurrentService;
-import com.github.ontio.blocksync.config.ConfigParam;
+import com.github.ontio.config.ConfigParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.util.OntologySDKService;

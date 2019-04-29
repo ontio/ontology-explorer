@@ -1,4 +1,4 @@
-package com.github.ontio.blocksync.config;
+package com.github.ontio.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
