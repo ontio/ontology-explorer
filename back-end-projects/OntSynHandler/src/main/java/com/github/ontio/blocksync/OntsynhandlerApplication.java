@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 @SpringBootApplication
 @EnableTransactionManagement
-@MapperScan(value = "com.github.ontio.mapper")
+@MapperScan(value = "com.github.ontio.blocksync.mapper")
 public class OntsynhandlerApplication {
 
     @Autowired
