@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.blocksync.mapper.TxEventLogMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.TxEventLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
+    <result column="tx_type" jdbcType="INTEGER" property="txType" />
+    <result column="tx_time" jdbcType="INTEGER" property="txTime" />
+    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
+    <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
+    <result column="event_log" jdbcType="LONGVARCHAR" property="eventLog" />
+  </resultMap>
+</mapper>
