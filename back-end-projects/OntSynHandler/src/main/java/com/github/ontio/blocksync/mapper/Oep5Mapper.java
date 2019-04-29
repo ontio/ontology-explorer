@@ -3,6 +3,8 @@ package com.github.ontio.blocksync.mapper;
 import com.github.ontio.blocksync.model.Oep5;
 import com.github.ontio.blocksync.model.Oep5Example;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -66,4 +68,13 @@ public interface Oep5Mapper {
         "where contract_hash = #{contractHash,jdbcType=VARCHAR}"
     })
     int updateByPrimaryKey(Oep5 record);
+
+    // Self-defined mapper
+
+    @Select({
+            "select name, symbol, decimals",
+            "from tbl_oep5",
+            "where audit_flag = 1"
+    })
+    List<Map> selectApprovedKeyInfo();
 }
