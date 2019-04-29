@@ -36,6 +36,7 @@ public interface CurrentMapper {
     int updateByExample(@Param("record") Current record, @Param("example") CurrentExample example);
 
     // Self-defined mapper
+
     @Update({
         "update tbl_current",
         "set block_height = #{record.blockHeight,jdbcType=INTEGER},",
