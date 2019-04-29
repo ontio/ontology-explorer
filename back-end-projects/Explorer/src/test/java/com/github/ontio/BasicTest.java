@@ -19,6 +19,10 @@ public class BasicTest {
     @Test
     public void calculateScore(){
 
+/*        String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse("8c15299cc6843e808b42f1ffb9cff7ec36f81ea1")).toBase58();
+        System.out.println("addr；"+contractAddress);*/
+
+
         int txnCount = 4003;
         int activeAddrCount = 2880;
         int allActiveAddrCount = 2929;
