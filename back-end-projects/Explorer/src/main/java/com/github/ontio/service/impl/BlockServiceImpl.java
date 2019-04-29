@@ -28,8 +28,7 @@ import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,11 +38,10 @@ import java.util.List;
 import java.util.Map;
 
 
+@Slf4j
 @Service("BlockService")
 //@MapperScan("com.github.ontio.dao")
 public class BlockServiceImpl implements IBlockService {
-
-    private static final Logger logger = LoggerFactory.getLogger(BlockServiceImpl.class);
 
     private static final String VERSION = "1.0";
 
@@ -150,7 +148,7 @@ public class BlockServiceImpl implements IBlockService {
                 }
             }
         } catch (Exception e) {
-            logger.error("db error...", e);
+            log.error("db error...", e);
             e.printStackTrace();
             return Helper.result("BlockCountInTwoWeeks", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION, false);
         }

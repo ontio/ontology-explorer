@@ -24,8 +24,7 @@ import com.github.ontio.service.impl.BlockServiceImpl;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +34,11 @@ import org.springframework.web.bind.annotation.*;
  * @version 1.0
  * @date 2018/2/27
  */
+@Slf4j
 @EnableAutoConfiguration
 @RestController
 @RequestMapping(value = "/api/v1/explorer")
 public class BlockController {
-
-    private static final Logger logger = LoggerFactory.getLogger(BlockController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
@@ -61,8 +59,8 @@ public class BlockController {
     @ResponseBody
     public OldResult queryBlockList(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}", amount);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("amount:{}", amount);
 
         OldResult rs = blockService.queryBlockList(amount);
         return rs;
@@ -80,8 +78,8 @@ public class BlockController {
     public OldResult queryBlockByPage(@PathVariable("pagenumber") Integer pageNumber,
                                       @PathVariable("pagesize") Integer pageSize) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
 
         OldResult rs = blockService.queryBlockList(pageSize, pageNumber);
         return rs;
@@ -96,8 +94,8 @@ public class BlockController {
     @ResponseBody
     public OldResult queryBlock(@PathVariable("param") String param) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("param:{}", param);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("param:{}", param);
 
         OldResult rs = new OldResult();
         if (param.length() == 64) {
@@ -125,8 +123,8 @@ public class BlockController {
     @ResponseBody
     public OldResult queryBlockGenerateTime(@PathVariable("amount") int amount) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("amount:{}", amount);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("amount:{}", amount);
 
         OldResult rs = blockService.queryBlockGenerateTime(amount);
         return rs;
@@ -144,8 +142,8 @@ public class BlockController {
     @ResponseBody
     public OldResult blockCountInTwoWeeks(@PathVariable("time") long time) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("time:{}", time);
+        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("time:{}", time);
 
         OldResult rs = blockService.blockCountInTwoWeeks(time);
         return rs;
