@@ -9,17 +9,30 @@ public class Oep8Key implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Oep8Key(String contractHash, String tokenId) {
-        this.contractHash = contractHash;
-        this.tokenId = tokenId;
-    }
-
     public String getContractHash() {
         return contractHash;
     }
 
+    public Oep8Key withContractHash(String contractHash) {
+        this.setContractHash(contractHash);
+        return this;
+    }
+
+    public void setContractHash(String contractHash) {
+        this.contractHash = contractHash == null ? null : contractHash.trim();
+    }
+
     public String getTokenId() {
         return tokenId;
+    }
+
+    public Oep8Key withTokenId(String tokenId) {
+        this.setTokenId(tokenId);
+        return this;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId == null ? null : tokenId.trim();
     }
 
     @Override

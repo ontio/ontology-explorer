@@ -22,7 +22,7 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.config.ConfigParam;
+import com.github.ontio.blocksync.config.ConfigParam;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.OntIdMapper;
 import com.github.ontio.paramBean.Result;

@@ -20,42 +20,95 @@ public class Oep5 implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Oep5(String contractHash, String name, Long totalSupply, String symbol, Date createTime, Integer auditFlag, Date updateTime) {
-        this.contractHash = contractHash;
-        this.name = name;
-        this.totalSupply = totalSupply;
-        this.symbol = symbol;
-        this.createTime = createTime;
-        this.auditFlag = auditFlag;
-        this.updateTime = updateTime;
-    }
-
     public String getContractHash() {
         return contractHash;
+    }
+
+    public Oep5 withContractHash(String contractHash) {
+        this.setContractHash(contractHash);
+        return this;
+    }
+
+    public void setContractHash(String contractHash) {
+        this.contractHash = contractHash == null ? null : contractHash.trim();
     }
 
     public String getName() {
         return name;
     }
 
+    public Oep5 withName(String name) {
+        this.setName(name);
+        return this;
+    }
+
+    public void setName(String name) {
+        this.name = name == null ? null : name.trim();
+    }
+
     public Long getTotalSupply() {
         return totalSupply;
+    }
+
+    public Oep5 withTotalSupply(Long totalSupply) {
+        this.setTotalSupply(totalSupply);
+        return this;
+    }
+
+    public void setTotalSupply(Long totalSupply) {
+        this.totalSupply = totalSupply;
     }
 
     public String getSymbol() {
         return symbol;
     }
 
+    public Oep5 withSymbol(String symbol) {
+        this.setSymbol(symbol);
+        return this;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol == null ? null : symbol.trim();
+    }
+
     public Date getCreateTime() {
         return createTime;
+    }
+
+    public Oep5 withCreateTime(Date createTime) {
+        this.setCreateTime(createTime);
+        return this;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public Integer getAuditFlag() {
         return auditFlag;
     }
 
+    public Oep5 withAuditFlag(Integer auditFlag) {
+        this.setAuditFlag(auditFlag);
+        return this;
+    }
+
+    public void setAuditFlag(Integer auditFlag) {
+        this.auditFlag = auditFlag;
+    }
+
     public Date getUpdateTime() {
         return updateTime;
+    }
+
+    public Oep5 withUpdateTime(Date updateTime) {
+        this.setUpdateTime(updateTime);
+        return this;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     @Override

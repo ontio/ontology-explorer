@@ -9,17 +9,30 @@ public class TxDetailKey implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public TxDetailKey(String txHash, Integer txIndex) {
-        this.txHash = txHash;
-        this.txIndex = txIndex;
-    }
-
     public String getTxHash() {
         return txHash;
     }
 
+    public TxDetailKey withTxHash(String txHash) {
+        this.setTxHash(txHash);
+        return this;
+    }
+
+    public void setTxHash(String txHash) {
+        this.txHash = txHash == null ? null : txHash.trim();
+    }
+
     public Integer getTxIndex() {
         return txIndex;
+    }
+
+    public TxDetailKey withTxIndex(Integer txIndex) {
+        this.setTxIndex(txIndex);
+        return this;
+    }
+
+    public void setTxIndex(Integer txIndex) {
+        this.txIndex = txIndex;
     }
 
     @Override

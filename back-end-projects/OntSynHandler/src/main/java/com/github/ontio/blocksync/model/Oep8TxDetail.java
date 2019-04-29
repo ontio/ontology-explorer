@@ -36,83 +36,199 @@ public class Oep8TxDetail extends Oep8TxDetailKey implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Oep8TxDetail(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash) {
-        super(txHash, txIndex);
-        this.txType = txType;
-        this.txTime = txTime;
-        this.blockHeight = blockHeight;
-        this.amount = amount;
-        this.fee = fee;
-        this.assetName = assetName;
-        this.fromAddress = fromAddress;
-        this.toAddress = toAddress;
-        this.description = description;
-        this.blockIndex = blockIndex;
-        this.confirmFlag = confirmFlag;
-        this.eventType = eventType;
-        this.contractHash = contractHash;
-        this.payer = payer;
-        this.calledContractHash = calledContractHash;
-    }
-
     public Integer getTxType() {
         return txType;
+    }
+
+    public Oep8TxDetail withTxType(Integer txType) {
+        this.setTxType(txType);
+        return this;
+    }
+
+    public void setTxType(Integer txType) {
+        this.txType = txType;
     }
 
     public Integer getTxTime() {
         return txTime;
     }
 
+    public Oep8TxDetail withTxTime(Integer txTime) {
+        this.setTxTime(txTime);
+        return this;
+    }
+
+    public void setTxTime(Integer txTime) {
+        this.txTime = txTime;
+    }
+
     public Integer getBlockHeight() {
         return blockHeight;
+    }
+
+    public Oep8TxDetail withBlockHeight(Integer blockHeight) {
+        this.setBlockHeight(blockHeight);
+        return this;
+    }
+
+    public void setBlockHeight(Integer blockHeight) {
+        this.blockHeight = blockHeight;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
 
+    public Oep8TxDetail withAmount(BigDecimal amount) {
+        this.setAmount(amount);
+        return this;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     public BigDecimal getFee() {
         return fee;
+    }
+
+    public Oep8TxDetail withFee(BigDecimal fee) {
+        this.setFee(fee);
+        return this;
+    }
+
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
     }
 
     public String getAssetName() {
         return assetName;
     }
 
+    public Oep8TxDetail withAssetName(String assetName) {
+        this.setAssetName(assetName);
+        return this;
+    }
+
+    public void setAssetName(String assetName) {
+        this.assetName = assetName == null ? null : assetName.trim();
+    }
+
     public String getFromAddress() {
         return fromAddress;
+    }
+
+    public Oep8TxDetail withFromAddress(String fromAddress) {
+        this.setFromAddress(fromAddress);
+        return this;
+    }
+
+    public void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress == null ? null : fromAddress.trim();
     }
 
     public String getToAddress() {
         return toAddress;
     }
 
+    public Oep8TxDetail withToAddress(String toAddress) {
+        this.setToAddress(toAddress);
+        return this;
+    }
+
+    public void setToAddress(String toAddress) {
+        this.toAddress = toAddress == null ? null : toAddress.trim();
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public Oep8TxDetail withDescription(String description) {
+        this.setDescription(description);
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
     }
 
     public Integer getBlockIndex() {
         return blockIndex;
     }
 
+    public Oep8TxDetail withBlockIndex(Integer blockIndex) {
+        this.setBlockIndex(blockIndex);
+        return this;
+    }
+
+    public void setBlockIndex(Integer blockIndex) {
+        this.blockIndex = blockIndex;
+    }
+
     public Integer getConfirmFlag() {
         return confirmFlag;
+    }
+
+    public Oep8TxDetail withConfirmFlag(Integer confirmFlag) {
+        this.setConfirmFlag(confirmFlag);
+        return this;
+    }
+
+    public void setConfirmFlag(Integer confirmFlag) {
+        this.confirmFlag = confirmFlag;
     }
 
     public Integer getEventType() {
         return eventType;
     }
 
+    public Oep8TxDetail withEventType(Integer eventType) {
+        this.setEventType(eventType);
+        return this;
+    }
+
+    public void setEventType(Integer eventType) {
+        this.eventType = eventType;
+    }
+
     public String getContractHash() {
         return contractHash;
+    }
+
+    public Oep8TxDetail withContractHash(String contractHash) {
+        this.setContractHash(contractHash);
+        return this;
+    }
+
+    public void setContractHash(String contractHash) {
+        this.contractHash = contractHash == null ? null : contractHash.trim();
     }
 
     public String getPayer() {
         return payer;
     }
 
+    public Oep8TxDetail withPayer(String payer) {
+        this.setPayer(payer);
+        return this;
+    }
+
+    public void setPayer(String payer) {
+        this.payer = payer == null ? null : payer.trim();
+    }
+
     public String getCalledContractHash() {
         return calledContractHash;
+    }
+
+    public Oep8TxDetail withCalledContractHash(String calledContractHash) {
+        this.setCalledContractHash(calledContractHash);
+        return this;
+    }
+
+    public void setCalledContractHash(String calledContractHash) {
+        this.calledContractHash = calledContractHash == null ? null : calledContractHash.trim();
     }
 
     @Override
