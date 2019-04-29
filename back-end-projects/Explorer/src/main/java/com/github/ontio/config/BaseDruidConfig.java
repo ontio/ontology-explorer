@@ -1,4 +1,4 @@
-package com.github.ontio.config;
+package com.github.ontio.blocksync.config;
 
 /**
  * @author zhouq
@@ -29,8 +29,8 @@ import java.sql.SQLException;
  * 5、扩展JDBC，如果你要对JDBC层有编程的需求，可以通过Druid提供的Filter-Chain机制，很方便编写JDBC层的扩展插件
  * http://localhost:port/druid/login.html
  */
-@Configuration
 @Slf4j
+@Configuration
 public class BaseDruidConfig {
 
     @Value("${spring.datasource.url}")
