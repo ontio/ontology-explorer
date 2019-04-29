@@ -1,4 +1,4 @@
-package com.github.ontio.dao;
+package com.github.ontio.mapper;
 
 import com.github.ontio.model.Oep5TxnDetail;
 import org.apache.ibatis.annotations.Param;

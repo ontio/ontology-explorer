@@ -22,7 +22,7 @@ package com.github.ontio.thread;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.asyncService.BlockHandleService;
-import com.github.ontio.dao.*;
+import com.github.ontio.mapper.*;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.utils.ConfigParam;
 import com.github.ontio.utils.ConstantParam;

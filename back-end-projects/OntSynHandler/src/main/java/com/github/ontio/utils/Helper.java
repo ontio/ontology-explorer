@@ -20,7 +20,6 @@
 package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.paramBean.Result;
 
 import java.math.BigInteger;
 
@@ -33,25 +32,6 @@ public class Helper {
     private static final String SEPARATOR = "\\|\\|";
 
     private static final BigInteger TWO_64 = BigInteger.ONE.shiftLeft(64);
-
-
-    /**
-     * @param action
-     * @param error
-     * @param desc
-     * @param version
-     * @param rs
-     * @return
-     */
-    public static Result result(String action, long error, String desc, String version, Object rs) {
-        Result rr = new Result();
-        rr.Error = error;
-        rr.Action = action;
-        rr.Desc = desc;
-        rr.Version = version;
-        rr.Result = rs;
-        return rr;
-    }
 
     /**
      * check param whether is null or ''

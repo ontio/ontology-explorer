@@ -1,11 +1,15 @@
-package com.github.ontio.dao;
+package com.github.ontio.mapper;
 
 import com.github.ontio.model.TransactionDetail;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+
+
 @Component
-public interface TransactionDetailDailyMapper {
+public interface TransactionDetailMapper {
     int deleteByPrimaryKey(TransactionDetail key);
 
     int insert(TransactionDetail record);
@@ -21,4 +25,6 @@ public interface TransactionDetailDailyMapper {
     void deleteByHeight(int height);
 
     int selectCountByHeight(@Param("height") int height);
+
+    List<Map> selectContractTxCountByHeight(int height);
 }
