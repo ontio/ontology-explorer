@@ -30,9 +30,9 @@ public interface Oep8Mapper {
         "symbol, create_time, ",
         "audit_flag, update_time)",
         "values (#{contractHash,jdbcType=VARCHAR}, #{tokenId,jdbcType=VARCHAR}, ",
-        "#{name,jdbcType=VARCHAR}, #{totalSupply,jdbcType=DECIMAL}, ",
+        "#{name,jdbcType=VARCHAR}, #{totalSupply,jdbcType=VARCHAR}, ",
         "#{symbol,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, ",
-        "#{auditFlag,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP})"
+        "#{auditFlag,jdbcType=BIT}, #{updateTime,jdbcType=TIMESTAMP})"
     })
     int insert(Oep8 record);
 
@@ -62,10 +62,10 @@ public interface Oep8Mapper {
     @Update({
         "update tbl_oep8",
         "set name = #{name,jdbcType=VARCHAR},",
-          "total_supply = #{totalSupply,jdbcType=DECIMAL},",
+          "total_supply = #{totalSupply,jdbcType=VARCHAR},",
           "symbol = #{symbol,jdbcType=VARCHAR},",
           "create_time = #{createTime,jdbcType=TIMESTAMP},",
-          "audit_flag = #{auditFlag,jdbcType=INTEGER},",
+          "audit_flag = #{auditFlag,jdbcType=BIT},",
           "update_time = #{updateTime,jdbcType=TIMESTAMP}",
         "where contract_hash = #{contractHash,jdbcType=VARCHAR}",
           "and token_id = #{tokenId,jdbcType=VARCHAR}"
@@ -75,10 +75,10 @@ public interface Oep8Mapper {
     // Self-defined mapper
 
     @Update({
-        "update tbl_oep8",
-        "set total_supply = #{totalSupply,jdbcType=DECIMAL},",
-        "where contract_hash = #{contractHash,jdbcType=VARCHAR}",
-        "and token_id = #{tokenId,jdbcType=VARCHAR}"
+            "update tbl_oep8",
+            "set total_supply = #{totalSupply,jdbcType=DECIMAL},",
+            "where contract_hash = #{contractHash,jdbcType=VARCHAR}",
+            "and token_id = #{tokenId,jdbcType=VARCHAR}"
     })
     int updateTotalSupply(Oep8 oep8);
 }

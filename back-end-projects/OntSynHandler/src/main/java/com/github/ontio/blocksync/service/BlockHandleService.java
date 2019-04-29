@@ -21,6 +21,7 @@ package com.github.ontio.blocksync.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.blocksync.model.Block;
 import com.github.ontio.common.Address;
 import com.github.ontio.blocksync.mapper.BlockMapper;
 import com.github.ontio.blocksync.mapper.CurrentMapper;
@@ -88,9 +89,6 @@ public class BlockHandleService {
             futureList.get(j).get();
         }
 
-        if (blockHeight >= 1) {
-            blockMapper.updateNextBlockHash(blockJson.getString("Hash"), blockHeight - 1);
-        }
         insertBlock(blockJson);
 
         Map<String, Integer> txnMap = currentMapper.selectSummary();
@@ -107,15 +105,14 @@ public class BlockHandleService {
     public void insertBlock(JSONObject blockJson) {
         JSONObject blockHeader = blockJson.getJSONObject("Header");
 
-        com.github.ontio.model.Block blockDO = new com.github.ontio.model.Block();
-        blockDO.setHash(blockJson.getString("Hash"));
-        blockDO.setBlocksize(blockJson.getInteger("Size"));
-        blockDO.setBlocktime(blockHeader.getInteger("Timestamp"));
-        blockDO.setHeight(blockHeader.getInteger("Height"));
-        blockDO.setTxnsroot(blockHeader.getString("TransactionsRoot"));
-        blockDO.setPrevblock(blockHeader.getString("PrevBlockHash"));
-        blockDO.setConsensusdata(blockHeader.getString("ConsensusData"));
-        blockDO.setTxnnum(blockJson.getJSONArray("Transactions").size());
+        Block block = new Block();
+        block.setBlockHash(blockJson.getString("Hash"));
+        block.setBlockSize(blockJson.getInteger("Size"));
+        block.setBlockTime(blockHeader.getInteger("Timestamp"));
+        block.setBlockHeight(blockHeader.getInteger("Height"));
+        block.setTxsRoot(blockHeader.getString("TransactionsRoot"));
+        block.setConsensusData(blockHeader.getString("ConsensusData"));
+        block.setTxCount(blockJson.getJSONArray("Transactions").size());
 
         String blockKeeperStr = "";
         JSONArray blockKeepers = blockHeader.getJSONArray("Bookkeepers");
@@ -130,21 +127,19 @@ public class BlockHandleService {
             blockKeeperStr = blockKeeperStr.substring(0, blockKeeperStr.length() - 1);
         }
 
-        blockDO.setBookkeeper(blockKeeperStr);
-        blockDO.setNextblock("");
-
-        blockMapper.insert(blockDO);
+        block.setBookkeepers(blockKeeperStr);
+        blockMapper.insert(block);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void updateCurrent(int height, int txnCount, int ontIdTxnCount, int nonontIdTxnCount) {
 
-        Current currentDO = new Current();
-        currentDO.setHeight(height);
-        currentDO.setTxncount(txnCount);
-        currentDO.setOntidcount(ontIdTxnCount);
-        currentDO.setNonontidtxncount(nonontIdTxnCount);
+        Current current = new Current();
+        current.setBlockHeight(height);
+        current.setTxCount(txnCount);
+        current.setOntidCount(ontIdTxnCount);
+        current.setNonontidTxCount(nonontIdTxnCount);
 
-        currentMapper.update(currentDO);
+        currentMapper.update(current);
     }
 }

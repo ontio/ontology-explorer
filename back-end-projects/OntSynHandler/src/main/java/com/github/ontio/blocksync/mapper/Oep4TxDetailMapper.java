@@ -91,4 +91,19 @@ public interface Oep4TxDetailMapper {
           "and tx_index = #{txIndex,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(Oep4TxDetail record);
+
+    // Self-defined mapper
+
+    @Select({
+            "select count(*)",
+            "from tbl_oep4_tx_detail",
+            "where height = #{height,jdbcType=INTEGER}"
+    })
+    int selectCountByHeight(Integer height);
+
+    @Delete({
+            "delete from tbl_oep4_tx_detail",
+            "where height = #{height,jdbcType=INTEGER}"
+    })
+    int deleteByHeight(Integer height);
 }
