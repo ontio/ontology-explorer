@@ -1,6 +1,6 @@
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.ResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IAddressService;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
@@ -36,7 +36,7 @@ public class AddressController {
 
     @ApiOperation(value = "Get address balance")
     @GetMapping(value = "/{address}/balances")
-    public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "error address format") String address) {
+    public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
 
         log.info("########{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
@@ -46,7 +46,7 @@ public class AddressController {
 
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(begin_time+end_time) or (page_number+page_size)")
     @GetMapping(value = "/{address}/transactions")
-    public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "error address format") String address,
+    public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
                                                       @RequestParam(name = "page_size",required = false) @Min(1) @Max(20) Integer pageSize,
                                                       @RequestParam(name = "page_number",required = false) @Min(1) Integer pageNumber,
                                                       @RequestParam(name = "begin_time",required = false) Integer beginTime,

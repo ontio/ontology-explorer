@@ -20,7 +20,7 @@
 package com.github.ontio.service;
 
 import com.github.ontio.paramBean.OldResult;
-import com.github.ontio.paramBean.ResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 
 /**
  * @author zhouq
@@ -30,46 +30,39 @@ import com.github.ontio.paramBean.ResponseBean;
 public interface ITransactionService {
 
     /**
-     * query latest transactions
+     * query latest transaction list
      *
      * @return
      */
     ResponseBean queryLatestTxs(int count);
 
     /**
-     * query latest transactions
+     * query transaction list by page
      *
      * @return
      */
     ResponseBean queryTxsByPage(int pageNumber, int pageSize);
 
     /**
-     * query latest transactions
+     * query latest nonontid transaction list
      *
      * @return
      */
     ResponseBean queryLatestNonontidTxs(int count);
 
     /**
-     * query latest transactions
+     * query nonontid transaction list by page
      *
      * @return
      */
     ResponseBean queryNonontidTxsByPage(int pageNumber, int pageSize);
 
-
-    ResponseBean queryTxDetailByHash(String txHash);
-
-
-
     /**
-     * query txn by txid
-     *
-     * @param txid
+     * query transaction detail by hash
+     * @param txHash
      * @return
      */
-    OldResult queryTxnDetailByHash(String txid);
-
+    ResponseBean queryTxDetailByHash(String txHash);
 
 
 
@@ -121,10 +114,5 @@ public interface ITransactionService {
      */
     OldResult queryAddressBalance(String address);
 
-    /**
-     * 查询地址所有交易
-     * @param address
-     * @return
-     */
-    OldResult queryAddressInfoForExcel(String address);
+
 }
