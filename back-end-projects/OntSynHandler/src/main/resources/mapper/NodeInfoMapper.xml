@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.blocksync.mapper.NodeInfoMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.NodeInfo">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="name" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="node_rank" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="current_stake" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="progress" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="detail_url" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="node_index" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="public_key" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="address" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="status" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="init_pos" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="total_pos" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="max_authorize" javaType="java.lang.Long" jdbcType="BIGINT" />
+      <arg column="node_proportion" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, name, node_rank, current_stake, progress, detail_url, node_index, public_key, 
+    address, status, init_pos, total_pos, max_authorize, node_proportion
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.NodeInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_node_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.NodeInfoExample">
+    delete from t_node_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.NodeInfo">
+    insert into t_node_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="nodeRank != null">
+        node_rank,
+      </if>
+      <if test="currentStake != null">
+        current_stake,
+      </if>
+      <if test="progress != null">
+        progress,
+      </if>
+      <if test="detailUrl != null">
+        detail_url,
+      </if>
+      <if test="nodeIndex != null">
+        node_index,
+      </if>
+      <if test="publicKey != null">
+        public_key,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="initPos != null">
+        init_pos,
+      </if>
+      <if test="totalPos != null">
+        total_pos,
+      </if>
+      <if test="maxAuthorize != null">
+        max_authorize,
+      </if>
+      <if test="nodeProportion != null">
+        node_proportion,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeRank != null">
+        #{nodeRank,jdbcType=INTEGER},
+      </if>
+      <if test="currentStake != null">
+        #{currentStake,jdbcType=BIGINT},
+      </if>
+      <if test="progress != null">
+        #{progress,jdbcType=VARCHAR},
+      </if>
+      <if test="detailUrl != null">
+        #{detailUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeIndex != null">
+        #{nodeIndex,jdbcType=INTEGER},
+      </if>
+      <if test="publicKey != null">
+        #{publicKey,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="initPos != null">
+        #{initPos,jdbcType=BIGINT},
+      </if>
+      <if test="totalPos != null">
+        #{totalPos,jdbcType=BIGINT},
+      </if>
+      <if test="maxAuthorize != null">
+        #{maxAuthorize,jdbcType=BIGINT},
+      </if>
+      <if test="nodeProportion != null">
+        #{nodeProportion,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.NodeInfoExample" resultType="java.lang.Long">
+    select count(*) from t_node_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_node_info
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nodeRank != null">
+        node_rank = #{record.nodeRank,jdbcType=INTEGER},
+      </if>
+      <if test="record.currentStake != null">
+        current_stake = #{record.currentStake,jdbcType=BIGINT},
+      </if>
+      <if test="record.progress != null">
+        progress = #{record.progress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.detailUrl != null">
+        detail_url = #{record.detailUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nodeIndex != null">
+        node_index = #{record.nodeIndex,jdbcType=INTEGER},
+      </if>
+      <if test="record.publicKey != null">
+        public_key = #{record.publicKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.address != null">
+        address = #{record.address,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.initPos != null">
+        init_pos = #{record.initPos,jdbcType=BIGINT},
+      </if>
+      <if test="record.totalPos != null">
+        total_pos = #{record.totalPos,jdbcType=BIGINT},
+      </if>
+      <if test="record.maxAuthorize != null">
+        max_authorize = #{record.maxAuthorize,jdbcType=BIGINT},
+      </if>
+      <if test="record.nodeProportion != null">
+        node_proportion = #{record.nodeProportion,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_node_info
+    set id = #{record.id,jdbcType=BIGINT},
+      name = #{record.name,jdbcType=VARCHAR},
+      node_rank = #{record.nodeRank,jdbcType=INTEGER},
+      current_stake = #{record.currentStake,jdbcType=BIGINT},
+      progress = #{record.progress,jdbcType=VARCHAR},
+      detail_url = #{record.detailUrl,jdbcType=VARCHAR},
+      node_index = #{record.nodeIndex,jdbcType=INTEGER},
+      public_key = #{record.publicKey,jdbcType=VARCHAR},
+      address = #{record.address,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      init_pos = #{record.initPos,jdbcType=BIGINT},
+      total_pos = #{record.totalPos,jdbcType=BIGINT},
+      max_authorize = #{record.maxAuthorize,jdbcType=BIGINT},
+      node_proportion = #{record.nodeProportion,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.NodeInfo">
+    update t_node_info
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeRank != null">
+        node_rank = #{nodeRank,jdbcType=INTEGER},
+      </if>
+      <if test="currentStake != null">
+        current_stake = #{currentStake,jdbcType=BIGINT},
+      </if>
+      <if test="progress != null">
+        progress = #{progress,jdbcType=VARCHAR},
+      </if>
+      <if test="detailUrl != null">
+        detail_url = #{detailUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeIndex != null">
+        node_index = #{nodeIndex,jdbcType=INTEGER},
+      </if>
+      <if test="publicKey != null">
+        public_key = #{publicKey,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="initPos != null">
+        init_pos = #{initPos,jdbcType=BIGINT},
+      </if>
+      <if test="totalPos != null">
+        total_pos = #{totalPos,jdbcType=BIGINT},
+      </if>
+      <if test="maxAuthorize != null">
+        max_authorize = #{maxAuthorize,jdbcType=BIGINT},
+      </if>
+      <if test="nodeProportion != null">
+        node_proportion = #{nodeProportion,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.NodeInfoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_node_info
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+</mapper>
