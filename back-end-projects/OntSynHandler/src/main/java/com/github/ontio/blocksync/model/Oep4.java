@@ -8,7 +8,7 @@ public class Oep4 implements Serializable {
 
     private String name;
 
-    private Long totalSupply;
+    private String totalSupply;
 
     private String symbol;
 
@@ -16,7 +16,7 @@ public class Oep4 implements Serializable {
 
     private Date createTime;
 
-    private Integer auditFlag;
+    private Boolean auditFlag;
 
     private Date updateTime;
 
@@ -48,17 +48,17 @@ public class Oep4 implements Serializable {
         this.name = name == null ? null : name.trim();
     }
 
-    public Long getTotalSupply() {
+    public String getTotalSupply() {
         return totalSupply;
     }
 
-    public Oep4 withTotalSupply(Long totalSupply) {
+    public Oep4 withTotalSupply(String totalSupply) {
         this.setTotalSupply(totalSupply);
         return this;
     }
 
-    public void setTotalSupply(Long totalSupply) {
-        this.totalSupply = totalSupply;
+    public void setTotalSupply(String totalSupply) {
+        this.totalSupply = totalSupply == null ? null : totalSupply.trim();
     }
 
     public String getSymbol() {
@@ -100,16 +100,16 @@ public class Oep4 implements Serializable {
         this.createTime = createTime;
     }
 
-    public Integer getAuditFlag() {
+    public Boolean getAuditFlag() {
         return auditFlag;
     }
 
-    public Oep4 withAuditFlag(Integer auditFlag) {
+    public Oep4 withAuditFlag(Boolean auditFlag) {
         this.setAuditFlag(auditFlag);
         return this;
     }
 
-    public void setAuditFlag(Integer auditFlag) {
+    public void setAuditFlag(Boolean auditFlag) {
         this.auditFlag = auditFlag;
     }
 

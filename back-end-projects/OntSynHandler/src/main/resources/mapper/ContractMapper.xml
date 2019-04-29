@@ -520,6 +520,2078 @@
     </if>
   </select>
   <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Contract">
+    <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="audit_flag" jdbcType="INTEGER" property="auditFlag" />
+    <result column="contact_info" jdbcType="VARCHAR" property="contactInfo" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="address_count" jdbcType="INTEGER" property="addressCount" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="ont_sum" jdbcType="DECIMAL" property="ontSum" />
+    <result column="ong_sum" jdbcType="DECIMAL" property="ongSum" />
+    <result column="token_sum" jdbcType="VARCHAR" property="tokenSum" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="dapp_name" jdbcType="VARCHAR" property="dappName" />
+    <result column="dappstore_flag" jdbcType="INTEGER" property="dappstoreFlag" />
+    <result column="total_reward" jdbcType="DECIMAL" property="totalReward" />
+    <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    <result column="abi" jdbcType="LONGVARCHAR" property="abi" />
+    <result column="code" jdbcType="LONGVARCHAR" property="code" />
+    <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    contract_hash, name, create_time, update_time, audit_flag, contact_info, description, 
+    type, logo, creator, address_count, tx_count, ont_sum, ong_sum, token_sum, category, 
+    dapp_name, dappstore_flag, total_reward, lastweek_reward
+  </sql>
+  <sql id="Blob_Column_List">
+    abi, code, source_code
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.ContractExample">
+    delete from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    insert into tbl_contract
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="auditFlag != null">
+        audit_flag,
+      </if>
+      <if test="contactInfo != null">
+        contact_info,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="logo != null">
+        logo,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="addressCount != null">
+        address_count,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="ontSum != null">
+        ont_sum,
+      </if>
+      <if test="ongSum != null">
+        ong_sum,
+      </if>
+      <if test="tokenSum != null">
+        token_sum,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="dappName != null">
+        dapp_name,
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag,
+      </if>
+      <if test="totalReward != null">
+        total_reward,
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward,
+      </if>
+      <if test="abi != null">
+        abi,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="sourceCode != null">
+        source_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultType="java.lang.Long">
+    select count(*) from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_contract
+    <set>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.auditFlag != null">
+        audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.contactInfo != null">
+        contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logo != null">
+        logo = #{record.logo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creator != null">
+        creator = #{record.creator,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addressCount != null">
+        address_count = #{record.addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.ontSum != null">
+        ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ongSum != null">
+        ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tokenSum != null">
+        token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappName != null">
+        dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappstoreFlag != null">
+        dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.totalReward != null">
+        total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.lastweekReward != null">
+        lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.abi != null">
+        abi = #{record.abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.sourceCode != null">
+        source_code = #{record.sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      abi = #{record.abi,jdbcType=LONGVARCHAR},
+      code = #{record.code,jdbcType=LONGVARCHAR},
+      source_code = #{record.sourceCode,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    update tbl_contract
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        audit_flag = #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        contact_info = #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        address_count = #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        ont_sum = #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        ong_sum = #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        token_sum = #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        dapp_name = #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag = #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        total_reward = #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward = #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        abi = #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        source_code = #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where contract_hash = #{contractHash,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByExampleWithBLOBsWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Contract">
+    <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="audit_flag" jdbcType="INTEGER" property="auditFlag" />
+    <result column="contact_info" jdbcType="VARCHAR" property="contactInfo" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="address_count" jdbcType="INTEGER" property="addressCount" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="ont_sum" jdbcType="DECIMAL" property="ontSum" />
+    <result column="ong_sum" jdbcType="DECIMAL" property="ongSum" />
+    <result column="token_sum" jdbcType="VARCHAR" property="tokenSum" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="dapp_name" jdbcType="VARCHAR" property="dappName" />
+    <result column="dappstore_flag" jdbcType="INTEGER" property="dappstoreFlag" />
+    <result column="total_reward" jdbcType="DECIMAL" property="totalReward" />
+    <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    <result column="abi" jdbcType="LONGVARCHAR" property="abi" />
+    <result column="code" jdbcType="LONGVARCHAR" property="code" />
+    <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    contract_hash, name, create_time, update_time, audit_flag, contact_info, description, 
+    type, logo, creator, address_count, tx_count, ont_sum, ong_sum, token_sum, category, 
+    dapp_name, dappstore_flag, total_reward, lastweek_reward
+  </sql>
+  <sql id="Blob_Column_List">
+    abi, code, source_code
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.ContractExample">
+    delete from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    insert into tbl_contract
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="auditFlag != null">
+        audit_flag,
+      </if>
+      <if test="contactInfo != null">
+        contact_info,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="logo != null">
+        logo,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="addressCount != null">
+        address_count,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="ontSum != null">
+        ont_sum,
+      </if>
+      <if test="ongSum != null">
+        ong_sum,
+      </if>
+      <if test="tokenSum != null">
+        token_sum,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="dappName != null">
+        dapp_name,
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag,
+      </if>
+      <if test="totalReward != null">
+        total_reward,
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward,
+      </if>
+      <if test="abi != null">
+        abi,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="sourceCode != null">
+        source_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultType="java.lang.Long">
+    select count(*) from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_contract
+    <set>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.auditFlag != null">
+        audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.contactInfo != null">
+        contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logo != null">
+        logo = #{record.logo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creator != null">
+        creator = #{record.creator,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addressCount != null">
+        address_count = #{record.addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.ontSum != null">
+        ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ongSum != null">
+        ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tokenSum != null">
+        token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappName != null">
+        dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappstoreFlag != null">
+        dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.totalReward != null">
+        total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.lastweekReward != null">
+        lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.abi != null">
+        abi = #{record.abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.sourceCode != null">
+        source_code = #{record.sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      abi = #{record.abi,jdbcType=LONGVARCHAR},
+      code = #{record.code,jdbcType=LONGVARCHAR},
+      source_code = #{record.sourceCode,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    update tbl_contract
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        audit_flag = #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        contact_info = #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        address_count = #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        ont_sum = #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        ong_sum = #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        token_sum = #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        dapp_name = #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag = #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        total_reward = #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward = #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        abi = #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        source_code = #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where contract_hash = #{contractHash,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByExampleWithBLOBsWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Contract">
+    <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="audit_flag" jdbcType="INTEGER" property="auditFlag" />
+    <result column="contact_info" jdbcType="VARCHAR" property="contactInfo" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="address_count" jdbcType="INTEGER" property="addressCount" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="ont_sum" jdbcType="DECIMAL" property="ontSum" />
+    <result column="ong_sum" jdbcType="DECIMAL" property="ongSum" />
+    <result column="token_sum" jdbcType="VARCHAR" property="tokenSum" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="dapp_name" jdbcType="VARCHAR" property="dappName" />
+    <result column="dappstore_flag" jdbcType="INTEGER" property="dappstoreFlag" />
+    <result column="total_reward" jdbcType="DECIMAL" property="totalReward" />
+    <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    <result column="abi" jdbcType="LONGVARCHAR" property="abi" />
+    <result column="code" jdbcType="LONGVARCHAR" property="code" />
+    <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    contract_hash, name, create_time, update_time, audit_flag, contact_info, description, 
+    type, logo, creator, address_count, tx_count, ont_sum, ong_sum, token_sum, category, 
+    dapp_name, dappstore_flag, total_reward, lastweek_reward
+  </sql>
+  <sql id="Blob_Column_List">
+    abi, code, source_code
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.ContractExample">
+    delete from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    insert into tbl_contract
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="auditFlag != null">
+        audit_flag,
+      </if>
+      <if test="contactInfo != null">
+        contact_info,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="logo != null">
+        logo,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="addressCount != null">
+        address_count,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="ontSum != null">
+        ont_sum,
+      </if>
+      <if test="ongSum != null">
+        ong_sum,
+      </if>
+      <if test="tokenSum != null">
+        token_sum,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="dappName != null">
+        dapp_name,
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag,
+      </if>
+      <if test="totalReward != null">
+        total_reward,
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward,
+      </if>
+      <if test="abi != null">
+        abi,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="sourceCode != null">
+        source_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultType="java.lang.Long">
+    select count(*) from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_contract
+    <set>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.auditFlag != null">
+        audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.contactInfo != null">
+        contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logo != null">
+        logo = #{record.logo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creator != null">
+        creator = #{record.creator,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addressCount != null">
+        address_count = #{record.addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.ontSum != null">
+        ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ongSum != null">
+        ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tokenSum != null">
+        token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappName != null">
+        dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappstoreFlag != null">
+        dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.totalReward != null">
+        total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.lastweekReward != null">
+        lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.abi != null">
+        abi = #{record.abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.sourceCode != null">
+        source_code = #{record.sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      abi = #{record.abi,jdbcType=LONGVARCHAR},
+      code = #{record.code,jdbcType=LONGVARCHAR},
+      source_code = #{record.sourceCode,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    update tbl_contract
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        audit_flag = #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        contact_info = #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        address_count = #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        ont_sum = #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        ong_sum = #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        token_sum = #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        dapp_name = #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag = #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        total_reward = #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward = #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        abi = #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        source_code = #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where contract_hash = #{contractHash,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByExampleWithBLOBsWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Contract">
+    <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="audit_flag" jdbcType="INTEGER" property="auditFlag" />
+    <result column="contact_info" jdbcType="VARCHAR" property="contactInfo" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="address_count" jdbcType="INTEGER" property="addressCount" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="ont_sum" jdbcType="DECIMAL" property="ontSum" />
+    <result column="ong_sum" jdbcType="DECIMAL" property="ongSum" />
+    <result column="token_sum" jdbcType="VARCHAR" property="tokenSum" />
+    <result column="category" jdbcType="VARCHAR" property="category" />
+    <result column="dapp_name" jdbcType="VARCHAR" property="dappName" />
+    <result column="dappstore_flag" jdbcType="INTEGER" property="dappstoreFlag" />
+    <result column="total_reward" jdbcType="DECIMAL" property="totalReward" />
+    <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    <result column="abi" jdbcType="LONGVARCHAR" property="abi" />
+    <result column="code" jdbcType="LONGVARCHAR" property="code" />
+    <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    contract_hash, name, create_time, update_time, audit_flag, contact_info, description, 
+    type, logo, creator, address_count, tx_count, ont_sum, ong_sum, token_sum, category, 
+    dapp_name, dappstore_flag, total_reward, lastweek_reward
+  </sql>
+  <sql id="Blob_Column_List">
+    abi, code, source_code
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.ContractExample">
+    delete from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    insert into tbl_contract
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="auditFlag != null">
+        audit_flag,
+      </if>
+      <if test="contactInfo != null">
+        contact_info,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="logo != null">
+        logo,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="addressCount != null">
+        address_count,
+      </if>
+      <if test="txCount != null">
+        tx_count,
+      </if>
+      <if test="ontSum != null">
+        ont_sum,
+      </if>
+      <if test="ongSum != null">
+        ong_sum,
+      </if>
+      <if test="tokenSum != null">
+        token_sum,
+      </if>
+      <if test="category != null">
+        category,
+      </if>
+      <if test="dappName != null">
+        dapp_name,
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag,
+      </if>
+      <if test="totalReward != null">
+        total_reward,
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward,
+      </if>
+      <if test="abi != null">
+        abi,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="sourceCode != null">
+        source_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.ContractExample" resultType="java.lang.Long">
+    select count(*) from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_contract
+    <set>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.auditFlag != null">
+        audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.contactInfo != null">
+        contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logo != null">
+        logo = #{record.logo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.creator != null">
+        creator = #{record.creator,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addressCount != null">
+        address_count = #{record.addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.txCount != null">
+        tx_count = #{record.txCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.ontSum != null">
+        ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.ongSum != null">
+        ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="record.tokenSum != null">
+        token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.category != null">
+        category = #{record.category,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappName != null">
+        dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dappstoreFlag != null">
+        dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.totalReward != null">
+        total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.lastweekReward != null">
+        lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="record.abi != null">
+        abi = #{record.abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.sourceCode != null">
+        source_code = #{record.sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL},
+      abi = #{record.abi,jdbcType=LONGVARCHAR},
+      code = #{record.code,jdbcType=LONGVARCHAR},
+      source_code = #{record.sourceCode,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_contract
+    set contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=INTEGER},
+      audit_flag = #{record.auditFlag,jdbcType=INTEGER},
+      contact_info = #{record.contactInfo,jdbcType=VARCHAR},
+      description = #{record.description,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
+      logo = #{record.logo,jdbcType=VARCHAR},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      address_count = #{record.addressCount,jdbcType=INTEGER},
+      tx_count = #{record.txCount,jdbcType=INTEGER},
+      ont_sum = #{record.ontSum,jdbcType=DECIMAL},
+      ong_sum = #{record.ongSum,jdbcType=DECIMAL},
+      token_sum = #{record.tokenSum,jdbcType=VARCHAR},
+      category = #{record.category,jdbcType=VARCHAR},
+      dapp_name = #{record.dappName,jdbcType=VARCHAR},
+      dappstore_flag = #{record.dappstoreFlag,jdbcType=INTEGER},
+      total_reward = #{record.totalReward,jdbcType=DECIMAL},
+      lastweek_reward = #{record.lastweekReward,jdbcType=DECIMAL}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.ContractWithBLOBs">
+    update tbl_contract
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=INTEGER},
+      </if>
+      <if test="auditFlag != null">
+        audit_flag = #{auditFlag,jdbcType=INTEGER},
+      </if>
+      <if test="contactInfo != null">
+        contact_info = #{contactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="logo != null">
+        logo = #{logo,jdbcType=VARCHAR},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="addressCount != null">
+        address_count = #{addressCount,jdbcType=INTEGER},
+      </if>
+      <if test="txCount != null">
+        tx_count = #{txCount,jdbcType=INTEGER},
+      </if>
+      <if test="ontSum != null">
+        ont_sum = #{ontSum,jdbcType=DECIMAL},
+      </if>
+      <if test="ongSum != null">
+        ong_sum = #{ongSum,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenSum != null">
+        token_sum = #{tokenSum,jdbcType=VARCHAR},
+      </if>
+      <if test="category != null">
+        category = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="dappName != null">
+        dapp_name = #{dappName,jdbcType=VARCHAR},
+      </if>
+      <if test="dappstoreFlag != null">
+        dappstore_flag = #{dappstoreFlag,jdbcType=INTEGER},
+      </if>
+      <if test="totalReward != null">
+        total_reward = #{totalReward,jdbcType=DECIMAL},
+      </if>
+      <if test="lastweekReward != null">
+        lastweek_reward = #{lastweekReward,jdbcType=DECIMAL},
+      </if>
+      <if test="abi != null">
+        abi = #{abi,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="sourceCode != null">
+        source_code = #{sourceCode,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where contract_hash = #{contractHash,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByExampleWithBLOBsWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.ContractExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_contract
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Contract">
     <constructor>
       <idArg column="contract_hash" javaType="java.lang.String" jdbcType="VARCHAR" />
       <arg column="name" javaType="java.lang.String" jdbcType="VARCHAR" />
