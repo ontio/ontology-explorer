@@ -1,6 +1,5 @@
 package com.github.ontio.blocksync.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -326,52 +325,62 @@ public class Oep8Example {
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyEqualTo(BigDecimal value) {
+        public Criteria andTotalSupplyEqualTo(String value) {
             addCriterion("total_supply =", value, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyNotEqualTo(BigDecimal value) {
+        public Criteria andTotalSupplyNotEqualTo(String value) {
             addCriterion("total_supply <>", value, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyGreaterThan(BigDecimal value) {
+        public Criteria andTotalSupplyGreaterThan(String value) {
             addCriterion("total_supply >", value, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyGreaterThanOrEqualTo(BigDecimal value) {
+        public Criteria andTotalSupplyGreaterThanOrEqualTo(String value) {
             addCriterion("total_supply >=", value, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyLessThan(BigDecimal value) {
+        public Criteria andTotalSupplyLessThan(String value) {
             addCriterion("total_supply <", value, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyLessThanOrEqualTo(BigDecimal value) {
+        public Criteria andTotalSupplyLessThanOrEqualTo(String value) {
             addCriterion("total_supply <=", value, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyIn(List<BigDecimal> values) {
+        public Criteria andTotalSupplyLike(String value) {
+            addCriterion("total_supply like", value, "totalSupply");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalSupplyNotLike(String value) {
+            addCriterion("total_supply not like", value, "totalSupply");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalSupplyIn(List<String> values) {
             addCriterion("total_supply in", values, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyNotIn(List<BigDecimal> values) {
+        public Criteria andTotalSupplyNotIn(List<String> values) {
             addCriterion("total_supply not in", values, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyBetween(BigDecimal value1, BigDecimal value2) {
+        public Criteria andTotalSupplyBetween(String value1, String value2) {
             addCriterion("total_supply between", value1, value2, "totalSupply");
             return (Criteria) this;
         }
 
-        public Criteria andTotalSupplyNotBetween(BigDecimal value1, BigDecimal value2) {
+        public Criteria andTotalSupplyNotBetween(String value1, String value2) {
             addCriterion("total_supply not between", value1, value2, "totalSupply");
             return (Criteria) this;
         }
@@ -516,52 +525,52 @@ public class Oep8Example {
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagEqualTo(Integer value) {
+        public Criteria andAuditFlagEqualTo(Boolean value) {
             addCriterion("audit_flag =", value, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagNotEqualTo(Integer value) {
+        public Criteria andAuditFlagNotEqualTo(Boolean value) {
             addCriterion("audit_flag <>", value, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagGreaterThan(Integer value) {
+        public Criteria andAuditFlagGreaterThan(Boolean value) {
             addCriterion("audit_flag >", value, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagGreaterThanOrEqualTo(Integer value) {
+        public Criteria andAuditFlagGreaterThanOrEqualTo(Boolean value) {
             addCriterion("audit_flag >=", value, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagLessThan(Integer value) {
+        public Criteria andAuditFlagLessThan(Boolean value) {
             addCriterion("audit_flag <", value, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagLessThanOrEqualTo(Integer value) {
+        public Criteria andAuditFlagLessThanOrEqualTo(Boolean value) {
             addCriterion("audit_flag <=", value, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagIn(List<Integer> values) {
+        public Criteria andAuditFlagIn(List<Boolean> values) {
             addCriterion("audit_flag in", values, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagNotIn(List<Integer> values) {
+        public Criteria andAuditFlagNotIn(List<Boolean> values) {
             addCriterion("audit_flag not in", values, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagBetween(Integer value1, Integer value2) {
+        public Criteria andAuditFlagBetween(Boolean value1, Boolean value2) {
             addCriterion("audit_flag between", value1, value2, "auditFlag");
             return (Criteria) this;
         }
 
-        public Criteria andAuditFlagNotBetween(Integer value1, Integer value2) {
+        public Criteria andAuditFlagNotBetween(Boolean value1, Boolean value2) {
             addCriterion("audit_flag not between", value1, value2, "auditFlag");
             return (Criteria) this;
         }

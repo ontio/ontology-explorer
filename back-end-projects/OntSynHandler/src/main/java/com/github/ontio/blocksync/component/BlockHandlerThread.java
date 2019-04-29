@@ -21,8 +21,8 @@ package com.github.ontio.blocksync.component;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.blocksync.mapper.*;
 import com.github.ontio.blocksync.service.BlockHandleService;
-import com.github.ontio.mapper.*;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.blocksync.utils.ConfigParam;
 import com.github.ontio.blocksync.utils.ConstantParam;
@@ -36,11 +36,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2018/3/13
- */
 @Slf4j
 @Component("BlockHandlerThread")
 @Scope("prototype")
@@ -57,15 +52,15 @@ public class BlockHandlerThread extends Thread {
     @Autowired
     private OntIdMapper ontIdMapper;
     @Autowired
-    private TransactionDetailMapper transactionDetailMapper;
+    private TxDetailMapper transactionDetailMapper;
     @Autowired
-    private Oep4TxnDetailMapper oep4TxnDetailMapper;
+    private Oep4TxDetailMapper oep4TxnDetailMapper;
     @Autowired
-    private Oep5TxnDetailMapper oep5TxnDetailMapper;
+    private Oep5TxDetailMapper oep5TxnDetailMapper;
     @Autowired
-    private Oep8TxnDetailMapper oep8TxnDetailMapper;
+    private Oep8TxDetailMapper oep8TxnDetailMapper;
     @Autowired
-    private TransactionDetailDailyMapper transactionDetailDailyMapper;
+    private TxDetailDailyMapper transactionDetailDailyMapper;
     @Autowired
     private Oep4Mapper oep4Mapper;
     @Autowired

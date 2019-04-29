@@ -1,19 +1,18 @@
 package com.github.ontio.blocksync.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class Oep8 extends Oep8Key implements Serializable {
     private String name;
 
-    private BigDecimal totalSupply;
+    private String totalSupply;
 
     private String symbol;
 
     private Date createTime;
 
-    private Integer auditFlag;
+    private Boolean auditFlag;
 
     private Date updateTime;
 
@@ -32,17 +31,17 @@ public class Oep8 extends Oep8Key implements Serializable {
         this.name = name == null ? null : name.trim();
     }
 
-    public BigDecimal getTotalSupply() {
+    public String getTotalSupply() {
         return totalSupply;
     }
 
-    public Oep8 withTotalSupply(BigDecimal totalSupply) {
+    public Oep8 withTotalSupply(String totalSupply) {
         this.setTotalSupply(totalSupply);
         return this;
     }
 
-    public void setTotalSupply(BigDecimal totalSupply) {
-        this.totalSupply = totalSupply;
+    public void setTotalSupply(String totalSupply) {
+        this.totalSupply = totalSupply == null ? null : totalSupply.trim();
     }
 
     public String getSymbol() {
@@ -71,16 +70,16 @@ public class Oep8 extends Oep8Key implements Serializable {
         this.createTime = createTime;
     }
 
-    public Integer getAuditFlag() {
+    public Boolean getAuditFlag() {
         return auditFlag;
     }
 
-    public Oep8 withAuditFlag(Integer auditFlag) {
+    public Oep8 withAuditFlag(Boolean auditFlag) {
         this.setAuditFlag(auditFlag);
         return this;
     }
 
-    public void setAuditFlag(Integer auditFlag) {
+    public void setAuditFlag(Boolean auditFlag) {
         this.auditFlag = auditFlag;
     }
 

@@ -21,10 +21,10 @@ CREATE TABLE `tbl_oep8`
     `contract_hash` varchar(255) NOT NULL DEFAULT '' COMMENT '合约hash值',
     `token_id`      varchar(255) NOT NULL DEFAULT '' COMMENT 'OEP8的token id',
     `name`          varchar(255) NOT NULL DEFAULT '' COMMENT 'OEP8代币名称',
-    `total_supply`  BIGINT       NOT NULL COMMENT 'OEP8代币总量',
+    `total_supply`  varchar(255) NOT NULL COMMENT 'OEP8代币总量',
     `symbol`        varchar(255) NOT NULL DEFAULT '' COMMENT 'OEP8代币符号',
     `create_time`   datetime     NOT NULL COMMENT '创建时间，yyyy-MM-dd',
-    `audit_flag`    int(11)      NOT NULL COMMENT '审核标识，1：审核通过 0：未审核',
+    `audit_flag`    bool         NOT NULL COMMENT '审核标识，1：审核通过 0：未审核',
     `update_time`   datetime              DEFAULT NULL COMMENT '更新时间，yyyy-MM-dd',
     PRIMARY KEY (`contract_hash`, `token_id`)
 ) ENGINE = InnoDB

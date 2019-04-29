@@ -187,6 +187,746 @@
     </if>
   </select>
   <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep5Dragon">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
+    <result column="json_url" jdbcType="VARCHAR" property="jsonUrl" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, contract_hash, asset_name, json_url
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample">
+    delete from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    insert into tbl_oep5_dragon
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="assetName != null">
+        asset_name,
+      </if>
+      <if test="jsonUrl != null">
+        json_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultType="java.lang.Long">
+    select count(*) from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_oep5_dragon
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assetName != null">
+        asset_name = #{record.assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jsonUrl != null">
+        json_url = #{record.jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_oep5_dragon
+    set id = #{record.id,jdbcType=INTEGER},
+      contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      asset_name = #{record.assetName,jdbcType=VARCHAR},
+      json_url = #{record.jsonUrl,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    update tbl_oep5_dragon
+    <set>
+      <if test="contractHash != null">
+        contract_hash = #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        asset_name = #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        json_url = #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep5Dragon">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
+    <result column="json_url" jdbcType="VARCHAR" property="jsonUrl" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, contract_hash, asset_name, json_url
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample">
+    delete from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    insert into tbl_oep5_dragon
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="assetName != null">
+        asset_name,
+      </if>
+      <if test="jsonUrl != null">
+        json_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultType="java.lang.Long">
+    select count(*) from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_oep5_dragon
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assetName != null">
+        asset_name = #{record.assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jsonUrl != null">
+        json_url = #{record.jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_oep5_dragon
+    set id = #{record.id,jdbcType=INTEGER},
+      contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      asset_name = #{record.assetName,jdbcType=VARCHAR},
+      json_url = #{record.jsonUrl,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    update tbl_oep5_dragon
+    <set>
+      <if test="contractHash != null">
+        contract_hash = #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        asset_name = #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        json_url = #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep5Dragon">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
+    <result column="json_url" jdbcType="VARCHAR" property="jsonUrl" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, contract_hash, asset_name, json_url
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample">
+    delete from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    insert into tbl_oep5_dragon
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="assetName != null">
+        asset_name,
+      </if>
+      <if test="jsonUrl != null">
+        json_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultType="java.lang.Long">
+    select count(*) from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_oep5_dragon
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assetName != null">
+        asset_name = #{record.assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jsonUrl != null">
+        json_url = #{record.jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_oep5_dragon
+    set id = #{record.id,jdbcType=INTEGER},
+      contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      asset_name = #{record.assetName,jdbcType=VARCHAR},
+      json_url = #{record.jsonUrl,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    update tbl_oep5_dragon
+    <set>
+      <if test="contractHash != null">
+        contract_hash = #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        asset_name = #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        json_url = #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep5Dragon">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
+    <result column="json_url" jdbcType="VARCHAR" property="jsonUrl" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, contract_hash, asset_name, json_url
+  </sql>
+  <select id="selectByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample">
+    delete from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    insert into tbl_oep5_dragon
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="contractHash != null">
+        contract_hash,
+      </if>
+      <if test="assetName != null">
+        asset_name,
+      </if>
+      <if test="jsonUrl != null">
+        json_url,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="contractHash != null">
+        #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultType="java.lang.Long">
+    select count(*) from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tbl_oep5_dragon
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.contractHash != null">
+        contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assetName != null">
+        asset_name = #{record.assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jsonUrl != null">
+        json_url = #{record.jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tbl_oep5_dragon
+    set id = #{record.id,jdbcType=INTEGER},
+      contract_hash = #{record.contractHash,jdbcType=VARCHAR},
+      asset_name = #{record.assetName,jdbcType=VARCHAR},
+      json_url = #{record.jsonUrl,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.blocksync.model.Oep5Dragon">
+    update tbl_oep5_dragon
+    <set>
+      <if test="contractHash != null">
+        contract_hash = #{contractHash,jdbcType=VARCHAR},
+      </if>
+      <if test="assetName != null">
+        asset_name = #{assetName,jdbcType=VARCHAR},
+      </if>
+      <if test="jsonUrl != null">
+        json_url = #{jsonUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByExampleWithRowbounds" parameterType="com.github.ontio.blocksync.model.Oep5DragonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from tbl_oep5_dragon
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.Oep5Dragon">
     <constructor>
       <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
       <arg column="contract_hash" javaType="java.lang.String" jdbcType="VARCHAR" />
