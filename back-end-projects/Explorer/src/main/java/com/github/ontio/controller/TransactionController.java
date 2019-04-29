@@ -19,7 +19,7 @@
 
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.ResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;

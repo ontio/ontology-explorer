@@ -1,6 +1,6 @@
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.ResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 
 /**
  * @author zhouq
