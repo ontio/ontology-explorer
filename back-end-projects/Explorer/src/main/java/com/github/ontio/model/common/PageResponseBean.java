@@ -12,15 +12,15 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PageResponseDto {
+public class PageResponseBean {
 
     private Integer total;
 
     private List records;
 
-    public PageResponseDto(List records, Integer total) {
+    public PageResponseBean(List records, Integer total) {
         this.total = total;
         this.records = records;
     }
-    public PageResponseDto(){}
+    public PageResponseBean(){}
 }
