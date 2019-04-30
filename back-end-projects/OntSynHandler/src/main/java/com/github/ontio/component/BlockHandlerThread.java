@@ -23,6 +23,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.blocksync.mapper.*;
 import com.github.ontio.mapper.CurrentMapper;
+import com.github.ontio.mapper.Oep4Mapper;
+import com.github.ontio.mapper.Oep5Mapper;
+import com.github.ontio.mapper.Oep8Mapper;
+import com.github.ontio.model.dao.Current;
+import com.github.ontio.model.dao.Oep4;
+import com.github.ontio.model.dao.Oep5;
+import com.github.ontio.model.dao.Oep8;
 import com.github.ontio.service.BlockHandleService;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.config.ConfigParam;
@@ -92,11 +99,11 @@ public class BlockHandlerThread extends Thread {
                 int remoteBlockHieght = getRemoteBlockHeight();
                 log.info("######remote blockheight:{}", remoteBlockHieght);
 
-                Integer dbBlockHeight = currentMapper.selectDBHeight();
-                log.info("######db blockheight:{}", dbBlockHeight);
+                List<Current> currents = currentMapper.selectAll();
+                log.info("######db blockheight:{}", currents.get(0).getBlockHeight());
 
                 //wait for generating block
-                if (dbBlockHeight >= remoteBlockHieght) {
+                if (currents.get(0).getBlockHeight() >= remoteBlockHieght) {
                     log.info("+++++++++wait for block+++++++++");
                     try {
                         Thread.sleep(configParam.BLOCK_INTERVAL);
@@ -155,36 +162,45 @@ public class BlockHandlerThread extends Thread {
      * 初始化oep合约全局信息
      */
     private void initOepContractConstantInfo(){
+
+        Oep4 oep4 = Oep4.builder()
+                .auditFlag(true)
+                .build();
         //获取审核过的OEP4资产信息
-        List<Map> oep4s = oep4Mapper.selectApprovedKeyInfo();
-        for (Map map : oep4s) {
+        List<Oep4> oep4s = oep4Mapper.select(oep4);
+        oep4s.forEach(item->{
             JSONObject obj = new JSONObject();
-            obj.put("Symbol", map.get("Symbol"));
-            obj.put("Decimals", map.get("Decimals"));
-            ConstantParam.OEP4MAP.put((String) map.get("Contract"), obj);
-        }
-        ConstantParam.OEP4CONTRACTS = ConstantParam.OEP4MAP.keySet();
+            obj.put("symbol", item.getSymbol());
+            obj.put("decimals", item.getDecimals());
+            ConstantParam.OEP4MAP.put(item.getContractHash(), obj);
+            ConstantParam.OEP4CONTRACTS.add(item.getContractHash());
+        });
 
+        Oep5 oep5 = Oep5.builder()
+                .auditflag(true)
+                .build();
         //获取审核过的OEP5资产信息
-        List<Map> oep5s = oep5Mapper.selectApprovedKeyInfo();
-        for (Map map : oep5s) {
+        List<Oep5> oep5s = oep5Mapper.select(oep5);
+        oep5s.forEach(item->{
             JSONObject obj = new JSONObject();
-            obj.put("Symbol", map.get("Symbol"));
-            obj.put("Name", map.get("Name"));
-            ConstantParam.OEP5MAP.put((String) map.get("Contract"), obj);
-        }
-        ConstantParam.OEP5CONTRACTS = ConstantParam.OEP5MAP.keySet();
+            obj.put("symbol", item.getSymbol());
+            obj.put("name", item.getName());
+            ConstantParam.OEP5MAP.put(item.getContractHash(), obj);
+            ConstantParam.OEP5CONTRACTS.add(item.getContractHash());
+        });
 
+        Oep8 oep8 = Oep8.builder()
+                .auditFlag(true)
+                .build();
         //获取审核过的OEP8资产信息
-        List<Map> oep8s = oep8Mapper.selectApprovedKeyInfo();
-        for (Map map : oep8s) {
+        List<Oep8> oep8s = oep8Mapper.select(oep8);
+        oep8s.forEach(item->{
             JSONObject obj = new JSONObject();
-            obj.put("Symbol", map.get("Symbol"));
-            obj.put("Name", map.get("Name"));
-
-            ConstantParam.OEP8MAP.put((String) map.get("Contract") + "-" + (String) map.get("TokenId"), obj);
-            ConstantParam.OEP8CONTRACTS.add((String) map.get("Contract"));
-        }
+            obj.put("symbol", item.getSymbol());
+            obj.put("name", item.getName());
+            ConstantParam.OEP8MAP.put((String) item.getContractHash() + "-" + (String) item.getTokenId(), obj);
+            ConstantParam.OEP8CONTRACTS.add((String) item.getContractHash());
+        });
     }
 
     /**

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.dao.OntIdMapper">
+
+  <cache type="com.github.ontio.OntSynRedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.OntId">
+    <id column="txnhash" jdbcType="VARCHAR" property="txnhash" />
+    <result column="txntype" jdbcType="INTEGER" property="txntype" />
+    <result column="ontid" jdbcType="VARCHAR" property="ontid" />
+    <result column="txntime" jdbcType="INTEGER" property="txntime" />
+    <result column="height" jdbcType="INTEGER" property="height" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    txnhash, txntype, ontid, txntime, height, description, fee
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_ont_ontid_detail
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tbl_ont_ontid_detail
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.github.ontio.model.OntId">
+    insert into tbl_ont_ontid_detail (txnhash, txntype, ontid, 
+      txntime, height, description, 
+      fee)
+    values (#{txnhash,jdbcType=VARCHAR}, #{txntype,jdbcType=INTEGER}, #{ontid,jdbcType=VARCHAR}, 
+      #{txntime,jdbcType=INTEGER}, #{height,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, 
+      #{fee,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.github.ontio.model.OntId">
+    insert into tbl_ont_ontid_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="txnhash != null">
+        txnhash,
+      </if>
+      <if test="txntype != null">
+        txntype,
+      </if>
+      <if test="ontid != null">
+        ontid,
+      </if>
+      <if test="txntime != null">
+        txntime,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="fee != null">
+        fee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="txnhash != null">
+        #{txnhash,jdbcType=VARCHAR},
+      </if>
+      <if test="txntype != null">
+        #{txntype,jdbcType=INTEGER},
+      </if>
+      <if test="ontid != null">
+        #{ontid,jdbcType=VARCHAR},
+      </if>
+      <if test="txntime != null">
+        #{txntime,jdbcType=INTEGER},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=INTEGER},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null">
+        #{fee,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.ontio.model.OntId">
+    update tbl_ont_ontid_detail
+    <set>
+      <if test="txntype != null">
+        txntype = #{txntype,jdbcType=INTEGER},
+      </if>
+      <if test="ontid != null">
+        ontid = #{ontid,jdbcType=VARCHAR},
+      </if>
+      <if test="txntime != null">
+        txntime = #{txntime,jdbcType=INTEGER},
+      </if>
+      <if test="height != null">
+        height = #{height,jdbcType=INTEGER},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null">
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.github.ontio.model.OntId">
+    update tbl_ont_ontid_detail
+    set txntype = #{txntype,jdbcType=INTEGER},
+      ontid = #{ontid,jdbcType=VARCHAR},
+      txntime = #{txntime,jdbcType=INTEGER},
+      height = #{height,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      fee = #{fee,jdbcType=DECIMAL}
+    where txnhash = #{txnhash,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_ont_ontid_detail
+    where height = #{param1}
+  </delete>
+
+  <select id="selectCountByHeight" resultType="java.lang.Integer" useCache="false">
+    select count(1)
+    from tbl_ont_ontid_detail
+    where height = #{height}
+  </select>
+
+
+</mapper>

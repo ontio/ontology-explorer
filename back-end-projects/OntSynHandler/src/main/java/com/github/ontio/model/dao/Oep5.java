@@ -1,7 +1,11 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "tbl_oep5")
 public class Oep5 {
@@ -42,6 +46,17 @@ public class Oep5 {
      * 更新时间，yyyy-MM-dd
      */
     private Date updatetime;
+
+    @Builder
+    public Oep5(String contractHash, String name, Long totalSupply, String symbol, Date createtime, Boolean auditflag, Date updatetime) {
+        this.contractHash = contractHash;
+        this.name = name;
+        this.totalSupply = totalSupply;
+        this.symbol = symbol;
+        this.createtime = createtime;
+        this.auditflag = auditflag;
+        this.updatetime = updatetime;
+    }
 
     /**
      * 获取合约hash值
