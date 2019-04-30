@@ -38,21 +38,18 @@ public class BlockController {
     @Autowired
     private IBlockService blockService;
 
-    @ResponseBody
     @PutMapping(value = "/latest-blocks/{count}")
     @ApiOperation(value = "Get latest block list")
     public ResponseBean getLatestBlock(@PathVariable("count") int count) {
         return blockService.queryBlockList(count);
     }
 
-    @ResponseBody
     @GetMapping(value = "/{page_size}/{page_number}")
     @ApiOperation(value = "Get block list by page")
     public ResponseBean getBlockByPage(@PathVariable("page_size") Integer pageSize, @PathVariable("page_number") Integer pageNumber) {
         return blockService.queryBlockList(pageSize, pageNumber);
     }
 
-    @ResponseBody
     @GetMapping(value = "/{param}")
     @ApiOperation(value = "Get block detail by height or hash")
     public ResponseBean getBlock(@PathVariable("param") String param) {
@@ -67,7 +64,6 @@ public class BlockController {
         }
     }
 
-    @ResponseBody
     @GetMapping(value = "/generate-time/{amount}")
     @ApiOperation(value = "Get generate block time")
     public ResponseBean queryBlockGenerateTime(@PathVariable("amount") int amount) {
