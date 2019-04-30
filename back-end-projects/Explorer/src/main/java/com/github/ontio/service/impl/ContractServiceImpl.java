@@ -70,8 +70,8 @@ public class ContractServiceImpl implements IContractService {
         List<Map> list = contractsMapper.selectApprovedContractByPage(paramMap);
         if (!list.isEmpty()) {
             for (Map map : list) {
-                map.put("OntCount", ((BigDecimal) map.get("OntCount")).toPlainString());
-                map.put("OngCount", ((BigDecimal) map.get("OngCount")).toPlainString());
+                map.put("ont_sum", ((BigDecimal) map.get("ont_sum")).toPlainString());
+                map.put("ong_sum", ((BigDecimal) map.get("ong_sum")).toPlainString());
             }
         }
         Map<String, Object> result = new HashMap<>();
