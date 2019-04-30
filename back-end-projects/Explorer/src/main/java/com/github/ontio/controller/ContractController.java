@@ -1,166 +1,160 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ * The ontology is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The ontology is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.ContractServiceImpl;
 import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author king
- * @version 1.0
- * @date 12.6
- */
+@Slf4j
+@Validated
 @RestController
 @EnableAspectJAutoProxy
-@RequestMapping(value = "/api/v1/explorer")
+@RequestMapping(value = "/v2/contracts")
 public class ContractController {
-    private static final Logger logger = LoggerFactory.getLogger(ContractController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
     @Autowired
     private ContractServiceImpl contractService;
 
-    /**
-     * contract list
-     * @param pagenumber the start page
-     * @param pagesize   the amount of each page
-     */
-    @RequestMapping(value = "contract/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public OldResult contracts(@PathVariable("pagesize") int pagesize,
-                               @PathVariable("pagenumber") int pagenumber){
-        OldResult rs = contractService.queryContract(pagesize, pagenumber);
-
-        return rs;
+    @ApiOperation(value = "Get contract list")
+    @GetMapping(value = "{page_size}/{page_number}")
+    public ResponseBean getContracts(@PathVariable("page_size") int pageSize, @PathVariable("page_number") int pageNumber) {
+        return contractService.queryContract(pageSize, pageNumber);
     }
 
-    /**
-     * query contractTxs by page
-     *
-     * @param contractHash   contractHash
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    @RequestMapping(value = "/contract/{contracthash}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult queryContractTxsByPage(@PathVariable("contracthash") String contractHash,
-                                            @PathVariable("pagenumber") Integer pageNumber,
-                                            @PathVariable("pagesize") Integer pageSize) {
+    @ApiOperation("Get contract detail by contract hash")
+    @GetMapping(value = "{contract_hash}")
+    public ResponseBean getContractDetail(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract address") String contract_hash) {
+        return null;
+    }
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
-        if (contractHash.isEmpty()){
+    @ApiOperation(value = "Get address balance")
+    @GetMapping(value = "/contract/{contracthash}/{pagesize}/{pagenumber}")
+    public ResponseBean queryContractTxsByPage(@PathVariable("contracthash") String contractHash,
+                                               @PathVariable("pagenumber") Integer pageNumber,
+                                               @PathVariable("pagesize") Integer pageSize) {
+        if (contractHash.isEmpty()) {
             return null;
         }
 
-        OldResult rs = contractService.queryContractByHash(contractHash, pageSize, pageNumber);
-        return rs;
+        return contractService.queryContractByHash(contractHash, pageSize, pageNumber);
     }
 
     /**
      * query OEP by type(oep4\oep8)
-     * @param type type
+     *
+     * @param type       type
      * @param pageNumber the start page
      * @param pageSize   the amount of each page
      * @return
      */
     @RequestMapping(value = "/oepcontract/{type}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public OldResult queryOEPContract(@PathVariable("type") String type,
+    public ResponseBean queryOEPContract(@PathVariable("type") String type,
                                       @PathVariable("pagenumber") Integer pageNumber,
-                                      @PathVariable("pagesize") Integer pageSize){
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
-        if (type.isEmpty()){
+                                      @PathVariable("pagesize") Integer pageSize) {
+        if (type.isEmpty()) {
             return null;
         }
 
-        OldResult rs = contractService.queryOEPContract(type, pageSize, pageNumber);
+        ResponseBean rs = contractService.queryOEPContract(type, pageSize, pageNumber);
         return rs;
     }
 
     /**
      * query OEP by type(oep4\oep8)
+     *
      * @param contracthash contracthash
-     * @param type type
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
+     * @param type         type
+     * @param pageNumber   the start page
+     * @param pageSize     the amount of each page
      * @return
      */
     @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public OldResult queryOEPContractByHash(@PathVariable("contracthash") String contracthash,
+    public ResponseBean queryOEPContractByHash(@PathVariable("contracthash") String contracthash,
                                             @PathVariable("type") String type,
                                             @PathVariable("pagenumber") Integer pageNumber,
-                                            @PathVariable("pagesize") Integer pageSize){
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
-        if (type.isEmpty() || contracthash.isEmpty()){
+                                            @PathVariable("pagesize") Integer pageSize) {
+        if (type.isEmpty() || contracthash.isEmpty()) {
             return null;
         }
 
-        OldResult rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, "", pageSize, pageNumber);
+        ResponseBean rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, "", pageSize, pageNumber);
         return rs;
     }
 
     /**
      * query OEP by type(oep4\oep8)
+     *
      * @param contracthash contracthash
-     * @param type type
-     * @param tokenname tokenname
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
+     * @param type         type
+     * @param tokenname    tokenname
+     * @param pageNumber   the start page
+     * @param pageSize     the amount of each page
      * @return
      */
     @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{tokenname}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public OldResult queryOEPContractByHashAndSymbol(@PathVariable("contracthash") String contracthash,
+    public ResponseBean queryOEPContractByHashAndSymbol(@PathVariable("contracthash") String contracthash,
                                                      @PathVariable("type") String type,
                                                      @PathVariable("tokenname") String tokenname,
                                                      @PathVariable("pagenumber") Integer pageNumber,
-                                                     @PathVariable("pagesize") Integer pageSize){
+                                                     @PathVariable("pagesize") Integer pageSize) {
 
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
-        if (type.isEmpty() || contracthash.isEmpty()){
+        if (type.isEmpty() || contracthash.isEmpty()) {
             return null;
         }
 
-        OldResult rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
+        ResponseBean rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
         return rs;
     }
 
 
     /**
      * 查询dappstore里的合约列表信息
+     *
      * @param pageSize
      * @param pageNumber
      * @return
      */
     @GetMapping(value = "/contract/dappstore/{pagesize}/{pagenumber}")
-    public OldResult queryDappstoreContractInfo(@PathVariable("pagesize") Integer pageSize, @PathVariable("pagenumber") Integer pageNumber){
-
-        logger.info("####{}.{} begin...pagesize:{},pagenumber:{}", CLASS_NAME, Helper.currentMethod(),pageSize, pageNumber);
-
-        OldResult rs = contractService.queryDappstoreContractInfo(pageSize, pageNumber);
+    public ResponseBean queryDappstoreContractInfo(@PathVariable("pagesize") Integer pageSize, @PathVariable("pagenumber") Integer pageNumber) {
+        ResponseBean rs = contractService.queryDappstoreContractInfo(pageSize, pageNumber);
         return rs;
     }
 
 
     /**
      * 查询dappstore里合约汇总信息
+     *
      * @return
      */
     @GetMapping(value = "/contract/dappstore/24h/summary")
-    public OldResult queryDappstoreContract24hSummary(){
-
-        logger.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = contractService.queryDappstore24hSummary();
+    public ResponseBean queryDappstoreContract24hSummary() {
+        ResponseBean rs = contractService.queryDappstore24hSummary();
         return rs;
     }
 
