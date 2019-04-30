@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.github.ontio.blocksync.mapper.TxDetailDailyMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.blocksync.model.TxDetailDaily">
+<mapper namespace="com.github.ontio.mapper.TxDetailDailyMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxDetailDaily">
     <!--
       WARNING - @mbg.generated
     -->
@@ -23,4 +23,16 @@
     <result column="payer" jdbcType="VARCHAR" property="payer" />
     <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
   </resultMap>
+
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_tx_detail_daily
+    where block_height = #{blockHeight}
+  </delete>
+
+  <select id="selectCountByHeight" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_tx_detail_daily
+    where block_height = #{blockHeight}
+  </select>
+
 </mapper>
