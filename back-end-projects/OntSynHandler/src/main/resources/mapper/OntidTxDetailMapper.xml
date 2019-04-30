@@ -13,4 +13,16 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="fee" jdbcType="DECIMAL" property="fee" />
   </resultMap>
+
+  <delete id="deleteByHeight" parameterType="java.lang.Integer">
+    delete from tbl_ontid_tx_detail
+    where block_height = #{blockHeight}
+  </delete>
+
+  <select id="selectCountByHeight" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_ontid_tx_detail
+    where block_height = #{blockHeight}
+  </select>
+
 </mapper>

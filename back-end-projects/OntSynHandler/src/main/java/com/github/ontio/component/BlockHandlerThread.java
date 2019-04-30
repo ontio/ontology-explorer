@@ -22,10 +22,7 @@ package com.github.ontio.component;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.blocksync.mapper.*;
-import com.github.ontio.mapper.CurrentMapper;
-import com.github.ontio.mapper.Oep4Mapper;
-import com.github.ontio.mapper.Oep5Mapper;
-import com.github.ontio.mapper.Oep8Mapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.dao.Current;
 import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
@@ -51,32 +48,38 @@ public class BlockHandlerThread extends Thread {
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
+    private final ConfigParam configParam;
+    private final BlockHandleService blockManagementService;
+    private final CurrentMapper currentMapper;
+    private final OntidTxDetailMapper ontidTxDetailMapper;
+    private final TxDetailMapper txDetailMapper;
+    private final Oep4TxDetailMapper oep4TxDetailMapper;
+    private final Oep5TxDetailMapper oep5TxDetailMapper;
+    private final Oep8TxDetailMapper oep8TxDetailMapper;
+    private final TxDetailDailyMapper txDetailDailyMapper;
+    private final TxEventLogMapper txEventLogMapper;
+    private final Oep4Mapper oep4Mapper;
+    private final Oep5Mapper oep5Mapper;
+    private final Oep8Mapper oep8Mapper;
+    private final Environment env;
+
     @Autowired
-    private ConfigParam configParam;
-    @Autowired
-    private BlockHandleService blockManagementService;
-    @Autowired
-    private CurrentMapper currentMapper;
-    @Autowired
-    private OntIdMapper ontIdMapper;
-    @Autowired
-    private TxDetailMapper transactionDetailMapper;
-    @Autowired
-    private Oep4TxDetailMapper oep4TxnDetailMapper;
-    @Autowired
-    private Oep5TxDetailMapper oep5TxnDetailMapper;
-    @Autowired
-    private Oep8TxDetailMapper oep8TxnDetailMapper;
-    @Autowired
-    private TxDetailDailyMapper transactionDetailDailyMapper;
-    @Autowired
-    private Oep4Mapper oep4Mapper;
-    @Autowired
-    private Oep5Mapper oep5Mapper;
-    @Autowired
-    private Oep8Mapper oep8Mapper;
-    @Autowired
-    private Environment env;
+    public BlockHandlerThread(TxDetailMapper txDetailMapper, ConfigParam configParam, BlockHandleService blockManagementService, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper, Oep4TxDetailMapper oep4TxDetailMapper, Environment env, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailDailyMapper txDetailDailyMapper, Oep5Mapper oep5Mapper, TxEventLogMapper txEventLogMapper, Oep8Mapper oep8Mapper, Oep4Mapper oep4Mapper) {
+        this.txDetailMapper = txDetailMapper;
+        this.configParam = configParam;
+        this.blockManagementService = blockManagementService;
+        this.currentMapper = currentMapper;
+        this.ontidTxDetailMapper = ontidTxDetailMapper;
+        this.oep4TxDetailMapper = oep4TxDetailMapper;
+        this.env = env;
+        this.oep5TxDetailMapper = oep5TxDetailMapper;
+        this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.txDetailDailyMapper = txDetailDailyMapper;
+        this.oep5Mapper = oep5Mapper;
+        this.txEventLogMapper = txEventLogMapper;
+        this.oep8Mapper = oep8Mapper;
+        this.oep4Mapper = oep4Mapper;
+    }
 
     /**
      * BlockHandlerThread
@@ -100,10 +103,11 @@ public class BlockHandlerThread extends Thread {
                 log.info("######remote blockheight:{}", remoteBlockHieght);
 
                 List<Current> currents = currentMapper.selectAll();
-                log.info("######db blockheight:{}", currents.get(0).getBlockHeight());
+                int dbBlockHeight = currents.get(0).getBlockHeight();
+                log.info("######db blockheight:{}", dbBlockHeight);
 
                 //wait for generating block
-                if (currents.get(0).getBlockHeight() >= remoteBlockHieght) {
+                if (dbBlockHeight >= remoteBlockHieght) {
                     log.info("+++++++++wait for block+++++++++");
                     try {
                         Thread.sleep(configParam.BLOCK_INTERVAL);
@@ -123,24 +127,28 @@ public class BlockHandlerThread extends Thread {
 
                 //每次删除当前current表height+1的交易，防止上次程序异常退出时，因为多线程事务插入了height+1的交易
                 //而current表height未更新，则本次同步再次插入会报主键重复异常
-                if (ontIdMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
-                    ontIdMapper.deleteByHeight(dbBlockHeight + 1);
+                if (ontidTxDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    ontidTxDetailMapper.deleteByHeight(dbBlockHeight + 1);
                 }
-                if (transactionDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
-                    transactionDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                if (txDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    txDetailMapper.deleteByHeight(dbBlockHeight + 1);
                 }
-                if (oep4TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
-                    oep4TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                if (txDetailDailyMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    txDetailDailyMapper.deleteByHeight(dbBlockHeight + 1);
                 }
-                if (oep5TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
-                    oep5TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                if (oep4TxDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep4TxDetailMapper.deleteByHeight(dbBlockHeight + 1);
                 }
-                if (oep8TxnDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
-                    oep8TxnDetailMapper.deleteByHeight(dbBlockHeight + 1);
+                if (oep5TxDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep5TxDetailMapper.deleteByHeight(dbBlockHeight + 1);
                 }
-                if (transactionDetailDailyMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
-                    transactionDetailDailyMapper.deleteByHeight(dbBlockHeight + 1);
+                if (oep8TxDetailMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    oep8TxDetailMapper.deleteByHeight(dbBlockHeight + 1);
                 }
+                if (txEventLogMapper.selectCountByHeight(dbBlockHeight + 1) != 0) {
+                    txEventLogMapper.deleteByHeight(dbBlockHeight + 1);
+                }
+
 
                 //handle blocks and transactions
                 for (int tHeight = dbBlockHeight + 1; tHeight <= remoteBlockHieght; tHeight++) {
@@ -159,15 +167,11 @@ public class BlockHandlerThread extends Thread {
     }
 
     /**
-     * 初始化oep合约全局信息
+     * 根据审核过的oep信息，初始化全局oep合约信息
      */
     private void initOepContractConstantInfo(){
 
-        Oep4 oep4 = Oep4.builder()
-                .auditFlag(true)
-                .build();
-        //获取审核过的OEP4资产信息
-        List<Oep4> oep4s = oep4Mapper.select(oep4);
+        List<Oep4> oep4s = oep4Mapper.selectApprovedRecords();
         oep4s.forEach(item->{
             JSONObject obj = new JSONObject();
             obj.put("symbol", item.getSymbol());
@@ -176,11 +180,7 @@ public class BlockHandlerThread extends Thread {
             ConstantParam.OEP4CONTRACTS.add(item.getContractHash());
         });
 
-        Oep5 oep5 = Oep5.builder()
-                .auditflag(true)
-                .build();
-        //获取审核过的OEP5资产信息
-        List<Oep5> oep5s = oep5Mapper.select(oep5);
+        List<Oep5> oep5s = oep5Mapper.selectApprovedRecords();
         oep5s.forEach(item->{
             JSONObject obj = new JSONObject();
             obj.put("symbol", item.getSymbol());
@@ -189,11 +189,7 @@ public class BlockHandlerThread extends Thread {
             ConstantParam.OEP5CONTRACTS.add(item.getContractHash());
         });
 
-        Oep8 oep8 = Oep8.builder()
-                .auditFlag(true)
-                .build();
-        //获取审核过的OEP8资产信息
-        List<Oep8> oep8s = oep8Mapper.select(oep8);
+        List<Oep8> oep8s = oep8Mapper.selectApprovedRecords();
         oep8s.forEach(item->{
             JSONObject obj = new JSONObject();
             obj.put("symbol", item.getSymbol());
