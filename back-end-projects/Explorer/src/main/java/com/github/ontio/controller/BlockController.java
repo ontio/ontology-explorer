@@ -32,7 +32,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping(value = "/api/v2/blocks")
 public class BlockController {
-    
+
     @Autowired
     private IBlockService blockService;
 
