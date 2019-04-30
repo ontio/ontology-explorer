@@ -52,7 +52,6 @@ public class BlockController {
         return blockService.queryBlockList(pageSize, pageNumber);
     }
 
-
     @ResponseBody
     @GetMapping(value = "/{param}")
     @ApiOperation(value = "Get block detail by height or hash")
