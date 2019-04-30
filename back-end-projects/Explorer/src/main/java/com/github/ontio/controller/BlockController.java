@@ -23,17 +23,15 @@ import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
+@Validated
 @RestController
 @RequestMapping(value = "/api/v2/blocks")
 public class BlockController {
-
-    private final String CLASS_NAME = this.getClass().getSimpleName();
-
-    private static final String VERSION = "2.0";
 
     @Autowired
     private IBlockService blockService;
