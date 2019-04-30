@@ -16,134 +16,61 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.OldResult;
-import com.github.ontio.service.impl.BlockServiceImpl;
+import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
-import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2018/2/27
- */
-@Slf4j
+import java.util.HashMap;
+
 @RestController
-@RequestMapping(value = "/api/v1/explorer")
+@RequestMapping(value = "/api/v2/blocks")
 public class BlockController {
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
-    private static final String VERSION = "1.0";
+    private static final String VERSION = "2.0";
 
     @Autowired
-    private BlockServiceImpl blockService;
+    private IBlockService blockService;
 
-
-    /**
-     * query the last few blocks
-     *
-     * @param amount the amount of queries
-     * @return
-     */
-    @ApiOperation(value = "查询block list")
-    @RequestMapping(value = "/blocklist/{amount}", method = RequestMethod.GET)
     @ResponseBody
-    public OldResult queryBlockList(@PathVariable("amount") int amount) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("amount:{}", amount);
-
-        OldResult rs = blockService.queryBlockList(amount);
-        return rs;
+    @PutMapping(value = "/latest-blocks/{count}")
+    @ApiOperation(value = "Get latest block list")
+    public ResponseBean getLatestBlock(@PathVariable("count") int count) {
+        return blockService.queryBlockList(count);
     }
 
-    /**
-     * query blocks by page
-     *
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    @RequestMapping(value = "/blocklist/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     @ResponseBody
-    public OldResult queryBlockByPage(@PathVariable("pagenumber") Integer pageNumber,
-                                      @PathVariable("pagesize") Integer pageSize) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("pageSize:{}, pageNumber；{}", pageSize, pageNumber);
-
-        OldResult rs = blockService.queryBlockList(pageSize, pageNumber);
-        return rs;
+    @GetMapping(value = "/{page_size}/{page_number}")
+    @ApiOperation(value = "Get block list by page")
+    public ResponseBean getBlockByPage(@PathVariable("page_size") Integer pageSize, @PathVariable("page_number") Integer pageNumber) {
+        return blockService.queryBlockList(pageSize, pageNumber);
     }
 
-    /**
-     * query block information and transaction of this block
-     *
-     * @return
-     */
-    @RequestMapping(value = "/block/{param}", method = RequestMethod.GET)
     @ResponseBody
-    public OldResult queryBlock(@PathVariable("param") String param) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("param:{}", param);
-
-        OldResult rs = new OldResult();
+    @GetMapping(value = "/{param}")
+    @ApiOperation(value = "Get block detail by height or hash")
+    public ResponseBean getBlock(@PathVariable("param") String param) {
         if (param.length() == 64) {
-            rs = blockService.queryBlockByHash(param);
-        } else {
-            int blockHeight = 1;
-            try {
-                blockHeight = Integer.valueOf(param);
-            } catch (NumberFormatException e) {
-                return Helper.result("QueryBlock", ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), VERSION, false);
-            }
-            rs = blockService.queryBlockByHeight(blockHeight);
+            return blockService.queryBlockByHash(param);
         }
-
-        return rs;
+        try {
+            int blockHeight = Integer.valueOf(param);
+            return blockService.queryBlockByHeight(blockHeight);
+        } catch (NumberFormatException e) {
+            return new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), new HashMap<>());
+        }
     }
 
-
-    /**
-     * query block information and transaction of this block
-     *
-     * @return
-     */
-    @RequestMapping(value = "/block/generatetime/{amount}", method = RequestMethod.GET)
     @ResponseBody
-    public OldResult queryBlockGenerateTime(@PathVariable("amount") int amount) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("amount:{}", amount);
-
-        OldResult rs = blockService.queryBlockGenerateTime(amount);
-        return rs;
-    }
-
-
-
-    /**
-     * query the last few blocks
-     *
-     * @param time the amount of queries
-     * @return
-     */
-    @RequestMapping(value = "/blockCountInTwoWeeks/{time}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult blockCountInTwoWeeks(@PathVariable("time") long time) {
-
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        log.info("time:{}", time);
-
-        OldResult rs = blockService.blockCountInTwoWeeks(time);
-        return rs;
+    @GetMapping(value = "/generate-time/{amount}")
+    @ApiOperation(value = "Get generate block time")
+    public ResponseBean queryBlockGenerateTime(@PathVariable("amount") int amount) {
+        return blockService.queryBlockGenerateTime(amount);
     }
 }

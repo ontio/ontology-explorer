@@ -17,30 +17,28 @@
  */
 
 
-
 package com.github.ontio.service.impl;
-
 
 import com.github.ontio.dao.BlockMapper;
 import com.github.ontio.dao.CurrentMapper;
 import com.github.ontio.dao.TransactionDetailMapper;
-import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.spring.annotation.MapperScan;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @Slf4j
 @Service("BlockService")
-//@MapperScan("com.github.ontio.dao")
+@MapperScan("com.github.ontio.mapper")
 public class BlockServiceImpl implements IBlockService {
 
     private static final String VERSION = "1.0";
@@ -54,79 +52,67 @@ public class BlockServiceImpl implements IBlockService {
 
 
     @Override
-    public OldResult queryBlockList(int amount) {
-
+    public ResponseBean queryBlockList(int amount) {
         List<Map> blockList = blockMapper.selectBlockByPage(0, amount);
-
-        return Helper.result("QueryBlockList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, blockList);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockList);
     }
 
     @Override
-    public OldResult queryBlockList(int pageSize, int pageNumber) {
+    public ResponseBean queryBlockList(int pageSize, int pageNumber) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
         List<Map> blockList = blockMapper.selectBlockByPage(start, pageSize);
 
         Map summaryMap = currentMapper.selectSummaryInfo();
         int total = (Integer) summaryMap.get("Height");
-
-        Map<String, Object> rs = new HashMap<>();
-        rs.put("BlockList", blockList);
-        rs.put("Total", total);
-
-        return Helper.result("QueryBlockList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+        Map<String, Object> map = new HashMap<>();
+        map.put("total", total);
+        map.put("records", blockList);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), map);
     }
 
+    @Override
+    public ResponseBean queryBlockGenerateTime(int amount) {
+        List<Map> dataList = blockMapper.selectHeightAndTime(amount + 1);
+        List<Map> rsList = new ArrayList<>();
+        for (int i = 0; i < dataList.size() - 1; i++) {
+            int time = (Integer) dataList.get(i).get("BlockTime") - (Integer) dataList.get(i + 1).get("BlockTime");
+            Map<String, Object> temp = new HashMap<>();
+            temp.put("block_height", dataList.get(i).get("Height"));
+            temp.put("generate_time", time);
+            rsList.add(temp);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsList);
+    }
 
     @Override
-    public OldResult queryBlockByHeight(int height) {
+    public ResponseBean queryBlockByHeight(int height) {
 
         Map blockInfo = blockMapper.selectBlockByHeight(height);
         if (Helper.isEmptyOrNull(blockInfo)) {
-            return Helper.result("QueryBlock", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), new ArrayList<HashMap>());
         }
 
         List<Map> txnList = transactionDetailMapper.selectTxnByBlockHeight(height);
         blockInfo.put("TxnList", txnList);
 
-        return Helper.result("QueryBlock", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, blockInfo);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockInfo);
     }
 
     @Override
-    public OldResult queryBlockByHash(String hash) {
-
+    public ResponseBean queryBlockByHash(String hash) {
         Map blockInfo = blockMapper.selectBlockByHash(hash);
         if (Helper.isEmptyOrNull(blockInfo)) {
-            return Helper.result("QueryBlock", ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), VERSION, false);
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
-
         int blockHeight = (Integer) blockInfo.get("Height");
         List<Map> txnList = transactionDetailMapper.selectTxnByBlockHeight(blockHeight);
         blockInfo.put("TxnList", txnList);
-
-        return Helper.result("QueryBlock", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, blockInfo);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockInfo);
     }
 
     @Override
-    public OldResult queryBlockGenerateTime(int amount) {
-
-        List<Map> dataList = blockMapper.selectHeightAndTime(amount + 1);
-        List<Map> rsList = new ArrayList<>();
-
-        for (int i = 0; i < dataList.size() - 1; i++) {
-            int time = (Integer) dataList.get(i).get("BlockTime") - (Integer) dataList.get(i + 1).get("BlockTime");
-            Map<String, Object> temp = new HashMap<>();
-            temp.put("Height", dataList.get(i).get("Height"));
-            temp.put("GenerateTime", time);
-            rsList.add(temp);
-        }
-
-        return Helper.result("QueryBlockGenerateTime", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rsList);
-    }
-
-    @Override
-    public OldResult blockCountInTwoWeeks(long time) {
-
+    public ResponseBean blockCountInTwoWeeks(long time) {
         List<Map> twoWeeksBlockCountList = new ArrayList<>();
         long zeroTime = time / 86400 * 86400;
         try {
@@ -150,9 +136,8 @@ public class BlockServiceImpl implements IBlockService {
         } catch (Exception e) {
             log.error("db error...", e);
             e.printStackTrace();
-            return Helper.result("BlockCountInTwoWeeks", ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), VERSION, false);
+            return new ResponseBean(ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), false);
         }
-
-        return Helper.result("BlockCountInTwoWeeks", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, twoWeeksBlockCountList);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), twoWeeksBlockCountList);
     }
 }
