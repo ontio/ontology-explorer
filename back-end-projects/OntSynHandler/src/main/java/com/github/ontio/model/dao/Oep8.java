@@ -1,12 +1,8 @@
 package com.github.ontio.model.dao;
 
-import lombok.Builder;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.persistence.*;
 
 @Table(name = "tbl_oep8")
 public class Oep8 {
@@ -57,18 +53,6 @@ public class Oep8 {
      */
     @Column(name = "update_time")
     private Date updateTime;
-
-    @Builder
-    public Oep8(String contractHash, String tokenId, String name, BigDecimal totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
-        this.contractHash = contractHash;
-        this.tokenId = tokenId;
-        this.name = name;
-        this.totalSupply = totalSupply;
-        this.symbol = symbol;
-        this.createTime = createTime;
-        this.auditFlag = auditFlag;
-        this.updateTime = updateTime;
-    }
 
     /**
      * 获取合约hash值

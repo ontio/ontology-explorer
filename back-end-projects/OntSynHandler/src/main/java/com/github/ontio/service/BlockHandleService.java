@@ -21,12 +21,12 @@ package com.github.ontio.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.blocksync.model.Block;
 import com.github.ontio.common.Address;
-import com.github.ontio.blocksync.mapper.BlockMapper;
-import com.github.ontio.blocksync.mapper.CurrentMapper;
-import com.github.ontio.blocksync.model.Current;
 import com.github.ontio.component.TxnHandlerThread;
+import com.github.ontio.mapper.BlockMapper;
+import com.github.ontio.mapper.CurrentMapper;
+import com.github.ontio.model.dao.Block;
+import com.github.ontio.model.dao.Current;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -70,15 +69,15 @@ public class BlockHandleService {
         int blockHeight = blockHeader.getInteger("Height");
         int blockTime = blockHeader.getInteger("Timestamp");
         JSONArray txnArray = blockJson.getJSONArray("Transactions");
-        int txnNum = txnArray.size();
-        log.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
+        int txCountInBlock = txnArray.size();
+        log.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
 
         ConstantParam.ONEBLOCK_ONTID_AMOUNT = 0;
         ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT = 0;
 
         List<Future> futureList = new ArrayList<>();
         //asynchronize handle transaction
-        for (int i = 0; i < txnNum; i++) {
+        for (int i = 0; i < txCountInBlock; i++) {
             JSONObject txnJson = (JSONObject) txnArray.get(i);
             Future future = txnHandlerThread.asyncHandleTxn(txnJson, blockHeight, blockTime, i + 1);
             futureList.add(future);
@@ -91,18 +90,19 @@ public class BlockHandleService {
 
         insertBlock(blockJson);
 
-        Map<String, Integer> txnMap = currentMapper.selectSummary();
-        int txnCount = txnMap.get("TxnCount");
-        int ontIdCount = txnMap.get("OntIdCount");
-        int nonOntIdTxnCount = txnMap.get("NonOntIdTxnCount");
-        updateCurrent(blockHeight, txnCount + txnNum,
-                ontIdCount + ConstantParam.ONEBLOCK_ONTID_AMOUNT, nonOntIdTxnCount + txnNum - ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT);
+        List<Current> currents = currentMapper.selectAll();
+        int txCount = currents.get(0).getTxCount();
+        int ontIdCount = currents.get(0).getOntidCount();
+        int nonOntIdTxCount = currents.get(0).getNonontidTxCount();
+        updateCurrent(blockHeight, txCount + txCountInBlock,
+                ontIdCount + ConstantParam.ONEBLOCK_ONTID_AMOUNT, nonOntIdTxCount + txCountInBlock - ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT);
 
-        log.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txnNum);
+        log.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txCount);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void insertBlock(JSONObject blockJson) {
+
         JSONObject blockHeader = blockJson.getJSONObject("Header");
 
         Block block = new Block();
@@ -115,31 +115,27 @@ public class BlockHandleService {
         block.setTxCount(blockJson.getJSONArray("Transactions").size());
 
         String blockKeeperStr = "";
+        StringBuilder sb = new StringBuilder(400);
         JSONArray blockKeepers = blockHeader.getJSONArray("Bookkeepers");
-        if (blockKeepers.size() > 0) {
-            StringBuilder sb = new StringBuilder(400);
-            for (Object obj :
-                    blockKeepers) {
-                sb.append(Address.addressFromPubKey((String) obj).toBase58());
-                sb.append("&");
-            }
-            blockKeeperStr = sb.toString();
-            blockKeeperStr = blockKeeperStr.substring(0, blockKeeperStr.length() - 1);
-        }
+        blockKeepers.forEach(item -> {
+            sb.append(Address.addressFromPubKey((String) item).toBase58());
+            sb.append("&");
+        });
+        blockKeeperStr = sb.toString();
+        blockKeeperStr = blockKeeperStr.substring(0, blockKeeperStr.length() - 1);
 
         block.setBookkeepers(blockKeeperStr);
         blockMapper.insert(block);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateCurrent(int height, int txnCount, int ontIdTxnCount, int nonontIdTxnCount) {
+    public void updateCurrent(int height, int txCount, int ontIdTxCount, int nonontIdTxCount) {
 
         Current current = new Current();
         current.setBlockHeight(height);
-        current.setTxCount(txnCount);
-        current.setOntidCount(ontIdTxnCount);
-        current.setNonontidTxCount(nonontIdTxnCount);
-
-        currentMapper.update(current);
+        current.setTxCount(txCount);
+        current.setOntidCount(ontIdTxCount);
+        current.setNonontidTxCount(nonontIdTxCount);
+        currentMapper.updateByPrimaryKey(current);
     }
 }
