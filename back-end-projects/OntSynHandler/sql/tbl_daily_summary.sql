@@ -15,8 +15,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for tbl_ont_daily_summary
 -- ----------------------------
-DROP TABLE IF EXISTS `tbl_ont_daily_summary`;
-CREATE TABLE `tbl_ont_daily_summary`
+DROP TABLE IF EXISTS `tbl_daily_summary`;
+CREATE TABLE `tbl_daily_summary`
 (
     `time`                 int(11)        NOT NULL COMMENT '当天的UTC0点时间戳',
     `block_count`          int(11)        NOT NULL COMMENT '当天的区块数量',
