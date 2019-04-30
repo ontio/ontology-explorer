@@ -26,13 +26,13 @@
 
   <delete id="deleteByHeight" parameterType="java.lang.Integer">
     delete from tbl_oep5_tx_detail
-    where height = #{param1}
+    where block_height = #{blockHeight}
   </delete>
 
-  <select id="selectCountByHeight" resultType="java.lang.Integer" useCache="false">
+  <select id="selectCountByHeight" resultType="java.lang.Integer">
     select count(1)
-    from tbl_ont_oep5txn_detail
-    where height = #{height}
+    from tbl_oep5_tx_detail
+    where block_height = #{blockHeight}
   </select>
 
 
