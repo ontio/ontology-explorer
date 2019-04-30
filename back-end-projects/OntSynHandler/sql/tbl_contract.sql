@@ -25,7 +25,7 @@ CREATE TABLE `tbl_contract`
     `source_code`     text COMMENT '合约源码',
     `create_time`     int(11)        NOT NULL COMMENT '创建时间戳',
     `update_time`     int(11)                 DEFAULT NULL COMMENT '更新时间戳',
-    `audit_flag`      int(11)        NOT NULL DEFAULT 0 COMMENT '审核标识，1：审核通过 0：未审核',
+    `audit_flag`      tinyint(1)        NOT NULL DEFAULT 0 COMMENT '审核标识，1：审核通过 0：未审核',
     `contact_info`    varchar(1000)  NOT NULL DEFAULT '' COMMENT '合约项目方联系信息.json格式字符串',
     `description`     varchar(1000)  NOT NULL DEFAULT '' COMMENT '合约描述',
     `type`            varchar(255)   NOT NULL DEFAULT '' COMMENT '合约类型，oep4，oep5，oep8，others等',
@@ -38,7 +38,7 @@ CREATE TABLE `tbl_contract`
     `token_sum`       varchar(255)   NOT NULL COMMENT '该合约的总的token流通量.json格式字符串',
     `category`        varchar(255)   NOT NULL DEFAULT '' COMMENT '合约分类',
     `dapp_name`       varchar(255)   NOT NULL DEFAULT '' COMMENT '合约所属Dapp名称',
-    `dappstore_flag`  bool           NOT NULL DEFAULT '0' COMMENT 'Dappstore审核标识。1：合约属于dappstore，0：合约不属于dappstore',
+    `dappstore_flag`  tinyint(1)           NOT NULL DEFAULT '0' COMMENT 'Dappstore审核标识。1：合约属于dappstore，0：合约不属于dappstore',
     `total_reward`    decimal(25, 9) NOT NULL DEFAULT '0.000000000' COMMENT '总激励',
     `lastweek_reward` decimal(25, 9) NOT NULL DEFAULT '0.000000000' COMMENT '上周激励',
     PRIMARY KEY (`contract_hash`) USING BTREE
