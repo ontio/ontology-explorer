@@ -1,55 +1,36 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ * The ontology is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The ontology is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.model.common.ResponseBean;
 
-/**
- * @author king
- * @version 1.0
- * @date 12.6
- */
 public interface IContractService {
 
-    /**
-     * query Contracts by page
-     * @param pagesize
-     * @param pageNum
-     * @return
-     */
-    OldResult queryContract(Integer pagesize, Integer pageNum);
+    ResponseBean queryContract(Integer pagesize, Integer pageNum);
 
-    /**
-     * query txn by page
-     * @param contractHash   contractHash
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    OldResult queryContractByHash(String contractHash, int pageSize, int pageNumber);
+    ResponseBean queryContractByHash(String contractHash, int pageSize, int pageNumber);
 
-    /**
-     * query txn by page
-     * @param type   type
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    OldResult queryOEPContract(String type, int pageSize, int pageNumber);
+    ResponseBean queryOEPContract(String type, int pageSize, int pageNumber);
 
-    /**
-     *  依据合约hash查询Token合约
-     * @param contractHash   contractHash
-     * @param type   type
-     * @param tokenName   tokenName
-     * @param pageSize   the amount of each page
-     * @param pageNumber the start page
-     * @return
-     */
-     OldResult queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber);
+    ResponseBean queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber);
 
+    ResponseBean queryDappstoreContractInfo(Integer pageSize, Integer pageNumber);
 
-
-     OldResult queryDappstoreContractInfo(Integer pageSize, Integer pageNumber);
-
-
-     OldResult queryDappstore24hSummary();
+    ResponseBean queryDappstore24hSummary();
 }
