@@ -38,6 +38,13 @@ public class SummaryController {
         return rs;
     }
 
+    @RequestMapping(value = "/blockCountInTwoWeeks/{time}", method = RequestMethod.GET)
+    @ResponseBody
+    public OldResult blockCountInTwoWeeks(@PathVariable("time") long time) {
+        OldResult rs = blockService.blockCountInTwoWeeks(time);
+        return rs;
+    }
+
     /**
      * query current summary information
      *
