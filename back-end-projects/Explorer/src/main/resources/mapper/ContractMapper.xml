@@ -29,4 +29,9 @@
     <result column="code" jdbcType="LONGVARCHAR" property="code" />
     <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
   </resultMap>
+
+  <select id="selectContractByContractHash" parameterType="java.lang.String" resultType="com.github.ontio.model.Contracts" useCache="false">
+    select * from tbl_contract where contract_hash = #{contractHash}
+  </select>
+
 </mapper>
