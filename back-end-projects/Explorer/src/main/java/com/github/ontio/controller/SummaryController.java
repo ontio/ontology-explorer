@@ -1,161 +1,41 @@
 package com.github.ontio.controller;
 
-import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.SummaryServiceImpl;
-import com.github.ontio.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author king
- * @version 1.0
- * @date 2018/12/17
- */
 @RestController
-@RequestMapping(value = "/api/v1/explorer")
+@RequestMapping(value = "/v2/summaries")
 public class SummaryController {
-
-    private static final Logger logger = LoggerFactory.getLogger(SummaryController.class);
-
-    private final String CLASS_NAME = this.getClass().getSimpleName();
 
     @Autowired
     private SummaryServiceImpl summaryService;
 
-    /**
-     * query all address information
-     *
-     * @return
-     */
-    @RequestMapping(value = "/summaryAllInfo", method = RequestMethod.POST)
-    @ResponseBody
-    public OldResult summaryAllInfo() {
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.summaryAllInfo();
-        return rs;
+    @ApiOperation(value = "Get blockchain latest summary information")
+    @GetMapping(value = "/blockchain/latest-info")
+    public ResponseBean getLatestInfo() {
+        return summaryService.getLatestInfo();
     }
 
-    @RequestMapping(value = "/blockCountInTwoWeeks/{time}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult blockCountInTwoWeeks(@PathVariable("time") long time) {
-        OldResult rs = blockService.blockCountInTwoWeeks(time);
-        return rs;
+    @ApiOperation(value = "Get blockchain tps information")
+    @GetMapping(value = "/blockchain/tps")
+    public ResponseBean getTps() {
+        return summaryService.getTps();
     }
 
-    /**
-     * query current summary information
-     *
-     * @return
-     */
-    @RequestMapping(value = "/summary/{amount}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult querySummary(@PathVariable("amount") int amount) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.querySummary(amount);
-        return rs;
+    @ApiOperation(value = "Get blockchain daily or weekly or monthly summary information")
+    @GetMapping(value = "/blockchain/{type}/{start_time}/{end_time}")
+    public ResponseBean getChainSummary(@PathVariable("type") String type, @PathVariable("start_time") int startTime,
+                                             @PathVariable("end_time") int endTime) {
+        return summaryService.getChainSummary(type, startTime, endTime);
     }
 
-    /**
-     * 统计 TPS
-     * @return
-     */
-    @RequestMapping(value = "/summary/tps", method = RequestMethod.GET)
-    public OldResult queryTps() {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.queryTps();
-        return rs;
+    @ApiOperation(value = "Get contract daily or weekly or monthly summary information")
+    @GetMapping(value = "/contract/{contract_hash}/{type}/{start_time}/{end_time}")
+    public ResponseBean getContractSummary(@PathVariable("contract_hash") String contractHash, @PathVariable("type") String type,
+                                           @PathVariable("start_time") int startTime, @PathVariable("end_time") int endTime) {
+        return summaryService.getContractSummary(contractHash, type, startTime, endTime);
     }
-
-    /**
-     * 项目统计
-     * @return
-     */
-    @RequestMapping(value = "/summary/project/{project}/{type}/{starttime}/{endtime}", method = RequestMethod.GET)
-    public OldResult queryProjectInfo(@PathVariable("project") String project,
-                                      @PathVariable("type") String type,
-                                      @PathVariable("starttime") int startTime,
-                                      @PathVariable("endtime") int endTime) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.queryProjectInfo(project, type, startTime, endTime);
-        return rs;
-    }
-
-    /**
-     * 日常统计
-     * @param type
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    @RequestMapping(value = "/summary/{type}/{starttime}/{endtime}", method = RequestMethod.GET)
-    public OldResult querySummary(@PathVariable("type") String type,
-                                  @PathVariable("starttime") int startTime,
-                                  @PathVariable("endtime") int endTime) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("####startTime:{}, endTime:{}", startTime, endTime);
-
-        OldResult rs = summaryService.querySummary(type, startTime, endTime);
-        return rs;
-    }
-
-    /**
-     * 合约的日常统计
-     *
-     * @param contractHash
-     * @param type
-     * @param startTime
-     * @param endTime
-     * @return
-     */
-    @RequestMapping(value = "/summary/contract/{contracthash}/{type}/{starttime}/{endtime}", method = RequestMethod.GET)
-    public OldResult queryContract(@PathVariable("contracthash") String contractHash,
-                                   @PathVariable("type") String type,
-                                   @PathVariable("starttime") int startTime,
-                                   @PathVariable("endtime") int endTime) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        logger.info("####startTime:{}, endTime:{}", startTime, endTime);
-
-        OldResult rs = summaryService.queryContract(contractHash, type, startTime, endTime);
-        return rs;
-    }
-
-    /**
-     * 查询ONT流通量
-     *
-     * @return
-     */
-    @GetMapping(value = "/summary/totalsupply")
-    public OldResult queryTotalSupply() {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.queryTotalSupply();
-        return rs;
-    }
-
-    /**
-     * 查询ONT,ONG流通量
-     *
-     * @return
-     */
-    @GetMapping(value = "/summary/native/totalsupply")
-    public OldResult queryNativeTotalSupply() {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.queryNativeTotalSupply();
-        return rs;
-    }
-
 }
