@@ -2,14 +2,16 @@ package com.github.ontio.mapper;
 
 import com.github.ontio.model.dto.TxDetailDto;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Repository
 public interface TxDetailMapper extends Mapper<TxDetailDto> {
+
+    // self-defined SQL
 
     List<TxDetailDto> selectTxsByPage(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 
@@ -26,5 +28,7 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
     List<Map> selectTransferTxByFromAddr(Map<String, Object> param);
 
     Integer selectTxCountByAddr(@Param("address") String address);
+
+    Integer queryTransactionCount(Map<String, Object> param);
 
 }
