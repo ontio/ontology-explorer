@@ -18,5 +18,9 @@
     <property name="readOnly" value="false" />
   </cache>
 
+  <select id="selectSummaryInfo" resultType="java.util.Map" useCache="false">
+    select tx_count, block_height, ontid_count, nonontid_tx_count
+    from tbl_current
+  </select>
 
 </mapper>
