@@ -143,4 +143,11 @@
         OR to_address = #{address}
     </select>
 
+    <select id="queryTransactionCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(DISTINCT(tx_hash))
+        from tbl_tx_detail
+        where tx_time &gt;= #{startTime}
+          and <![CDATA[ tx_time < #{endTime} ]]>
+    </select>
+
 </mapper>
