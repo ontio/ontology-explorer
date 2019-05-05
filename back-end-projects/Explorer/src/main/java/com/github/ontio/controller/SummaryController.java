@@ -2,7 +2,6 @@ package com.github.ontio.controller;
 
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.SummaryServiceImpl;
-import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,65 +38,4 @@ public class SummaryController {
                                            @PathVariable("start_time") int startTime, @PathVariable("end_time") int endTime) {
         return summaryService.getContractSummary(contractHash, type, startTime, endTime);
     }
-
-    /**
-     * query current summary information
-     *
-     * @return
-     */
-    @RequestMapping(value = "/summary/{amount}", method = RequestMethod.GET)
-    @ResponseBody
-    public OldResult querySummary(@PathVariable("amount") int amount) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.querySummary(amount);
-        return rs;
-    }
-
-    /**
-     * 项目统计
-     *
-     * @return
-     */
-    @RequestMapping(value = "/summary/project/{project}/{type}/{starttime}/{endtime}", method = RequestMethod.GET)
-    public OldResult queryProjectInfo(@PathVariable("project") String project,
-                                      @PathVariable("type") String type,
-                                      @PathVariable("starttime") int startTime,
-                                      @PathVariable("endtime") int endTime) {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.queryProjectInfo(project, type, startTime, endTime);
-        return rs;
-    }
-
-    /**
-     * 查询ONT流通量
-     *
-     * @return
-     */
-    @GetMapping(value = "/summary/totalsupply")
-    public OldResult queryTotalSupply() {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.queryTotalSupply();
-        return rs;
-    }
-
-    /**
-     * 查询ONT,ONG流通量
-     *
-     * @return
-     */
-    @GetMapping(value = "/summary/native/totalsupply")
-    public OldResult queryNativeTotalSupply() {
-
-        logger.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        OldResult rs = summaryService.queryNativeTotalSupply();
-        return rs;
-    }
-
 }
