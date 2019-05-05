@@ -15,4 +15,13 @@
     <result column="new_address_count" jdbcType="INTEGER" property="newAddressCount" />
     <result column="dapp_name" jdbcType="VARCHAR" property="dappName" />
   </resultMap>
+
+  <select id="selectDailySummaryByContractHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
+    select tx_count, ong_sum, ong_sum, active_address_count, new_address_count, time
+    from tbl_contract_daily_summary
+    where contract_hash = #{contractHash} and time >= #{startTime}
+      and <![CDATA[ time <= #{endTime} ]]>
+    order by time
+  </select>
+
 </mapper>
