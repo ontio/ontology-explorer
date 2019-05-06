@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 
 @Table(name = "tbl_block")
@@ -51,6 +53,18 @@ public class Block {
      */
     @Column(name = "block_size")
     private Integer blockSize;
+
+    @Builder
+    public Block(Integer blockHeight, String blockHash, String txsRoot, Integer blockTime, String consensusData, String bookkeepers, Integer txCount, Integer blockSize) {
+        this.blockHeight = blockHeight;
+        this.blockHash = blockHash;
+        this.txsRoot = txsRoot;
+        this.blockTime = blockTime;
+        this.consensusData = consensusData;
+        this.bookkeepers = bookkeepers;
+        this.txCount = txCount;
+        this.blockSize = blockSize;
+    }
 
     /**
      * 获取区块高度

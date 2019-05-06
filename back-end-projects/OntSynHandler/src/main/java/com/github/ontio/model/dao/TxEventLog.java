@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 
 @Table(name = "tbl_tx_eventlog")
@@ -46,6 +48,17 @@ public class TxEventLog {
      */
     @Column(name = "event_log")
     private String eventLog;
+
+    @Builder
+    public TxEventLog(String txHash, Integer txType, Integer txTime, Integer blockHeight, Integer blockIndex, String calledContractHash, String eventLog) {
+        this.txHash = txHash;
+        this.txType = txType;
+        this.txTime = txTime;
+        this.blockHeight = blockHeight;
+        this.blockIndex = blockIndex;
+        this.calledContractHash = calledContractHash;
+        this.eventLog = eventLog;
+    }
 
     /**
      * 获取交易hash值

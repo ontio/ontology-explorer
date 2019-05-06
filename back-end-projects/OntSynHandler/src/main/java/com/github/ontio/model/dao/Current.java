@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 
 @Table(name = "tbl_current")
@@ -27,6 +29,14 @@ public class Current {
      */
     @Column(name = "nonontid_tx_count")
     private Integer nonontidTxCount;
+
+    @Builder
+    public Current(Integer blockHeight, Integer txCount, Integer ontidCount, Integer nonontidTxCount) {
+        this.blockHeight = blockHeight;
+        this.txCount = txCount;
+        this.ontidCount = ontidCount;
+        this.nonontidTxCount = nonontidTxCount;
+    }
 
     /**
      * 获取当前同步的最新区块高度

@@ -1,7 +1,11 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import javax.persistence.*;
 
 @Table(name = "tbl_contract")
 public class Contract {
@@ -135,6 +139,33 @@ public class Contract {
      */
     @Column(name = "source_code")
     private String sourceCode;
+
+    @Builder
+    public Contract(String contractHash, String name, Integer createTime, Integer updateTime, Boolean auditFlag, String contactInfo, String description, String type, String logo, String creator, Integer addressCount, Integer txCount, BigDecimal ontSum, BigDecimal ongSum, String tokenSum, String category, String dappName, Boolean dappstoreFlag, BigDecimal totalReward, BigDecimal lastweekReward, String abi, String code, String sourceCode) {
+        this.contractHash = contractHash;
+        this.name = name;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+        this.auditFlag = auditFlag;
+        this.contactInfo = contactInfo;
+        this.description = description;
+        this.type = type;
+        this.logo = logo;
+        this.creator = creator;
+        this.addressCount = addressCount;
+        this.txCount = txCount;
+        this.ontSum = ontSum;
+        this.ongSum = ongSum;
+        this.tokenSum = tokenSum;
+        this.category = category;
+        this.dappName = dappName;
+        this.dappstoreFlag = dappstoreFlag;
+        this.totalReward = totalReward;
+        this.lastweekReward = lastweekReward;
+        this.abi = abi;
+        this.code = code;
+        this.sourceCode = sourceCode;
+    }
 
     /**
      * 获取合约hash值
