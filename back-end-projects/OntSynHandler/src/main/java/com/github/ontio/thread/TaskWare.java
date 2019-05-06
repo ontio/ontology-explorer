@@ -17,7 +17,7 @@
  */
 
 
-package com.github.ontio.component;
+package com.github.ontio.thread;
 
 import com.github.ontio.ApplicationContextProvider;
 import org.springframework.beans.factory.annotation.Autowired;
