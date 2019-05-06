@@ -41,44 +41,19 @@ public final class ConstantParam {
     public static int MASTERNODE_INDEX = 0;
 
     /**
-     * 尝试连接的最大次数
-     */
-    public static int NODE_RETRYMAXTIME = 0;
-
-    /**
      * Ontology SDK object
      */
     public static OntSdk ONT_SDKSERVICE = null;
 
     /**
-     * the number of transactions of one block
-     */
-    public static int TXN_INIT_AMOUNT = 0;
-
-    /**
      * the number of ontid transactions of one block
      */
-    public static int ONEBLOCK_ONTID_AMOUNT = 0;
+    public static int ONEBLOCK_ONTID_COUNT = 0;
 
     /**
      * the number of nonontid transactions of one block
      */
-    public static int ONEBLOCK_ONTIDTXN_AMOUNT = 0;
-
-    /**
-     * ontId operation transaction smart contract event description
-     */
-    public static final String ONTID_OPE_PREFIX = "ontId-";
-
-    /**
-     * record transaction smart contract event description
-     */
-    public static final String CLAIMRECORD_OPE = "claimRecord-";
-
-    /**
-     * auth
-     */
-    public static final String AUTH_OPE_PREFIX = "auth";
+    public static int ONEBLOCK_ONTIDTX_COUNT = 0;
 
     /**
      * Push
@@ -118,7 +93,18 @@ public final class ConstantParam {
     public static Set<String> OEP8CONTRACTS = new HashSet<>();
 
 
-    public static final int DAPPSTOREFLAG_YES = 1;
 
-    public static final int DAPPSTOREFLAG_NO = 0;
+    public static final String ASSET_NAME_ONT = "ont";
+
+    public static final String ASSET_NAME_ONG = "ong";
+
+    public static final String ASSET_NAME_DRAGON = "HyperDragons: ";
+
+    public static final String IS_OEP4TX = "is_oep4tx";
+
+    public static final String IS_OEP5TX = "is_oep5tx";
+
+    public static final String IS_OEP8TX = "is_oep8tx";
+
+
 }
