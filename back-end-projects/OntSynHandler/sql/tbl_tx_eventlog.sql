@@ -23,7 +23,7 @@ CREATE TABLE `tbl_tx_eventlog`
     `tx_time`              int(11)      NOT NULL COMMENT '交易时间戳',
     `block_height`         int(11)      NOT NULL COMMENT '区块高度',
     `block_index`          int(11)      NOT NULL COMMENT '交易在区块里的索引',
-    `event_log`            text         NOT NULL COMMENT '交易的event log',
+    `event_log`            varchar(5000)NOT NULL COMMENT '交易的event log',
     `called_contract_hash` varchar(255) NOT NULL DEFAULT '' COMMENT '该交易真正调用的合约hash',
     PRIMARY KEY (`tx_hash`)
 ) ENGINE = InnoDB
