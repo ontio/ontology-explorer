@@ -1,8 +1,7 @@
 package com.github.ontio;
 
-import com.github.ontio.config.ConfigParam;
+import com.github.ontio.config.ParamsConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,22 +17,22 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync
 @SpringBootApplication
 @EnableTransactionManagement
-@MapperScan(value = "com.github.ontio.blocksync.mapper")
+@tk.mybatis.spring.annotation.MapperScan("com.github.ontio.mapper")
 public class OntsynhandlerApplication {
 
     @Autowired
-    private ConfigParam configParam;
+    private ParamsConfig paramsConfig;
 
 
-    @Bean
+    @Bean(name = "synTaskExecutor")
     public AsyncTaskExecutor taskExecutor() {
-        log.info("########taskExecutor#########");
+        log.info("########synTaskExecutor#########");
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setMaxPoolSize(configParam.THREADPOOLSIZE_MAX);
-        executor.setCorePoolSize(configParam.THREADPOOLSIZE_CORE);
-        executor.setQueueCapacity(configParam.THREADPOOLSIZE_QUEUE);
-        executor.setThreadNamePrefix("TxnHandlerThread--");
-        executor.setKeepAliveSeconds(configParam.THREADPOOLSIZE_KEEPALIVE_SECOND);
+        executor.setMaxPoolSize(paramsConfig.THREADPOOLSIZE_MAX);
+        executor.setCorePoolSize(paramsConfig.THREADPOOLSIZE_CORE);
+        executor.setQueueCapacity(paramsConfig.THREADPOOLSIZE_QUEUE);
+        executor.setThreadNamePrefix("TxHandlerThread--");
+        executor.setKeepAliveSeconds(paramsConfig.THREADPOOLSIZE_KEEPALIVE_SECOND);
 
         // Rejection policies
 /*		executor.setRejectedExecutionHandler(new RejectedExecutionHandler() {
