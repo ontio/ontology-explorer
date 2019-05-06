@@ -15,8 +15,19 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
 
+  <sql id="baseColumns">
+    contract_hash as contractHash,
+    token_id as tokenId,
+    name as name,
+    total_supply as totalSupply,
+    symbol as symbol,
+    create_time as createTime,
+    audit_flag as auditFlag,
+    update_time as updateTime
+  </sql>
+
   <select id="selectApprovedRecords" resultType="com.github.ontio.model.dao.Oep8">
-    select *
+    select <include refid="baseColumns"/>
     from tbl_oep8
     where audit_flag = 1
   </select>

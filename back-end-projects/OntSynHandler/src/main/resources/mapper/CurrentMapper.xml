@@ -10,4 +10,19 @@
     <result column="ontid_count" jdbcType="INTEGER" property="ontidCount" />
     <result column="nonontid_tx_count" jdbcType="INTEGER" property="nonontidTxCount" />
   </resultMap>
+
+
+  <update id="update" parameterType="com.github.ontio.model.dao.Current">
+    update tbl_current
+    set block_height = #{blockHeight},
+    tx_count = #{txCount},
+    ontid_count = #{ontidCount},
+    nonontid_tx_count = #{nonontidTxCount}
+  </update>
+
+  <select id="selectBlockHeight" resultType="java.lang.Integer">
+    select block_height
+    from tbl_current
+  </select>
+
 </mapper>
