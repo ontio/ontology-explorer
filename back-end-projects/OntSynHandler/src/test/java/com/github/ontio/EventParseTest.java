@@ -3,6 +3,8 @@ package com.github.ontio;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Helper;
+import com.github.ontio.model.common.EventTypeEnum;
+import com.github.ontio.utils.ConstantParam;
 import org.junit.Test;
 
 /**
@@ -15,6 +17,8 @@ public class EventParseTest {
     @Test
     public void parseEvent() {
         try {
+
+            System.out.println("code:"+Helper.reverse("792e4e61746976652e496e766f6b65"));
 
             String contractAddress2 = Helper.reverse("ecd1fcc4ed4d2f14508afa9418ded28eba138c60");
 
@@ -61,6 +65,7 @@ public class EventParseTest {
     @Test
     public void test02() {
 
+
         String code = "";
         String calledContractHash = "";
         try {
@@ -78,6 +83,41 @@ public class EventParseTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    @Test
+    public void parseCLaimRecordTx() throws Exception{
+
+        String nodeRestfulUrl = "http://dappnode1.ont.io:20334";
+        OntSdk ontSdk = OntSdk.getInstance();
+        ontSdk.setRestful(nodeRestfulUrl);
+
+        String txHash = "00002e607b2d5e353c31a0db43afa4212500e35ff4807d9c7da0537454e438c5";
+        JSONObject eventObj = (JSONObject) ontSdk.getConnect().getSmartCodeEvent(txHash);
+        System.out.println("eventObj:" + eventObj.toJSONString());
+
+        JSONArray notifyArray = eventObj.getJSONArray("Notify");
+
+        JSONArray stateList = ((JSONObject)notifyArray.get(0)).getJSONArray("States");
+
+        String actionType = new String(Helper.hexToBytes(stateList.getString(0)));
+        StringBuilder sb = new StringBuilder(140);
+        sb.append(EventTypeEnum.Claimrecord.des());
+
+        if (ConstantParam.CLAIMRECORD_OPE_PREFIX.equals(actionType)) {
+            if (stateList.size() >= 4) {
+                String issuerOntId = new String(Helper.hexToBytes(stateList.getString(1)));
+                String action = new String(Helper.hexToBytes(stateList.getString(2)));
+                String claimId = new String(Helper.hexToBytes(stateList.getString(3)));
+                System.out.println("action:"+action+",issureOntId:"+issuerOntId+",claimId:"+claimId);
+                sb.append(issuerOntId);
+                sb.append(action);
+                sb.append("claimId:");
+                sb.append(claimId);
+            }
+        }
+        System.out.println("content:"+sb.toString());
 
     }
 
