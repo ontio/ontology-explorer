@@ -21,13 +21,7 @@ package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSONObject;
 
-import java.math.BigInteger;
-
 public class Helper {
-
-    private static final String SEPARATOR = "\\|\\|";
-
-    private static final BigInteger TWO_64 = BigInteger.ONE.shiftLeft(64);
 
     /**
      * check param whether is null or ''
@@ -47,6 +41,10 @@ public class Helper {
         return true;
     }
 
+    public static Boolean isNotEmptyOrNull(Object... params){
+        return !isEmptyOrNull(params);
+    }
+
     /**
      * judge whether the string is in json format.
      *
@@ -64,15 +62,6 @@ public class Helper {
 
     public static String currentMethod() {
         return new Exception("").getStackTrace()[1].getMethodName();
-    }
-
-
-    public static String asUnsignedDecimalString(long l) {
-        BigInteger b = BigInteger.valueOf(l);
-        if (b.signum() < 0) {
-            b = b.add(TWO_64);
-        }
-        return b.toString();
     }
 
 
