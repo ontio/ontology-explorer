@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.github.ontio</groupId>
-	<artifactId>ont-sync-handler</artifactId>
+	<artifactId>ontsynhandler</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ont-sync-handler</name>
+	<name>ontsynhandler</name>
 	<description>explorer information sync handler for Ontology</description>
 	<packaging>jar</packaging>
 
@@ -100,6 +100,18 @@
             <artifactId>mapper</artifactId>
             <version>4.1.0</version>
         </dependency>
+
+		<!--druid-->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid-spring-boot-starter</artifactId>
+			<version>1.1.10</version>
+		</dependency>
 
 
 
