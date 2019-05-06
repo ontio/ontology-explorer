@@ -17,40 +17,41 @@
  */
 
 
-package com.github.ontio.utils;
+package com.github.ontio.model.common;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2018/2/27
- */
-public enum TransactionTypeEnum {
+
+public enum OntIdEventDesEnum {
+
 
     /**
-     * DeployCodeTransaction
+     * Register OntId
      */
-    BOOKKEEPER(0),
+    REGISTERONTID("Register"),
 
     /**
-     * DeployCodeTransaction
+     * PublicKey operation
      */
-    DEPLOYCODE(208),
+    PUBLICKEYOPE("PublicKey"),
 
     /**
-     * InvokeCodeTransaction
+     * PublicKey operation
      */
-    INVOKECODE(209);
+    RECOVERYOPE("Recovery"),
+
+    /**
+     * Attribute operation
+     */
+    ATTRIBUTEOPE("Attribute");
 
 
-    private int type;
+    private String des;
 
-    TransactionTypeEnum(int type) {
-        this.type = type;
+    OntIdEventDesEnum(String des) {
+        this.des = des;
     }
 
-    public int type() {
-        return this.type;
+    public String des() {
+        return this.des;
     }
-
 
 }
