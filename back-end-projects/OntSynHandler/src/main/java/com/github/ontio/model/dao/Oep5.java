@@ -1,7 +1,11 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "tbl_oep5")
 public class Oep5 {
@@ -31,17 +35,31 @@ public class Oep5 {
     /**
      * 创建时间，yyyy-MM-dd
      */
-    private Date createtime;
+    @Column(name = "create_time")
+    private Date createTime;
 
     /**
      * 审核标识，1：审核通过 0：未审核
      */
-    private Boolean auditflag;
+    @Column(name = "audit_flag")
+    private Boolean auditFlag;
 
     /**
      * 更新时间，yyyy-MM-dd
      */
-    private Date updatetime;
+    @Column(name = "update_time")
+    private Date updateTime;
+
+    @Builder
+    public Oep5(String contractHash, String name, Long totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
+        this.contractHash = contractHash;
+        this.name = name;
+        this.totalSupply = totalSupply;
+        this.symbol = symbol;
+        this.createTime = createTime;
+        this.auditFlag = auditFlag;
+        this.updateTime = updateTime;
+    }
 
     /**
      * 获取合约hash值
@@ -118,54 +136,54 @@ public class Oep5 {
     /**
      * 获取创建时间，yyyy-MM-dd
      *
-     * @return createtime - 创建时间，yyyy-MM-dd
+     * @return create_time - 创建时间，yyyy-MM-dd
      */
-    public Date getCreatetime() {
-        return createtime;
+    public Date getCreateTime() {
+        return createTime;
     }
 
     /**
      * 设置创建时间，yyyy-MM-dd
      *
-     * @param createtime 创建时间，yyyy-MM-dd
+     * @param createTime 创建时间，yyyy-MM-dd
      */
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     /**
      * 获取审核标识，1：审核通过 0：未审核
      *
-     * @return auditflag - 审核标识，1：审核通过 0：未审核
+     * @return audit_flag - 审核标识，1：审核通过 0：未审核
      */
-    public Boolean getAuditflag() {
-        return auditflag;
+    public Boolean getAuditFlag() {
+        return auditFlag;
     }
 
     /**
      * 设置审核标识，1：审核通过 0：未审核
      *
-     * @param auditflag 审核标识，1：审核通过 0：未审核
+     * @param auditFlag 审核标识，1：审核通过 0：未审核
      */
-    public void setAuditflag(Boolean auditflag) {
-        this.auditflag = auditflag;
+    public void setAuditFlag(Boolean auditFlag) {
+        this.auditFlag = auditFlag;
     }
 
     /**
      * 获取更新时间，yyyy-MM-dd
      *
-     * @return updatetime - 更新时间，yyyy-MM-dd
+     * @return update_time - 更新时间，yyyy-MM-dd
      */
-    public Date getUpdatetime() {
-        return updatetime;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
     /**
      * 设置更新时间，yyyy-MM-dd
      *
-     * @param updatetime 更新时间，yyyy-MM-dd
+     * @param updateTime 更新时间，yyyy-MM-dd
      */
-    public void setUpdatetime(Date updatetime) {
-        this.updatetime = updatetime;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }

@@ -1,7 +1,11 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import javax.persistence.*;
 
 @Table(name = "tbl_oep5_tx_detail")
 public class Oep5TxDetail {
@@ -104,6 +108,27 @@ public class Oep5TxDetail {
      */
     @Column(name = "called_contract_hash")
     private String calledContractHash;
+
+    @Builder
+    public Oep5TxDetail(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash) {
+        this.txHash = txHash;
+        this.txIndex = txIndex;
+        this.txType = txType;
+        this.txTime = txTime;
+        this.blockHeight = blockHeight;
+        this.amount = amount;
+        this.fee = fee;
+        this.assetName = assetName;
+        this.fromAddress = fromAddress;
+        this.toAddress = toAddress;
+        this.description = description;
+        this.blockIndex = blockIndex;
+        this.confirmFlag = confirmFlag;
+        this.eventType = eventType;
+        this.contractHash = contractHash;
+        this.payer = payer;
+        this.calledContractHash = calledContractHash;
+    }
 
     /**
      * 获取交易hash
