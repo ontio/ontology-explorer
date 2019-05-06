@@ -1,7 +1,11 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import javax.persistence.*;
 
 @Table(name = "tbl_ontid_tx_detail")
 public class OntidTxDetail {
@@ -44,6 +48,17 @@ public class OntidTxDetail {
      * 交易手续费
      */
     private BigDecimal fee;
+
+    @Builder
+    public OntidTxDetail(String txHash, Integer txType, String ontid, Integer txTime, Integer blockHeight, String description, BigDecimal fee) {
+        this.txHash = txHash;
+        this.txType = txType;
+        this.ontid = ontid;
+        this.txTime = txTime;
+        this.blockHeight = blockHeight;
+        this.description = description;
+        this.fee = fee;
+    }
 
     /**
      * 获取交易hash

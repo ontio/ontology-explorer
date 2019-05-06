@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 
 @Table(name = "tbl_oep5_dragon")
@@ -25,6 +27,13 @@ public class Oep5Dragon {
      */
     @Column(name = "json_url")
     private String jsonUrl;
+
+    @Builder
+    public Oep5Dragon(String contractHash, String assetName, String jsonUrl) {
+        this.contractHash = contractHash;
+        this.assetName = assetName;
+        this.jsonUrl = jsonUrl;
+    }
 
     /**
      * @return id

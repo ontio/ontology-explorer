@@ -1,8 +1,11 @@
 package com.github.ontio.model.dao;
 
-import java.math.BigDecimal;
+import lombok.Builder;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "tbl_oep8")
 public class Oep8 {
@@ -29,7 +32,7 @@ public class Oep8 {
      * OEP8代币总量
      */
     @Column(name = "total_supply")
-    private BigDecimal totalSupply;
+    private Long totalSupply;
 
     /**
      * OEP8代币符号
@@ -53,6 +56,18 @@ public class Oep8 {
      */
     @Column(name = "update_time")
     private Date updateTime;
+
+    @Builder
+    public Oep8(String contractHash, String tokenId, String name, Long totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
+        this.contractHash = contractHash;
+        this.tokenId = tokenId;
+        this.name = name;
+        this.totalSupply = totalSupply;
+        this.symbol = symbol;
+        this.createTime = createTime;
+        this.auditFlag = auditFlag;
+        this.updateTime = updateTime;
+    }
 
     /**
      * 获取合约hash值
@@ -113,7 +128,7 @@ public class Oep8 {
      *
      * @return total_supply - OEP8代币总量
      */
-    public BigDecimal getTotalSupply() {
+    public Long getTotalSupply() {
         return totalSupply;
     }
 
@@ -122,7 +137,7 @@ public class Oep8 {
      *
      * @param totalSupply OEP8代币总量
      */
-    public void setTotalSupply(BigDecimal totalSupply) {
+    public void setTotalSupply(Long totalSupply) {
         this.totalSupply = totalSupply;
     }
 
