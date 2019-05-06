@@ -22,11 +22,11 @@ package com.github.ontio.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
-import com.github.ontio.component.TxnHandlerThread;
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.model.dao.Block;
 import com.github.ontio.model.dao.Current;
+import com.github.ontio.thread.TxHandlerThread;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
 import lombok.extern.slf4j.Slf4j;
@@ -47,14 +47,18 @@ import java.util.concurrent.Future;
 @Service
 public class BlockHandleService {
 
-    @Autowired
-    private BlockMapper blockMapper;
+    private final BlockMapper blockMapper;
+
+    private final CurrentMapper currentMapper;
+
+    private final TxHandlerThread txHandlerThread;
 
     @Autowired
-    private CurrentMapper currentMapper;
-
-    @Autowired
-    private TxnHandlerThread txnHandlerThread;
+    public BlockHandleService(BlockMapper blockMapper, CurrentMapper currentMapper, TxHandlerThread txHandlerThread) {
+        this.blockMapper = blockMapper;
+        this.currentMapper = currentMapper;
+        this.txHandlerThread = txHandlerThread;
+    }
 
     /**
      * handle the block and the transactions in this block
@@ -68,18 +72,18 @@ public class BlockHandleService {
         JSONObject blockHeader = blockJson.getJSONObject("Header");
         int blockHeight = blockHeader.getInteger("Height");
         int blockTime = blockHeader.getInteger("Timestamp");
-        JSONArray txnArray = blockJson.getJSONArray("Transactions");
-        int txCountInBlock = txnArray.size();
-        log.info("{} run-------blockHeight:{},txnSum:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
+        JSONArray txArray = blockJson.getJSONArray("Transactions");
+        int txCountInBlock = txArray.size();
+        log.info("{} run-------blockHeight:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
 
-        ConstantParam.ONEBLOCK_ONTID_AMOUNT = 0;
-        ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT = 0;
+        ConstantParam.ONEBLOCK_ONTID_COUNT = 0;
+        ConstantParam.ONEBLOCK_ONTIDTX_COUNT = 0;
 
         List<Future> futureList = new ArrayList<>();
         //asynchronize handle transaction
         for (int i = 0; i < txCountInBlock; i++) {
-            JSONObject txnJson = (JSONObject) txnArray.get(i);
-            Future future = txnHandlerThread.asyncHandleTxn(txnJson, blockHeight, blockTime, i + 1);
+            JSONObject txJson = (JSONObject) txArray.get(i);
+            Future future = txHandlerThread.asyncHandleTx(txJson, blockHeight, blockTime, i + 1);
             futureList.add(future);
             //future.get();
         }
@@ -95,47 +99,49 @@ public class BlockHandleService {
         int ontIdCount = currents.get(0).getOntidCount();
         int nonOntIdTxCount = currents.get(0).getNonontidTxCount();
         updateCurrent(blockHeight, txCount + txCountInBlock,
-                ontIdCount + ConstantParam.ONEBLOCK_ONTID_AMOUNT, nonOntIdTxCount + txCountInBlock - ConstantParam.ONEBLOCK_ONTIDTXN_AMOUNT);
+                ontIdCount + ConstantParam.ONEBLOCK_ONTID_COUNT, nonOntIdTxCount + txCountInBlock - ConstantParam.ONEBLOCK_ONTIDTX_COUNT);
 
-        log.info("{} end-------height:{},txnSum:{}", Helper.currentMethod(), blockHeight, txCount);
+        log.info("{} end-------height:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void insertBlock(JSONObject blockJson) {
-
-        JSONObject blockHeader = blockJson.getJSONObject("Header");
-
-        Block block = new Block();
-        block.setBlockHash(blockJson.getString("Hash"));
-        block.setBlockSize(blockJson.getInteger("Size"));
-        block.setBlockTime(blockHeader.getInteger("Timestamp"));
-        block.setBlockHeight(blockHeader.getInteger("Height"));
-        block.setTxsRoot(blockHeader.getString("TransactionsRoot"));
-        block.setConsensusData(blockHeader.getString("ConsensusData"));
-        block.setTxCount(blockJson.getJSONArray("Transactions").size());
-
         String blockKeeperStr = "";
         StringBuilder sb = new StringBuilder(400);
+
+        JSONObject blockHeader = blockJson.getJSONObject("Header");
         JSONArray blockKeepers = blockHeader.getJSONArray("Bookkeepers");
         blockKeepers.forEach(item -> {
             sb.append(Address.addressFromPubKey((String) item).toBase58());
             sb.append("&");
         });
         blockKeeperStr = sb.toString();
-        blockKeeperStr = blockKeeperStr.substring(0, blockKeeperStr.length() - 1);
+        if (Helper.isNotEmptyOrNull(blockKeeperStr)) {
+            blockKeeperStr = blockKeeperStr.substring(0, blockKeeperStr.length() - 1);
+        }
 
-        block.setBookkeepers(blockKeeperStr);
+        Block block = Block.builder()
+                .blockHash(blockJson.getString("Hash"))
+                .blockSize(blockJson.getInteger("Size"))
+                .blockTime(blockHeader.getInteger("Timestamp"))
+                .blockHeight(blockHeader.getInteger("Height"))
+                .txsRoot(blockHeader.getString("TransactionsRoot"))
+                .consensusData(blockHeader.getString("ConsensusData"))
+                .txCount(blockJson.getJSONArray("Transactions").size())
+                .bookkeepers(blockKeeperStr)
+                .build();
         blockMapper.insert(block);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateCurrent(int height, int txCount, int ontIdTxCount, int nonontIdTxCount) {
+    public void updateCurrent(int blockHeight, int txCount, int ontIdTxCount, int nonontIdTxCount) {
 
-        Current current = new Current();
-        current.setBlockHeight(height);
-        current.setTxCount(txCount);
-        current.setOntidCount(ontIdTxCount);
-        current.setNonontidTxCount(nonontIdTxCount);
-        currentMapper.updateByPrimaryKey(current);
+        Current current = Current.builder()
+                .blockHeight(blockHeight)
+                .txCount(txCount)
+                .ontidCount(ontIdTxCount)
+                .nonontidTxCount(nonontIdTxCount)
+                .build();
+        currentMapper.update(current);
     }
 }
