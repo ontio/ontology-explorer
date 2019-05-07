@@ -14,4 +14,37 @@
     <result column="tx_count" jdbcType="INTEGER" property="txCount" />
     <result column="block_size" jdbcType="INTEGER" property="blockSize" />
   </resultMap>
+
+  <cache type="com.github.ontio.config.RedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+  <sql id="basicColumns">
+    block_hash as blockHash,
+    block_height as blockHeight,
+    txs_root as txsRoot,
+    bookkeepers as bookkeepers,
+    consensus_data as consensusData,
+    block_size as blockSize,
+    block_time as blockTime,
+    tx_count as txCount
+  </sql>
+
+
+  <select id="selectBlocksByPage" resultType="com.github.ontio.model.dto.BlockDto">
+    select <include refid="basicColumns"/>
+    from tbl_block
+    order by block_height desc
+    limit #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="selectHeightAndTime" resultType="java.util.Map">
+    select block_height as blockHeight, block_time as blockTime
+    from tbl_block
+    order by block_height desc
+    limit 0, #{count}
+  </select>
+
 </mapper>

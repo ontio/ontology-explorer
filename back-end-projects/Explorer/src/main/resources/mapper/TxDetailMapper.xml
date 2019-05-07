@@ -150,4 +150,12 @@
           and <![CDATA[ tx_time < #{endTime} ]]>
     </select>
 
+
+    <select id="selectTxsByBlockHeight" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxBasicDto">
+        select distinct <include refid="txBasicColumns" />
+        from tbl_tx_detail
+        where block_height = #{blockHeight}
+        order by block_index
+    </select>
+
 </mapper>

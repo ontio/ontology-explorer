@@ -19,17 +19,18 @@
 
 package com.github.ontio.service.impl;
 
-import com.github.ontio.dao.BlockMapper;
-import com.github.ontio.dao.CurrentMapper;
-import com.github.ontio.dao.TransactionDetailMapper;
+import com.github.ontio.mapper.TxDetailMapper;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.BlockDto;
+import com.github.ontio.model.dto.CurrentDto;
+import com.github.ontio.model.dto.TxBasicDto;
 import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tk.mybatis.spring.annotation.MapperScan;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,37 +39,33 @@ import java.util.Map;
 
 @Slf4j
 @Service("BlockService")
-@MapperScan("com.github.ontio.mapper")
 public class BlockServiceImpl implements IBlockService {
 
-    private static final String VERSION = "1.0";
-
     @Autowired
-    private BlockMapper blockMapper;
+    private com.github.ontio.mapper.BlockMapper blockMapper;
     @Autowired
-    private TransactionDetailMapper transactionDetailMapper;
+    private TxDetailMapper txDetailMapper;
     @Autowired
-    private CurrentMapper currentMapper;
+    private com.github.ontio.mapper.CurrentMapper currentMapper;
 
 
     @Override
-    public ResponseBean queryBlockList(int amount) {
-        List<Map> blockList = blockMapper.selectBlockByPage(0, amount);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockList);
+    public ResponseBean queryLatestBlocks(int amount) {
+        List<BlockDto> blockDtos = blockMapper.selectBlocksByPage(0, amount);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockDtos);
     }
 
     @Override
-    public ResponseBean queryBlockList(int pageSize, int pageNumber) {
+    public ResponseBean queryBlocksByPage(int pageSize, int pageNumber) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
-        List<Map> blockList = blockMapper.selectBlockByPage(start, pageSize);
+        List<BlockDto> blockDtos = blockMapper.selectBlocksByPage(start, pageSize);
 
-        Map summaryMap = currentMapper.selectSummaryInfo();
-        int total = (Integer) summaryMap.get("Height");
-        Map<String, Object> map = new HashMap<>();
-        map.put("total", total);
-        map.put("records", blockList);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), map);
+        List<CurrentDto> currentDtos = currentMapper.selectAll();
+
+        PageResponseBean pageResponseBean = new PageResponseBean(blockDtos, currentDtos.get(0).getBlockHeight());
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
     @Override
@@ -76,9 +73,9 @@ public class BlockServiceImpl implements IBlockService {
         List<Map> dataList = blockMapper.selectHeightAndTime(amount + 1);
         List<Map> rsList = new ArrayList<>();
         for (int i = 0; i < dataList.size() - 1; i++) {
-            int time = (Integer) dataList.get(i).get("BlockTime") - (Integer) dataList.get(i + 1).get("BlockTime");
+            int time = (Integer) dataList.get(i).get("blockTime") - (Integer) dataList.get(i + 1).get("blockTime");
             Map<String, Object> temp = new HashMap<>();
-            temp.put("block_height", dataList.get(i).get("Height"));
+            temp.put("block_height", dataList.get(i).get("blockHeight"));
             temp.put("generate_time", time);
             rsList.add(temp);
         }
@@ -86,58 +83,42 @@ public class BlockServiceImpl implements IBlockService {
     }
 
     @Override
-    public ResponseBean queryBlockByHeight(int height) {
+    public ResponseBean queryBlockByHeight(int blockHeight) {
 
-        Map blockInfo = blockMapper.selectBlockByHeight(height);
-        if (Helper.isEmptyOrNull(blockInfo)) {
-            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), new ArrayList<HashMap>());
-        }
-
-        List<Map> txnList = transactionDetailMapper.selectTxnByBlockHeight(height);
-        blockInfo.put("TxnList", txnList);
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockInfo);
-    }
-
-    @Override
-    public ResponseBean queryBlockByHash(String hash) {
-        Map blockInfo = blockMapper.selectBlockByHash(hash);
-        if (Helper.isEmptyOrNull(blockInfo)) {
+        BlockDto blockDtoTemp = BlockDto.builder()
+                .blockHeight(blockHeight)
+                .build();
+        BlockDto blockDto = blockMapper.selectOne(blockDtoTemp);
+        if (Helper.isEmptyOrNull(blockDto)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
-        int blockHeight = (Integer) blockInfo.get("Height");
-        List<Map> txnList = transactionDetailMapper.selectTxnByBlockHeight(blockHeight);
-        blockInfo.put("TxnList", txnList);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockInfo);
+        List<TxBasicDto> txBasicDtos = txDetailMapper.selectTxsByBlockHeight(blockHeight);
+        if(Helper.isNotEmptyOrNull(txBasicDtos)){
+            blockDto.setTxs(txBasicDtos);
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockDto);
     }
 
     @Override
-    public ResponseBean blockCountInTwoWeeks(long time) {
-        List<Map> twoWeeksBlockCountList = new ArrayList<>();
-        long zeroTime = time / 86400 * 86400;
-        try {
-            for (int i = 0; i < 14; i++) {
-                if (i == 0) {
-                    int count = blockMapper.selectBlockCountInOneDay(zeroTime, time);
-                    Map<String, Object> oneDayCount = new HashMap<>();
-                    oneDayCount.put("day", zeroTime);
-                    oneDayCount.put("count", count);
-                    twoWeeksBlockCountList.add(oneDayCount);
-                } else {
-                    long dayEndTime = zeroTime - (i - 1) * 86400;
-                    long dayStartTime = dayEndTime - 86400;
-                    int count = blockMapper.selectBlockCountInOneDay(dayStartTime, dayEndTime);
-                    Map<String, Object> oneDayCount = new HashMap<>();
-                    oneDayCount.put("day", dayStartTime);
-                    oneDayCount.put("count", count);
-                    twoWeeksBlockCountList.add(oneDayCount);
-                }
-            }
-        } catch (Exception e) {
-            log.error("db error...", e);
-            e.printStackTrace();
-            return new ResponseBean(ErrorInfo.DB_ERROR.code(), ErrorInfo.DB_ERROR.desc(), false);
+    public ResponseBean queryBlockByHash(String blockHash) {
+
+        BlockDto blockDtoTemp = BlockDto.builder()
+                .blockHash(blockHash)
+                .build();
+        BlockDto blockDto = blockMapper.selectOne(blockDtoTemp);
+        if (Helper.isEmptyOrNull(blockDto)) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), twoWeeksBlockCountList);
+        int blockHeight = blockDto.getBlockHeight();
+
+        List<TxBasicDto> txBasicDtos = txDetailMapper.selectTxsByBlockHeight(blockHeight);
+        if(Helper.isNotEmptyOrNull(txBasicDtos)){
+            blockDto.setTxs(txBasicDtos);
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockDto);
     }
+
+
 }

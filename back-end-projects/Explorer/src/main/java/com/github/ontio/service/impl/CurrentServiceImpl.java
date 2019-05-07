@@ -20,11 +20,14 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.config.ConfigParam;
 import com.github.ontio.dao.*;
-import com.github.ontio.model.*;
+import com.github.ontio.model.Contracts;
+import com.github.ontio.model.Oep4;
+import com.github.ontio.model.Oep5;
+import com.github.ontio.model.Oep8;
 import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.service.ICurrentService;
-import com.github.ontio.config.ConfigParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.util.OntologySDKService;
@@ -43,7 +46,7 @@ import java.util.*;
  */
 @Slf4j
 @Service("CurrentService")
-@MapperScan("com.github.ontio.mapper")
+@MapperScan("com.github.ontio.dao")
 public class CurrentServiceImpl implements ICurrentService {
 
     private static final String VERSION = "1.0";
