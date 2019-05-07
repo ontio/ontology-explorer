@@ -21,36 +21,54 @@ package com.github.ontio.controller;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Validated
 @RestController
-@RequestMapping(value = "/api/v2/blocks")
+@RequestMapping(value = "/v2/")
+@Slf4j
 public class BlockController {
 
+    private String CLASS_NAME = this.getClass().getSimpleName();
+
+    private final IBlockService blockService;
+
     @Autowired
-    private IBlockService blockService;
+    public BlockController(IBlockService blockService) {
+        this.blockService = blockService;
+    }
 
-    @PutMapping(value = "/latest-blocks/{count}")
     @ApiOperation(value = "Get latest block list")
-    public ResponseBean getLatestBlock(@PathVariable("count") int count) {
-        return blockService.queryBlockList(count);
+    @GetMapping(value = "/latest-blocks")
+    public ResponseBean getLatestBlocks(@RequestParam("count") @Min(1) @Max(50) Integer count) {
+
+        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        return blockService.queryLatestBlocks(count);
     }
 
-    @GetMapping(value = "/{page_size}/{page_number}")
     @ApiOperation(value = "Get block list by page")
-    public ResponseBean getBlockByPage(@PathVariable("page_size") Integer pageSize, @PathVariable("page_number") Integer pageNumber) {
-        return blockService.queryBlockList(pageSize, pageNumber);
+    @GetMapping(value = "/blocks")
+    public ResponseBean getBlocksByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
+                                        @RequestParam("page_number") @Min(1) Integer pageNumber) {
+
+        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        return blockService.queryBlocksByPage(pageSize, pageNumber);
     }
 
-    @GetMapping(value = "/{param}")
     @ApiOperation(value = "Get block detail by height or hash")
+    @GetMapping(value = "/blocks/{param}")
     public ResponseBean getBlock(@PathVariable("param") String param) {
+
+        log.info("####{}.{} begin...param:{}",CLASS_NAME, Helper.currentMethod(),param);
+
         if (param.length() == 64) {
             return blockService.queryBlockByHash(param);
         }
@@ -58,13 +76,19 @@ public class BlockController {
             int blockHeight = Integer.valueOf(param);
             return blockService.queryBlockByHeight(blockHeight);
         } catch (NumberFormatException e) {
-            return new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), new HashMap<>());
+            return new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), null);
         }
     }
 
-    @GetMapping(value = "/generate-time/{amount}")
     @ApiOperation(value = "Get generate block time")
-    public ResponseBean queryBlockGenerateTime(@PathVariable("amount") int amount) {
+    @GetMapping(value = "/blocks/generate-time")
+    public ResponseBean queryBlockGenerateTime(@RequestParam("amount") Integer amount) {
+
+        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+
         return blockService.queryBlockGenerateTime(amount);
     }
+
+
+
 }

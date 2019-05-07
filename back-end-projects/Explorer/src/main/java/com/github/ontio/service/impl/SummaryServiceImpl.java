@@ -7,9 +7,9 @@ import com.github.ontio.service.ISummaryService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tk.mybatis.spring.annotation.MapperScan;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

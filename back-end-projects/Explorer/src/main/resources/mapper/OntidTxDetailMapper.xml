@@ -13,4 +13,27 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="fee" jdbcType="DECIMAL" property="fee" />
   </resultMap>
+
+  <sql id="detailColumns">
+    tx_hash as txHash,
+    tx_type as txType,
+    ontid as ontid,
+    tx_time as txTime,
+    block_height as blockHeight,
+    description as description,
+    fee as fee
+  </sql>
+
+
+  <select id="selectOntidTxsByPage" resultType="com.github.ontio.model.dto.OntidTxDetailDto">
+    select <include refid="detailColumns"/>
+    from tbl_ontid_tx_detail
+    where 1= 1
+    <if test="ontid != '' and ontid != null">
+      and ontid = #{ontid}
+    </if>
+    order by block_height desc
+    limit #{startIndex}, #{pageSize}
+  </select>
+
 </mapper>

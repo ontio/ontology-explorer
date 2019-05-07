@@ -58,7 +58,7 @@ public class DailyInfoSchedule {
     public void UpdateDailyInfo() {
         log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
-        summaryService.summaryAllInfo();
+        //summaryService.summaryAllInfo();
     }
 
     /**

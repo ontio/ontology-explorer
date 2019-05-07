@@ -38,6 +38,7 @@ import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,7 @@ import java.util.*;
  * @date 2018/2/27
  */
 @Service("TransactionService")
+@MapperScan("com.github.ontio.dao")
 @Slf4j
 public class TransactionServiceImpl implements ITransactionService {
 
