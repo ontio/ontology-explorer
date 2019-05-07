@@ -19,7 +19,7 @@
 
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.model.common.ResponseBean;
 
 /**
  * @author zhouq
@@ -33,7 +33,7 @@ public interface IOntIdService {
      *
      * @return
      */
-    OldResult queryOntIdList(int amount);
+    ResponseBean queryLatestOntIdTxs(int count);
 
     /**
      * query ontId list by page
@@ -42,7 +42,7 @@ public interface IOntIdService {
      * @param pageNumber
      * @return
      */
-    OldResult queryOntIdList(int pageSize, int pageNumber);
+    ResponseBean queryOntidTxsByPage(int pageSize, int pageNumber);
 
     /**
      * query ontId detail
@@ -50,7 +50,7 @@ public interface IOntIdService {
      * @param ontId
      * @return
      */
-    OldResult queryOntIdDetail(String ontId, int pageSize, int pageNumber);
+    ResponseBean queryOntIdDetail(String ontId, int pageSize, int pageNumber);
 
 
 

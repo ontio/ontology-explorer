@@ -29,6 +29,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 @Slf4j
 @Validated
 @RestController
@@ -42,8 +45,12 @@ public class ContractController {
     private ContractServiceImpl contractService;
 
     @ApiOperation(value = "Get contract list")
-    @GetMapping(value = "{page_size}/{page_number}")
-    public ResponseBean getContracts(@PathVariable("page_size") int pageSize, @PathVariable("page_number") int pageNumber) {
+    @GetMapping
+    public ResponseBean getContracts(@RequestParam("page_size") @Max(20) @Min(1) Integer pageSize,
+                                     @RequestParam("page_number") @Min(1) Integer pageNumber) {
+
+        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+
         return contractService.queryContract(pageSize, pageNumber);
     }
 

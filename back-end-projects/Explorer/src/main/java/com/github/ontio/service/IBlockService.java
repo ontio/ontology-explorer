@@ -23,9 +23,9 @@ import com.github.ontio.model.common.ResponseBean;
 
 public interface IBlockService {
 
-    ResponseBean queryBlockList(int amount);
+    ResponseBean queryLatestBlocks(int amount);
 
-    ResponseBean queryBlockList(int pageSize, int pageNumber);
+    ResponseBean queryBlocksByPage(int pageSize, int pageNumber);
 
     ResponseBean queryBlockByHeight(int height);
 
@@ -33,5 +33,4 @@ public interface IBlockService {
 
     ResponseBean queryBlockGenerateTime(int amount);
 
-    ResponseBean blockCountInTwoWeeks(long time);
 }

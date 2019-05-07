@@ -18,8 +18,15 @@
     <property name="readOnly" value="false" />
   </cache>
 
-  <select id="selectSummaryInfo" resultType="java.util.Map" useCache="false">
-    select tx_count, block_height, ontid_count, nonontid_tx_count
+  <sql id="baseColumns">
+    block_height as blockHeight,
+    tx_count as txCount,
+    ontid_count as ontidCount,
+    nonontid_tx_count as nonontidTxCount
+  </sql>
+
+  <select id="selectSummaryInfo" resultType="com.github.ontio.model.dto.OntidTxDetailDto">
+    select <include refid="baseColumns"/>
     from tbl_current
   </select>
 

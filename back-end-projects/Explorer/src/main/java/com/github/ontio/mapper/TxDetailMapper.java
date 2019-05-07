@@ -1,5 +1,6 @@
 package com.github.ontio.mapper;
 
+import com.github.ontio.model.dto.TxBasicDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -30,5 +31,7 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
     Integer selectTxCountByAddr(@Param("address") String address);
 
     Integer queryTransactionCount(Map<String, Object> param);
+
+    List<TxBasicDto> selectTxsByBlockHeight(@Param("blockHeight") Integer blockHeight);
 
 }

@@ -23,16 +23,23 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ConfigParam;
-import com.github.ontio.dao.CurrentMapper;
-import com.github.ontio.dao.OntIdMapper;
+import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.model.common.ClaimContextEnum;
-import com.github.ontio.paramBean.OldResult;
+import com.github.ontio.model.common.PageResponseBean;
+import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.CurrentDto;
+import com.github.ontio.model.dto.OntidTxDetailDto;
 import com.github.ontio.service.IOntIdService;
-import com.github.ontio.util.*;
+import com.github.ontio.util.ConstantParam;
+import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
+import com.github.ontio.util.OntologySDKService;
+import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -53,9 +60,9 @@ public class OntIdServiceImpl implements IOntIdService {
     private static final String VERSION = "1.0";
 
     @Autowired
-    private OntIdMapper ontIdMapper;
+    private OntidTxDetailMapper ontidTxDetailMapper;
     @Autowired
-    private CurrentMapper currentMapper;
+    private com.github.ontio.mapper.CurrentMapper currentMapper;
     @Autowired
     private ConfigParam configParam;
 
@@ -68,51 +75,62 @@ public class OntIdServiceImpl implements IOntIdService {
     }
 
     @Override
-    public OldResult queryOntIdList(int amount) {
+    public ResponseBean queryLatestOntIdTxs(int count) {
 
-        List<Map> ontIdList = ontIdMapper.selectOntIdByPage(0, amount);
+        List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.selectOntidTxsByPage("", 0, count);
 
-        for (Map map : ontIdList) {
-            map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
-            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
+        for (OntidTxDetailDto dto : ontidTxDetailDtos) {
+            dto.setDescription(Helper.templateOntIdOperation(dto.getDescription()));
         }
-
-        return Helper.result("QueryOntIdList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, ontIdList);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), ontidTxDetailDtos);
     }
 
     @Override
-    public OldResult queryOntIdList(int pageSize, int pageNumber) {
-
-        if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
-            return Helper.result("QueryOntIdList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
-        }
+    public ResponseBean queryOntidTxsByPage(int pageSize, int pageNumber) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
-        List<Map> ontIdList = ontIdMapper.selectOntIdByPage(start, pageSize);
-        for (Map map :
-                ontIdList) {
-            map.put("Description", Helper.templateOntIdOperation((String) map.get("Description")));
-            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
+        List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.selectOntidTxsByPage("", start, pageSize);
+        for (OntidTxDetailDto dto :
+                ontidTxDetailDtos) {
+            dto.setDescription(Helper.templateOntIdOperation(dto.getDescription()));
         }
 
-        Map currentMap = currentMapper.selectSummaryInfo();
-        int count = (Integer) currentMap.get("TxnCount") - (Integer) currentMap.get("NonOntIdTxnCount");
+        CurrentDto currentDto = currentMapper.selectSummaryInfo();
+        int nonontidTxCount = currentDto.getNonontidTxCount();
 
-        Map<String, Object> rs = new HashMap<>();
-        rs.put("OntIdList", ontIdList);
-        rs.put("Total", count);
+        PageResponseBean pageResponseBean = new PageResponseBean(ontidTxDetailDtos, nonontidTxCount);
 
-        return Helper.result("QueryOntIdList", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, rs);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
     @Override
-    public OldResult queryOntIdDetail(String ontId, int pageSize, int pageNumber) {
-
-        if (pageSize > configParam.QUERYADDRINFO_PAGESIZE) {
-            return Helper.result("QueryOntId", ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), VERSION, "pageSize limit " + configParam.QUERYADDRINFO_PAGESIZE);
-        }
+    public ResponseBean queryOntIdDetail(String ontId, int pageSize, int pageNumber) {
 
         int start = (pageNumber - 1) * pageSize < 0 ? 0 : (pageNumber - 1) * pageSize;
+
+
+        OntidTxDetailDto ontidTxDetailDto = OntidTxDetailDto.builder()
+                .ontid(ontId)
+                .build();
+        Integer count = ontidTxDetailMapper.selectCount(ontidTxDetailDto);
+
+
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+        List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.selectOntidTxsByPage("", 0, count);
+
+        for (OntidTxDetailDto dto : ontidTxDetailDtos) {
+            dto.setDescription(Helper.templateOntIdOperation(dto.getDescription()));
+        }
+
+        PageHelper.startPage(start, pageSize);
+
+        Example example = new Example(OntidTxDetailMapper.class);
+        example.setOrderByClause("block_height desc");
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("ont_id", ontId);
+
+        List<OntidTxDetailDto> result = ontidTxDetailMapper.selectByExample(example);
+
 
         Map<String, Object> param = new HashMap<>();
         param.put("PageSize", pageSize);

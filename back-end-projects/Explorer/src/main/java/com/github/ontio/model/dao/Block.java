@@ -1,8 +1,13 @@
 package com.github.ontio.model.dao;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Table(name = "tbl_block")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Block {
     /**
      * 区块高度

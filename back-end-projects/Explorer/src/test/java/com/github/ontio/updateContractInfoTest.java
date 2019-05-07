@@ -25,7 +25,7 @@ public class updateContractInfoTest {
     public void updateContract(){
 
 
-        summaryService.summaryAllInfo();
+       // summaryService.summaryAllInfo();
 
 
 //        summaryService.updateDailyContractInfoAndContractNewAddress(1554048003);
