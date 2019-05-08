@@ -13,4 +13,31 @@
     <result column="auditflag" jdbcType="INTEGER" property="auditflag" />
     <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
+
+
+  <select id="selectOep5Tokens" resultType="com.github.ontio.model.dto.Oep5DetailDto">
+    SELECT
+    a.contract_hash AS contractHash,
+    a.creator AS creator,
+    a.description as description,
+    a.logo as logo,
+    a.create_time as createTime,
+    a.update_time as updateTime,
+    a.contact_info as contactInfo,
+    b.total_supply as totalSupply,
+    b.`name` AS name,
+    b.symbol as symbol,
+    a.address_count as addressCount,
+    a.ont_sum as ontSum,
+    a.ong_sum as ongSum,
+    a.tx_count as txCount
+    FROM
+    tbl_contract a
+    LEFT JOIN tbl_oep5 b ON a.contract_hash = b.contract_hash
+    WHERE
+    a.type = 'oep5'
+    order by a.create_time desc
+  </select>
+
+
 </mapper>
