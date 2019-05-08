@@ -101,9 +101,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
         List<TxDetailDto> txDetails = txDetailMapper.selectTxsByPage(start, pageSize);
 
-        List<CurrentDto> currentDtos = currentMapper.selectAll();
+        CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDtos.get(0).getTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDto.getTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -123,9 +123,9 @@ public class TransactionServiceImpl implements ITransactionService {
 
         List<TxDetailDto> txDetails = txDetailMapper.selectNonontidTxsByPage(start, pageSize);
 
-        List<CurrentDto> currentDtos = currentMapper.selectAll();
+        CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDtos.get(0).getNonontidTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDto.getNonontidTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -144,21 +144,20 @@ public class TransactionServiceImpl implements ITransactionService {
         if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType) {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-            for (TxDetailDto dto :
-                    txDetailDtos) {
+
+            txDetailDtos.forEach(item->{
                 //ONG转换好精度给前端
-                String assetName = dto.getAssetName();
+                String assetName = item.getAssetName();
                 if (ConstantParam.ONG.equals(assetName)) {
-                    dto.setAmount(dto.getAmount().divide(ConstantParam.ONG_TOTAL));
+                    item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
                 }
-            }
+            });
             detailObj.put("transfers", txDetailDtos);
         } else if (EventTypeEnum.Ontid.getType() == eventType) {
             //ONTID交易获取ONTID动作详情
             OntidTxDetailDto ontidTxDetailDtoTemp = OntidTxDetailDto.builder()
                     .txHash(txHash)
                     .build();
-
             OntidTxDetailDto ontidTxDetailDto = ontidTxDetailMapper.selectOne(ontidTxDetailDtoTemp);
 
             String ontIdDes = Helper.templateOntIdOperation(ontidTxDetailDto.getDescription());

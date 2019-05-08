@@ -1,8 +1,15 @@
 package com.github.ontio.model.dao;
 
-import java.math.BigDecimal;
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.math.BigDecimal;
+
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "tbl_contract")
 public class Contract {
     /**
@@ -38,6 +45,7 @@ public class Contract {
     /**
      * 合约项目方联系信息.json格式字符串
      */
+    //TODO 转换成json
     @Column(name = "contact_info")
     private String contactInfo;
 

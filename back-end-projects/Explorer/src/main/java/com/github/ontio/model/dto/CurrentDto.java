@@ -1,5 +1,7 @@
 package com.github.ontio.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.ontio.model.dao.Current;
 import lombok.Data;
 
 import javax.persistence.Table;
@@ -11,5 +13,8 @@ import javax.persistence.Table;
  */
 @Data
 @Table(name = "tbl_current")
-public class CurrentDto extends com.github.ontio.model.dao.Current {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CurrentDto extends Current {
+
+    private Integer nodeCount;
 }

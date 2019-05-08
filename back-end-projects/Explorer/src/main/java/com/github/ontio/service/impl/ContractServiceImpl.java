@@ -20,12 +20,19 @@ package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.dao.*;
+import com.github.ontio.dao.Oep4Mapper;
+import com.github.ontio.dao.Oep5Mapper;
+import com.github.ontio.dao.Oep8Mapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.Contracts;
 import com.github.ontio.model.Oep4;
 import com.github.ontio.model.Oep5;
 import com.github.ontio.model.Oep8;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.service.IContractService;
+import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import org.mybatis.spring.annotation.MapperScan;
@@ -39,6 +46,16 @@ import java.util.*;
 @MapperScan("com.github.ontio.dao")
 public class ContractServiceImpl implements IContractService {
 
+    @Autowired
+    private ContractMapper contractMapper;
+    @Autowired
+    private Oep4TxDetailMapper oep4TxDetailMapper;
+    @Autowired
+    private Oep5TxDetailMapper oep5TxDetailMapper;
+    @Autowired
+    private Oep8TxDetailMapper oep8TxDetailMapper;
+    @Autowired
+    private TxDetailMapper txDetailMapper;
     @Autowired
     private ContractsMapper contractsMapper;
 
@@ -65,23 +82,74 @@ public class ContractServiceImpl implements IContractService {
     }
 
     @Override
-    public ResponseBean queryContract(Integer pageSize, Integer pageNumber) {
-        Map<String, Object> paramMap = newPageInfoMap(pageSize, pageNumber);
-        List<Map> list = contractsMapper.selectApprovedContractByPage(paramMap);
-        if (!list.isEmpty()) {
-            for (Map map : list) {
-                map.put("ont_sum", ((BigDecimal) map.get("ont_sum")).toPlainString());
-                map.put("ong_sum", ((BigDecimal) map.get("ong_sum")).toPlainString());
-            }
+    public ResponseBean queryContractsByPage(Integer pageSize, Integer pageNumber) {
+
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+        List<ContractDto> contractDtos = contractMapper.selectApprovedContract(start, pageSize);
+
+        ContractDto contractDto = ContractDto.builder()
+                .auditFlag(1)
+                .build();
+        int count = contractMapper.selectCount(contractDto);
+
+        PageResponseBean pageResponseBean = new PageResponseBean(contractDtos, count);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
+    }
+
+
+    @Override
+    public ResponseBean queryContractDetail(String contractHash) {
+
+        ContractDto contractDtoTemp = ContractDto.builder()
+                .contractHash(contractHash)
+                .build();
+        ContractDto contractDto = contractMapper.selectOne(contractDtoTemp);
+        contractDto.setAuditFlag(null);
+        contractDto.setDappstoreFlag(null);
+        contractDto.setTotalReward(null);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), contractDto);
+    }
+
+
+    @Override
+    public ResponseBean queryTxsByContractHash(String contractType, String contractHash, Integer pageNumber, Integer pageSize) {
+
+        List<TxDetailDto> txDetailDtos = new ArrayList<>();
+        Integer count = 0;
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+
+        switch (contractType.toLowerCase()){
+            case ConstantParam.CONTRACT_TYPE_OEP4:
+                txDetailDtos = oep4TxDetailMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
+                count = oep4TxDetailMapper.selectCountByCalledContracthash(contractHash);
+                break;
+            case ConstantParam.CONTRACT_TYPE_OEP5:
+                txDetailDtos = oep5TxDetailMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
+                count = oep5TxDetailMapper.selectCountByCalledContracthash(contractHash);
+                break;
+            case ConstantParam.CONTRACT_TYPE_OEP8:
+                txDetailDtos = oep8TxDetailMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
+                count = oep8TxDetailMapper.selectCountByCalledContracthash(contractHash);
+                break;
+            case ConstantParam.CONTRACT_TYPE_OTHER:
+                txDetailDtos = txDetailMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
+                count = txDetailMapper.selectCountByCalledContracthash(contractHash);
+                break;
         }
-        Map<String, Object> result = new HashMap<>();
-        result.put("total", contractsMapper.selectContractCount());
-        result.put("records", list);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+
+        PageResponseBean pageResponseBean = new PageResponseBean(txDetailDtos, count);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
     @Override
     public ResponseBean queryContractByHash(String contractHash, int pageSize, int pageNumber) {
+
+
+
+
         Map<String, Object> result = getResultMap(contractHash, "", "", pageSize, pageNumber);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }

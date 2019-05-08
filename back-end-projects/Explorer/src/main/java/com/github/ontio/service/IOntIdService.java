@@ -50,7 +50,10 @@ public interface IOntIdService {
      * @param ontId
      * @return
      */
-    ResponseBean queryOntIdDetail(String ontId, int pageSize, int pageNumber);
+    ResponseBean queryOntIdTxsByOntid(String ontId, int pageSize, int pageNumber);
+
+
+    ResponseBean queryOntidDdo(String ontId);
 
 
 

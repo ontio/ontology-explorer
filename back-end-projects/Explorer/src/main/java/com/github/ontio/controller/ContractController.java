@@ -25,51 +25,59 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 
 @Slf4j
 @Validated
 @RestController
-@EnableAspectJAutoProxy
 @RequestMapping(value = "/v2/contracts")
 public class ContractController {
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
+    private final ContractServiceImpl contractService;
+
     @Autowired
-    private ContractServiceImpl contractService;
-
-    @ApiOperation(value = "Get contract list")
-    @GetMapping
-    public ResponseBean getContracts(@RequestParam("page_size") @Max(20) @Min(1) Integer pageSize,
-                                     @RequestParam("page_number") @Min(1) Integer pageNumber) {
-
-        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
-
-        return contractService.queryContract(pageSize, pageNumber);
+    public ContractController(ContractServiceImpl contractService) {
+        this.contractService = contractService;
     }
+
+    @ApiOperation(value = "Get contract list by page")
+    @GetMapping
+    public ResponseBean queryContractsByPage(@RequestParam("page_size") @Max(20) @Min(1) Integer pageSize,
+                                             @RequestParam("page_number") @Min(1) Integer pageNumber) {
+
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        return contractService.queryContractsByPage(pageSize, pageNumber);
+    }
+
 
     @ApiOperation("Get contract detail by contract hash")
-    @GetMapping(value = "{contract_hash}")
-    public ResponseBean getContractDetail(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract address") String contract_hash) {
-        return null;
+    @GetMapping(value = "/{contract_hash}")
+    public ResponseBean queryContractDetail(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash) {
+
+        log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
+
+        return contractService.queryContractDetail(contractHash);
     }
 
-    @ApiOperation(value = "Get address balance")
-    @GetMapping(value = "/contract/{contracthash}/{pagesize}/{pagenumber}")
-    public ResponseBean queryContractTxsByPage(@PathVariable("contracthash") String contractHash,
-                                               @PathVariable("pagenumber") Integer pageNumber,
-                                               @PathVariable("pagesize") Integer pageSize) {
-        if (contractHash.isEmpty()) {
-            return null;
-        }
 
-        return contractService.queryContractByHash(contractHash, pageSize, pageNumber);
+    @ApiOperation(value = "Get contract transaction list by contracthash")
+    @GetMapping(value = "/{contract_type}/{contract_hash}/transactions")
+    public ResponseBean queryContractTxsByPage(@PathVariable("contract_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|other|OTHER", message = "Incorrect contract type") String contractType,
+                                               @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract address") String contractHash,
+                                               @RequestParam("page_number") @Min(1) Integer pageNumber,
+                                               @RequestParam("page_size") @Max(20) @Min(1) Integer pageSize) {
+
+        log.info("####{}.{} begin...contract_type:{},contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractType, contractHash);
+
+        return contractService.queryTxsByContractHash(contractType, contractHash, pageNumber,pageSize);
     }
 
     /**
@@ -82,8 +90,8 @@ public class ContractController {
      */
     @RequestMapping(value = "/oepcontract/{type}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     public ResponseBean queryOEPContract(@PathVariable("type") String type,
-                                      @PathVariable("pagenumber") Integer pageNumber,
-                                      @PathVariable("pagesize") Integer pageSize) {
+                                         @RequestParam("page_number") Integer pageNumber,
+                                         @RequestParam("page_size") Integer pageSize) {
         if (type.isEmpty()) {
             return null;
         }
@@ -103,9 +111,9 @@ public class ContractController {
      */
     @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     public ResponseBean queryOEPContractByHash(@PathVariable("contracthash") String contracthash,
-                                            @PathVariable("type") String type,
-                                            @PathVariable("pagenumber") Integer pageNumber,
-                                            @PathVariable("pagesize") Integer pageSize) {
+                                               @PathVariable("type") String type,
+                                               @PathVariable("pagenumber") Integer pageNumber,
+                                               @PathVariable("pagesize") Integer pageSize) {
         if (type.isEmpty() || contracthash.isEmpty()) {
             return null;
         }
@@ -126,10 +134,10 @@ public class ContractController {
      */
     @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{tokenname}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
     public ResponseBean queryOEPContractByHashAndSymbol(@PathVariable("contracthash") String contracthash,
-                                                     @PathVariable("type") String type,
-                                                     @PathVariable("tokenname") String tokenname,
-                                                     @PathVariable("pagenumber") Integer pageNumber,
-                                                     @PathVariable("pagesize") Integer pageSize) {
+                                                        @PathVariable("type") String type,
+                                                        @PathVariable("tokenname") String tokenname,
+                                                        @PathVariable("pagenumber") Integer pageNumber,
+                                                        @PathVariable("pagesize") Integer pageSize) {
 
         if (type.isEmpty() || contracthash.isEmpty()) {
             return null;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.github.ontio.mapper.Oep5TxDetailMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Oep5TxDetail">
+<mapper namespace="com.github.ontio.mapper.Oep8TxDetailMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Oep8TxDetail">
     <!--
       WARNING - @mbg.generated
     -->
@@ -42,19 +42,19 @@
   </sql>
 
 
-  <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.Oep5TxDetailDto">
+  <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.Oep8TxDetailDto">
     select DISTINCT <include refid="txBasicColumns"/>
-    from tbl_oep5_tx_detail
+    from tbl_oep8_tx_detail
     where called_contract_hash = #{calledContractHash}
     order by block_height desc
     limit #{startIndex}, #{pageSize}
   </select>
 
-
   <select id="selectCountByCalledContracthash" resultType="java.lang.Integer">
     select count(DISTINCT (tx_hash))
-    from tbl_oep5_tx_detail
+    from tbl_oep8_tx_detail
     where called_contract_hash = #{calledContractHash}
   </select>
+
 
 </mapper>
