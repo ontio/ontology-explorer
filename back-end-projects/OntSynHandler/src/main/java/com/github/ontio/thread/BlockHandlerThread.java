@@ -19,24 +19,19 @@
 
 package com.github.ontio.thread;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
-import com.github.ontio.model.dao.Oep4;
-import com.github.ontio.model.dao.Oep5;
-import com.github.ontio.model.dao.Oep8;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.service.BlockHandleService;
+import com.github.ontio.service.CommonService;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Component("BlockHandlerThread")
@@ -56,9 +51,10 @@ public class BlockHandlerThread extends Thread {
     private final TxDetailDailyMapper txDetailDailyMapper;
     private final TxEventLogMapper txEventLogMapper;
     private final Environment env;
+    private final CommonService commonService;
 
     @Autowired
-    public BlockHandlerThread(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, BlockHandleService blockManagementService, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper, Oep4TxDetailMapper oep4TxDetailMapper, Environment env, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailDailyMapper txDetailDailyMapper, TxEventLogMapper txEventLogMapper) {
+    public BlockHandlerThread(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, BlockHandleService blockManagementService, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper, Oep4TxDetailMapper oep4TxDetailMapper, Environment env, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailDailyMapper txDetailDailyMapper, TxEventLogMapper txEventLogMapper, CommonService commonService) {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.blockManagementService = blockManagementService;
@@ -70,6 +66,7 @@ public class BlockHandlerThread extends Thread {
         this.oep8TxDetailMapper = oep8TxDetailMapper;
         this.txDetailDailyMapper = txDetailDailyMapper;
         this.txEventLogMapper = txEventLogMapper;
+        this.commonService = commonService;
     }
 
     /**
@@ -77,7 +74,7 @@ public class BlockHandlerThread extends Thread {
      */
     @Override
     public void run() {
-        log.info("========{}.{}run=======", CLASS_NAME, Thread.currentThread().getName());
+        log.info("========{}.run=======", CLASS_NAME);
         try {
             ConstantParam.MASTERNODE_RESTFULURL = paramsConfig.MASTERNODE_RESTFUL_URL;
             //初始化node列表
@@ -88,7 +85,7 @@ public class BlockHandlerThread extends Thread {
             int oneBlockTryTime = 1;
             while (true) {
 
-                int remoteBlockHieght = getRemoteBlockHeight();
+                int remoteBlockHieght = commonService.getRemoteBlockHeight();
                 log.info("######remote blockheight:{}", remoteBlockHieght);
 
                 int dbBlockHeight = currentMapper.selectBlockHeight();
@@ -105,7 +102,7 @@ public class BlockHandlerThread extends Thread {
                     }
                     oneBlockTryTime++;
                     if (oneBlockTryTime >= paramsConfig.NODE_WAITFORBLOCKTIME_MAX) {
-                        switchNode();
+                        commonService.switchNode();
                         oneBlockTryTime = 1;
                     }
                     continue;
@@ -124,9 +121,10 @@ public class BlockHandlerThread extends Thread {
 
                 //handle blocks and transactions
                 for (int tHeight = dbBlockHeight + 1; tHeight <= remoteBlockHieght; tHeight++) {
-                    JSONObject blockJson = getBlockJsonByHeight(tHeight);
+                    JSONObject blockJson = commonService.getBlockJsonByHeight(tHeight);
+                    JSONArray txEventLogArray = commonService.getTxEventLogsByHeight(tHeight);
                     long time1 = System.currentTimeMillis();
-                    blockManagementService.handleOneBlock(blockJson);
+                    blockManagementService.handleOneBlock(blockJson, txEventLogArray);
                     long time2 = System.currentTimeMillis();
                     log.info("handle block {} used time:{}", tHeight, (time2 - time1));
                 }
@@ -137,89 +135,6 @@ public class BlockHandlerThread extends Thread {
         }
     }
 
-
-    /**
-     * get the the blockheight of the ontology blockchain
-     *
-     * @return
-     * @throws Exception
-     */
-    private int getRemoteBlockHeight() throws Exception {
-        int remoteHeight = 0;
-        int tryTime = 1;
-        while (true) {
-            try {
-                remoteHeight = ConstantParam.ONT_SDKSERVICE.getConnect().getBlockHeight();
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getBlockHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
-                }
-            } catch (IOException e) {
-                log.error("get blockheight thread can't work,error {} ", e);
-                throw new Exception(e);
-            }
-        }
-
-        return remoteHeight;
-    }
-
-    /**
-     * get the block by height
-     *
-     * @return
-     * @throws Exception
-     */
-    private JSONObject getBlockJsonByHeight(int height) throws Exception {
-        JSONObject blockObj = new JSONObject();
-        int tryTime = 1;
-        while (true) {
-            try {
-                blockObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getBlockJson(height);
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getBlockJsonByHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
-                }
-            } catch (IOException ex) {
-                log.error("getBlockJsonByHeight thread can't work,error {} ", ex);
-                throw new Exception(ex);
-            }
-        }
-
-        return blockObj;
-    }
-
-    /**
-     * switch to another node and initialize ONT_SDKSERVICE object
-     * when the master node have an exception
-     */
-    private void switchNode() {
-        ConstantParam.MASTERNODE_INDEX++;
-        if (ConstantParam.MASTERNODE_INDEX >= paramsConfig.NODE_COUNT) {
-            ConstantParam.MASTERNODE_INDEX = 0;
-        }
-        ConstantParam.MASTERNODE_RESTFULURL = ConstantParam.NODE_RESTFULURLLIST.get(ConstantParam.MASTERNODE_INDEX);
-        log.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
-
-        OntSdk wm = OntSdk.getInstance();
-        wm.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
-        ConstantParam.ONT_SDKSERVICE = wm;
-    }
 
     /**
      * initialize node list for synchronization thread
