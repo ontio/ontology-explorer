@@ -4,9 +4,9 @@ import com.github.ontio.model.common.ResponseBean;
 
 public interface ISummaryService {
 
-    ResponseBean getLatestInfo();
+    ResponseBean getBlockChainLatestInfo();
 
-    ResponseBean getTps();
+    ResponseBean getBlockChainTps();
 
     ResponseBean getChainSummary(String type, int startTime, int endTime);
 

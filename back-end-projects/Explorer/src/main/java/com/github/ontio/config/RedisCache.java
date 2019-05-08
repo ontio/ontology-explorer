@@ -55,13 +55,22 @@ public class RedisCache implements Cache {
     @Override
     public void putObject(Object key, Object value) {
         log.info("##putObject. key:{}, value:{}##", key, value);
+
+        if(key.toString().contains("com.github.ontio.mapper.BlockMapper.selectBlocksByPage")){
+            log.info("redis time 1 minute");
+            redisTemplate.opsForValue().set(key.toString(), value, 1, TimeUnit.MINUTES);
+
+        }else {
+            redisTemplate.opsForValue().set(key.toString(), value, 3, TimeUnit.MINUTES);
+
+        }
         //RedisTemplate redisTemplate = getRedisTemplate();
 
-        if (value != null) {
+/*        if (value != null) {
             // 向Redis中添加数据，有效时间是2天
            // redisTemplate.opsForValue().set(key.toString(), JSONObject.toJSONString(value), 1, TimeUnit.MINUTES);
             redisTemplate.opsForValue().set(key.toString(), value, 3, TimeUnit.MINUTES);
-        }
+        }*/
     }
 
     @Override

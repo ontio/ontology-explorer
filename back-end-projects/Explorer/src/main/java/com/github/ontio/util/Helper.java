@@ -136,6 +136,8 @@ public class Helper {
             descriptionSb.append(desArray[1]);
             descriptionSb.append(" recovery:");
             descriptionSb.append(desArray[3]);
+        } else {
+            descriptionSb.append(action);
         }
 
         return descriptionSb.toString();

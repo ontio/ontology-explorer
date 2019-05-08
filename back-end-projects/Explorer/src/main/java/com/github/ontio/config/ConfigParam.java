@@ -52,7 +52,7 @@ public class ConfigParam {
     public String OEP8_PUMPKIN_CODEHASH;
 
     @Value("${sdk.nodecount}")
-    public String SDK_NODE_COUNT;
+    public Integer SDK_NODE_COUNT;
 
     @Value("${explorer.dailyschedule}")
     public String EXPLORER_DAILY_SCHEDULE;
@@ -76,6 +76,10 @@ public class ConfigParam {
 
     @Value("${ontreward.week}")
     public BigDecimal ONTREWARD_WEEK;
+
+
+    @Value("${blockchain.max.tps}")
+    public Integer BLOCKCHAIN_MAX_TPS;
 
 
 }

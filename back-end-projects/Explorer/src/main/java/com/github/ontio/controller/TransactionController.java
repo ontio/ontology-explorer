@@ -24,6 +24,7 @@ import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -97,9 +98,9 @@ public class TransactionController {
 
     @ApiOperation(value = "Get transaction detail by txhash")
     @GetMapping(value = "/transactions/{tx_hash}")
-    public ResponseBean queryTxnByHash(@PathVariable("tx_hash") String txHash) {
+    public ResponseBean queryTxnByHash(@PathVariable("tx_hash") @Length(min = 64, max = 64, message = "Incorrect transaction hash") String txHash) {
 
-        log.info("###{}.{} begin...txHash:{}", CLASS_NAME, Helper.currentMethod(),txHash);
+        log.info("###{}.{} begin...txHash:{}", CLASS_NAME, Helper.currentMethod(), txHash);
 
         ResponseBean rs = transactionService.queryTxDetailByHash(txHash);
         return rs;

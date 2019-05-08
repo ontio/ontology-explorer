@@ -22,7 +22,12 @@ import com.github.ontio.model.common.ResponseBean;
 
 public interface IContractService {
 
-    ResponseBean queryContract(Integer pagesize, Integer pageNum);
+    ResponseBean queryContractsByPage(Integer pagesize, Integer pageNum);
+
+    ResponseBean queryContractDetail(String contractHash);
+
+    ResponseBean queryTxsByContractHash(String contractType, String contractHash, Integer pageNumber, Integer pageSize);
+
 
     ResponseBean queryContractByHash(String contractHash, int pageSize, int pageNumber);
 

@@ -23,4 +23,37 @@
     <result column="payer" jdbcType="VARCHAR" property="payer" />
     <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
   </resultMap>
+
+
+  <cache type="com.github.ontio.config.RedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+  <sql id="txBasicColumns">
+    tx_hash as txHash,
+    tx_type as txType,
+    tx_time as txTime,
+    block_height as blockHeight,
+    confirm_flag as confirmFlag,
+    block_index as blockIndex,
+    fee as fee
+  </sql>
+
+
+  <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.Oep4TxDetailDto">
+    select DISTINCT <include refid="txBasicColumns"/>
+    from tbl_oep4_tx_detail
+    where called_contract_hash = #{calledContractHash}
+    order by block_height desc
+    limit #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="selectCountByCalledContracthash" resultType="java.lang.Integer">
+    select count(DISTINCT (tx_hash))
+    from tbl_oep4_tx_detail
+    where called_contract_hash = #{calledContractHash}
+  </select>
+
 </mapper>

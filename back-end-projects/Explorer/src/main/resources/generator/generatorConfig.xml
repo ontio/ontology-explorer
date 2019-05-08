@@ -42,7 +42,7 @@
         </javaClientGenerator>
 
 
-
+<!--
         <table tableName="tbl_block" domainObjectName="Block">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
@@ -61,12 +61,12 @@
 
         <table tableName="tbl_ontid_tx_detail" domainObjectName="OntidTxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
 
 
 
-        <table tableName="tbl_oep4" domainObjectName="Oep4">
+<!--        <table tableName="tbl_oep4" domainObjectName="Oep4">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
@@ -84,13 +84,13 @@
 
         <table tableName="tbl_oep8" domainObjectName="Oep8">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
         <table tableName="tbl_oep8_tx_detail" domainObjectName="Oep8TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
-        <table tableName="tbl_oep5_dragon" domainObjectName="Oep5Dragon">
+<!--        <table tableName="tbl_oep5_dragon" domainObjectName="Oep5Dragon">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
@@ -129,7 +129,7 @@
 
         <table tableName="tbl_address_daily_summary" domainObjectName="AddressDailySummary">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
 
     </context>

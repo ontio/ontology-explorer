@@ -14,6 +14,13 @@
     <result column="fee" jdbcType="DECIMAL" property="fee" />
   </resultMap>
 
+  <cache type="com.github.ontio.config.RedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+
   <sql id="detailColumns">
     tx_hash as txHash,
     tx_type as txType,

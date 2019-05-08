@@ -128,4 +128,13 @@ public class ConstantParam {
     public static final Integer AUDIT_UNPASSED = 0;
 
 
+    public static final String CONTRACT_TYPE_OEP4 = "oep4";
+
+    public static final String CONTRACT_TYPE_OEP5 = "oep5";
+
+    public static final String CONTRACT_TYPE_OEP8 = "oep8";
+
+    public static final String CONTRACT_TYPE_OTHER = "other";
+
+
 }
