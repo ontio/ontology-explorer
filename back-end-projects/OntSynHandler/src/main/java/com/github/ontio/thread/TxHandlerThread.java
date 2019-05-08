@@ -816,7 +816,7 @@ public class TxHandlerThread {
                 .addressCount(0)
                 .ongSum(ConstantParam.ZERO)
                 .ontSum(ConstantParam.ZERO)
-                .tokenSum(new JSONArray().toJSONString())
+                .tokenSum(new JSONObject().toJSONString())
                 .dappstoreFlag(false)
                 .auditFlag(false)
                 .category("")
