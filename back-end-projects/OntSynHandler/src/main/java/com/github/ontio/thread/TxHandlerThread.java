@@ -22,11 +22,9 @@ package com.github.ontio.thread;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.core.payload.DeployCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.EventTypeEnum;
@@ -34,8 +32,8 @@ import com.github.ontio.model.common.OntIdEventDesEnum;
 import com.github.ontio.model.common.SessionMapperDto;
 import com.github.ontio.model.common.TransactionTypeEnum;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.exception.RestfulException;
+import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +46,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,11 +71,14 @@ public class TxHandlerThread {
 
     private final SqlSessionTemplate sqlSessionTemplate;
 
+    private final CommonService commonService;
+
     @Autowired
-    public TxHandlerThread(ParamsConfig paramsConfig, ContractMapper contractMapper, SqlSessionTemplate sqlSessionTemplate) {
+    public TxHandlerThread(ParamsConfig paramsConfig, ContractMapper contractMapper, SqlSessionTemplate sqlSessionTemplate, CommonService commonService) {
         this.paramsConfig = paramsConfig;
         this.contractMapper = contractMapper;
         this.sqlSessionTemplate = sqlSessionTemplate;
+        this.commonService = commonService;
     }
 
     @Async
@@ -156,7 +156,7 @@ public class TxHandlerThread {
         log.info("####txType:{}, txHash:{}, calledContractHash:{}", txType, txHash, calledContractHash);
 
         try {
-            JSONObject eventLogObj = getEventLogByTxHash(txHash);
+            JSONObject eventLogObj = txJson.getJSONObject("EventLog");
             log.info("eventLog:{}", eventLogObj.toJSONString());
             insertTxEventLog(sessionMapperDto, txHash, blockTime, txType, blockHeight, indexInBlock, calledContractHash, eventLogObj.toJSONString());
             //eventstate 1:success 0:failed
@@ -325,7 +325,7 @@ public class TxHandlerThread {
 
         String txHash = txJson.getString("Hash");
         int txType = txJson.getInteger("TxType");
-        JSONObject contractObj = getContractInfoByTxHash(txHash);
+        JSONObject contractObj = commonService.getContractInfoByTxHash(txHash);
         //原生合约hash需要转换
         String contractHash = getNativeContractHash(contractObj.getString("ContractHash"));
 
@@ -523,51 +523,13 @@ public class TxHandlerThread {
         //OEP5初始化交易
         if ("birth".equalsIgnoreCase(action) && oep5Obj != null) {
 
-            Long totalSupply = getOep5TotalSupply(contractAddress);
+            Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
             Oep5 oep5 = Oep5.builder()
                     .contractHash(contractAddress)
                     .totalSupply(totalSupply)
                     .build();
             sessionMapperDto.getOep5Mapper().updateByPrimaryKeySelective(oep5);
         }
-    }
-
-    /**
-     * get oep5 total supply
-     *
-     * @return
-     * @throws Exception
-     */
-    private Long getOep5TotalSupply(String contractAddress) {
-
-        ConstantParam.ONT_SDKSERVICE.neovm().oep5().setContractAddress(contractAddress);
-        Long totalSupply = 0L;
-        int tryTime = 1;
-        while (true) {
-            try {
-                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep5().queryTotalSupply());
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getOep5TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
-            } catch (Exception ex) {
-                log.error("getOep5TotalSupply error {} ", ex);
-                break;
-            }
-        }
-        return totalSupply;
     }
 
 
@@ -1042,104 +1004,7 @@ public class TxHandlerThread {
         return str;
     }
 
-    /**
-     * get the event log by txhash
-     *
-     * @return
-     * @throws Exception
-     */
-    private JSONObject getEventLogByTxHash(String txHash) throws Exception {
 
-        JSONObject eventObj = new JSONObject();
-        int tryTime = 1;
-        while (true) {
-            try {
-                eventObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getSmartCodeEvent(txHash);
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getEventLogByTxHash error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
-                }
-            } catch (IOException ex) {
-                log.error("getEventLogByTxHash thread can't work,error {} ", ex);
-                throw new Exception(ex);
-            }
-        }
-
-        return eventObj;
-    }
-
-
-    /**
-     * switch to another node and initialize ONT_SDKSERVICE object
-     * when the master node have an exception
-     */
-    private void switchNode() {
-
-        ConstantParam.MASTERNODE_INDEX++;
-        if (ConstantParam.MASTERNODE_INDEX >= paramsConfig.NODE_COUNT) {
-            ConstantParam.MASTERNODE_INDEX = 0;
-        }
-        ConstantParam.MASTERNODE_RESTFULURL = ConstantParam.NODE_RESTFULURLLIST.get(ConstantParam.MASTERNODE_INDEX);
-        log.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
-
-        OntSdk wm = OntSdk.getInstance();
-        wm.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
-        ConstantParam.ONT_SDKSERVICE = wm;
-    }
-
-
-    /**
-     * 根据部署合约交易hash获取链上合约信息
-     *
-     * @param txHash
-     * @return
-     * @throws Exception
-     */
-    private JSONObject getContractInfoByTxHash(String txHash) throws Exception {
-
-        JSONObject contractObj = new JSONObject();
-        contractObj.put("Name", "");
-        contractObj.put("Description", "");
-        contractObj.put("ContractHash", "");
-        int tryTime = 1;
-        while (true) {
-            try {
-                DeployCode deployCodeObj = (DeployCode) ConstantParam.ONT_SDKSERVICE.getConnect().getTransaction(txHash);
-                //根据code转成合约hash
-                String code = Helper.toHexString(deployCodeObj.code);
-                String contractHash = Address.AddressFromVmCode(code).toHexString();
-                contractObj.put("ContractHash", contractHash);
-                //先设置合约hash，某些合约信息在链上找不到
-                contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractHash);
-                contractObj.remove("Code");
-                contractObj.put("ContractHash", contractHash);
-                break;
-            } catch (ConnectorException ex) {
-                log.error("getContractInfoByTxHash error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
-                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
-                    switchNode();
-                    tryTime++;
-                    continue;
-                } else {
-                    tryTime++;
-                    Thread.sleep(1000);
-                    continue;
-                }
-            } catch (Exception ex) {
-                log.error("getContractInfoByTxHash thread can't work,error {} ", ex);
-                break;
-            }
-        }
-        return contractObj;
-    }
 
     /**
      * 获取dragon的信息

@@ -67,7 +67,7 @@ public class BlockHandleService {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public void handleOneBlock(JSONObject blockJson) throws Exception {
+    public void handleOneBlock(JSONObject blockJson, JSONArray txEventLogArray) throws Exception {
 
         JSONObject blockHeader = blockJson.getJSONObject("Header");
         int blockHeight = blockHeader.getInteger("Height");
@@ -83,6 +83,7 @@ public class BlockHandleService {
         //asynchronize handle transaction
         for (int i = 0; i < txCountInBlock; i++) {
             JSONObject txJson = (JSONObject) txArray.get(i);
+            txJson.put("EventLog", txEventLogArray.get(i));
             Future future = txHandlerThread.asyncHandleTx(txJson, blockHeight, blockTime, i + 1);
             futureList.add(future);
             //future.get();
@@ -103,6 +104,7 @@ public class BlockHandleService {
 
         log.info("{} end-------height:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
     }
+
 
     @Transactional(rollbackFor = Exception.class)
     public void insertBlock(JSONObject blockJson) {
