@@ -37,7 +37,7 @@ import javax.validation.constraints.Min;
 @Slf4j
 public class BlockController {
 
-    private String CLASS_NAME = this.getClass().getSimpleName();
+    private final String CLASS_NAME = this.getClass().getSimpleName();
 
     private final IBlockService blockService;
 
@@ -45,6 +45,8 @@ public class BlockController {
     public BlockController(IBlockService blockService) {
         this.blockService = blockService;
     }
+
+
 
     @ApiOperation(value = "Get latest block list")
     @GetMapping(value = "/latest-blocks")
@@ -82,11 +84,11 @@ public class BlockController {
 
     @ApiOperation(value = "Get generate block time")
     @GetMapping(value = "/blocks/generate-time")
-    public ResponseBean queryBlockGenerateTime(@RequestParam("amount") Integer amount) {
+    public ResponseBean queryBlockGenerateTime(@RequestParam("count") @Max(100) @Min(1) Integer count) {
 
         log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
 
-        return blockService.queryBlockGenerateTime(amount);
+        return blockService.queryBlockGenerateTime(count);
     }
 
 

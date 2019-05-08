@@ -72,7 +72,7 @@
     select distinct <include refid="txBasicColumns" />
     from tbl_tx_detail
     order by block_height DESC
-      limit #{startIndex}, #{pageSize}
+    limit #{startIndex}, #{pageSize}
   </select>
 
 
@@ -147,7 +147,7 @@
         select count(DISTINCT(tx_hash))
         from tbl_tx_detail
         where tx_time &gt;= #{startTime}
-          and <![CDATA[ tx_time < #{endTime} ]]>
+          and <![CDATA[ tx_time <= #{endTime} ]]>
     </select>
 
 
@@ -156,6 +156,20 @@
         from tbl_tx_detail
         where block_height = #{blockHeight}
         order by block_index
+    </select>
+
+    <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.TxDetailDto">
+        select DISTINCT <include refid="txBasicColumns"/>
+        from tbl_tx_detail
+        where called_contract_hash = #{calledContractHash}
+        order by block_height desc
+        limit #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectCountByCalledContracthash" resultType="java.lang.Integer">
+        select count(DISTINCT (tx_hash))
+        from tbl_tx_detail
+        where called_contract_hash = #{calledContractHash}
     </select>
 
 </mapper>

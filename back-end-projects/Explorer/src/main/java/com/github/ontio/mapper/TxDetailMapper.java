@@ -34,4 +34,10 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     List<TxBasicDto> selectTxsByBlockHeight(@Param("blockHeight") Integer blockHeight);
 
+
+    List<TxDetailDto> selectTxsByCalledContractHash(@Param("calledContractHash") String contractHash, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
+
+    Integer selectCountByCalledContracthash(@Param("calledContractHash") String calledContractHash);
+
+
 }

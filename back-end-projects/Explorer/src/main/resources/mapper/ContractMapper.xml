@@ -30,8 +30,61 @@
     <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
   </resultMap>
 
+  <sql id="basicColumns">
+    contract_hash as contractHash,
+    name as name,
+    create_time as createTime,
+    update_time as updateTime,
+    contact_info as contactInfo,
+    description as description,
+    type as type,
+    logo as logo,
+    creator as creator,
+    address_count as addressCount,
+    tx_count as txCount,
+    ont_sum as ontSum,
+    ong_sum as ongSum,
+    token_sum as tokenSum,
+    category as category,
+    dapp_name as dappName
+  </sql>
+
+
+  <sql id="detailColumns">
+    contract_hash as contractHash,
+    name as name,
+    create_time as createTime,
+    update_time as updateTime,
+    contact_info as contactInfo,
+    description as description,
+    type as type,
+    logo as logo,
+    creator as creator,
+    address_count as addressCount,
+    tx_count as txCount,
+    ont_sum as ontSum,
+    ong_sum as ongSum,
+    token_sum as tokenSum,
+    category as category,
+    dapp_name as dappName,
+    abi as abi,
+    code as code,
+    source_code as sourceCode
+  </sql>
+
   <select id="selectContractByContractHash" parameterType="java.lang.String" resultType="com.github.ontio.model.Contracts" useCache="false">
     select * from tbl_contract where contract_hash = #{contractHash}
   </select>
+
+
+  <select id="selectApprovedContract" resultType="com.github.ontio.model.dto.ContractDto">
+    select <include refid="basicColumns"/>
+    from tbl_contract
+    where audit_flag = 1
+    order by create_time desc
+    limit #{startIndex}, #{pageSize}
+  </select>
+
+
 
 </mapper>

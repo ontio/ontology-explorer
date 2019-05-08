@@ -19,6 +19,8 @@
 
 package com.github.ontio.service.impl;
 
+import com.github.ontio.mapper.BlockMapper;
+import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
@@ -30,6 +32,7 @@ import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,12 +44,18 @@ import java.util.Map;
 @Service("BlockService")
 public class BlockServiceImpl implements IBlockService {
 
+    private final BlockMapper blockMapper;
+    private final TxDetailMapper txDetailMapper;
+    private final CurrentMapper currentMapper;
+
     @Autowired
-    private com.github.ontio.mapper.BlockMapper blockMapper;
+    private RedisTemplate<String,Object> redisTemplate;
     @Autowired
-    private TxDetailMapper txDetailMapper;
-    @Autowired
-    private com.github.ontio.mapper.CurrentMapper currentMapper;
+    public BlockServiceImpl(BlockMapper blockMapper, TxDetailMapper txDetailMapper, CurrentMapper currentMapper) {
+        this.blockMapper = blockMapper;
+        this.txDetailMapper = txDetailMapper;
+        this.currentMapper = currentMapper;
+    }
 
 
     @Override
@@ -61,30 +70,17 @@ public class BlockServiceImpl implements IBlockService {
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
         List<BlockDto> blockDtos = blockMapper.selectBlocksByPage(start, pageSize);
 
-        List<CurrentDto> currentDtos = currentMapper.selectAll();
+        CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(blockDtos, currentDtos.get(0).getBlockHeight());
+        PageResponseBean pageResponseBean = new PageResponseBean(blockDtos, currentDto.getBlockHeight());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
     @Override
-    public ResponseBean queryBlockGenerateTime(int amount) {
-        List<Map> dataList = blockMapper.selectHeightAndTime(amount + 1);
-        List<Map> rsList = new ArrayList<>();
-        for (int i = 0; i < dataList.size() - 1; i++) {
-            int time = (Integer) dataList.get(i).get("blockTime") - (Integer) dataList.get(i + 1).get("blockTime");
-            Map<String, Object> temp = new HashMap<>();
-            temp.put("block_height", dataList.get(i).get("blockHeight"));
-            temp.put("generate_time", time);
-            rsList.add(temp);
-        }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsList);
-    }
-
-    @Override
+    //@Cacheable(value = "selectByblockheight")
     public ResponseBean queryBlockByHeight(int blockHeight) {
-
+        //TODO 通用mapper无法使用redis
         BlockDto blockDtoTemp = BlockDto.builder()
                 .blockHeight(blockHeight)
                 .build();
@@ -118,6 +114,21 @@ public class BlockServiceImpl implements IBlockService {
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blockDto);
+    }
+
+    @Override
+    public ResponseBean queryBlockGenerateTime(int count) {
+
+        List<Map> dataList = blockMapper.selectHeightAndTime(count + 1);
+        List<Map> rsList = new ArrayList<>();
+        for (int i = 0; i < dataList.size() - 1; i++) {
+            int time = (Integer) dataList.get(i).get("blockTime") - (Integer) dataList.get(i + 1).get("blockTime");
+            Map<String, Object> temp = new HashMap<>();
+            temp.put("block_height", dataList.get(i).get("blockHeight"));
+            temp.put("generate_time", time);
+            rsList.add(temp);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsList);
     }
 
 

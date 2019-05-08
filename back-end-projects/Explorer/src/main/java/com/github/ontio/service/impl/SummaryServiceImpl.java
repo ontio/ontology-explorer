@@ -1,8 +1,10 @@
 package com.github.ontio.service.impl;
 
+import com.github.ontio.config.ConfigParam;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.Contracts;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.service.ISummaryService;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
@@ -29,6 +31,8 @@ public class SummaryServiceImpl implements ISummaryService {
     private static final String CLASS_NAME = SummaryServiceImpl.class.getSimpleName();
 
     @Autowired
+    private ConfigParam configParam;
+    @Autowired
     private TxDetailMapper txDetailMapper;
 
     @Autowired
@@ -44,16 +48,28 @@ public class SummaryServiceImpl implements ISummaryService {
     private CurrentMapper currentMapper;
 
     @Override
-    public ResponseBean getLatestInfo() {
-        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        Map<String, Object> result = new HashMap<>();
-        Map summary = currentMapper.selectSummaryInfo();
-        result.put("block_height", summary.get("block_height"));
-        result.put("tx_count", summary.get("tx_count"));
-        result.put("ontid_count", summary.get("ontid_count"));
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    public ResponseBean getBlockChainLatestInfo() {
+
+        CurrentDto currentDto = currentMapper.selectSummaryInfo();
+        currentDto.setNodeCount(configParam.SDK_NODE_COUNT);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentDto);
+
     }
 
+    @Override
+    public ResponseBean getBlockChainTps() {
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("current_tps", calcTps());
+        resultMap.put("max_tps", configParam.BLOCKCHAIN_MAX_TPS);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), resultMap);
+    }
+
+    /**
+     * 计算当前tps
+     * @return
+     */
     private String calcTps() {
         int now = (int) (System.currentTimeMillis() / 1000);
         Map<String, Object> txCountParam = new HashMap<>();
@@ -64,14 +80,6 @@ public class SummaryServiceImpl implements ISummaryService {
         return df.format((double) (txPerMin) / 60);
     }
 
-    @Override
-    public ResponseBean getTps() {
-        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("current_tps", calcTps());
-        resultMap.put("max_tps", 10000);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), resultMap);
-    }
 
     private List<Map> querySummaryInfo(List<Map> dailyList, SimpleDateFormat simpleDateFormat, Integer count) {
         List<Map> SummaryInfo = new ArrayList<>();

@@ -55,7 +55,7 @@ public class OntIdController {
 
     @ApiOperation(value = "Get latest ONT ID transaction list")
     @GetMapping(value = "/latest-ontids")
-    public ResponseBean queryLatestOntIdTxs(@RequestParam("count") int count) {
+    public ResponseBean queryLatestOntIdTxs(@RequestParam("count") @Max(50) int count) {
 
         log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
@@ -73,21 +73,29 @@ public class OntIdController {
 
         ResponseBean rs = ontIdService.queryOntidTxsByPage(pageSize, pageNumber);
         return rs;
-
     }
 
 
     @ApiOperation(value = "Get ONT ID transaction list by page")
-    @GetMapping(value = "/ontids/{ontid}/txs")
-    public ResponseBean queryOntIdDetail(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{63}") String ontid,
-                                         @RequestParam("page_size") @Max(20) @Min(1) int pageSize,
-                                         @RequestParam("page_number") @Min(1) int pageNumber) {
+    @GetMapping(value = "/ontids/{ontid}/transactions")
+    public ResponseBean queryOntIdTxsByOntid(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{33}", message = "Incorrect ONT ID format") String ontid,
+                                             @RequestParam("page_size") @Max(20) @Min(1) int pageSize,
+                                             @RequestParam("page_number") @Min(1) int pageNumber) {
 
-        log.info("########{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...ontid:{}", CLASS_NAME, Helper.currentMethod(), ontid);
 
-        ResponseBean rs = ontIdService.queryOntIdDetail(ontid, pageSize, pageNumber);
+        ResponseBean rs = ontIdService.queryOntIdTxsByOntid(ontid, pageSize, pageNumber);
         return rs;
+    }
 
+    @ApiOperation(value = "Get ONT ID Ddo by page")
+    @GetMapping(value = "/ontids/{ontid}/ddo")
+    public ResponseBean queryOntIdDdo(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{33}", message = "Incorrect ONT ID format") String ontid) {
+
+        log.info("####{}.{} begin...ontid:{}", CLASS_NAME, Helper.currentMethod(), ontid);
+
+        ResponseBean rs = ontIdService.queryOntidDdo(ontid);
+        return rs;
     }
 
 
