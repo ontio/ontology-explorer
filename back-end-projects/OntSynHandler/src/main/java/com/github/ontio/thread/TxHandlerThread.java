@@ -466,9 +466,10 @@ public class TxHandlerThread {
      */
     private void handleOep5TransferTxn(SessionMapperDto sessionMapperDto, JSONArray stateArray, int txType, String txHash, int blockHeight,
                                        int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag,
-                                       String contractAddress, Object oep5Obj, String payer, String calledContractHash) throws Exception {
+                                       String contractAddress, JSONObject oep5Obj, String payer, String calledContractHash) throws Exception {
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        //只解析birth和transfer合约方法
         if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
@@ -488,8 +489,10 @@ public class TxHandlerThread {
         }
 
         String assetName = "";
-        if (oep5Obj == null || "HyperDragons".equalsIgnoreCase(((JSONObject) oep5Obj).getString("name"))) {
-            // 如果是birth方法，id位置在2；如果是transfer方法，id位置在3
+        BigDecimal amount = ConstantParam.ZERO;
+        //云斗龙特殊处理,记录birth出来的云斗龙信息
+        if ("HyperDragons".equalsIgnoreCase(oep5Obj.getString("name"))) {
+            // 如果是birth方法，tokenid位置在2；如果是transfer方法，tokenid位置在3
             String dragonId = "";
             if ("birth".equalsIgnoreCase(action)) {
                 dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).toString();
@@ -503,33 +506,39 @@ public class TxHandlerThread {
                         .build();
                 sessionMapperDto.getOep5DragonMapper().insert(oep5Dragon);
             } else {
+                amount = ConstantParam.ONE;
                 dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
             }
             assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
         } else {
-            assetName = ((JSONObject) oep5Obj).getString("name") + ": " + stateArray.get(3);
+            //OEP5初始化交易，更新total_supply。且tokenid位置在2
+            if ("birth".equalsIgnoreCase(action)) {
+                assetName = oep5Obj.getString("symbol") + stateArray.get(2);
+                fromAddress = "";
+                toAddress = "";
+
+                Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
+                Oep5 oep5 = Oep5.builder()
+                        .contractHash(contractAddress)
+                        .totalSupply(totalSupply)
+                        .build();
+                sessionMapperDto.getOep5Mapper().updateByPrimaryKeySelective(oep5);
+
+            } else if ("transfer".equalsIgnoreCase(action)) {
+                //transfer方法，tokenid在位置3
+                assetName = oep5Obj.getString("symbol") + stateArray.get(3);
+                amount = ConstantParam.ONE;
+            }
         }
 
-        log.info("OEP5TransferTx:fromaddress:{}, toaddress:{}, oep5-assetName:{}", fromAddress, toAddress, assetName);
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, new BigDecimal("1"), txType, txHash, blockHeight,
+        log.info("OEP5TransferTx:fromaddress:{}, toaddress:{}, assetName:{}", fromAddress, toAddress, assetName);
+
+        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
-        if (!"transfer".equalsIgnoreCase(action)) {
-            txDetail.setAmount(ConstantParam.ZERO);
-        }
 
         sessionMapperDto.getTxDetailMapper().insert(txDetail);
         sessionMapperDto.getTxDetailDailyMapper().insert(TxDetail.toTxDetailDaily(txDetail));
         sessionMapperDto.getOep5TxDetailMapper().insert(TxDetail.toOep5TxDetail(txDetail));
-        //OEP5初始化交易
-        if ("birth".equalsIgnoreCase(action) && oep5Obj != null) {
-
-            Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
-            Oep5 oep5 = Oep5.builder()
-                    .contractHash(contractAddress)
-                    .totalSupply(totalSupply)
-                    .build();
-            sessionMapperDto.getOep5Mapper().updateByPrimaryKeySelective(oep5);
-        }
     }
 
 
@@ -1003,7 +1012,6 @@ public class TxHandlerThread {
         }
         return str;
     }
-
 
 
     /**
