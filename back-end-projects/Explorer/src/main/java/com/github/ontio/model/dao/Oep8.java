@@ -1,8 +1,9 @@
 package com.github.ontio.model.dao;
 
-import java.math.BigDecimal;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "tbl_oep8")
 public class Oep8 {
@@ -29,7 +30,7 @@ public class Oep8 {
      * OEP8代币总量
      */
     @Column(name = "total_supply")
-    private BigDecimal totalSupply;
+    private Long totalSupply;
 
     /**
      * OEP8代币符号
@@ -46,7 +47,7 @@ public class Oep8 {
      * 审核标识，1：审核通过 0：未审核
      */
     @Column(name = "audit_flag")
-    private Integer auditFlag;
+    private Boolean auditFlag;
 
     /**
      * 更新时间，yyyy-MM-dd
@@ -113,7 +114,7 @@ public class Oep8 {
      *
      * @return total_supply - OEP8代币总量
      */
-    public BigDecimal getTotalSupply() {
+    public Long getTotalSupply() {
         return totalSupply;
     }
 
@@ -122,7 +123,7 @@ public class Oep8 {
      *
      * @param totalSupply OEP8代币总量
      */
-    public void setTotalSupply(BigDecimal totalSupply) {
+    public void setTotalSupply(Long totalSupply) {
         this.totalSupply = totalSupply;
     }
 
@@ -167,7 +168,7 @@ public class Oep8 {
      *
      * @return audit_flag - 审核标识，1：审核通过 0：未审核
      */
-    public Integer getAuditFlag() {
+    public Boolean getAuditFlag() {
         return auditFlag;
     }
 
@@ -176,7 +177,7 @@ public class Oep8 {
      *
      * @param auditFlag 审核标识，1：审核通过 0：未审核
      */
-    public void setAuditFlag(Integer auditFlag) {
+    public void setAuditFlag(Boolean auditFlag) {
         this.auditFlag = auditFlag;
     }
 

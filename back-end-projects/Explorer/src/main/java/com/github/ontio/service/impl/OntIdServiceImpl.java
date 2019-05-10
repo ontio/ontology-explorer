@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ConfigParam;
+import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.model.common.ClaimContextEnum;
 import com.github.ontio.model.common.PageResponseBean;
@@ -35,7 +36,6 @@ import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,19 +51,21 @@ import java.util.Map;
  */
 @Slf4j
 @Service("OntIdService")
-@MapperScan("com.github.ontio.dao")
 public class OntIdServiceImpl implements IOntIdService {
 
-    private static final String VERSION = "1.0";
 
-    @Autowired
-    private OntidTxDetailMapper ontidTxDetailMapper;
-    @Autowired
-    private com.github.ontio.mapper.CurrentMapper currentMapper;
-    @Autowired
-    private ConfigParam configParam;
+    private final OntidTxDetailMapper ontidTxDetailMapper;
+    private final CurrentMapper currentMapper;
+    private final ConfigParam configParam;
 
     private OntologySDKService sdkService;
+
+    @Autowired
+    public OntIdServiceImpl(OntidTxDetailMapper ontidTxDetailMapper, CurrentMapper currentMapper, ConfigParam configParam) {
+        this.ontidTxDetailMapper = ontidTxDetailMapper;
+        this.currentMapper = currentMapper;
+        this.configParam = configParam;
+    }
 
     private synchronized void initSDK() {
         if (sdkService == null) {

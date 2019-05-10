@@ -28,13 +28,6 @@ public interface IContractService {
 
     ResponseBean queryTxsByContractHash(String contractType, String contractHash, Integer pageNumber, Integer pageSize);
 
-
-    ResponseBean queryContractByHash(String contractHash, int pageSize, int pageNumber);
-
-    ResponseBean queryOEPContract(String type, int pageSize, int pageNumber);
-
-    ResponseBean queryOEPContractByHashAndTokenName(String contractHash, String type, String tokenName, int pageSize, int pageNumber);
-
     ResponseBean queryDappstoreContractInfo(Integer pageSize, Integer pageNumber);
 
     ResponseBean queryDappstore24hSummary();

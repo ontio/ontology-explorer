@@ -2,14 +2,13 @@ package com.github.ontio.controller;
 
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.SummaryServiceImpl;
+import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -43,17 +42,31 @@ public class SummaryController {
         return summaryService.getBlockChainTps();
     }
 
-    @ApiOperation(value = "Get blockchain daily or weekly or monthly summary information")
-    @GetMapping(value = "/blockchain/{type}/{start_time}/{end_time}")
-    public ResponseBean getChainSummary(@PathVariable("type") String type, @PathVariable("start_time") int startTime,
-                                             @PathVariable("end_time") int endTime) {
-        return summaryService.getChainSummary(type, startTime, endTime);
+    @ApiOperation(value = "Get blockchain daily summary information")
+    @GetMapping(value = "/blockchain/daily/")
+    public ResponseBean getChainSummary(@RequestParam("start_time") Long startTime,
+                                        @RequestParam("end_time") Long endTime) {
+
+        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        if(Helper.isTimeRangeExceedLimit(startTime, endTime)){
+            return  new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
+        }
+        return summaryService.getBlockChainDailySummary(startTime, endTime);
     }
 
-    @ApiOperation(value = "Get contract daily or weekly or monthly summary information")
-    @GetMapping(value = "/contract/{contract_hash}/{type}/{start_time}/{end_time}")
-    public ResponseBean getContractSummary(@PathVariable("contract_hash") String contractHash, @PathVariable("type") String type,
-                                           @PathVariable("start_time") int startTime, @PathVariable("end_time") int endTime) {
-        return summaryService.getContractSummary(contractHash, type, startTime, endTime);
+
+    @ApiOperation(value = "Get contract daily  summary information")
+    @GetMapping(value = "/contracts/{contract_hash}/daily")
+    public ResponseBean getContractSummary(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash")  String contractHash,
+                                           @RequestParam("start_time") Long startTime,
+                                           @RequestParam("end_time") Long endTime) {
+
+        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        if(Helper.isTimeRangeExceedLimit(startTime, endTime)){
+            return  new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
+        }
+        return summaryService.getContractDailySummary(contractHash, startTime, endTime);
     }
 }

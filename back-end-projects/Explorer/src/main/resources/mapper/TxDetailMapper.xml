@@ -143,11 +143,11 @@
         OR to_address = #{address}
     </select>
 
-    <select id="queryTransactionCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+    <select id="queryTxCount" resultType="java.lang.Integer">
         select count(DISTINCT(tx_hash))
         from tbl_tx_detail
         where tx_time &gt;= #{startTime}
-          and <![CDATA[ tx_time <= #{endTime} ]]>
+        and <![CDATA[ tx_time <= #{endTime} ]]>
     </select>
 
 
@@ -170,6 +170,56 @@
         select count(DISTINCT (tx_hash))
         from tbl_tx_detail
         where called_contract_hash = #{calledContractHash}
+    </select>
+
+
+    <select id="selectTransferTxsByAddrAndPage" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT *
+        FROM
+        (
+            SELECT <include refid="transferTxDetailColumns" />
+            FROM tbl_tx_detail
+            WHERE from_address = #{address}
+            <if test="assetName != '' and assetName != null">
+                and asset_name = #{assetName}
+            </if>
+            AND event_type IN (2, 3)
+              UNION ALL
+            SELECT <include refid="transferTxDetailColumns" />
+            FROM tbl_tx_detail
+            WHERE to_address = #{address}
+            <if test="assetName != '' and assetName != null">
+                and asset_name = #{assetName}
+            </if>
+            AND event_type IN (2, 3)
+        ) a
+        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectTransferTxsByAddrAndTime" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT *
+        FROM
+        (
+            SELECT <include refid="transferTxDetailColumns" />
+            FROM tbl_tx_detail
+            WHERE from_address = #{address}
+            <if test="assetName != '' and assetName != null">
+                and asset_name = #{assetName}
+            </if>
+            AND event_type IN (2, 3)
+              UNION ALL
+            SELECT <include refid="transferTxDetailColumns" />
+            FROM tbl_tx_detail
+            WHERE to_address = #{address}
+            <if test="assetName != '' and assetName != null">
+                and asset_name = #{assetName}
+            </if>
+            AND event_type IN (2, 3)
+        ) a
+        where a.txTime &gt;= #{startTime}
+        and <![CDATA[ a.txTime <= #{endTime} ]]>
+        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
     </select>
 
 </mapper>

@@ -2,6 +2,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IAddressService;
+import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class AddressController {
     @GetMapping(value = "/{address}/balances")
     public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
 
-        log.info("########{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         ResponseBean rs = addressService.queryAddressBalance(address);
         return rs;
@@ -49,10 +50,10 @@ public class AddressController {
     public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
                                                       @RequestParam(name = "page_size",required = false) @Min(1) @Max(20) Integer pageSize,
                                                       @RequestParam(name = "page_number",required = false) @Min(1) Integer pageNumber,
-                                                      @RequestParam(name = "begin_time",required = false) Integer beginTime,
-                                                      @RequestParam(name = "end_time",required = false) Integer endTime) {
+                                                      @RequestParam(name = "begin_time",required = false) Long beginTime,
+                                                      @RequestParam(name = "end_time",required = false) Long endTime) {
 
-        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         ResponseBean rs = new ResponseBean();
         if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
@@ -71,8 +72,8 @@ public class AddressController {
                                                                   @PathVariable("asset_name") String assetName,
                                                                   @RequestParam(name = "page_size",required = false) @Min(1) @Max(20) Integer pageSize,
                                                                   @RequestParam(name = "page_number",required = false) @Min(1) Integer pageNumber,
-                                                                  @RequestParam(name = "begin_time",required = false) Integer beginTime,
-                                                                  @RequestParam(name = "end_time",required = false) Integer endTime) {
+                                                                  @RequestParam(name = "begin_time",required = false) Long beginTime,
+                                                                  @RequestParam(name = "end_time",required = false) Long endTime) {
 
         log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
@@ -82,6 +83,9 @@ public class AddressController {
             rs = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
 
+            if(Helper.isTimeRangeExceedLimit(beginTime, endTime)){
+                return  new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
+            }
             rs = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
         }
         return rs;

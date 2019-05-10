@@ -1,5 +1,6 @@
 package com.github.ontio.mapper;
 
+import com.github.ontio.model.dto.TransferTxDto;
 import com.github.ontio.model.dto.TxBasicDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import org.apache.ibatis.annotations.Param;
@@ -30,14 +31,17 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     Integer selectTxCountByAddr(@Param("address") String address);
 
-    Integer queryTransactionCount(Map<String, Object> param);
-
     List<TxBasicDto> selectTxsByBlockHeight(@Param("blockHeight") Integer blockHeight);
 
 
     List<TxDetailDto> selectTxsByCalledContractHash(@Param("calledContractHash") String contractHash, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 
     Integer selectCountByCalledContracthash(@Param("calledContractHash") String calledContractHash);
+
+
+    List<TransferTxDto> selectTransferTxsByAddrAndPage(@Param("address") String address, @Param("assetName") String assetName, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
+
+    List<TransferTxDto> selectTransferTxsByAddrAndTime(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
 
 }

@@ -13,4 +13,14 @@
     <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
     <result column="event_log" jdbcType="LONGVARCHAR" property="eventLog" />
   </resultMap>
+
+
+  <select id="queryTxCount" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_tx_eventlog
+    where tx_time &gt;= #{startTime}
+    and <![CDATA[ tx_time <= #{endTime} ]]>
+  </select>
+
+
 </mapper>

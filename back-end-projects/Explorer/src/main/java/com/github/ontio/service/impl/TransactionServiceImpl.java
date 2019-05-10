@@ -64,7 +64,6 @@ public class TransactionServiceImpl implements ITransactionService {
     private com.github.ontio.mapper.CurrentMapper currentMapper;
     @Autowired
     private OntidTxDetailMapper ontidTxDetailMapper;
-
     @Autowired
     private TransactionDetailMapper transactionDetailMapper;
     @Autowired
@@ -73,8 +72,6 @@ public class TransactionServiceImpl implements ITransactionService {
     private Oep5Mapper oep5Mapper;
     @Autowired
     private Oep8Mapper oep8Mapper;
-    @Autowired
-    private OntIdMapper ontIdMapper;
     @Autowired
     private ConfigParam configParam;
 

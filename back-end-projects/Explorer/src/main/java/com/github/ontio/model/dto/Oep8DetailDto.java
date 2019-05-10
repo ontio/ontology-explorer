@@ -1,6 +1,5 @@
 package com.github.ontio.model.dto;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.Contract;
 import lombok.Data;
@@ -14,12 +13,12 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Oep8DetailDto extends Contract {
 
-    private JSONObject totalSupply;
+    private Object totalSupply;
 
-    private JSONObject symbol;
+    private Object symbol;
 
-    private JSONObject tokenName;
+    private Object tokenName;
 
-    private JSONObject tokenId;
+    private Object tokenId;
 
 }

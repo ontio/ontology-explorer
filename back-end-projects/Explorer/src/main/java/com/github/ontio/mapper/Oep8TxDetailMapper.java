@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface Oep8TxDetailMapper extends Mapper<Oep8TxDetailDto> {
 
-    List<TxDetailDto> selectTxsByCalledContractHash(@Param("calledContractHash") String contractHash, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
+    List<TxDetailDto> selectTxsByCalledContractHashAndTokenName(@Param("calledContractHash") String calledContractHash, @Param("tokenName") String tokenName, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 
-    Integer selectCountByCalledContracthash(@Param("calledContractHash") String calledContractHash);
+    Integer selectCountByCalledContracthashAndTokenName(@Param("calledContractHash") String calledContractHash, @Param("tokenName") String tokenName);
 
 }
