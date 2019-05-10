@@ -19,6 +19,7 @@
 
 package com.github.ontio.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 
 import java.math.BigDecimal;
@@ -72,6 +73,8 @@ public final class ConstantParam {
 
     public static final BigDecimal ZERO = new BigDecimal("0");
 
+    public static final BigDecimal ONE = new BigDecimal("1");
+
     public static final BigDecimal ONG_DECIMAL = new BigDecimal("1000000000");
 
     //ontid operation description separator
@@ -80,15 +83,15 @@ public final class ConstantParam {
     //ontid operation description separator
     public static final String ONTID_SEPARATOR2 = "&";
 
-    public static Map<String, Object> OEP4MAP = new HashMap<>();
+    public static Map<String, JSONObject> OEP4MAP = new HashMap<>();
 
     public static Set<String> OEP4CONTRACTS = new HashSet<>();
 
-    public static Map<String, Object> OEP5MAP = new HashMap<>();
+    public static Map<String, JSONObject> OEP5MAP = new HashMap<>();
 
     public static Set<String> OEP5CONTRACTS = new HashSet<>();
 
-    public static Map<String, Object> OEP8MAP = new HashMap<>();
+    public static Map<String, JSONObject> OEP8MAP = new HashMap<>();
 
     public static Set<String> OEP8CONTRACTS = new HashSet<>();
 
