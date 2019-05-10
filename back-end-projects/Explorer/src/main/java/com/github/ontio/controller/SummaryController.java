@@ -29,7 +29,7 @@ public class SummaryController {
     @GetMapping(value = "/blockchain/latest-info")
     public ResponseBean getBlockChainLatestInfo() {
 
-        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
         return summaryService.getBlockChainLatestInfo();
     }
 
@@ -37,20 +37,20 @@ public class SummaryController {
     @GetMapping(value = "/blockchain/tps")
     public ResponseBean getBlockChainTps() {
 
-        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         return summaryService.getBlockChainTps();
     }
 
     @ApiOperation(value = "Get blockchain daily summary information")
     @GetMapping(value = "/blockchain/daily/")
-    public ResponseBean getChainSummary(@RequestParam("start_time") Long startTime,
+    public ResponseBean getBlockChainSummary(@RequestParam("start_time") Long startTime,
                                         @RequestParam("end_time") Long endTime) {
 
-        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...start_time:{},end_time:{}", CLASS_NAME, Helper.currentMethod(), startTime, endTime);
 
-        if(Helper.isTimeRangeExceedLimit(startTime, endTime)){
-            return  new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
+        if (Helper.isTimeRangeExceedLimit(startTime, endTime)) {
+            return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
         }
         return summaryService.getBlockChainDailySummary(startTime, endTime);
     }
@@ -58,14 +58,14 @@ public class SummaryController {
 
     @ApiOperation(value = "Get contract daily  summary information")
     @GetMapping(value = "/contracts/{contract_hash}/daily")
-    public ResponseBean getContractSummary(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash")  String contractHash,
+    public ResponseBean getContractSummary(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
                                            @RequestParam("start_time") Long startTime,
                                            @RequestParam("end_time") Long endTime) {
 
-        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin...start_time:{},end_time:{}", CLASS_NAME, Helper.currentMethod(), startTime, endTime);
 
-        if(Helper.isTimeRangeExceedLimit(startTime, endTime)){
-            return  new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
+        if (Helper.isTimeRangeExceedLimit(startTime, endTime)) {
+            return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
         }
         return summaryService.getContractDailySummary(contractHash, startTime, endTime);
     }

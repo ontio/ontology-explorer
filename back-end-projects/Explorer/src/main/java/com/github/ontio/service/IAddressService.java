@@ -15,5 +15,7 @@ public interface IAddressService {
 
     ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
 
+    ResponseBean queryTransferTxsByTimeAndPage(String address, String assetName, Long endTime, Integer pageSize);
+
 
 }
