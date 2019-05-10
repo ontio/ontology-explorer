@@ -6,11 +6,12 @@ import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
 import com.github.ontio.mapper.TxDetailMapper;
-import com.github.ontio.model.common.PageResponseBean;
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
 import com.github.ontio.model.dto.BalanceDto;
-import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.TransferTxDetailDto;
+import com.github.ontio.model.dto.TransferTxDto;
 import com.github.ontio.service.IAddressService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -148,7 +149,7 @@ public class AddressServiceImpl implements IAddressService {
 
         //审核过的OEP5余额
         Oep5 oep5Temp = new Oep5();
-        oep5Temp.setAuditflag(ConstantParam.AUDIT_PASSED);
+        oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
         List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
         for (Oep5 oep5 :
                 oep5s) {
@@ -167,8 +168,8 @@ public class AddressServiceImpl implements IAddressService {
         }
 
         //审核过的OEP8余额,南瓜的也合并在一起了
-        List<Map<String,String>> oep8s = oep8Mapper.selectAuditPassedOep8();
-        for (Map<String,String> map :
+        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8();
+        for (Map<String, String> map :
                 oep8s) {
             String contractHash = map.get("contractHash");
             String symbol = map.get("symbol");
@@ -200,16 +201,16 @@ public class AddressServiceImpl implements IAddressService {
      */
     private String calculateWaitingBoundOng(String address, String ont) {
 
-        Integer txntime = txDetailMapper.selectLatestONTTransferTxTime(address);
+        Integer txtime = txDetailMapper.selectLatestONTTransferTxTime(address);
 
-        if (Helper.isEmptyOrNull(txntime)) {
+        if (Helper.isEmptyOrNull(txtime)) {
             return "0";
         }
 
         long now = System.currentTimeMillis() / 1000L;
-        log.info("txntime:{},now:{}", txntime, now);
+        log.info("calculateWaitingBoundOng txtime:{},now:{}", txtime, now);
 
-        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txntime)).multiply(configParam.ONG_SECOND_GENERATE);
+        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txtime)).multiply(configParam.ONG_SECOND_GENERATE);
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
 
         return ong.toPlainString();
@@ -218,55 +219,13 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
 
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("address", address);
-        paramMap.put("assetName", assetName);
-        paramMap.put("startIndex", 0);
-        paramMap.put("pageSize", pageNumber * pageSize * 3);
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<Map> fromAddrTxnList = txDetailMapper.selectTransferTxByFromAddr(paramMap);
-        List<Map> toAddrTxnList = txDetailMapper.selectTransferTxByToAddr(paramMap);
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByAddrAndPage(address, assetName, start, pageSize);
 
-        List<Map> dbTxnList = new ArrayList<>();
-        dbTxnList.addAll(fromAddrTxnList);
-        dbTxnList.addAll(toAddrTxnList);
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
 
-        if (fromAddrTxnList.size() != 0 && toAddrTxnList.size() != 0) {
-            sortTxnList(dbTxnList);
-        }
-
-        List<Map> formattedTxnList = formatTransferTxnList2(dbTxnList);
-
-        List<Map> returnTxnList = new LinkedList<>();
-
-        if (formattedTxnList.size() < pageSize * pageNumber && formattedTxnList.size() > 0) {
-            int amount = txDetailMapper.selectTxCountByAddr(address);
-            //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
-            if (amount > pageNumber * pageSize * 3) {
-                returnTxnList = queryAddressInfoSpe(address, pageNumber, pageSize, amount, assetName);
-            } else {
-                //先查询出txnlist，再根据请求条数进行分页
-                //根据分页确认start，end即请求的pageSize条数
-                int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
-                int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
-                for (int k = start; k < end; k++) {
-                    returnTxnList.add(formattedTxnList.get(k));
-                }
-            }
-        } else {
-            //先查询出txnlist，再根据请求条数进行分页
-            //根据分页确认start，end即请求的pageSize条数
-            int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
-            int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
-            for (int k = start; k < end; k++) {
-                returnTxnList.add(formattedTxnList.get(k));
-            }
-        }
-
-        PageResponseBean pageResponseBean = new PageResponseBean();
-        pageResponseBean.setRecords(returnTxnList);
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
 
     /**
@@ -376,6 +335,75 @@ public class AddressServiceImpl implements IAddressService {
 
 
     /**
+     * 格式化转账交易列表
+     *
+     * @return
+     */
+    private List<TransferTxDto> formatTransferTxs(List<TransferTxDto> transferTxDtos) {
+
+        List<TransferTxDto> formattedTransferTxs = new ArrayList<>();
+
+        String previousTxHash = "";
+        int previousTxIndex = 0;
+        for (int i = 0; i < transferTxDtos.size(); i++) {
+            TransferTxDto transferTxDto = transferTxDtos.get(i);
+            //ONG精度格式化
+            String assetName = transferTxDto.getAssetName();
+            BigDecimal amount = transferTxDto.getAmount();
+            if (ConstantParam.ONG.equals(assetName)) {
+                amount = amount.divide(ConstantParam.ONG_TOTAL);
+            }
+
+            String txHash = transferTxDto.getTxHash();
+            log.info("txHash:{}", txHash);
+
+            if (txHash.equals(previousTxHash)) {
+                //自己给自己转账，sql会查询出两条记录.
+                if (previousTxIndex != transferTxDto.getTxIndex()) {
+
+                    TransferTxDetailDto transferTxDetailDto = TransferTxDetailDto.builder()
+                            .amount(amount)
+                            .fromAddress(transferTxDto.getFromAddress())
+                            .toAddress(transferTxDto.getToAddress())
+                            .assetName(transferTxDto.getAssetName())
+                            .build();
+
+                    List<TransferTxDetailDto> transferTxnList = (List<TransferTxDetailDto>) (formattedTransferTxs.get(formattedTransferTxs.size() - 1)).getTransfers();
+                    transferTxnList.add(transferTxDetailDto);
+
+                }
+                previousTxIndex = transferTxDto.getTxIndex();
+            } else {
+
+                previousTxIndex = transferTxDto.getTxIndex();
+
+                TransferTxDetailDto transferTxDetailDto = TransferTxDetailDto.builder()
+                        .amount(amount)
+                        .fromAddress(transferTxDto.getFromAddress())
+                        .toAddress(transferTxDto.getToAddress())
+                        .assetName(transferTxDto.getAssetName())
+                        .build();
+                List<TransferTxDetailDto> transferTxnList = new ArrayList<>();
+                transferTxnList.add(transferTxDetailDto);
+
+                transferTxDto.setTransfers(transferTxnList);
+                transferTxDto.setFromAddress(null);
+                transferTxDto.setToAddress(null);
+                transferTxDto.setAmount(null);
+                transferTxDto.setAssetName(null);
+                transferTxDto.setTxIndex(null);
+
+                formattedTransferTxs.add(transferTxDto);
+            }
+
+            previousTxHash = txHash;
+        }
+
+        return formattedTransferTxs;
+    }
+
+
+    /**
      * 针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
      *
      * @param address
@@ -422,9 +450,14 @@ public class AddressServiceImpl implements IAddressService {
     }
 
 
-
     @Override
-    public ResponseBean queryTransferTxsByTime(String address, String assetName, Integer beginTime, Integer endTime) {
-        return null;
+    public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
+
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByAddrAndTime(address, assetName, beginTime, endTime);
+
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+
     }
 }

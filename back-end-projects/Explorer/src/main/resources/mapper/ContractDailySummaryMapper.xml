@@ -16,11 +16,24 @@
     <result column="dapp_name" jdbcType="VARCHAR" property="dappName" />
   </resultMap>
 
-  <select id="selectDailySummaryByContractHash" parameterType="java.util.Map" resultType="java.util.Map" useCache="false">
-    select tx_count, ong_sum, ong_sum, active_address_count, new_address_count, time
+
+    <sql id="basicColumns">
+      time as time,
+      contract_hash as contractHash,
+      tx_count as txCount,
+      ont_sum as ontSum,
+      ong_sum as ongSum,
+      active_address_count as activeAddressCount,
+      new_address_count as newAddressCount
+    </sql>
+
+
+  <select id="selectDailySummaryByContractHash" resultType="com.github.ontio.model.dto.ContractDailySummaryDto">
+    select <include refid="basicColumns"/>
     from tbl_contract_daily_summary
-    where contract_hash = #{contractHash} and time >= #{startTime}
-      and <![CDATA[ time <= #{endTime} ]]>
+    where contract_hash = #{contractHash}
+    and time >= #{startTime}
+    and <![CDATA[ time <= #{endTime} ]]>
     order by time
   </select>
 

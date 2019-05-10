@@ -1,7 +1,9 @@
 package com.github.ontio.model.dao;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
 
 @Table(name = "tbl_oep4")
 public class Oep4 {
@@ -43,7 +45,7 @@ public class Oep4 {
      * 审核标识，1：审核通过 0：未审核
      */
     @Column(name = "audit_flag")
-    private Integer auditFlag;
+    private Boolean auditFlag;
 
     /**
      * 更新时间
@@ -164,7 +166,7 @@ public class Oep4 {
      *
      * @return audit_flag - 审核标识，1：审核通过 0：未审核
      */
-    public Integer getAuditFlag() {
+    public Boolean getAuditFlag() {
         return auditFlag;
     }
 
@@ -173,7 +175,7 @@ public class Oep4 {
      *
      * @param auditFlag 审核标识，1：审核通过 0：未审核
      */
-    public void setAuditFlag(Integer auditFlag) {
+    public void setAuditFlag(Boolean auditFlag) {
         this.auditFlag = auditFlag;
     }
 

@@ -32,7 +32,6 @@ import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -48,8 +47,6 @@ public class BlockServiceImpl implements IBlockService {
     private final TxDetailMapper txDetailMapper;
     private final CurrentMapper currentMapper;
 
-    @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
     @Autowired
     public BlockServiceImpl(BlockMapper blockMapper, TxDetailMapper txDetailMapper, CurrentMapper currentMapper) {
         this.blockMapper = blockMapper;

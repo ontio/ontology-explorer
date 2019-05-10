@@ -8,7 +8,7 @@ public interface ISummaryService {
 
     ResponseBean getBlockChainTps();
 
-    ResponseBean getChainSummary(String type, int startTime, int endTime);
+    ResponseBean getBlockChainDailySummary(Long startTime, Long endTime);
 
-    ResponseBean getContractSummary(String contractHash, String type, int startTime, int endTime);
+    ResponseBean getContractDailySummary(String contractHash, Long startTime, Long endTime);
 }
