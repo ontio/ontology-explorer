@@ -47,6 +47,8 @@ public class ContractController {
         this.contractService = contractService;
     }
 
+
+
     @ApiOperation(value = "Get contract list by page")
     @GetMapping
     public ResponseBean queryContractsByPage(@RequestParam("page_size") @Max(20) @Min(1) Integer pageSize,
@@ -78,32 +80,6 @@ public class ContractController {
         log.info("####{}.{} begin...contract_type:{},contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractType, contractHash);
 
         return contractService.queryTxsByContractHash(contractType, contractHash, pageNumber,pageSize);
-    }
-
-
-    /**
-     * 查询dappstore里的合约列表信息
-     *
-     * @param pageSize
-     * @param pageNumber
-     * @return
-     */
-    @GetMapping(value = "/contract/dappstore/{pagesize}/{pagenumber}")
-    public ResponseBean queryDappstoreContractInfo(@PathVariable("pagesize") Integer pageSize, @PathVariable("pagenumber") Integer pageNumber) {
-        ResponseBean rs = contractService.queryDappstoreContractInfo(pageSize, pageNumber);
-        return rs;
-    }
-
-
-    /**
-     * 查询dappstore里合约汇总信息
-     *
-     * @return
-     */
-    @GetMapping(value = "/contract/dappstore/24h/summary")
-    public ResponseBean queryDappstoreContract24hSummary() {
-        ResponseBean rs = contractService.queryDappstore24hSummary();
-        return rs;
     }
 
 

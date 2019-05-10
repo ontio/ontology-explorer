@@ -19,7 +19,6 @@
 
     <sql id="basicColumns">
       time as time,
-      contract_hash as contractHash,
       tx_count as txCount,
       ont_sum as ontSum,
       ong_sum as ongSum,

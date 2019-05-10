@@ -22,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouq
@@ -33,22 +35,24 @@ import java.util.*;
 @Service("AddressService")
 public class AddressServiceImpl implements IAddressService {
 
+    private final Oep4Mapper oep4Mapper;
+    private final Oep8Mapper oep8Mapper;
+    private final Oep5Mapper oep5Mapper;
+    private final TxDetailMapper txDetailMapper;
+    private final ConfigParam configParam;
 
     @Autowired
-    private Oep4Mapper oep4Mapper;
-    @Autowired
-    private Oep8Mapper oep8Mapper;
-    @Autowired
-    private Oep5Mapper oep5Mapper;
-    @Autowired
-    private TxDetailMapper txDetailMapper;
-
-    @Autowired
-    private ConfigParam configParam;
+    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper, ConfigParam configParam) {
+        this.oep4Mapper = oep4Mapper;
+        this.oep8Mapper = oep8Mapper;
+        this.oep5Mapper = oep5Mapper;
+        this.txDetailMapper = txDetailMapper;
+        this.configParam = configParam;
+    }
 
     private OntologySDKService sdk;
 
-    private synchronized void initSDK() {
+    private void initSDK() {
         if (sdk == null) {
             sdk = OntologySDKService.getInstance(configParam);
         }
@@ -158,7 +162,6 @@ public class AddressServiceImpl implements IAddressService {
             if (balance.compareTo(ConstantParam.ZERO) == 0) {
                 continue;
             }
-
             BalanceDto balanceDto = BalanceDto.builder()
                     .assetName(oep5.getSymbol())
                     .assetType(ConstantParam.ASSET_TYPE_OEP5)
@@ -167,7 +170,7 @@ public class AddressServiceImpl implements IAddressService {
             balanceList.add(balanceDto);
         }
 
-        //审核过的OEP8余额,南瓜的也合并在一起了
+        //审核过的OEP8余额
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8();
         for (Map<String, String> map :
                 oep8s) {
@@ -201,7 +204,7 @@ public class AddressServiceImpl implements IAddressService {
      */
     private String calculateWaitingBoundOng(String address, String ont) {
 
-        Integer txtime = txDetailMapper.selectLatestONTTransferTxTime(address);
+        Integer txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
 
         if (Helper.isEmptyOrNull(txtime)) {
             return "0";
@@ -216,123 +219,54 @@ public class AddressServiceImpl implements IAddressService {
         return ong.toPlainString();
     }
 
+
     @Override
     public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByAddrAndPage(address, assetName, start, pageSize);
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
 
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
 
-    /**
-     * 根据height倒序,再txnhash,txnindex正序排序
-     *
-     * @param list
-     * @return
-     */
-    private List<Map<String, Object>> sortTxnList(List list) {
+    @Override
+    public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
-        Collections.sort(list, new Comparator<Map<String, Object>>() {
-            @Override
-            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-                Integer height1 = (Integer) o1.get("blockHeight");
-                Integer height2 = (Integer) o2.get("blockHeight");
-
-                if (height1.compareTo(height2) == 0) {
-                    String txnHash1 = o1.get("txHash").toString();
-                    String txnHash2 = o2.get("txHash").toString();
-                    if (txnHash1.compareTo(txnHash2) == 0) {
-                        if (o1.containsKey("txIndex") && o2.containsKey("txIndex")) {
-                            Integer txnindex1 = (Integer) o1.get("txIndex");
-                            Integer txnindex2 = (Integer) o2.get("txIndex");
-                            return txnindex1.compareTo(txnindex2);
-                        }
-                        return txnHash1.compareTo(txnHash2);
-                    } else {
-                        return txnHash1.compareTo(txnHash2);
-                    }
-                } else {
-                    return -height1.compareTo(height2);
-                }
-            }
-        });
-
-        return list;
-    }
-
-    /**
-     * 格式化转账交易列表
-     *
-     * @param dbTxnList
-     * @return
-     */
-    private List<Map> formatTransferTxnList2(List<Map> dbTxnList) {
-
-        List<Map> formattedTxnList = new ArrayList<>();
-
-        String previousTxnHash = "";
-        int previousTxnIndex = 0;
-        for (int i = 0; i < dbTxnList.size(); i++) {
-            Map map = dbTxnList.get(i);
-            //金额转换string给前端显示
-            map.put("Fee", ((BigDecimal) map.get("Fee")).toPlainString());
-            //ONG精度格式化
-            String assetName = (String) map.get("AssetName");
-            BigDecimal amount = (BigDecimal) map.get("Amount");
-            if (ConstantParam.ONG.equals(assetName)) {
-                amount = amount.divide(ConstantParam.ONT_TOTAL);
-            }
-
-            String txnhash = (String) map.get("TxnHash");
-            //   log.info("txnhash:{}", txnhash);
-
-            if (txnhash.equals(previousTxnHash)) {
-                //自己给自己转账，sql会查询出两条记录.
-                if (previousTxnIndex != (Integer) map.get("TxnIndex")) {
-
-                    Map<String, Object> transfertxnListMap = new HashMap<>();
-                    transfertxnListMap.put("Amount", amount.toPlainString());
-                    transfertxnListMap.put("FromAddress", map.get("FromAddress"));
-                    transfertxnListMap.put("ToAddress", map.get("ToAddress"));
-                    transfertxnListMap.put("AssetName", assetName);
-
-                    List<Map> transferTxnList = (List<Map>) (formattedTxnList.get(formattedTxnList.size() - 1)).get("TransferList");
-                    transferTxnList.add(transfertxnListMap);
-                }
-                previousTxnIndex = (Integer) map.get("TxnIndex");
-            } else {
-
-                Map<String, Object> transfertxnListMap = new HashMap<>();
-                transfertxnListMap.put("Amount", amount.toPlainString());
-                transfertxnListMap.put("FromAddress", map.get("FromAddress"));
-                transfertxnListMap.put("ToAddress", map.get("ToAddress"));
-                transfertxnListMap.put("AssetName", assetName);
-
-                List<Map> transferTxnList = new ArrayList<>();
-                transferTxnList.add(transfertxnListMap);
-
-                map.put("TransferList", transferTxnList);
-
-                map.remove("FromAddress");
-                map.remove("ToAddress");
-                map.remove("Amount");
-                map.remove("AssetName");
-                previousTxnIndex = (Integer) map.get("TxnIndex");
-                map.remove("TxnIndex");
-
-                formattedTxnList.add(map);
-            }
-
-            previousTxnHash = txnhash;
+        List<TransferTxDto> transferTxDtos = new ArrayList<>();
+        //云斗龙资产使用like查询, for ONTO
+        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+            assetName = assetName + "%";
+            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTime(address, assetName, beginTime, endTime);
+        } else {
+            transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
         }
 
-        return formattedTxnList;
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
 
+
+    @Override
+    public ResponseBean queryTransferTxsByTimeAndPage(String address, String assetName, Long endTime, Integer pageSize) {
+
+        List<TransferTxDto> transferTxDtos = new ArrayList<>();
+        //云斗龙资产使用like查询
+        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+            assetName = assetName + "%";
+            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
+        } else {
+            transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
+        }
+
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+
+    }
 
     /**
      * 格式化转账交易列表
@@ -403,61 +337,4 @@ public class AddressServiceImpl implements IAddressService {
     }
 
 
-    /**
-     * 针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
-     *
-     * @param address
-     * @param pageNumber
-     * @param pageSize
-     * @param amount
-     * @param assetName
-     * @return
-     */
-    private List<Map> queryAddressInfoSpe(String address, int pageNumber, int pageSize, int amount, String assetName) {
-
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("address", address);
-        paramMap.put("assetName", assetName);
-        //int txnAmount = transactionDetailMapper.selectTxnAmountByAddressInfo(paramMap);
-        //db查询返回总条数or分页的前几十条
-//        int dbReturnNum = (pageNumber * pageSize) > txnAmount ? txnAmount : (pageNumber * pageSize);
-        paramMap.put("startIndex", 0);
-        paramMap.put("pageSize", amount);
-
-        List<Map> fromAddrTxnList = txDetailMapper.selectTransferTxByFromAddr(paramMap);
-        List<Map> toAddrTxnList = txDetailMapper.selectTransferTxByToAddr(paramMap);
-
-        List<Map> dbTxnList = new ArrayList<>();
-        dbTxnList.addAll(fromAddrTxnList);
-        dbTxnList.addAll(toAddrTxnList);
-
-        if (fromAddrTxnList.size() != 0 && toAddrTxnList.size() != 0) {
-            sortTxnList(dbTxnList);
-        }
-
-        List<Map> formattedTxnList = formatTransferTxnList2(dbTxnList);
-
-        List<Map> returnTxnList = new LinkedList<>();
-        //先查询出txnlist，再根据请求条数进行分页
-        //根据分页确认start，end即请求的pageSize条数
-        int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
-        int end = (pageSize + start) > formattedTxnList.size() ? formattedTxnList.size() : (pageSize + start);
-        for (int k = start; k < end; k++) {
-            returnTxnList.add(formattedTxnList.get(k));
-        }
-
-        return returnTxnList;
-    }
-
-
-    @Override
-    public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
-
-        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByAddrAndTime(address, assetName, beginTime, endTime);
-
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
-
-    }
 }

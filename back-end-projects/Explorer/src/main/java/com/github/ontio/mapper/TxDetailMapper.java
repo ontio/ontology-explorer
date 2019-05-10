@@ -23,7 +23,7 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     List<TxDetailDto> selectTransferTxDetailByHash(@Param("txHash") String txHash);
 
-    Integer selectLatestONTTransferTxTime(@Param("address") String address);
+    Integer selectLatestOntTransferTxTime(@Param("address") String address);
 
     List<Map> selectTransferTxByToAddr(Map<String, Object> param);
 
@@ -39,9 +39,15 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
     Integer selectCountByCalledContracthash(@Param("calledContractHash") String calledContractHash);
 
 
-    List<TransferTxDto> selectTransferTxsByAddrAndPage(@Param("address") String address, @Param("assetName") String assetName, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
+    List<TransferTxDto> selectTransferTxsByPage(@Param("address") String address, @Param("assetName") String assetName, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
-    List<TransferTxDto> selectTransferTxsByAddrAndTime(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
+    List<TransferTxDto> selectTransferTxsByTime(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
+
+    List<TransferTxDto> selectTransferTxsByTimeAndPage(@Param("address") String address, @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
+
+    List<TransferTxDto> selectDragonTransferTxsByTime(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
+
+    List<TransferTxDto> selectDragonTransferTxsByTimeAndPage(@Param("address") String address, @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
 
 
 }

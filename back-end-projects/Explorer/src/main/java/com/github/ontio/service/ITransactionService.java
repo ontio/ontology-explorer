@@ -19,7 +19,6 @@
 
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.OldResult;
 import com.github.ontio.model.common.ResponseBean;
 
 /**
@@ -63,56 +62,6 @@ public interface ITransactionService {
      * @return
      */
     ResponseBean queryTxDetailByHash(String txHash);
-
-
-
-
-    /**
-     *  query asset balance and transactions
-     *
-     * @param address
-     * @return
-     */
-    OldResult queryAddressInfo(String address, int pageNumber, int pageSize);
-
-    /**
-     *  query the specially asset balance and transactions
-     *
-     * @param address
-     * @return
-     */
-    OldResult queryAddressInfo(String address, int pageNumber, int pageSize, String assetName);
-
-    /**
-     *  query the specially asset balance and transactions
-     *
-     * @param address
-     * @return
-     */
-    OldResult queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int time);
-
-    /**
-     *  query the specially asset balance and transactions
-     *
-     * @param address
-     * @return
-     */
-    OldResult queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime);
-
-    /**
-     *  query the specially asset balance and transactions
-     *
-     * @param address
-     * @return
-     */
-    OldResult queryAddressInfoByTime(String address, String assetName, int beginTime);
-
-    /**
-     * 查询地址余额
-     * @param address
-     * @return
-     */
-    OldResult queryAddressBalance(String address);
 
 
 }

@@ -40,7 +40,7 @@
   <select id="selectAddrAndOntIdCount" resultType="java.util.Map">
     select SUM(new_address_count) as addressTotal, SUM(new_ontid_count) as ontIdTotal
     from tbl_daily_summary
-    where <![CDATA[ time < #{startTime} ]]>
+    where <![CDATA[ time <= #{startTime} ]]>
   </select>
 
 </mapper>

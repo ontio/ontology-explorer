@@ -42,13 +42,9 @@
 		b.create_time as createTime,
 		b.update_time as updateTime,
 		b.logo as logo,
-		b.abi as abi,
-		b.`code` as code,
 		b.tx_count as txCount,
 		b.creator as creator,
-		b.address_count as addressCount,
-		b.ont_sum as ontSum,
-		b.ong_sum as ongSum
+		b.address_count as addressCount
 	FROM tbl_oep8 a, tbl_contract b
 	where a.contract_hash = b.contract_hash
 	GROUP BY

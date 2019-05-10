@@ -72,9 +72,6 @@
     source_code as sourceCode
   </sql>
 
-  <select id="selectContractByContractHash" parameterType="java.lang.String" resultType="com.github.ontio.model.Contracts" useCache="false">
-    select * from tbl_contract where contract_hash = #{contractHash}
-  </select>
 
 
   <select id="selectApprovedContract" resultType="com.github.ontio.model.dto.ContractDto">
@@ -83,6 +80,19 @@
     where audit_flag = 1
     order by create_time desc
     limit #{startIndex}, #{pageSize}
+  </select>
+
+
+  <select id="selectApprovedContractCount" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_contract
+    where audit_flag = 1
+  </select>
+  
+  <select id="selectContractDetail" resultType="com.github.ontio.model.dto.ContractDto">
+    select <include refid="detailColumns"/>
+    from tbl_contract
+    where contract_hash = #{contractHash}
   </select>
 
 

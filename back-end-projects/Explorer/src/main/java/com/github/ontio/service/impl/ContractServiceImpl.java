@@ -18,8 +18,6 @@
 
 package com.github.ontio.service.impl;
 
-import com.github.ontio.dao.ContractSummaryMapper;
-import com.github.ontio.dao.ContractsMapper;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
@@ -28,41 +26,39 @@ import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
-import com.github.ontio.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service("ContractService")
 public class ContractServiceImpl implements IContractService {
 
+    private final ContractMapper contractMapper;
+    private final Oep4TxDetailMapper oep4TxDetailMapper;
+    private final Oep5TxDetailMapper oep5TxDetailMapper;
+    private final Oep8TxDetailMapper oep8TxDetailMapper;
+    private final TxDetailMapper txDetailMapper;
+
     @Autowired
-    private ContractMapper contractMapper;
-    @Autowired
-    private Oep4TxDetailMapper oep4TxDetailMapper;
-    @Autowired
-    private Oep5TxDetailMapper oep5TxDetailMapper;
-    @Autowired
-    private Oep8TxDetailMapper oep8TxDetailMapper;
-    @Autowired
-    private TxDetailMapper txDetailMapper;
-    @Autowired
-    private ContractsMapper contractsMapper;
-    @Autowired
-    private ContractSummaryMapper contractSummaryMapper;
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailMapper txDetailMapper) {
+        this.contractMapper = contractMapper;
+        this.oep4TxDetailMapper = oep4TxDetailMapper;
+        this.oep5TxDetailMapper = oep5TxDetailMapper;
+        this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.txDetailMapper = txDetailMapper;
+
+    }
 
 
     @Override
     public ResponseBean queryContractsByPage(Integer pageSize, Integer pageNumber) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
-        List<ContractDto> contractDtos = contractMapper.selectApprovedContract(start, pageSize);
 
-        ContractDto contractDto = ContractDto.builder()
-                .auditFlag(1)
-                .build();
-        int count = contractMapper.selectCount(contractDto);
+        List<ContractDto> contractDtos = contractMapper.selectApprovedContract(start, pageSize);
+        int count = contractMapper.selectApprovedContractCount();
 
         PageResponseBean pageResponseBean = new PageResponseBean(contractDtos, count);
 
@@ -73,13 +69,7 @@ public class ContractServiceImpl implements IContractService {
     @Override
     public ResponseBean queryContractDetail(String contractHash) {
 
-        ContractDto contractDtoTemp = ContractDto.builder()
-                .contractHash(contractHash)
-                .build();
-        ContractDto contractDto = contractMapper.selectOne(contractDtoTemp);
-        contractDto.setAuditFlag(null);
-        contractDto.setDappstoreFlag(null);
-        contractDto.setTotalReward(null);
+        ContractDto contractDto = contractMapper.selectContractDetail(contractHash);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), contractDto);
     }
@@ -116,137 +106,4 @@ public class ContractServiceImpl implements IContractService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
-
-
-    @Override
-    public ResponseBean queryDappstoreContractInfo(Integer pageSize, Integer pageNumber) {
-
-        Map<String, Object> rsMap = new HashMap<>();
-
-        //查询Dappstore的合约基本信息
-        List<Map> allContractInfoList = contractsMapper.selectDappstoreContract();
-        if (allContractInfoList.size() == 0) {
-            rsMap.put("ContractList", new ArrayList<>());
-            rsMap.put("Total", 0);
-        } else {
-            //一个project可能会有多个合约
-            Set<Object> allProjectSet = new HashSet<>();
-            allContractInfoList.forEach(item -> allProjectSet.add(item.get("Project")));
-
-            List<String> allContractHashList = new ArrayList<>();
-            allContractInfoList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));
-
-            long nowTime = System.currentTimeMillis();
-            //一天前的UTC 0点
-            Calendar yesterdayCalendar = Calendar.getInstance();
-            yesterdayCalendar.setTimeInMillis(nowTime);
-            yesterdayCalendar.add(Calendar.DAY_OF_MONTH, -1);
-            yesterdayCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            yesterdayCalendar.set(Calendar.MINUTE, 0);
-            yesterdayCalendar.set(Calendar.SECOND, 0);
-            long yesterday0HourTime = yesterdayCalendar.getTimeInMillis() / 1000L;
-            //7天前的UTC 0点
-            Calendar last7dayCalendar = Calendar.getInstance();
-            last7dayCalendar.setTimeInMillis(nowTime);
-            last7dayCalendar.add(Calendar.DAY_OF_MONTH, -7);
-            last7dayCalendar.set(Calendar.HOUR_OF_DAY, 0);
-            last7dayCalendar.set(Calendar.MINUTE, 0);
-            last7dayCalendar.set(Calendar.SECOND, 0);
-            long last7Day0HourTime = last7dayCalendar.getTimeInMillis() / 1000L;
-
-            Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put("beginTime", last7Day0HourTime);
-            paramMap.put("endTime", yesterday0HourTime);
-            paramMap.put("contractHashList", allContractHashList);
-            paramMap.put("start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
-            paramMap.put("pageSize", pageSize);
-
-            //根据project分组查询周统计数据，并以WeekActiveAddressCount和WeekTxCount倒序
-            List<Map> contractOneWeekInfoList = contractSummaryMapper.selectDappstoreContractOneWeekInfo(paramMap);
-            //获取分页后的project列表
-            List<String> projectList = new ArrayList<>();
-            contractOneWeekInfoList.forEach(item -> projectList.add((String) item.get("Project")));
-
-
-            Map<String, Object> paramMap2 = new HashMap<>();
-            paramMap2.put("ProjectList", projectList);
-            List<String> contractHashList = contractsMapper.selectContractHashByProject(paramMap2);
-
-            paramMap.put("contractHashList", contractHashList);
-            paramMap.put("time", yesterday0HourTime);
-            //查询project日统计数据
-            List<Map> contractDayInfoList = contractSummaryMapper.selectDappstoreContractYesterdayInfo(paramMap);
-
-            for (Map map :
-                    contractOneWeekInfoList) {
-                String project = (String) map.get("Project");
-                for (Map map1 :
-                        allContractInfoList) {
-                    if (project.equals(map1.get("Project"))) {
-                        map.putAll(map1);
-                    }
-                }
-                for (Map map2 :
-                        contractDayInfoList) {
-                    if (project.equals(map2.get("Project"))) {
-                        map.putAll(map2);
-                    }
-                }
-            }
-
-            rsMap.put("ContractList", contractOneWeekInfoList);
-            rsMap.put("Total", allProjectSet.size());
-        }
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
-    }
-
-
-    @Override
-    public ResponseBean queryDappstore24hSummary() {
-
-        //查询Dappstore的合约基本信息
-        List<Map> allContractInfoList = contractsMapper.selectDappstoreContract();
-        Map<String, Object> result = new HashMap<>();
-        if (allContractInfoList.size() == 0) {
-            result.put("DayOnt", 0);
-            result.put("DayOng", 0);
-            result.put("DayActiveAddressCount", 0);
-            result.put("DayTxCount", 0);
-            result.put("Total", 0);
-            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
-        }
-        //一个project可能会有多个合约
-        Set<Object> allProjectSet = new HashSet<>();
-        allContractInfoList.forEach(item -> allProjectSet.add(item.get("Project")));
-
-        List<String> allContractHashList = new ArrayList<>();
-        allContractInfoList.forEach(item -> allContractHashList.add((String) item.get("ContractHash")));
-
-        result.put("Total", allProjectSet.size());
-
-        long nowTime = System.currentTimeMillis();
-        //一天前的UTC 0点
-        Calendar yesterdayCalendar = Calendar.getInstance();
-        yesterdayCalendar.setTimeInMillis(nowTime);
-        yesterdayCalendar.add(Calendar.DAY_OF_MONTH, -1);
-        yesterdayCalendar.set(Calendar.HOUR_OF_DAY, 0);
-        yesterdayCalendar.set(Calendar.MINUTE, 0);
-        yesterdayCalendar.set(Calendar.SECOND, 0);
-        long yesterday0HourTime = yesterdayCalendar.getTimeInMillis() / 1000L;
-
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("contractHashList", allContractHashList);
-        paramMap.put("time", yesterday0HourTime);
-        Map contractInfo = contractSummaryMapper.selectAllDappstoreContractYesterdayInfo(paramMap);
-        if (Helper.isEmptyOrNull(contractInfo)) {
-            result.put("DayOnt", 0);
-            result.put("DayOng", 0);
-            result.put("DayActiveAddressCount", 0);
-            result.put("DayTxCount", 0);
-        } else {
-            result.putAll(contractInfo);
-        }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
-    }
 }

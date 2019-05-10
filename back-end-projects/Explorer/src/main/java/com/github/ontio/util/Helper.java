@@ -20,7 +20,6 @@
 package com.github.ontio.util;
 
 import com.github.ontio.model.common.OntIdEventEnum;
-import com.github.ontio.paramBean.OldResult;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,24 +36,6 @@ import java.util.Map;
 public class Helper {
 
     private static final String SEPARATOR = "\\|\\|";
-
-    /**
-     * @param action
-     * @param error
-     * @param desc
-     * @param version
-     * @param rs
-     * @return
-     */
-    public static OldResult result(String action, long error, String desc, String version, Object rs) {
-        OldResult rr = new OldResult();
-        rr.Error = error;
-        rr.Action = action;
-        rr.Desc = desc;
-        rr.Version = version;
-        rr.Result = rs;
-        return rr;
-    }
 
 
     /**

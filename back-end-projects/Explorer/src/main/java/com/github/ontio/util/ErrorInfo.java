@@ -40,7 +40,7 @@ public enum ErrorInfo {
     /**
      * already exist
      */
-    ALREADY_EXIST(61002, "FAIL, already exist."),
+    TIME_EXCEED(61002, "Time interval exceed limit."),
 
     /**
      * not found in db

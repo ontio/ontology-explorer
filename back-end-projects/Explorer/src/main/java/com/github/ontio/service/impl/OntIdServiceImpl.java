@@ -78,7 +78,7 @@ public class OntIdServiceImpl implements IOntIdService {
 
         List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.selectOntidTxsByPage("", 0, count);
 
-        ontidTxDetailDtos.forEach(item->{
+        ontidTxDetailDtos.forEach(item -> {
             item.setDescription(Helper.templateOntIdOperation(item.getDescription()));
         });
 
@@ -91,7 +91,7 @@ public class OntIdServiceImpl implements IOntIdService {
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
         List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.selectOntidTxsByPage("", start, pageSize);
 
-        ontidTxDetailDtos.forEach(item->{
+        ontidTxDetailDtos.forEach(item -> {
             item.setDescription(Helper.templateOntIdOperation(item.getDescription()));
         });
 
@@ -108,14 +108,11 @@ public class OntIdServiceImpl implements IOntIdService {
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
         List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.selectOntidTxsByPage(ontId, start, pageSize);
 
-        ontidTxDetailDtos.forEach(item->{
+        ontidTxDetailDtos.forEach(item -> {
             item.setDescription(Helper.templateOntIdOperation(item.getDescription()));
         });
 
-        OntidTxDetailDto ontidTxDetailDto = OntidTxDetailDto.builder()
-                .ontid(ontId)
-                .build();
-        Integer count = ontidTxDetailMapper.selectCount(ontidTxDetailDto);
+        Integer count = ontidTxDetailMapper.selectTxCountByOntid(ontId);
 
         PageResponseBean pageResponseBean = new PageResponseBean(ontidTxDetailDtos, count);
 
@@ -182,13 +179,29 @@ public class OntIdServiceImpl implements IOntIdService {
                 } else if (ClaimContextEnum.LINKEDIN_CLAIM.context().equals(claimContext)) {
 
                     claimObj.put("ContextDesc", ClaimContextEnum.LINKEDIN_CLAIM.desc());
-                } else if (ClaimContextEnum.EMPLOYMENT_CLAIM.context().equals(claimContext)) {
+                } else if (ClaimContextEnum.SFP_DL_CLAIM.context().equals(claimContext)) {
 
-                    claimObj.put("ContextDesc", ClaimContextEnum.EMPLOYMENT_CLAIM.desc());
+                    claimObj.put("ContextDesc", ClaimContextEnum.SFP_DL_CLAIM.desc());
+                } else if (ClaimContextEnum.SFP_ID_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextEnum.SFP_ID_CLAIM.desc());
+                } else if (ClaimContextEnum.SFP_PP_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextEnum.SFP_PP_CLAIM.desc());
+                } else if (ClaimContextEnum.IDM_DL_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextEnum.IDM_DL_CLAIM.desc());
+                } else if (ClaimContextEnum.IDM_ID_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextEnum.IDM_ID_CLAIM.desc());
+                } else if (ClaimContextEnum.IDM_PP_CLAIM.context().equals(claimContext)) {
+
+                    claimObj.put("ContextDesc", ClaimContextEnum.IDM_PP_CLAIM.desc());
                 } else if (ClaimContextEnum.CFCA_CLAIM.context().equals(claimContext)) {
 
                     claimObj.put("ContextDesc", ClaimContextEnum.CFCA_CLAIM.desc());
                 }
+
                 Map<String, Object> formatedAttrMap = new HashMap<>();
                 formatedAttrMap.put("Claim", claimObj);
                 formatedAttrList.add(formatedAttrMap);

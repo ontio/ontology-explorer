@@ -36,7 +36,17 @@ public enum ClaimContextEnum {
 
     LINKEDIN_CLAIM("claim:linkedin_authentication", "linkedin authentication claim"),
 
-    EMPLOYMENT_CLAIM("claim:employment_authentication", "employment authentication claim"),
+    SFP_DL_CLAIM("claim:sfp_dl_authentication","shuftipro driver license authentication claim"),
+
+    SFP_PP_CLAIM("claim:sfp_passport_authentication","shuftipro passport authentication claim"),
+
+    SFP_ID_CLAIM("claim:sfp_idcard_authentication","shuftipro idcard authentication claim"),
+
+    IDM_DL_CLAIM("claim:idm_dl_authentication","identitymind driver license authentication claim"),
+
+    IDM_PP_CLAIM("claim:idm_passport_authentication","identitymind passport authentication claim"),
+
+    IDM_ID_CLAIM("claim:idm_idcard_authentication","identitymind idcard authentication claim"),
 
     CFCA_CLAIM("claim:cfca_authentication", "cfca real-name authentication claim");
 

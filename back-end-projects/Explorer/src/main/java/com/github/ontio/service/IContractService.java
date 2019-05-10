@@ -28,7 +28,4 @@ public interface IContractService {
 
     ResponseBean queryTxsByContractHash(String contractType, String contractHash, Integer pageNumber, Integer pageSize);
 
-    ResponseBean queryDappstoreContractInfo(Integer pageSize, Integer pageNumber);
-
-    ResponseBean queryDappstore24hSummary();
 }
