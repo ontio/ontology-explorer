@@ -251,9 +251,14 @@ public class CommonService {
                 String contractHash = Address.AddressFromVmCode(code).toHexString();
                 contractObj.put("ContractHash", contractHash);
                 //先设置合约hash，某些合约信息在链上找不到
-                contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractHash);
-                contractObj.remove("Code");
-                contractObj.put("ContractHash", contractHash);
+                try {
+                    contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractHash);
+                    contractObj.remove("Code");
+                    contractObj.put("ContractHash", contractHash);
+                }catch (Exception e){
+                    log.error("getContractJson error...",e);
+                    break;
+                }
                 break;
             } catch (ConnectorException ex) {
                 log.error("getContractInfoByTxHash error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
