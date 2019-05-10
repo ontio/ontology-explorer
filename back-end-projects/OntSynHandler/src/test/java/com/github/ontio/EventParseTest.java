@@ -2,10 +2,14 @@ package com.github.ontio;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.payload.DeployCode;
 import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.utils.ConstantParam;
 import org.junit.Test;
+
+import java.math.BigDecimal;
 
 /**
  * @author zhouq
@@ -118,6 +122,58 @@ public class EventParseTest {
             }
         }
         System.out.println("content:"+sb.toString());
+
+    }
+
+    @Test
+    public void ParseOep4Tx() throws Exception{
+
+        String nodeRestfulUrl = "http://dappnode1.ont.io:20334";
+        OntSdk ontSdk = OntSdk.getInstance();
+        ontSdk.setRestful(nodeRestfulUrl);
+
+
+        String txHash = "03cef6720e3935bc684ba98d32129b1206f5d076ebf0eaa22e485cc5922ffa54";
+        JSONObject eventObj = (JSONObject) ontSdk.getConnect().getSmartCodeEvent(txHash);
+        System.out.println("eventObj:" + eventObj.toJSONString());
+
+        JSONArray notifyArray = eventObj.getJSONArray("Notify");
+
+        JSONArray stateArray = ((JSONObject)notifyArray.get(0)).getJSONArray("States");
+
+        String fromAddress = (String) stateArray.get(1);
+        if (40 == fromAddress.length()) {
+            fromAddress = Address.parse(fromAddress).toBase58();
+        }
+        String toAddress = (String) stateArray.get(2);
+        if (40 == toAddress.length()) {
+            toAddress = Address.parse(toAddress).toBase58();
+        }
+
+        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+        System.out.println("fromaddress:"+fromAddress+",toaddress:"+toAddress+",amount:"+eventAmount);
+
+    }
+
+    @Test
+    public void parseContract() throws Exception{
+
+        String nodeRestfulUrl = "http://dappnode1.ont.io:20334";
+        OntSdk ontSdk = OntSdk.getInstance();
+        ontSdk.setRestful(nodeRestfulUrl);
+
+       // String txHash = "bdbd56ca56bb5e5d6b1cebd4379f2eb8a3fb39d061075edf1cc0b756cbcc323e";
+        String txHash = "152532973f3d35c1b420440487fe1098d5f04ad9076613ec72434931bddd4fd4";
+        DeployCode deployCodeObj = (DeployCode) ontSdk.getConnect().getTransaction(txHash);
+        //根据code转成合约hash
+        String code = Helper.toHexString(deployCodeObj.code);
+        String contractHash = Address.AddressFromVmCode(code).toHexString();
+        System.out.println("contractHash:"+contractHash);
+
+        //1514857e55b0f711af93c9b5a3a3eb32b53efaab
+        //4e4a9b860fb7ffba41f91ea112712191bd7eca53
+        JSONObject contractObj = (JSONObject) ontSdk.getConnect().getContractJson(contractHash);
+        System.out.println("contract:"+contractObj.toJSONString());
 
     }
 
