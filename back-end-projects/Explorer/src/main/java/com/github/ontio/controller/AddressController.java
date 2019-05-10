@@ -48,10 +48,10 @@ public class AddressController {
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(begin_time+end_time) or (page_number+page_size)")
     @GetMapping(value = "/{address}/transactions")
     public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-                                                      @RequestParam(name = "page_size",required = false) @Min(1) @Max(20) Integer pageSize,
-                                                      @RequestParam(name = "page_number",required = false) @Min(1) Integer pageNumber,
-                                                      @RequestParam(name = "begin_time",required = false) Long beginTime,
-                                                      @RequestParam(name = "end_time",required = false) Long endTime) {
+                                                      @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
+                                                      @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
+                                                      @RequestParam(name = "begin_time", required = false) Long beginTime,
+                                                      @RequestParam(name = "end_time", required = false) Long endTime) {
 
         log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
@@ -66,14 +66,14 @@ public class AddressController {
         return rs;
     }
 
-    @ApiOperation(value = "Get address transfer transaction list by params+assetName", notes = "(begin_time+end_time) or (page_number+page_size)")
+    @ApiOperation(value = "Get address transfer transaction list by params+assetName", notes = "(begin_time+end_time) or (page_number+page_size) or (end_time+page_size)")
     @GetMapping(value = "/{address}/{asset_name}/transactions")
     public ResponseBean queryAddressTransferTxsByPageAndAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "error address format") String address,
                                                                   @PathVariable("asset_name") String assetName,
-                                                                  @RequestParam(name = "page_size",required = false) @Min(1) @Max(20) Integer pageSize,
-                                                                  @RequestParam(name = "page_number",required = false) @Min(1) Integer pageNumber,
-                                                                  @RequestParam(name = "begin_time",required = false) Long beginTime,
-                                                                  @RequestParam(name = "end_time",required = false) Long endTime) {
+                                                                  @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
+                                                                  @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
+                                                                  @RequestParam(name = "begin_time", required = false) Long beginTime,
+                                                                  @RequestParam(name = "end_time", required = false) Long endTime) {
 
         log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
@@ -83,10 +83,13 @@ public class AddressController {
             rs = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
 
-            if(Helper.isTimeRangeExceedLimit(beginTime, endTime)){
-                return  new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
+            if (Helper.isTimeRangeExceedLimit(beginTime, endTime)) {
+                return new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
             }
             rs = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
+        } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {
+            //use for ONTO
+            rs = addressService.queryTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
         }
         return rs;
     }

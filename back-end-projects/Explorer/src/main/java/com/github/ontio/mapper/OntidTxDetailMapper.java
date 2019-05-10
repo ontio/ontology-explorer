@@ -12,4 +12,6 @@ public interface OntidTxDetailMapper extends Mapper<OntidTxDetailDto> {
 
     List<OntidTxDetailDto> selectOntidTxsByPage(@Param("ontid") String ontid, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 
+    Integer selectTxCountByOntid(@Param("ontid") String ontId);
+
 }

@@ -43,4 +43,10 @@
     limit #{startIndex}, #{pageSize}
   </select>
 
+  <select id="selectTxCountByOntid" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_ontid_tx_detail
+    where ontid = #{ontid}
+  </select>
+
 </mapper>
