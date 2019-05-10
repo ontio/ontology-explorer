@@ -28,4 +28,5 @@
     from tbl_dapp_daily_summary where <![CDATA[ time < #{startTime} ]]>
   </select>
 
+
 </mapper>

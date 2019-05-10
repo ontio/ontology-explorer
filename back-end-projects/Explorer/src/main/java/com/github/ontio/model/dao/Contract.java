@@ -45,6 +45,7 @@ public class Contract {
     /**
      * 合约项目方联系信息.json格式字符串
      */
+    //@JsonSerialize(using = String2Json.class)
     //TODO 转换成json
     @Column(name = "contact_info")
     private String contactInfo;

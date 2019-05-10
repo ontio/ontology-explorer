@@ -71,80 +71,13 @@ public class ContractController {
     @ApiOperation(value = "Get contract transaction list by contracthash")
     @GetMapping(value = "/{contract_type}/{contract_hash}/transactions")
     public ResponseBean queryContractTxsByPage(@PathVariable("contract_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|other|OTHER", message = "Incorrect contract type") String contractType,
-                                               @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract address") String contractHash,
+                                               @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
                                                @RequestParam("page_number") @Min(1) Integer pageNumber,
                                                @RequestParam("page_size") @Max(20) @Min(1) Integer pageSize) {
 
         log.info("####{}.{} begin...contract_type:{},contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractType, contractHash);
 
         return contractService.queryTxsByContractHash(contractType, contractHash, pageNumber,pageSize);
-    }
-
-    /**
-     * query OEP by type(oep4\oep8)
-     *
-     * @param type       type
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    @RequestMapping(value = "/oepcontract/{type}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public ResponseBean queryOEPContract(@PathVariable("type") String type,
-                                         @RequestParam("page_number") Integer pageNumber,
-                                         @RequestParam("page_size") Integer pageSize) {
-        if (type.isEmpty()) {
-            return null;
-        }
-
-        ResponseBean rs = contractService.queryOEPContract(type, pageSize, pageNumber);
-        return rs;
-    }
-
-    /**
-     * query OEP by type(oep4\oep8)
-     *
-     * @param contracthash contracthash
-     * @param type         type
-     * @param pageNumber   the start page
-     * @param pageSize     the amount of each page
-     * @return
-     */
-    @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public ResponseBean queryOEPContractByHash(@PathVariable("contracthash") String contracthash,
-                                               @PathVariable("type") String type,
-                                               @PathVariable("pagenumber") Integer pageNumber,
-                                               @PathVariable("pagesize") Integer pageSize) {
-        if (type.isEmpty() || contracthash.isEmpty()) {
-            return null;
-        }
-
-        ResponseBean rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, "", pageSize, pageNumber);
-        return rs;
-    }
-
-    /**
-     * query OEP by type(oep4\oep8)
-     *
-     * @param contracthash contracthash
-     * @param type         type
-     * @param tokenname    tokenname
-     * @param pageNumber   the start page
-     * @param pageSize     the amount of each page
-     * @return
-     */
-    @RequestMapping(value = "/oepcontract/{type}/{contracthash}/{tokenname}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
-    public ResponseBean queryOEPContractByHashAndSymbol(@PathVariable("contracthash") String contracthash,
-                                                        @PathVariable("type") String type,
-                                                        @PathVariable("tokenname") String tokenname,
-                                                        @PathVariable("pagenumber") Integer pageNumber,
-                                                        @PathVariable("pagesize") Integer pageSize) {
-
-        if (type.isEmpty() || contracthash.isEmpty()) {
-            return null;
-        }
-
-        ResponseBean rs = contractService.queryOEPContractByHashAndTokenName(contracthash, type, tokenname, pageSize, pageNumber);
-        return rs;
     }
 
 

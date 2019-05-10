@@ -81,7 +81,7 @@ public class Helper {
     }
 
 
-    public static Boolean isTimeRangeExceedLimit(Integer beginTime, Integer endTime) {
+    public static Boolean isTimeRangeExceedLimit(Long beginTime, Long endTime) {
 
         if ((endTime - beginTime) > (30 * 24 * 60 * 60)) {
             return true;

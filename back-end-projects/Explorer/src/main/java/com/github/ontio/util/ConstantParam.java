@@ -19,6 +19,8 @@
 
 package com.github.ontio.util;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -123,9 +125,9 @@ public class ConstantParam {
 
     public static final String ASSET_TYPE_OEP8 = "oep8";
 
-    public static final Integer AUDIT_PASSED = 1;
+    public static final Boolean AUDIT_PASSED = true;
 
-    public static final Integer AUDIT_UNPASSED = 0;
+    public static final Boolean AUDIT_UNPASSED = false;
 
 
     public static final String CONTRACT_TYPE_OEP4 = "oep4";
@@ -135,6 +137,14 @@ public class ConstantParam {
     public static final String CONTRACT_TYPE_OEP8 = "oep8";
 
     public static final String CONTRACT_TYPE_OTHER = "other";
+
+
+    public static final String SUMMARY_TYPE_DAILY = "daily";
+
+    public static final String SUMMARY_TYPE_WEKKLY = "weekly";
+
+    public static final String SUMMARY_TYPE_MONTHLY = "monthly";
+
 
 
 }

@@ -19,8 +19,10 @@ public class PageResponseBean {
     private List records;
 
     public PageResponseBean(List records, Integer total) {
-        this.total = total;
+        this.total = total == null ? 0 : total;
         this.records = records;
     }
-    public PageResponseBean(){}
+
+    public PageResponseBean() {
+    }
 }

@@ -13,7 +13,7 @@ public interface IAddressService {
 
     ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
-    ResponseBean queryTransferTxsByTime(String address, String assetName, Integer beginTime, Integer endTime);
+    ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
 
 
 }

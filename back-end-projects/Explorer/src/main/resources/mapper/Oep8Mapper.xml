@@ -11,9 +11,15 @@
     <result column="total_supply" jdbcType="DECIMAL" property="totalSupply" />
     <result column="symbol" jdbcType="VARCHAR" property="symbol" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="audit_flag" jdbcType="INTEGER" property="auditFlag" />
+    <result column="audit_flag" jdbcType="BIT" property="auditFlag" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
+
+	<cache type="com.github.ontio.config.RedisCache">
+		<property name="eviction" value="LRU" />
+		<property name="size" value="1024" />
+		<property name="readOnly" value="false" />
+	</cache>
 
 
   <select id="selectAuditPassedOep8" resultType="java.util.Map" useCache="false">
@@ -21,6 +27,34 @@
     from tbl_oep8
     where audit_flag = 1
     GROUP BY contract_hash
+  </select>
+
+  <select id="selectOep8Tokens" resultType="com.github.ontio.model.dto.Oep8DetailDto">
+	SELECT
+		a.contract_hash as contractHash,
+		b.`name` as name,
+		GROUP_CONCAT(a.token_id) as tokenId,
+		GROUP_CONCAT(a.total_supply) as totalSupply,
+		GROUP_CONCAT(a.symbol) AS symbol,
+		GROUP_CONCAT(a.`name`) AS tokenName,
+		b.description as description,
+		b.contact_info as contactInfo,
+		b.create_time as createTime,
+		b.update_time as updateTime,
+		b.logo as logo,
+		b.abi as abi,
+		b.`code` as code,
+		b.tx_count as txCount,
+		b.creator as creator,
+		b.address_count as addressCount,
+		b.ont_sum as ontSum,
+		b.ong_sum as ongSum
+	FROM tbl_oep8 a, tbl_contract b
+	where a.contract_hash = b.contract_hash
+	GROUP BY
+		a.contract_hash
+	ORDER BY
+		b.create_time desc
   </select>
 
 
