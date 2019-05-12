@@ -11,6 +11,8 @@ public interface IAddressService {
 
     ResponseBean queryAddressBalance(String address);
 
+    ResponseBean queryAddressBalanceTest(String address);
+
     ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
     ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
