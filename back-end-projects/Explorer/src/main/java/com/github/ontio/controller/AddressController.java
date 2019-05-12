@@ -45,6 +45,16 @@ public class AddressController {
         return rs;
     }
 
+    @ApiOperation(value = "Get address balance")
+    @GetMapping(value = "/{address}/balances/test")
+    public ResponseBean queryAddressBalanceTest(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
+
+        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+
+        ResponseBean rs = addressService.queryAddressBalanceTest(address);
+        return rs;
+    }
+
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(begin_time+end_time) or (page_number+page_size)")
     @GetMapping(value = "/{address}/transactions")
     public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,

@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * @author zhouq
@@ -50,6 +51,9 @@ public class AddressServiceImpl implements IAddressService {
         this.configParam = configParam;
     }
 
+    @Autowired
+    private BalanceTask balanceTask;
+
     private OntologySDKService sdk;
 
     private void initSDK() {
@@ -62,9 +66,18 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryAddressBalance(String address) {
 
+        List<BalanceDto> balanceList = getAddressBalance2(address, "");
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
+    }
+
+    @Override
+    public ResponseBean queryAddressBalanceTest(String address) {
+
         List<BalanceDto> balanceList = getAddressBalance(address, "");
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
     }
+
+
 
 
     /**
@@ -191,6 +204,120 @@ public class AddressServiceImpl implements IAddressService {
                 balanceList.add(balanceDto);
             }
         }
+
+        return balanceList;
+    }
+
+    /**
+     * 获取账户余额，可提取的ong，待提取的ong
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getAddressBalance2(String address, String assetName) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+
+        initSDK();
+        Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+
+        if (Helper.isEmptyOrNull(assetName) || ConstantParam.ONG.equals(assetName)) {
+
+            BalanceDto balanceDto1 = BalanceDto.builder()
+                    .assetName(ConstantParam.ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .build();
+            balanceList.add(balanceDto1);
+
+            //计算等待提取的ong
+            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            BalanceDto balanceDto2 = BalanceDto.builder()
+                    .assetName(ConstantParam.WAITBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(waitBoundOng)))
+                    .build();
+            balanceList.add(balanceDto2);
+
+
+            //获取可提取的ong
+            String unBoundOng = sdk.getUnBoundOng(address);
+            if (Helper.isEmptyOrNull(unBoundOng)) {
+                unBoundOng = "0";
+            }
+            //计算等待提取的ong
+            BalanceDto balanceDto3 = BalanceDto.builder()
+                    .assetName(ConstantParam.UNBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(unBoundOng)))
+                    .build();
+            balanceList.add(balanceDto3);
+
+            //加上ont资产
+            if (Helper.isEmptyOrNull(assetName)) {
+                BalanceDto balanceDto4 = BalanceDto.builder()
+                        .assetName(ConstantParam.ONT)
+                        .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                        .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                        .build();
+                balanceList.add(balanceDto4);
+            }
+
+        } else if (ConstantParam.ONT.equals(assetName)) {
+
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName(ConstantParam.ONT)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .build();
+            balanceList.add(balanceDto);
+        }
+
+        List<Future<List<BalanceDto>>> futureList = new ArrayList<>();
+        //审核过的OEP4余额
+        Oep4 oep4Temp = new Oep4();
+        oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
+        log.info("query oep4 balance begin.....");
+        for (Oep4 oep4 :
+                oep4s) {
+            Future<List<BalanceDto>> task = balanceTask.getBalance(address, ConstantParam.ASSET_TYPE_OEP4, oep4.getContractHash(), oep4.getSymbol(), oep4.getDecimals());
+            futureList.add(task);
+        }
+
+        //审核过的OEP5余额
+        Oep5 oep5Temp = new Oep5();
+        oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
+        log.info("query oep5 balance begin.....");
+        for (Oep5 oep5 :
+                oep5s) {
+            Future<List<BalanceDto>> task = balanceTask.getBalance(address, ConstantParam.ASSET_TYPE_OEP5, oep5.getContractHash(), oep5.getSymbol(), null);
+            futureList.add(task);
+        }
+
+        //审核过的OEP8余额
+        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8();
+        log.info("query oep8 balance begin.....");
+        for (Map<String, String> map :
+                oep8s) {
+            String contractHash = map.get("contractHash");
+            String symbol = map.get("symbol");
+
+            Future<List<BalanceDto>> task = balanceTask.getBalance(address, ConstantParam.ASSET_TYPE_OEP8, contractHash, symbol, null);
+            futureList.add(task);
+        }
+        log.info("wait syn thread.....");
+        try {
+            //等待异步线程运行完成
+            for (Future<List<BalanceDto>> future : futureList) {
+                List<BalanceDto> a = future.get();
+                balanceList.addAll(a);
+            }
+        }catch (Exception e){
+            log.error("error...",e);
+        }
+        log.info("wait syn thread end.....");
 
         return balanceList;
     }
