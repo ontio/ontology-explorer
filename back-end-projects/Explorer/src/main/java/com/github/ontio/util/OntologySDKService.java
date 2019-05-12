@@ -134,7 +134,7 @@ public class OntologySDKService {
             String balance = ontSdk.neovm().oep5().queryBalanceOf(address);
             return balance;
         } catch (Exception e) {
-            logger.error("getOep4AssetBalance error...", e);
+            logger.error("getOep5AssetBalance error...", e);
             return "0";
         }
     }
