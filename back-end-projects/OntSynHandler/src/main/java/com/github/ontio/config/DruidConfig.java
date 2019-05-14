@@ -31,7 +31,7 @@ public class DruidConfig extends BaseDruidConfig {
 
     @Bean
     public ServletRegistrationBean druidServlet() throws Exception {
-        return getServletRegistrationBean(monitorUsername, publicKey, monitorPassword, logSlowSql);
+        return getServletRegistrationBean(monitorUsername, publicKey, monitorPassword, monitorBaseurl, logSlowSql);
     }
 
     @Bean
@@ -41,6 +41,7 @@ public class DruidConfig extends BaseDruidConfig {
 
     /**
      * 这个应该是数据库连接池配置
+     *
      * @return
      * @throws Exception
      */
