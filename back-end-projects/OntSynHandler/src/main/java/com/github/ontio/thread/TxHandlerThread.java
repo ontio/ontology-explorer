@@ -909,17 +909,18 @@ public class TxHandlerThread {
 
         } else {
             String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
-            if (action.equalsIgnoreCase("transfer")) {
-                fromAddress = (String) stateArray.get(1);
-                if (40 == fromAddress.length()) {
-                    fromAddress = Address.parse(fromAddress).toBase58();
-                }
-                toAddress = (String) stateArray.get(2);
-                if (40 == toAddress.length()) {
-                    toAddress = Address.parse(toAddress).toBase58();
-                }
-                eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+            if (!action.equalsIgnoreCase("transfer")) {
+                return;
             }
+            fromAddress = (String) stateArray.get(1);
+            if (40 == fromAddress.length()) {
+                fromAddress = Address.parse(fromAddress).toBase58();
+            }
+            toAddress = (String) stateArray.get(2);
+            if (40 == toAddress.length()) {
+                toAddress = Address.parse(toAddress).toBase58();
+            }
+            eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
         }
         log.info("OEP4TransferTx:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
 
