@@ -56,7 +56,7 @@ public class SummaryController {
     }
 
 
-    @ApiOperation(value = "Get contract daily  summary information")
+    @ApiOperation(value = "Get contract daily summary information")
     @GetMapping(value = "/contracts/{contract_hash}/daily")
     public ResponseBean getContractSummary(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
                                            @RequestParam("start_time") Long startTime,
