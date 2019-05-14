@@ -30,56 +30,20 @@ import java.math.BigDecimal;
  * @date 2018/2/27
  */
 
-@Service("ConfigParam")
-public class ConfigParam {
+@Service("ParamsConfig")
+public class ParamsConfig {
 
-    /**
-     * ontology blockchain restful url
-     */
+
     @Value("${masternode.restful.url}")
     public String MASTERNODE_RESTFUL_URL;
 
-
-    @Value("${genesisblock.time}")
-    public int GENESISBLOCKTIME;
-
-
-    @Value("${queryAddr.pageSize}")
-    public int QUERYADDRINFO_PAGESIZE;
-
-
-    @Value("${oep8.pumpkin.codeHash}")
-    public String OEP8_PUMPKIN_CODEHASH;
-
-    @Value("${sdk.nodecount}")
-    public Integer SDK_NODE_COUNT;
-
-    @Value("${explorer.dailyschedule}")
-    public String EXPLORER_DAILY_SCHEDULE;
-
-    @Value("${goserver.domain}")
-    public String GOSERVER_DOMAIN;
-
-    /**
-     * 主网每秒生成的ong个数
-     */
-    @Value("${ong.second.generate}")
-    public BigDecimal ONG_SECOND_GENERATE;
-
-    //创世区块时间
-    @Value("${genesisblock.time}")
-    public int GENESISBLOCK_TIME;
-
-
-    @Value("${ongreward.daily}")
-    public BigDecimal ONGREWARD_DAILY;
-
-    @Value("${ontreward.week}")
-    public BigDecimal ONTREWARD_WEEK;
-
+    @Value("${blockchain.node.count}")
+    public Integer BLOCKCHAIN_NODE_COUNT;
 
     @Value("${blockchain.max.tps}")
     public Integer BLOCKCHAIN_MAX_TPS;
 
+    @Value("${ong.second.generate}")
+    public BigDecimal ONG_SECOND_GENERATE;
 
 }
