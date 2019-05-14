@@ -44,7 +44,7 @@ public class InitOepInfoSchedule {
     /**
      * 初始化OEP全局变量
      */
-    @Scheduled(initialDelay = 5 * 1000, fixedDelay = 5 * 60 * 1000)
+    @Scheduled(initialDelay = 1 * 100, fixedDelay = 5 * 60 * 1000)
     public void initOepInfo() {
         log.info("####{}.{} begin....", CLASS_NAME, Helper.currentMethod());
         List<Oep4> oep4s = oep4Mapper.selectApprovedRecords();
