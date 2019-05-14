@@ -19,6 +19,18 @@ import java.math.BigDecimal;
 public class EventParseTest {
 
     @Test
+    public void parse(){
+
+       BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) "01")).longValue());
+       System.out.println("amount:"+eventAmount);
+        BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10,6)));
+        System.out.println("amount:"+amount);
+
+
+
+    }
+
+    @Test
     public void parseEvent() {
         try {
 
