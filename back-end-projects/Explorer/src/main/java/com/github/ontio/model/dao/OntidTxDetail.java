@@ -50,6 +50,8 @@ public class OntidTxDetail {
     /**
      * 交易手续费
      */
+    //@JsonDeserialize(using = TxAmountDeserializer.class)
+    //@JsonSerialize(using = TxAmountSerializer.class)
     private BigDecimal fee;
 
     /**

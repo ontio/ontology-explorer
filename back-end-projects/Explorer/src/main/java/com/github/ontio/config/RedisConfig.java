@@ -54,7 +54,7 @@ public class RedisConfig{
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
 
-/*        RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
+/*        RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
         template.setConnectionFactory(redisConnectionFactory);
         //Jackson2JsonRedisSerializer更高效，占用内存更小，序列化带泛型的数据时，会以map的结构进行存储，反序列化是不能将map解析成对象
         //GenericJackson2JsonRedisSerializer会保存序列化的对象的包名和类名，反序列化时以这个作为标示就可以反序列化成指定的对象
