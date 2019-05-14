@@ -9,9 +9,7 @@ import com.github.ontio.model.common.ResponseBean;
  */
 public interface IAddressService {
 
-    ResponseBean queryAddressBalance(String address);
-
-    ResponseBean queryAddressBalanceTest(String address);
+    ResponseBean queryAddressBalance(String address, String tokenType);
 
     ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
