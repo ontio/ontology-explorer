@@ -25,7 +25,7 @@
     nonontid_tx_count as nonontidTxCount
   </sql>
 
-  <select id="selectSummaryInfo" resultType="com.github.ontio.model.dto.CurrentDto" useCache="false">
+  <select id="selectSummaryInfo" resultType="com.github.ontio.model.dto.CurrentDto">
     select <include refid="baseColumns"/>
     from tbl_current
   </select>

@@ -40,6 +40,18 @@
     limit #{startIndex}, #{pageSize}
   </select>
 
+  <select id="selectOneByHeight" resultType="com.github.ontio.model.dto.BlockDto">
+    select <include refid="basicColumns"/>
+    from tbl_block
+    where block_height = #{blockHeight}
+  </select>
+
+  <select id="selectOneByHash" resultType="com.github.ontio.model.dto.BlockDto">
+    select <include refid="basicColumns"/>
+    from tbl_block
+    where block_hash = #{blockHash}
+  </select>
+
   <select id="selectHeightAndTime" resultType="java.util.Map">
     select block_height as blockHeight, block_time as blockTime
     from tbl_block
