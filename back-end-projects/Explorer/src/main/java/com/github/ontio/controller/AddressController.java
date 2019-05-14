@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 
 /**
  * @author zhouq
@@ -36,24 +37,16 @@ public class AddressController {
 
 
     @ApiOperation(value = "Get address balance")
-    @GetMapping(value = "/{address}/balances")
-    public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
+    @GetMapping(value = "/{address}/{token_type}/balances")
+    public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+                                            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE",message = "Incorrect token type")  String tokenType) {
 
-        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+        log.info("####{}.{} begin...address:{},token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
 
-        ResponseBean rs = addressService.queryAddressBalance(address);
+        ResponseBean rs = addressService.queryAddressBalance(address, tokenType);
         return rs;
     }
 
-    @ApiOperation(value = "Get address balance")
-    @GetMapping(value = "/{address}/balances/test")
-    public ResponseBean queryAddressBalanceTest(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
-
-        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
-
-        ResponseBean rs = addressService.queryAddressBalanceTest(address);
-        return rs;
-    }
 
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(begin_time+end_time) or (page_number+page_size)")
     @GetMapping(value = "/{address}/transactions")
@@ -71,6 +64,9 @@ public class AddressController {
             rs = addressService.queryTransferTxsByPage(address, "", pageNumber, pageSize);
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
 
+            if (Helper.isTimeRangeExceedLimit(beginTime, endTime)) {
+                return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
+            }
             rs = addressService.queryTransferTxsByTime(address, "", beginTime, endTime);
         }
         return rs;
@@ -94,7 +90,7 @@ public class AddressController {
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
 
             if (Helper.isTimeRangeExceedLimit(beginTime, endTime)) {
-                return new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), false);
+                return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
             }
             rs = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
         } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {

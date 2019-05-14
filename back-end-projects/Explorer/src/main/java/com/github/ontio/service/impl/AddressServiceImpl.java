@@ -1,7 +1,7 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.github.ontio.config.ConfigParam;
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
@@ -40,15 +40,15 @@ public class AddressServiceImpl implements IAddressService {
     private final Oep8Mapper oep8Mapper;
     private final Oep5Mapper oep5Mapper;
     private final TxDetailMapper txDetailMapper;
-    private final ConfigParam configParam;
+    private final ParamsConfig paramsConfig;
 
     @Autowired
-    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper, ConfigParam configParam) {
+    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper, ParamsConfig paramsConfig) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
         this.txDetailMapper = txDetailMapper;
-        this.configParam = configParam;
+        this.paramsConfig = paramsConfig;
     }
 
     @Autowired
@@ -58,93 +58,94 @@ public class AddressServiceImpl implements IAddressService {
 
     private void initSDK() {
         if (sdk == null) {
-            sdk = OntologySDKService.getInstance(configParam);
+            sdk = OntologySDKService.getInstance(paramsConfig);
         }
     }
 
 
     @Override
-    public ResponseBean queryAddressBalance(String address) {
+    public ResponseBean queryAddressBalance(String address, String tokenType) {
 
-        List<BalanceDto> balanceList = getAddressBalance2(address, "");
+        List<BalanceDto> balanceList = new ArrayList<>();
+
+        switch (tokenType.toLowerCase()) {
+            case ConstantParam.ASSET_TYPE_OEP4:
+                balanceList = getOep4Balance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_OEP5:
+                balanceList = getOep5Balance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_OEP8:
+                balanceList = getOep8Balance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_NATIVE:
+                balanceList = getNativeBalance(address);
+                break;
+        }
+
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
     }
-
-    @Override
-    public ResponseBean queryAddressBalanceTest(String address) {
-
-        List<BalanceDto> balanceList = getAddressBalance(address, "");
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
-    }
-
-
-
 
     /**
-     * 获取账户余额，可提取的ong，待提取的ong
-     *
+     * 获取原生资产余额
      * @param address
      * @return
      */
-    private List<BalanceDto> getAddressBalance(String address, String assetName) {
+    private List<BalanceDto> getNativeBalance(String address) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
 
         initSDK();
         Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+        //ONG
+        BalanceDto balanceDto1 = BalanceDto.builder()
+                .assetName(ConstantParam.ONG)
+                .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .build();
+        balanceList.add(balanceDto1);
 
-        if (Helper.isEmptyOrNull(assetName) || ConstantParam.ONG.equals(assetName)) {
+        //等待提取的ONG
+        String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+        BalanceDto balanceDto2 = BalanceDto.builder()
+                .assetName(ConstantParam.WAITBOUND_ONG)
+                .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                .balance((new BigDecimal(waitBoundOng)))
+                .build();
+        balanceList.add(balanceDto2);
 
-            BalanceDto balanceDto1 = BalanceDto.builder()
-                    .assetName(ConstantParam.ONG)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
-                    .build();
-            balanceList.add(balanceDto1);
-
-            //计算等待提取的ong
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
-            BalanceDto balanceDto2 = BalanceDto.builder()
-                    .assetName(ConstantParam.WAITBOUND_ONG)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal(waitBoundOng)))
-                    .build();
-            balanceList.add(balanceDto2);
-
-
-            //获取可提取的ong
-            String unBoundOng = sdk.getUnBoundOng(address);
-            if (Helper.isEmptyOrNull(unBoundOng)) {
-                unBoundOng = "0";
-            }
-            //计算等待提取的ong
-            BalanceDto balanceDto3 = BalanceDto.builder()
-                    .assetName(ConstantParam.UNBOUND_ONG)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal(unBoundOng)))
-                    .build();
-            balanceList.add(balanceDto3);
-
-            //加上ont资产
-            if (Helper.isEmptyOrNull(assetName)) {
-                BalanceDto balanceDto4 = BalanceDto.builder()
-                        .assetName(ConstantParam.ONT)
-                        .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                        .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
-                        .build();
-                balanceList.add(balanceDto4);
-            }
-
-        } else if (ConstantParam.ONT.equals(assetName)) {
-
-            BalanceDto balanceDto = BalanceDto.builder()
-                    .assetName(ConstantParam.ONT)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
-                    .build();
-            balanceList.add(balanceDto);
+        //可提取的ONG
+        String unBoundOng = sdk.getUnBoundOng(address);
+        if (Helper.isEmptyOrNull(unBoundOng)) {
+            unBoundOng = "0";
         }
+        BalanceDto balanceDto3 = BalanceDto.builder()
+                .assetName(ConstantParam.UNBOUND_ONG)
+                .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                .balance((new BigDecimal(unBoundOng)))
+                .build();
+        balanceList.add(balanceDto3);
 
+        //ONT
+        BalanceDto balanceDto4 = BalanceDto.builder()
+                .assetName(ConstantParam.ONT)
+                .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                .build();
+        balanceList.add(balanceDto4);
+
+        return balanceList;
+    }
+
+    /**
+     * 获取OEP4余额
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep4Balance(String address){
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
         //审核过的OEP4余额
         Oep4 oep4Temp = new Oep4();
         oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
@@ -163,7 +164,18 @@ public class AddressServiceImpl implements IAddressService {
                     .build();
             balanceList.add(balanceDto);
         }
+        return balanceList;
+    }
 
+    /**
+     * 获取OEP5余额
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep5Balance(String address){
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
         //审核过的OEP5余额
         Oep5 oep5Temp = new Oep5();
         oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
@@ -182,7 +194,18 @@ public class AddressServiceImpl implements IAddressService {
                     .build();
             balanceList.add(balanceDto);
         }
+        return balanceList;
+    }
 
+    /**
+     * 获取OEP8余额
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep8Balance(String address){
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
         //审核过的OEP8余额
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8();
         for (Map<String, String> map :
@@ -204,8 +227,31 @@ public class AddressServiceImpl implements IAddressService {
                 balanceList.add(balanceDto);
             }
         }
-
         return balanceList;
+    }
+
+    /**
+     * 计算待提取的ong
+     *
+     * @param address
+     * @param ont
+     * @return
+     */
+    private String calculateWaitingBoundOng(String address, String ont) {
+
+        Integer txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
+
+        if (Helper.isEmptyOrNull(txtime)) {
+            return "0";
+        }
+
+        long now = System.currentTimeMillis() / 1000L;
+        log.info("calculateWaitingBoundOng txtime:{},now:{}", txtime, now);
+
+        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txtime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+        BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
+
+        return ong.toPlainString();
     }
 
     /**
@@ -214,7 +260,7 @@ public class AddressServiceImpl implements IAddressService {
      * @param address
      * @return
      */
-    private List<BalanceDto> getAddressBalance2(String address, String assetName) {
+    private List<BalanceDto> getAddressBalance(String address, String assetName) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
 
@@ -314,36 +360,12 @@ public class AddressServiceImpl implements IAddressService {
                 List<BalanceDto> a = future.get();
                 balanceList.addAll(a);
             }
-        }catch (Exception e){
-            log.error("error...",e);
+        } catch (Exception e) {
+            log.error("error...", e);
         }
         log.info("wait syn thread end.....");
 
         return balanceList;
-    }
-
-    /**
-     * 计算待提取的ong
-     *
-     * @param address
-     * @param ont
-     * @return
-     */
-    private String calculateWaitingBoundOng(String address, String ont) {
-
-        Integer txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
-
-        if (Helper.isEmptyOrNull(txtime)) {
-            return "0";
-        }
-
-        long now = System.currentTimeMillis() / 1000L;
-        log.info("calculateWaitingBoundOng txtime:{},now:{}", txtime, now);
-
-        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txtime)).multiply(configParam.ONG_SECOND_GENERATE);
-        BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
-
-        return ong.toPlainString();
     }
 
 
