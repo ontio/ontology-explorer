@@ -1,7 +1,7 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
-import com.github.ontio.config.ConfigParam;
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
@@ -38,13 +38,13 @@ public class BalanceTask {
     @Autowired
     private Oep8Mapper oep8Mapper;
     @Autowired
-    private ConfigParam configParam;
+    private ParamsConfig paramsConfig;
 
     private OntologySDKService sdk;
 
     private void initSDK() {
         if (sdk == null) {
-            sdk = OntologySDKService.getInstance(configParam);
+            sdk = OntologySDKService.getInstance(paramsConfig);
         }
     }
 
