@@ -22,7 +22,7 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.config.ConfigParam;
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.model.common.ClaimContextEnum;
@@ -56,20 +56,20 @@ public class OntIdServiceImpl implements IOntIdService {
 
     private final OntidTxDetailMapper ontidTxDetailMapper;
     private final CurrentMapper currentMapper;
-    private final ConfigParam configParam;
+    private final ParamsConfig paramsConfig;
 
     private OntologySDKService sdkService;
 
     @Autowired
-    public OntIdServiceImpl(OntidTxDetailMapper ontidTxDetailMapper, CurrentMapper currentMapper, ConfigParam configParam) {
+    public OntIdServiceImpl(OntidTxDetailMapper ontidTxDetailMapper, CurrentMapper currentMapper, ParamsConfig paramsConfig) {
         this.ontidTxDetailMapper = ontidTxDetailMapper;
         this.currentMapper = currentMapper;
-        this.configParam = configParam;
+        this.paramsConfig = paramsConfig;
     }
 
     private synchronized void initSDK() {
         if (sdkService == null) {
-            sdkService = OntologySDKService.getInstance(configParam);
+            sdkService = OntologySDKService.getInstance(paramsConfig);
         }
     }
 
@@ -213,7 +213,6 @@ public class OntIdServiceImpl implements IOntIdService {
                 selfDefined.put("SelfDefined", unFormatedMap);
                 formatedAttrList.add(selfDefined);
             }
-
         }
 
         return formatedAttrList;
