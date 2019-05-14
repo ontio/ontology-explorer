@@ -31,7 +31,7 @@ public class DruidConfig extends BaseDruidConfig {
 
     @Bean
     public ServletRegistrationBean druidServlet() throws Exception {
-        return getServletRegistrationBean(username, publicKey, password, logSlowSql);
+        return getServletRegistrationBean(monitorUsername, publicKey, monitorPassword, logSlowSql);
     }
 
     @Bean
