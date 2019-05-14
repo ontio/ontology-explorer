@@ -75,13 +75,9 @@ public class BlockServiceImpl implements IBlockService {
     }
 
     @Override
-    //@Cacheable(value = "selectByblockheight")
     public ResponseBean queryBlockByHeight(int blockHeight) {
-        //TODO 通用mapper无法使用redis
-        BlockDto blockDtoTemp = BlockDto.builder()
-                .blockHeight(blockHeight)
-                .build();
-        BlockDto blockDto = blockMapper.selectOne(blockDtoTemp);
+
+        BlockDto blockDto = blockMapper.selectOneByHeight(blockHeight);
         if (Helper.isEmptyOrNull(blockDto)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
@@ -96,10 +92,7 @@ public class BlockServiceImpl implements IBlockService {
     @Override
     public ResponseBean queryBlockByHash(String blockHash) {
 
-        BlockDto blockDtoTemp = BlockDto.builder()
-                .blockHash(blockHash)
-                .build();
-        BlockDto blockDto = blockMapper.selectOne(blockDtoTemp);
+        BlockDto blockDto = blockMapper.selectOneByHash(blockHash);
         if (Helper.isEmptyOrNull(blockDto)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
