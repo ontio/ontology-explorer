@@ -93,6 +93,9 @@ public class BaseDruidConfig {
     @Value("${druid.monitor.password}")
     protected String monitorPassword;
 
+    @Value("${druid.monitor.baseUrl}")
+    protected String monitorBaseurl;
+
 
     public DataSource getDataSource(String dbUrl, String username, String publicKey, String password, String driverClassName, int initialSize, int minIdle, int maxActive, int maxWait, int timeBetweenEvictionRunsMillis, int minEvictableIdleTimeMillis, String validationQuery, boolean testWhileIdle, boolean testOnBorrow, boolean testOnReturn, String connectionProperties, String filters, Logger log) throws Exception {
         DruidDataSource datasource = new DruidDataSource();
@@ -121,12 +124,11 @@ public class BaseDruidConfig {
         return datasource;
     }
 
-    public ServletRegistrationBean getServletRegistrationBean(String monitorUsername, String publicKey, String monitorPassword, String logSlowSql) throws Exception {
+    public ServletRegistrationBean getServletRegistrationBean(String monitorUsername, String publicKey, String monitorPassword, String monitorBaseurl,String logSlowSql) throws Exception {
         ServletRegistrationBean reg = new ServletRegistrationBean();
         reg.setServlet(new StatViewServlet());
-        reg.addUrlMappings("/syn-druid-monitor/*");//配置访问URL
+        reg.addUrlMappings(monitorBaseurl + "*");//配置访问URL
         reg.addInitParameter("loginUsername", monitorUsername);  //配置用户名
-//        reg.addInitParameter("loginPassword", ConfigTools.decrypt(publicKey, password));
         reg.addInitParameter("loginPassword", monitorPassword);  //配置用户名
         reg.addInitParameter("logSlowSql", logSlowSql);   //是否启用慢sql
         return reg;
