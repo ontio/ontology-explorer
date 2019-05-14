@@ -1,6 +1,6 @@
 package com.github.ontio.service.impl;
 
-import com.github.ontio.config.ConfigParam;
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.ContractDailySummaryMapper;
 import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.DailySummaryMapper;
@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -25,26 +26,28 @@ import java.util.Map;
 @Service("SummaryService")
 public class SummaryServiceImpl implements ISummaryService {
 
-    private final ConfigParam configParam;
+    private final ParamsConfig paramsConfig;
     private final TxEventLogMapper  txEventLogMapper;
     private final DailySummaryMapper dailySummaryMapper;
     private final ContractDailySummaryMapper contractDailySummaryMapper;
     private final CurrentMapper currentMapper;
 
     @Autowired
-    public SummaryServiceImpl(ConfigParam configParam, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper) {
-        this.configParam = configParam;
+    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper) {
+        this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.dailySummaryMapper = dailySummaryMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.currentMapper = currentMapper;
     }
 
+
+
     @Override
     public ResponseBean getBlockChainLatestInfo() {
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
-        currentDto.setNodeCount(configParam.SDK_NODE_COUNT);
+        currentDto.setNodeCount(paramsConfig.BLOCKCHAIN_NODE_COUNT);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentDto);
 
@@ -55,7 +58,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("current_tps", calcTps());
-        resultMap.put("max_tps", configParam.BLOCKCHAIN_MAX_TPS);
+        resultMap.put("max_tps", paramsConfig.BLOCKCHAIN_MAX_TPS);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), resultMap);
     }
@@ -78,10 +81,10 @@ public class SummaryServiceImpl implements ISummaryService {
 
         List<DailySummaryDto> dailySummaryDtos = dailySummaryMapper.selectSummaryByTime(startTime, endTime);
         if (dailySummaryDtos.size() > 0) {
-            Map<String, Integer> addrAndOntidCountMap = dailySummaryMapper.selectAddrAndOntIdCount(startTime);
+            Map<String, BigDecimal> addrAndOntidCountMap = dailySummaryMapper.selectAddrAndOntIdCount(startTime);
 
-            dailySummaryDtos.get(0).setAddressTotal(addrAndOntidCountMap.get("addressTotal"));
-            dailySummaryDtos.get(0).setOntidTotal(addrAndOntidCountMap.get("ontidTotal"));
+            dailySummaryDtos.get(0).setAddressTotal(addrAndOntidCountMap.get("addressTotal").intValue());
+            dailySummaryDtos.get(0).setOntidTotal(addrAndOntidCountMap.get("ontidTotal").intValue());
 
             for (int i = 1; i < dailySummaryDtos.size(); i++) {
                 DailySummaryDto dailySummaryDto = dailySummaryDtos.get(i);
