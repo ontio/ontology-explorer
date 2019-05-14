@@ -15,4 +15,8 @@ public interface BlockMapper extends Mapper<BlockDto> {
 
     List<Map> selectHeightAndTime(@Param("count") int count);
 
+    BlockDto selectOneByHeight(@Param("blockHeight") int blockHeight);
+
+    BlockDto selectOneByHash(@Param("blockHash") String hash);
+
 }
