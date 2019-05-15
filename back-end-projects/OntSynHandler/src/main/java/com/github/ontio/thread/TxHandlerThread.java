@@ -832,6 +832,9 @@ public class TxHandlerThread {
                 .contactInfo("")
                 .type("")
                 .logo("")
+                .dappName("")
+                .totalReward(ConstantParam.ZERO)
+                .lastweekReward(ConstantParam.ZERO)
                 .build();
         sessionMapperDto.getContractMapper().insertSelective(contract);
     }
