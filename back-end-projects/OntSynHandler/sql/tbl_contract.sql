@@ -20,9 +20,9 @@ CREATE TABLE `tbl_contract`
 (
     `contract_hash`   varchar(255)   NOT NULL DEFAULT '' COMMENT '合约hash值',
     `name`            varchar(255)   NOT NULL DEFAULT '' COMMENT '名称',
-    `abi`             text COMMENT '合约abi',
-    `code`            text COMMENT '合约code',
-    `source_code`     text COMMENT '合约源码',
+    `abi`             text NOT NULL COMMENT '合约abi',
+    `code`            text NOT NULL COMMENT '合约code',
+    `source_code`     text NOT NULL COMMENT '合约源码',
     `create_time`     int(11)        NOT NULL COMMENT '创建时间戳',
     `update_time`     int(11)                 DEFAULT NULL COMMENT '更新时间戳',
     `audit_flag`      tinyint(1)        NOT NULL DEFAULT 0 COMMENT '审核标识，1：审核通过 0：未审核',
