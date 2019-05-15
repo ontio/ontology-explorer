@@ -1,10 +1,14 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import javax.persistence.*;
 
 @Table(name = "tbl_oep8_tx_detail")
 @AllArgsConstructor
@@ -45,11 +49,13 @@ public class Oep8TxDetail {
     /**
      * 交易金额
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     private BigDecimal amount;
 
     /**
      * 交易手续费
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     private BigDecimal fee;
 
     /**

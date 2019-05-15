@@ -1,5 +1,7 @@
 package com.github.ontio.model.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 @Data
 public class TransferTxDetailDto {
 
+    @JsonSerialize(using = TxAmountSerializer.class)
     private BigDecimal amount;
 
     private String fromAddress;
