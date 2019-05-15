@@ -73,7 +73,7 @@ public class TokenServiceImpl implements ITokenService {
                 PageHelper.startPage(start, pageSize);
                 List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens();
                 total = ((Long) ((Page) oep8DetailDtos).getTotal()).intValue();
-                //OEP8同一个合约hash有多种token，需要根据tokenId转换
+                //OEP8同一个合约hash有多种token，需要根据tokenId分类
                 oep8DetailDtos.forEach(item -> {
 
                     Map tokenIdMap = new HashMap();

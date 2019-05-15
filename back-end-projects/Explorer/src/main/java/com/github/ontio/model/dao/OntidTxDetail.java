@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -50,8 +52,7 @@ public class OntidTxDetail {
     /**
      * 交易手续费
      */
-    //@JsonDeserialize(using = TxAmountDeserializer.class)
-    //@JsonSerialize(using = TxAmountSerializer.class)
+    @JsonSerialize(using = TxAmountSerializer.class)
     private BigDecimal fee;
 
     /**
