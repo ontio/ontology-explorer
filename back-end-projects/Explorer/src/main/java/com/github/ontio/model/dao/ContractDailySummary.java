@@ -1,7 +1,13 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import javax.persistence.*;
 
 @Table(name = "tbl_contract_daily_summary")
 public class ContractDailySummary {
@@ -29,12 +35,14 @@ public class ContractDailySummary {
     /**
      * 此合约当天的ont流通量
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     @Column(name = "ont_sum")
     private BigDecimal ontSum;
 
     /**
      * 此合约当天的ong流通量
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     @Column(name = "ong_sum")
     private BigDecimal ongSum;
 

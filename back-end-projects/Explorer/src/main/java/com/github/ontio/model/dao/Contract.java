@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -45,8 +47,6 @@ public class Contract {
     /**
      * 合约项目方联系信息.json格式字符串
      */
-    //@JsonSerialize(using = String2Json.class)
-    //TODO 转换成json
     @Column(name = "contact_info")
     private String contactInfo;
 
@@ -85,12 +85,14 @@ public class Contract {
     /**
      * 该合约的总的ont流通量
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     @Column(name = "ont_sum")
     private BigDecimal ontSum;
 
     /**
      * 该合约的总的ong流通量
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     @Column(name = "ong_sum")
     private BigDecimal ongSum;
 
@@ -120,12 +122,14 @@ public class Contract {
     /**
      * 总激励
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     @Column(name = "total_reward")
     private BigDecimal totalReward;
 
     /**
      * 上周激励
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     @Column(name = "lastweek_reward")
     private BigDecimal lastweekReward;
 

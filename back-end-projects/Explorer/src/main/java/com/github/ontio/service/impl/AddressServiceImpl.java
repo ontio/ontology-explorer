@@ -244,9 +244,8 @@ public class AddressServiceImpl implements IAddressService {
         if (Helper.isEmptyOrNull(txtime)) {
             return "0";
         }
-
         long now = System.currentTimeMillis() / 1000L;
-        log.info("calculateWaitingBoundOng txtime:{},now:{}", txtime, now);
+        log.info("calculateWaitingBoundOng latestOntTransferTxTime:{},now:{}", txtime, now);
 
         BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txtime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
