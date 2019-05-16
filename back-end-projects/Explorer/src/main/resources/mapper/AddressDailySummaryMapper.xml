@@ -10,4 +10,18 @@
     <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
     <result column="address" jdbcType="VARCHAR" property="address" />
   </resultMap>
+
+  <cache type="com.github.ontio.config.RedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+
+  <select id="selectAllAddressCount" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_address_daily_summary
+    where contract_hash = '00'
+  </select>
+
 </mapper>
