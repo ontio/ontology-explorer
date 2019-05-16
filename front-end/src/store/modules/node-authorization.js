@@ -385,6 +385,12 @@ function nodeDetailData() {
       "publickey": "02f0e43592212629ff5f482a0011eba5c5be059cd40eb1bdd2c956c1139967bb35",
       "address": "AV59sm9kRGB4EYRKCMYXXsiCPKzbAFMcpA",
       "ontid": "did:ont:AdiYHQJkfGC1PjMP9KePMAcoPJrVpBW6RB",
+    },
+    {
+      "nodename": "Huobi Wallet",
+      "publickey": "02fcf82dbd1952fa073d47c831d35fdb3bc264edc355962e3d9332060a61c962cd",
+      "address": "ATTzSUQm5MgXQCLfrbWBv9hSBLcZX75giR",
+      "ontid": "did:ont:AanoxBZqh2fzdfWuKckQXHcjeMRRupdpW7",
     }
   ]
 }
