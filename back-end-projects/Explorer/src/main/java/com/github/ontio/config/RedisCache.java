@@ -4,6 +4,7 @@ import com.github.ontio.ApplicationContextProvider;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.cache.Cache;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
@@ -23,6 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 @Component
 @Slf4j
+@DependsOn("applicationContextProviderExplorer")
 public class RedisCache implements Cache {
 
     private String CLASS_NAME = this.getClass().getSimpleName();
