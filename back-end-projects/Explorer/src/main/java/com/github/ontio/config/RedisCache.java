@@ -1,6 +1,7 @@
 package com.github.ontio.config;
 
 import com.github.ontio.ApplicationContextProvider;
+import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.cache.Cache;
 import org.springframework.dao.DataAccessException;
@@ -23,13 +24,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Component
 @Slf4j
 public class RedisCache implements Cache {
-    
+
+    private String CLASS_NAME = this.getClass().getSimpleName();
+
     // 读写锁
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
     private RedisTemplate<String, Object> redisTemplate = ApplicationContextProvider.getBean("redisTemplate");
-
-    //private RedisTemplate redisTemplate;
 
     private String id = "defaultrediscacheid001";
 
@@ -48,47 +49,27 @@ public class RedisCache implements Cache {
 
     @Override
     public String getId() {
-        log.info("##get Redis Cache Id:{}##", this.id);
+        log.info("##{}.{} Id:{}", CLASS_NAME, Helper.currentMethod(), this.id);
         return this.id;
     }
 
     @Override
     public void putObject(Object key, Object value) {
-        log.info("##putObject. key:{}, value:{}##", key, value);
-
-        if(key.toString().contains("com.github.ontio.mapper.BlockMapper.selectBlocksByPage")){
-            log.info("redis time 1 minute");
-            redisTemplate.opsForValue().set(key.toString(), value, 1, TimeUnit.MINUTES);
-
-        }else {
-            redisTemplate.opsForValue().set(key.toString(), value, 3, TimeUnit.MINUTES);
-
+        log.info("##{}.{} key:{}, value:{}##", CLASS_NAME, Helper.currentMethod(), key, value);
+        if (Helper.isBelongRedisLongExpireMapper(key.toString())) {
+            redisTemplate.opsForValue().set(key.toString(), value, 2 * 60, TimeUnit.SECONDS);
+        } else {
+            redisTemplate.opsForValue().set(key.toString(), value, 6, TimeUnit.SECONDS);
         }
-        //RedisTemplate redisTemplate = getRedisTemplate();
-
-/*        if (value != null) {
-            // 向Redis中添加数据，有效时间是2天
-           // redisTemplate.opsForValue().set(key.toString(), JSONObject.toJSONString(value), 1, TimeUnit.MINUTES);
-            redisTemplate.opsForValue().set(key.toString(), value, 3, TimeUnit.MINUTES);
-        }*/
     }
 
     @Override
     public Object getObject(Object key) {
-        log.info("##getObject. key:{}##", key.toString());
+        log.info("##{}.{} key:{}##", CLASS_NAME, Helper.currentMethod(), key.toString());
         try {
-            //RedisTemplate redisTemplate = getRedisTemplate();
             if (key != null) {
-/*                String obj = (String)redisTemplate.opsForValue().get(key.toString());
-                return  JSONArray.parseArray(obj);*/
-/*                if(obj instanceof JSONArray){
-                    return JSONArray.parseArray((String) obj);
-                }else if(obj instanceof JSONObject){
-                    return JSONObject.parseObject((String) obj);
-                }*/
                 Object obj = redisTemplate.opsForValue().get(key.toString());
-                return  obj;
-                //log.info("redis value:{}", JacksonUtil.beanToJSonStr(obj));
+                return obj;
             }
         } catch (Exception e) {
             log.error("redis error... ", e);
@@ -98,6 +79,7 @@ public class RedisCache implements Cache {
 
     /**
      * 批量删除对应的value
+     *
      * @param keys
      */
     public void remove(final String... keys) {
@@ -109,9 +91,7 @@ public class RedisCache implements Cache {
 
     @Override
     public Object removeObject(Object key) {
-        //RedisTemplate redisTemplate = getRedisTemplate();
-
-        log.info("##removeObject. key:{}##", key.toString());
+        log.info("##{}.{} key:{}##", CLASS_NAME, Helper.currentMethod(), key.toString());
         try {
             if (key != null) {
                 redisTemplate.delete(key.toString());
@@ -123,13 +103,11 @@ public class RedisCache implements Cache {
 
     @Override
     public void clear() {
-        log.info("clear Redis Cache,this.id:{}",this.id);
-        //RedisTemplate redisTemplate = getRedisTemplate();
-
+        log.info("##{}.{} this.id:{}", CLASS_NAME, Helper.currentMethod(), this.id);
         try {
             Set<String> keys = redisTemplate.keys("*:" + this.id + "*");
             if (!CollectionUtils.isEmpty(keys)) {
-                log.info("keys:{}",keys);
+                log.info("keys:{}", keys);
                 redisTemplate.delete(keys);
             }
         } catch (Exception e) {
@@ -138,7 +116,7 @@ public class RedisCache implements Cache {
 
     @Override
     public int getSize() {
-        log.info("##get Redis Cache Size##");
+        log.info("##{}.{}", CLASS_NAME, Helper.currentMethod());
         Long size = (Long) redisTemplate.execute(new RedisCallback<Long>() {
             @Override
             public Long doInRedis(RedisConnection connection) throws DataAccessException {
@@ -153,13 +131,6 @@ public class RedisCache implements Cache {
         log.info("##get Redis Cache ReadWriteLock##");
         return this.readWriteLock;
     }
-
-/*    private RedisTemplate getRedisTemplate() {
-        if (redisTemplate == null) {
-            redisTemplate = ApplicationContextProvider.getBean("redisTemplate");
-        }
-        return redisTemplate;
-    }*/
 
 
 }
