@@ -6,4 +6,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 @Repository
 public interface AddressDailySummaryMapper extends Mapper<AddressDailySummary> {
+
+    Integer selectAllAddressCount();
+
 }
