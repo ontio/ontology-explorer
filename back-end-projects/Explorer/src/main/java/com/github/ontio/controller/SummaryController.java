@@ -50,7 +50,7 @@ public class SummaryController {
         log.info("####{}.{} begin...start_time:{},end_time:{}", CLASS_NAME, Helper.currentMethod(), startTime, endTime);
 
         if (Helper.isTimeRangeExceedLimit(startTime, endTime)) {
-            return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
+            return new ResponseBean(ErrorInfo.REQ_TIME_EXCEED.code(), ErrorInfo.REQ_TIME_EXCEED.desc(), false);
         }
         return summaryService.getBlockChainDailySummary(startTime, endTime);
     }
@@ -65,7 +65,7 @@ public class SummaryController {
         log.info("####{}.{} begin...start_time:{},end_time:{}", CLASS_NAME, Helper.currentMethod(), startTime, endTime);
 
         if (Helper.isTimeRangeExceedLimit(startTime, endTime)) {
-            return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
+            return new ResponseBean(ErrorInfo.REQ_TIME_EXCEED.code(), ErrorInfo.REQ_TIME_EXCEED.desc(), false);
         }
         return summaryService.getContractDailySummary(contractHash, startTime, endTime);
     }
