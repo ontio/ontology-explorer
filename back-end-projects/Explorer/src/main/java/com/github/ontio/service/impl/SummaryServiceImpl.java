@@ -1,10 +1,7 @@
 package com.github.ontio.service.impl;
 
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.ContractDailySummaryMapper;
-import com.github.ontio.mapper.CurrentMapper;
-import com.github.ontio.mapper.DailySummaryMapper;
-import com.github.ontio.mapper.TxEventLogMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dto.ContractDailySummaryDto;
@@ -31,14 +28,16 @@ public class SummaryServiceImpl implements ISummaryService {
     private final DailySummaryMapper dailySummaryMapper;
     private final ContractDailySummaryMapper contractDailySummaryMapper;
     private final CurrentMapper currentMapper;
+    private final AddressDailySummaryMapper addressDailySummaryMapper;
 
     @Autowired
-    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper) {
+    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper) {
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.dailySummaryMapper = dailySummaryMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.currentMapper = currentMapper;
+        this.addressDailySummaryMapper = addressDailySummaryMapper;
     }
 
 
@@ -48,6 +47,9 @@ public class SummaryServiceImpl implements ISummaryService {
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
         currentDto.setNodeCount(paramsConfig.BLOCKCHAIN_NODE_COUNT);
+
+        Integer addressCount = addressDailySummaryMapper.selectAllAddressCount();
+        currentDto.setAddressCount(addressCount);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentDto);
 

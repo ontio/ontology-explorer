@@ -4,7 +4,6 @@ import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.util.ConstantParam;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Calendar;
 
@@ -22,15 +21,8 @@ public class BasicTest {
     public void calculateScore(){
 
 
-        Class<?> classT = BlockMapper.class;
-        Method[] methods = classT.getMethods();
-        for (Method method:methods){
-            System.out.println(","+method.getName());
-        }
-
 /*        String contractAddress = Address.parse(com.github.ontio.common.Helper.reverse("8c15299cc6843e808b42f1ffb9cff7ec36f81ea1")).toBase58();
         System.out.println("addr；"+contractAddress);*/
-
 
         int txnCount = 4003;
         int activeAddrCount = 2880;

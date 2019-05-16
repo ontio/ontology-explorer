@@ -17,4 +17,6 @@ import javax.persistence.Table;
 public class CurrentDto extends Current {
 
     private Integer nodeCount;
+
+    private Integer addressCount;
 }

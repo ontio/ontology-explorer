@@ -1,12 +1,9 @@
 package com.github.ontio;
 
-import com.github.ontio.service.impl.SummaryServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.annotation.Resource;
 
 /**
  * @author zhouq
@@ -16,9 +13,6 @@ import javax.annotation.Resource;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class updateContractInfoTest {
-
-    @Resource
-    private SummaryServiceImpl summaryService;
 
 
     @Test
