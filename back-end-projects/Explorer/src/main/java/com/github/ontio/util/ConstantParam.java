@@ -20,6 +20,7 @@
 package com.github.ontio.util;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -100,6 +101,29 @@ public class ConstantParam {
 
     public static final String CONTRACT_TYPE_OTHER = "other";
 
+
+    /**
+     * 对外访问实时性要求不高的接口中对应的mapper，redis中可以设置过期时间较长
+     */
+    public static final List<String> REDIS_LONGEXPIRETIME_KEYLIST = new ArrayList<String>(
+            Arrays.asList(
+                    "BlockMapper.selectOneByHeight",
+                    "BlockMapper.selectOneByHash",
+                    "TxDetailMapper.selectTxByHash",
+                    "TxDetailMapper.selectTransferTxDetailByHash",
+                    "TxDetailMapper.selectLatestOntTransferTxTime",
+                    "TxDetailMapper.selectTxsByBlockHeight",
+                    "ContractMapper.selectApprovedContract",
+                    "ContractMapper.selectApprovedContractCount",
+                    "ContractMapper.selectContractDetail",
+                    "Oep4Mapper.selectOep4Tokens",
+                    "Oep5Mapper.selectOep5Tokens",
+                    "Oep8Mapper.selectOep8Tokens",
+                    "ContractDailySummaryMapper.selectDailySummaryByContractHash",
+                    "DailySummaryMapper.selectSummaryByTime",
+                    "DailySummaryMapper.selectAddrAndOntIdTotal"
+            )
+    );
 
 
 
