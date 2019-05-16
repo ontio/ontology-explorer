@@ -110,39 +110,6 @@
     </select>
 
 
-    <select id="selectTransferTxByFromAddr" parameterType="java.util.Map" resultType="java.util.Map">
-        select <include refid="transferTxDetailColumns"/>
-        from tbl_tx_detail
-        where from_address = #{address}
-        <if test="assetName != '' and assetName != null">
-            and asset_name = #{assetName}
-        </if>
-        and event_type in (2,3)
-        order by block_height DESC
-        limit #{startIndex}, #{pageSize}
-    </select>
-
-
-    <select id="selectTransferTxByToAddr" parameterType="java.util.Map" resultType="java.util.Map">
-        select <include refid="transferTxDetailColumns" />
-        from tbl_tx_detail
-        where to_address = #{address}
-        <if test="assetName != '' and assetName != null">
-            and asset_name = #{assetName}
-        </if>
-        and event_type in (2,3)
-        order by block_height DESC
-        limit #{startIndex}, #{pageSize}
-    </select>
-
-
-    <select id="selectTxCountByAddr" resultType="java.lang.Integer">
-        SELECT count(1)
-        FROM tbl_tx_detail
-        WHERE from_address = #{address}
-        OR to_address = #{address}
-    </select>
-
     <select id="queryTxCount" resultType="java.lang.Integer">
         select count(DISTINCT(tx_hash))
         from tbl_tx_detail
