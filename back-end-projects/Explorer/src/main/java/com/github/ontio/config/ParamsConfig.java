@@ -46,4 +46,8 @@ public class ParamsConfig {
     @Value("${ong.second.generate}")
     public BigDecimal ONG_SECOND_GENERATE;
 
+    @Value("${reqlimit.expire.second}")
+    public Integer REQLIMIT_EXPIRE_SECOND;
+
+
 }
