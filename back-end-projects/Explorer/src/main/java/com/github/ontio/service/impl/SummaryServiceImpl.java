@@ -81,7 +81,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
         List<DailySummaryDto> dailySummaryDtos = dailySummaryMapper.selectSummaryByTime(startTime, endTime);
         if (dailySummaryDtos.size() > 0) {
-            Map<String, BigDecimal> addrAndOntidCountMap = dailySummaryMapper.selectAddrAndOntIdCount(startTime);
+            Map<String, BigDecimal> addrAndOntidCountMap = dailySummaryMapper.selectAddrAndOntIdTotal(startTime);
 
             dailySummaryDtos.get(0).setAddressTotal(addrAndOntidCountMap.get("addressTotal").intValue());
             dailySummaryDtos.get(0).setOntidTotal(addrAndOntidCountMap.get("ontidTotal").intValue());
