@@ -25,7 +25,5 @@ public class ExplorerApplication {
 		}*/
 
 		SpringApplication.run(ExplorerApplication.class, args);
-
-
 	}
 }
