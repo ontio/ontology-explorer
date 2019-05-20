@@ -21,6 +21,7 @@ package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.model.common.BatchBlockDto;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -49,12 +50,17 @@ public final class ConstantParam {
     /**
      * the number of ontid transactions of one block
      */
-    public static int ONEBLOCK_ONTID_COUNT = 0;
+    public static int BATCHBLOCK_ONTID_COUNT = 0;
 
     /**
      * the number of nonontid transactions of one block
      */
-    public static int ONEBLOCK_ONTIDTX_COUNT = 0;
+    public static int BATCHBLOCK_ONTIDTX_COUNT = 0;
+
+    /**
+     * the number of nonontid transactions of one block
+     */
+    public static int BATCHBLOCK_TX_COUNT = 0;
 
     /**
      * Push
@@ -109,5 +115,6 @@ public final class ConstantParam {
 
     public static final String IS_OEP8TX = "is_oep8tx";
 
+    public static BatchBlockDto BATCHBLOCKDTO = new BatchBlockDto();
 
 }

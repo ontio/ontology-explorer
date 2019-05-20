@@ -9,4 +9,6 @@ import java.util.List;
 public interface Oep4Mapper extends Mapper<Oep4> {
 
     List<Oep4> selectApprovedRecords();
+
+    void batchInsert(List<Oep4> list);
 }

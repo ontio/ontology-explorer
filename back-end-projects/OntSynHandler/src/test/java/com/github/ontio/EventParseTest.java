@@ -10,6 +10,8 @@ import com.github.ontio.utils.ConstantParam;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zhouq
@@ -20,6 +22,12 @@ public class EventParseTest {
 
     @Test
     public void parse(){
+
+        List<String> a = new ArrayList<>();
+        a.add("1");
+        a.add("2");
+        List<String> b = a.subList(2,2);
+        System.out.println(""+b.size());
 
        BigDecimal eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) "01")).longValue());
        System.out.println("amount:"+eventAmount);

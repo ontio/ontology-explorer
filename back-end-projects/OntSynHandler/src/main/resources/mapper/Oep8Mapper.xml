@@ -32,4 +32,30 @@
     where audit_flag = 1
   </select>
 
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO `tbl_oep8` (
+      `contract_hash`,
+      `token_id`,
+      `name`,
+      `total_supply`,
+      `symbol`,
+      `create_time`,
+      `audit_flag`,
+      `update_time`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.contractHash},
+      #{item.tokenId},
+      #{item.name},
+      #{item.totalSupply},
+      #{item.symbol},
+      #{item.createTime},
+      #{item.auditFlag},
+      #{item.updateTime}
+      )
+    </foreach>
+  </insert>
+
 </mapper>
