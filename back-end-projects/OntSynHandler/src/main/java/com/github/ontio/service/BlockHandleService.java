@@ -22,17 +22,13 @@ package com.github.ontio.service;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
-import com.github.ontio.mapper.BlockMapper;
-import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.model.dao.Block;
-import com.github.ontio.model.dao.Current;
 import com.github.ontio.thread.TxHandlerThread;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,16 +43,10 @@ import java.util.concurrent.Future;
 @Service
 public class BlockHandleService {
 
-    private final BlockMapper blockMapper;
-
-    private final CurrentMapper currentMapper;
-
     private final TxHandlerThread txHandlerThread;
 
     @Autowired
-    public BlockHandleService(BlockMapper blockMapper, CurrentMapper currentMapper, TxHandlerThread txHandlerThread) {
-        this.blockMapper = blockMapper;
-        this.currentMapper = currentMapper;
+    public BlockHandleService(TxHandlerThread txHandlerThread) {
         this.txHandlerThread = txHandlerThread;
     }
 
@@ -66,7 +56,6 @@ public class BlockHandleService {
      * @param blockJson
      * @throws Exception
      */
-    @Transactional(rollbackFor = Exception.class)
     public void handleOneBlock(JSONObject blockJson, JSONArray txEventLogArray) throws Exception {
 
         JSONObject blockHeader = blockJson.getJSONObject("Header");
@@ -75,9 +64,6 @@ public class BlockHandleService {
         JSONArray txArray = blockJson.getJSONArray("Transactions");
         int txCountInBlock = txArray.size();
         log.info("{} run-------blockHeight:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
-
-        ConstantParam.ONEBLOCK_ONTID_COUNT = 0;
-        ConstantParam.ONEBLOCK_ONTIDTX_COUNT = 0;
 
         List<Future> futureList = new ArrayList<>();
         //asynchronize handle transaction
@@ -92,21 +78,14 @@ public class BlockHandleService {
         for (int j = 0; j < futureList.size(); j++) {
             futureList.get(j).get();
         }
+        ConstantParam.BATCHBLOCK_TX_COUNT += txCountInBlock;
 
         insertBlock(blockJson);
-
-        List<Current> currents = currentMapper.selectAll();
-        int txCount = currents.get(0).getTxCount();
-        int ontIdCount = currents.get(0).getOntidCount();
-        int nonOntIdTxCount = currents.get(0).getNonontidTxCount();
-        updateCurrent(blockHeight, txCount + txCountInBlock,
-                ontIdCount + ConstantParam.ONEBLOCK_ONTID_COUNT, nonOntIdTxCount + txCountInBlock - ConstantParam.ONEBLOCK_ONTIDTX_COUNT);
 
         log.info("{} end-------height:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
     public void insertBlock(JSONObject blockJson) {
         String blockKeeperStr = "";
         StringBuilder sb = new StringBuilder(400);
@@ -132,18 +111,7 @@ public class BlockHandleService {
                 .txCount(blockJson.getJSONArray("Transactions").size())
                 .bookkeepers(blockKeeperStr)
                 .build();
-        blockMapper.insert(block);
+        ConstantParam.BATCHBLOCKDTO.getBlocks().add(block);
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void updateCurrent(int blockHeight, int txCount, int ontIdTxCount, int nonontIdTxCount) {
-
-        Current current = Current.builder()
-                .blockHeight(blockHeight)
-                .txCount(txCount)
-                .ontidCount(ontIdTxCount)
-                .nonontidTxCount(nonontIdTxCount)
-                .build();
-        currentMapper.update(current);
-    }
 }
