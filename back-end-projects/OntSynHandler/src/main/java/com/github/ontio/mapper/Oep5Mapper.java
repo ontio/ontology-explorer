@@ -10,5 +10,7 @@ public interface Oep5Mapper extends Mapper<Oep5> {
 
     List<Oep5> selectApprovedRecords();
 
+    void batchInsert(List<Oep5> list);
+
 
 }

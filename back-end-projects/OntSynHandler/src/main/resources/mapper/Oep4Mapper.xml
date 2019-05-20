@@ -33,4 +33,30 @@
   </select>
 
 
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO `tbl_oep4` (
+    `contract_hash`,
+    `name`,
+    `total_supply`,
+    `symbol`,
+    `decimals`,
+    `create_time`,
+    `audit_flag`,
+    `update_time`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.contractHash},
+      #{item.name},
+      #{item.totalSupply},
+      #{item.symbol},
+      #{item.decimals},
+      #{item.createTime},
+      #{item.auditFlag},
+      #{item.updateTime}
+      )
+    </foreach>
+  </insert>
+
 </mapper>
