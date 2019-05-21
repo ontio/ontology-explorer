@@ -10,6 +10,4 @@ public interface Oep8Mapper extends Mapper<Oep8> {
 
     List<Oep8> selectApprovedRecords();
 
-    void batchInsert(List<Oep8> list);
-
 }

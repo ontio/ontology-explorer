@@ -7,13 +7,18 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.payload.DeployCode;
+import com.github.ontio.mapper.*;
+import com.github.ontio.model.common.BatchBlockDto;
+import com.github.ontio.model.dao.*;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author zhouq
@@ -24,11 +29,177 @@ import java.io.IOException;
 @Service
 public class CommonService {
 
+
     private final ParamsConfig paramsConfig;
+    private final CurrentMapper currentMapper;
+    private final OntidTxDetailMapper ontidTxDetailMapper;
+    private final TxDetailMapper txDetailMapper;
+    private final Oep4TxDetailMapper oep4TxDetailMapper;
+    private final Oep5TxDetailMapper oep5TxDetailMapper;
+    private final Oep8TxDetailMapper oep8TxDetailMapper;
+    private final TxEventLogMapper txEventLogMapper;
+    private final Oep5DragonMapper oep5DragonMapper;
+    private final BlockMapper blockMapper;
+    private final ContractMapper contractMapper;
 
     @Autowired
-    public CommonService(ParamsConfig paramsConfig) {
+    public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
+                         Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
+                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, ContractMapper contractMapper) {
+        this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
+        this.currentMapper = currentMapper;
+        this.ontidTxDetailMapper = ontidTxDetailMapper;
+        this.oep4TxDetailMapper = oep4TxDetailMapper;
+        this.oep5TxDetailMapper = oep5TxDetailMapper;
+        this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.txEventLogMapper = txEventLogMapper;
+        this.blockMapper = blockMapper;
+        this.oep5DragonMapper = oep5DragonMapper;
+        this.contractMapper = contractMapper;
+    }
+
+    /**
+     * 批量插入记录
+     *
+     * @param tHeight
+     * @param batchBlockDto
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void batchInsertDb(int tHeight, BatchBlockDto batchBlockDto) {
+        //插入tbl_tx_detail表
+        if (batchBlockDto.getTxDetails().size() > 0) {
+            int count = batchBlockDto.getTxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<TxDetail> list = batchBlockDto.getTxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        txDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                txDetailMapper.batchInsert(batchBlockDto.getTxDetails());
+            }
+        }
+        //TODO 线上放开
+        //插入tbl_tx_detail_daily表
+/*        if (batchBlockDto.getTxDetailDailys().size() > 0) {
+            int count = batchBlockDto.getTxDetailDailys().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<TxDetailDaily> list = batchBlockDto.getTxDetailDailys().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        txDetailDailyMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                txDetailDailyMapper.batchInsert(batchBlockDto.getTxDetailDailys());
+            }
+        }*/
+        //插入tbl_tx_eventlog表
+        if (batchBlockDto.getTxEventLogs().size() > 0) {
+            int count = batchBlockDto.getTxEventLogs().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<TxEventLog> list = batchBlockDto.getTxEventLogs().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        txEventLogMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                txEventLogMapper.batchInsert(batchBlockDto.getTxEventLogs());
+            }
+        }
+        //插入tbl_ontid_tx_detail表
+        if (batchBlockDto.getOntidTxDetails().size() > 0) {
+            int count = batchBlockDto.getOntidTxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<OntidTxDetail> list = batchBlockDto.getOntidTxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        ontidTxDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                ontidTxDetailMapper.batchInsert(batchBlockDto.getOntidTxDetails());
+            }
+        }
+        //插入tbl_oep4_tx_detail表
+        if (batchBlockDto.getOep4TxDetails().size() > 0) {
+            int count = batchBlockDto.getOep4TxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<Oep4TxDetail> list = batchBlockDto.getOep4TxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        oep4TxDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                oep4TxDetailMapper.batchInsert(batchBlockDto.getOep4TxDetails());
+            }
+        }
+        //插入tbl_oep5_tx_detail表
+        if (batchBlockDto.getOep5TxDetails().size() > 0) {
+            int count = batchBlockDto.getOep5TxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<Oep5TxDetail> list = batchBlockDto.getOep5TxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        oep5TxDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                oep5TxDetailMapper.batchInsert(batchBlockDto.getOep5TxDetails());
+            }
+        }
+        //插入tbl_oep5_dragon表
+        if (batchBlockDto.getOep5Dragons().size() > 0) {
+            int count = batchBlockDto.getOep5Dragons().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<Oep5Dragon> list = batchBlockDto.getOep5Dragons().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        oep5DragonMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                oep5DragonMapper.batchInsert(batchBlockDto.getOep5Dragons());
+            }
+        }
+        //插入tbl_oep8_tx_detail表
+        if (batchBlockDto.getOep8TxDetails().size() > 0) {
+            int count = batchBlockDto.getOep8TxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<Oep8TxDetail> list = batchBlockDto.getOep8TxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        oep8TxDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                oep8TxDetailMapper.batchInsert(batchBlockDto.getOep8TxDetails());
+            }
+        }
+        //插入tbl_contract表
+        if (batchBlockDto.getContracts().size() > 0) {
+            contractMapper.batchInsert(batchBlockDto.getContracts());
+        }
+        //插入tbl_block表
+        if (batchBlockDto.getBlocks().size() > 0) {
+            blockMapper.batchInsert(batchBlockDto.getBlocks());
+        }
+        //更新current表
+        List<Current> currents = currentMapper.selectAll();
+        int txCount = currents.get(0).getTxCount();
+        int ontIdCount = currents.get(0).getOntidCount();
+        int nonOntIdTxCount = currents.get(0).getNonontidTxCount();
+        Current current = Current.builder()
+                .blockHeight(tHeight)
+                .txCount(txCount + ConstantParam.BATCHBLOCK_TX_COUNT)
+                .ontidCount(ontIdCount + ConstantParam.BATCHBLOCK_ONTID_COUNT)
+                .nonontidTxCount(nonOntIdTxCount + ConstantParam.BATCHBLOCK_TX_COUNT - ConstantParam.BATCHBLOCK_ONTIDTX_COUNT)
+                .build();
+        currentMapper.update(current);
     }
 
 
@@ -130,7 +301,7 @@ public class CommonService {
             try {
                 //返回空字符串或JSONArray
                 Object object = (Object) ConstantParam.ONT_SDKSERVICE.getConnect().getSmartCodeEvent(height);
-                if(object instanceof JSONArray){
+                if (object instanceof JSONArray) {
                     txEventLogArray = (JSONArray) object;
                 }
                 break;
@@ -255,8 +426,8 @@ public class CommonService {
                     contractObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContractJson(contractHash);
                     contractObj.remove("Code");
                     contractObj.put("ContractHash", contractHash);
-                }catch (Exception e){
-                    log.error("getContractJson error...",e);
+                } catch (Exception e) {
+                    log.error("getContractJson error...", e);
                     break;
                 }
                 break;
@@ -279,7 +450,42 @@ public class CommonService {
         return contractObj;
     }
 
+    /**
+     * 根据oep8的tokenId获取总量
+     *
+     * @param tokenId
+     * @return
+     */
+    public Long getOep8TotalSupply(String tokenId) {
 
+        Long totalSupply = 0L;
+        int tryTime = 1;
+        while (true) {
+            try {
+                totalSupply = Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId)));
+                break;
+            } catch (ConnectorException ex) {
+                log.error("getOep8TotalSupply error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
+                    switchNode();
+                    tryTime++;
+                    continue;
+                } else {
+                    tryTime++;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    continue;
+                }
+            } catch (Exception ex) {
+                log.error("getOep8TotalSupply thread can't work,error {} ", ex);
+                break;
+            }
+        }
+        return totalSupply;
+    }
 
 
 }
