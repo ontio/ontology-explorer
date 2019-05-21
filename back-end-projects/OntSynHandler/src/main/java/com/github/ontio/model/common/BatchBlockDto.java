@@ -27,17 +27,11 @@ public class BatchBlockDto {
 
     private List<OntidTxDetail> ontidTxDetails=Collections.synchronizedList(new ArrayList<OntidTxDetail>());
 
-    private List<Oep4> oep4s= Collections.synchronizedList(new ArrayList<Oep4>());
-
     private List<Oep4TxDetail> oep4TxDetails= Collections.synchronizedList(new ArrayList<Oep4TxDetail>());
-
-    private List<Oep5> oep5s= Collections.synchronizedList(new ArrayList<Oep5>());
 
     private List<Oep5TxDetail> oep5TxDetails= Collections.synchronizedList(new ArrayList<Oep5TxDetail>());
 
     private List<Oep5Dragon> oep5Dragons= Collections.synchronizedList(new ArrayList<Oep5Dragon>());
-
-    private List<Oep8> oep8s= Collections.synchronizedList(new ArrayList<Oep8>());
 
     private List<Oep8TxDetail> oep8TxDetails= Collections.synchronizedList(new ArrayList<Oep8TxDetail>());
 

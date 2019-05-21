@@ -42,7 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -104,7 +103,15 @@ public class TxHandlerThread {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
+    /**
+     * 处理单笔交易
+     *
+     * @param txJson
+     * @param blockHeight
+     * @param blockTime
+     * @param indexInBlock
+     * @throws Exception
+     */
     public void handleOneTx(JSONObject txJson, int blockHeight, int blockTime, int indexInBlock) throws Exception {
 
         int txType = txJson.getInteger("TxType");
@@ -151,14 +158,14 @@ public class TxHandlerThread {
 
                 if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress) || paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
                     //transfer transaction
-                    handleTransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                    handleNativeTransferTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
                             contractAddress, gasConsumed, i + 1, notifyArray.size(), confirmFlag, payer, calledContractHash);
 
                 } else if (paramsConfig.ONTID_CONTRACTHASH.equals(contractAddress)) {
                     //ontId operation transaction
-                    handleOntIdTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                    handleOntIdTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
                             gasConsumed, i + 1, contractAddress, payer, calledContractHash);
-                    addOneBlockOntIdTxnCount();
+                    addOneBlockOntIdTxCount();
 
                 } else if (paramsConfig.CLAIMRECORD_CONTRACTHASH.equals(contractAddress)) {
                     //claimrecord transaction
@@ -203,31 +210,6 @@ public class TxHandlerThread {
     }
 
     /**
-     * 记录交易的eventlog
-     *
-     * @param txHash
-     * @param txTime
-     * @param txType
-     * @param blockHeight
-     * @param blockIndex
-     * @param callednContractHash
-     * @param eventLog
-     */
-    private void insertTxEventLog(String txHash, int txTime, int txType,
-                                  int blockHeight, int blockIndex, String callednContractHash, String eventLog) {
-        TxEventLog txEventLog = TxEventLog.builder()
-                .txHash(txHash)
-                .txTime(txTime)
-                .txType(txType)
-                .blockHeight(blockHeight)
-                .blockIndex(blockIndex)
-                .eventLog(eventLog.substring(0, eventLog.length() > 5000 ? 5000 : eventLog.length()))
-                .calledContractHash(callednContractHash)
-                .build();
-        ConstantParam.BATCHBLOCKDTO.getTxEventLogs().add(txEventLog);
-    }
-
-    /**
      * 解析这笔交易真正调用的合约hash
      *
      * @param txJson
@@ -250,7 +232,7 @@ public class TxHandlerThread {
                 break;
             }
         }
-
+        //判断属于什么OEP类型交易
         if (ConstantParam.OEP5CONTRACTS.contains(calledContractHash)) {
             IS_OEPTX_FLAG.get().put(ConstantParam.IS_OEP5TX, true);
         } else if (ConstantParam.OEP4CONTRACTS.contains(calledContractHash)) {
@@ -259,6 +241,32 @@ public class TxHandlerThread {
             IS_OEPTX_FLAG.get().put(ConstantParam.IS_OEP8TX, true);
         }
         return calledContractHash;
+    }
+
+    /**
+     * 记录交易的eventlog
+     *
+     * @param txHash
+     * @param txTime
+     * @param txType
+     * @param blockHeight
+     * @param blockIndex
+     * @param callednContractHash
+     * @param eventLog
+     */
+    private void insertTxEventLog(String txHash, int txTime, int txType,
+                                  int blockHeight, int blockIndex, String callednContractHash, String eventLog) {
+        TxEventLog txEventLog = TxEventLog.builder()
+                .txHash(txHash)
+                .txTime(txTime)
+                .txType(txType)
+                .blockHeight(blockHeight)
+                .blockIndex(blockIndex)
+                //表字段长度为5000
+                .eventLog(eventLog.substring(0, eventLog.length() > 5000 ? 5000 : eventLog.length()))
+                .calledContractHash(callednContractHash)
+                .build();
+        ConstantParam.BATCHBLOCKDTO.getTxEventLogs().add(txEventLog);
     }
 
 
@@ -292,13 +300,202 @@ public class TxHandlerThread {
         Contract contract = Contract.builder()
                 .contractHash(contractHash)
                 .build();
-        // 部署合约，将合约信息保存到合约列表
         Integer count = contractMapper.selectCount(contract);
         if (count.equals(0)) {
             insertContractInfo(contractHash, blockTime, contractObj, payer);
         }
     }
 
+    /**
+     * 原生合约hash需要特殊转换
+     *
+     * @param contractHash
+     * @return
+     */
+    private String getNativeContractHash(String contractHash) {
+        switch (contractHash) {
+            case "0239dcf9b4a46f15c5f23f20d52fac916a0bac0d":
+                contractHash = paramsConfig.ONT_CONTRACTHASH;
+                break;
+            case "08b6dcfed2aace9190a44ae34a320e42c04b46ac":
+                contractHash = paramsConfig.ONG_CONTRACTHASH;
+                break;
+            case "6815cbe7b4dbad4d2d09ae035141b5254a002f79":
+                contractHash = paramsConfig.ONTID_CONTRACTHASH;
+                break;
+            case "24a15c6aed092dfaa711c4974caf1e9d307bf4b5":
+                contractHash = paramsConfig.AUTH_CONTRACTHASH;
+                break;
+            default:
+                contractHash = contractHash;
+        }
+
+        return contractHash;
+    }
+
+
+    /**
+     * 记录合约基本信息
+     *
+     * @param contractHash
+     * @param blockTime
+     * @param contractObj
+     * @param player
+     */
+    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String player) {
+
+        Contract contract = Contract.builder()
+                .contractHash(contractHash)
+                .name(contractObj.getString("Name"))
+                .description(contractObj.getString("Description"))
+                .abi("")
+                .code("")
+                .sourceCode("")
+                .createTime(blockTime)
+                .updateTime(blockTime)
+                .creator(player)
+                .txCount(0)
+                .addressCount(0)
+                .ongSum(ConstantParam.ZERO)
+                .ontSum(ConstantParam.ZERO)
+                .tokenSum(new JSONObject().toJSONString())
+                .dappstoreFlag(false)
+                .auditFlag(false)
+                .category("")
+                .contactInfo("")
+                .type("")
+                .logo("")
+                .dappName("")
+                .totalReward(ConstantParam.ZERO)
+                .lastweekReward(ConstantParam.ZERO)
+                .build();
+        ConstantParam.BATCHBLOCKDTO.getContracts().add(contract);
+    }
+
+
+    /**
+     * 累加一个区块里跟ontid相关的交易
+     */
+    public synchronized void addOneBlockOntIdTxCount() {
+        ConstantParam.BATCHBLOCK_ONTIDTX_COUNT++;
+    }
+
+
+    /**
+     * 处理原生ont，ong转账
+     *
+     * @param stateList
+     * @param txType
+     * @param txHash
+     * @param blockHeight
+     * @param blockTime
+     * @param indexInBlock
+     * @param contractAddress
+     * @param gasConsumed
+     * @param indexInTx
+     * @param notifyListSize
+     * @param confirmFlag
+     * @param payer
+     * @throws Exception
+     */
+    private void handleNativeTransferTx(JSONArray stateList, int txType, String txHash,
+                                        int blockHeight, int blockTime, int indexInBlock, String contractAddress,
+                                        BigDecimal gasConsumed, int indexInTx, int notifyListSize, int confirmFlag,
+                                        String payer, String calledContractHash) throws Exception {
+        if (stateList.size() < 3) {
+            TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
+
+            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+            return;
+        }
+
+        int eventType = EventTypeEnum.Transfer.type();
+        String assetName = "";
+        if (paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
+            assetName = ConstantParam.ASSET_NAME_ONT;
+        } else if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+            assetName = ConstantParam.ASSET_NAME_ONG;
+        }
+
+        String action = (String) stateList.get(0);
+        //手续费不为0的情况下，notifylist的最后一个一定是收取手续费event
+        if (gasConsumed.compareTo(ConstantParam.ZERO) != 0 && (indexInTx == notifyListSize) && paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+            action = EventTypeEnum.Gasconsume.des();
+            eventType = EventTypeEnum.Gasconsume.type();
+        }
+
+        String fromAddress = (String) stateList.get(1);
+        String toAddress = (String) stateList.get(2);
+        BigDecimal amount = new BigDecimal((stateList.get(3)).toString());
+        log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
+
+        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
+                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, eventType, contractAddress, payer, calledContractHash);
+
+        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        // OEP交易的手续费入对应的子表
+        if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+            if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_OEP8TX)) {
+                ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
+            } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_OEP5TX)) {
+                ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
+            } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_OEP4TX)) {
+                ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
+            }
+        }
+
+    }
+
+
+    /**
+     * 处理ontid交易
+     *
+     * @param stateList
+     * @param txType
+     * @param txHash
+     * @param blockHeight
+     * @param blockTime
+     * @param indexInBlock
+     * @param gasConsumed
+     * @param indexInTx
+     * @param contractAddress
+     * @throws Exception
+     */
+    private void handleOntIdTx(JSONArray stateList, int txType, String txHash, int blockHeight,
+                               int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx,
+                               String contractAddress, String payer, String calledContractHash) throws Exception {
+
+        String action = stateList.getString(0);
+        String ontId = "";
+        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
+            ontId = stateList.getString(1);
+        } else {
+            ontId = stateList.getString(2);
+        }
+        String descriptionStr = formatOntIdOperation(ontId, action, stateList);
+
+        OntidTxDetail ontidTxDetail = OntidTxDetail.builder()
+                .blockHeight(blockHeight)
+                .txHash(txHash)
+                .txType(txType)
+                .txTime(blockTime)
+                .ontid(ontId)
+                .fee(gasConsumed)
+                .description(descriptionStr)
+                .build();
+        ConstantParam.BATCHBLOCKDTO.getOntidTxDetails().add(ontidTxDetail);
+
+        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, 1, EventTypeEnum.Ontid.des() + action,
+                gasConsumed, indexInTx, EventTypeEnum.Ontid.type(), contractAddress, payer, calledContractHash);
+
+        //如果是注册ontid交易，ontid数量加1
+        if (ConstantParam.REGISTER.equals(action)) {
+            addOneBlockOntIdCount();
+        }
+    }
 
     /**
      * 累加一个区块里注册ontid的交易
@@ -307,11 +504,141 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCK_ONTID_COUNT++;
     }
 
+
     /**
-     * 累加一个区块里跟ontid相关的交易
+     * format ontId operation description
+     *
+     * @param action
+     * @param stateList
+     * @return
      */
-    public synchronized void addOneBlockOntIdTxnCount() {
-        ConstantParam.BATCHBLOCK_ONTIDTX_COUNT++;
+    private String formatOntIdOperation(String ontId, String action, JSONArray stateList) throws Exception {
+
+        String str = "";
+        StringBuilder descriptionSb = new StringBuilder(140);
+        descriptionSb.append(action);
+        descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+
+        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
+
+            descriptionSb.append(ontId);
+            str = descriptionSb.toString();
+            log.info("####Register OntId:{}", ontId);
+
+        } else if (OntIdEventDesEnum.PUBLICKEYOPE.des().equals(action)) {
+
+            String op = stateList.getString(1);
+            int publickeyNumber = stateList.getInteger(3);
+            String publicKey = stateList.getString(4);
+            log.info("####PublicKey op:{},keyNumber:{},publicKey:{}####", op, publickeyNumber, publicKey);
+
+            descriptionSb.append(op);
+            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+            descriptionSb.append(ontId);
+            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+            descriptionSb.append(publicKey);
+            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+            descriptionSb.append(publickeyNumber);
+            str = descriptionSb.toString();
+
+        } else if (OntIdEventDesEnum.ATTRIBUTEOPE.des().equals(action)) {
+
+            String op = stateList.getString(1);
+            log.info("####Attribute op:{}####", op);
+
+            descriptionSb.append(op);
+            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+            descriptionSb.append(ontId);
+            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+
+            if (ConstantParam.ADD.equals(op)) {
+                JSONArray attrNameArray = stateList.getJSONArray(3);
+                log.info("####attrName:{}####", attrNameArray.toArray());
+                for (Object obj :
+                        attrNameArray) {
+                    String attrName = (String) obj;
+                    attrName = new String(com.github.ontio.common.Helper.hexToBytes(attrName));
+                    descriptionSb.append(attrName);
+                    descriptionSb.append(ConstantParam.ONTID_SEPARATOR2);
+                }
+            } else {
+                String attrName = stateList.getString(3);
+                log.info("####attrName:{}####", attrName);
+                descriptionSb.append(attrName);
+                descriptionSb.append(ConstantParam.ONTID_SEPARATOR2);
+            }
+            str = descriptionSb.substring(0, descriptionSb.length() - 1);
+
+        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equals(action)) {
+
+            String op = stateList.getString(1);
+            String address = Address.parse(stateList.getString(3)).toBase58();
+            log.info("####Recovery op:{}, ontid:{}, address:{}####", op, ontId, address);
+
+            descriptionSb.append(op);
+            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+            descriptionSb.append(ontId);
+            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+            descriptionSb.append(address);
+
+            str = descriptionSb.toString();
+        }
+        return str;
+    }
+
+    /**
+     * 处理存证交易
+     *
+     * @param stateList
+     * @param txType
+     * @param txHash
+     * @param blockHeight
+     * @param blockTime
+     * @param indexInBlock
+     * @param gasConsumed
+     * @param indexInTx
+     * @param contractAddress
+     * @throws Exception
+     */
+    private void handleClaimRecordTxn(JSONArray stateList, int txType, String txHash, int blockHeight,
+                                      int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx,
+                                      String contractAddress, String payer, String calledContractHash) throws Exception {
+
+        String actionType = new String(Helper.hexToBytes(stateList.getString(0)));
+        StringBuilder sb = new StringBuilder(140);
+        sb.append(EventTypeEnum.Claimrecord.des());
+
+        if (ConstantParam.CLAIMRECORD_OPE_PREFIX.equals(actionType)) {
+            if (stateList.size() >= 4) {
+                String issuerOntId = new String(Helper.hexToBytes(stateList.getString(1)));
+                String action = new String(Helper.hexToBytes(stateList.getString(2)));
+                String claimId = new String(Helper.hexToBytes(stateList.getString(3)));
+                log.info("####ClaimRecord:action:{}, issuerOntId:{}, claimId:{}#####", action, issuerOntId, claimId);
+                sb.append(issuerOntId);
+                sb.append(action);
+                sb.append("claimId:");
+                sb.append(claimId);
+                //创建claim的动作也记录到ontid的表中
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(action);
+                stringBuilder.append("claimId:");
+                stringBuilder.append(claimId);
+
+                OntidTxDetail ontidTxDetail = OntidTxDetail.builder()
+                        .blockHeight(blockHeight)
+                        .txHash(txHash)
+                        .txType(txType)
+                        .txTime(blockTime)
+                        .ontid(issuerOntId)
+                        .fee(gasConsumed)
+                        .description(stringBuilder.toString())
+                        .build();
+                ConstantParam.BATCHBLOCKDTO.getOntidTxDetails().add(ontidTxDetail);
+            }
+        }
+
+        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, 1, sb.toString(),
+                gasConsumed, indexInTx, EventTypeEnum.Claimrecord.type(), contractAddress, payer, calledContractHash);
     }
 
 
@@ -355,7 +682,7 @@ public class TxHandlerThread {
             Oep8 oep8 = Oep8.builder()
                     .contractHash(contractAddress)
                     .tokenId((String) stateArray.get(3))
-                    .totalSupply(Long.valueOf(ConstantParam.ONT_SDKSERVICE.neovm().oep8().queryTotalSupply(Helper.hexToBytes(tokenId))))
+                    .totalSupply(commonService.getOep8TotalSupply(tokenId))
                     .build();
             //在子线程直接更新，不批量更新
             oep8Mapper.updateByPrimaryKeySelective(oep8);
@@ -549,177 +876,6 @@ public class TxHandlerThread {
 
 
     /**
-     * 处理原生ont，ong转账
-     *
-     * @param stateList
-     * @param txType
-     * @param txHash
-     * @param blockHeight
-     * @param blockTime
-     * @param indexInBlock
-     * @param contractAddress
-     * @param gasConsumed
-     * @param indexInTx
-     * @param notifyListSize
-     * @param confirmFlag
-     * @param payer
-     * @throws Exception
-     */
-    private void handleTransferTxn(JSONArray stateList, int txType, String txHash,
-                                   int blockHeight, int blockTime, int indexInBlock, String contractAddress,
-                                   BigDecimal gasConsumed, int indexInTx, int notifyListSize, int confirmFlag,
-                                   String payer, String calledContractHash) throws Exception {
-        if (stateList.size() < 3) {
-            TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
-                    blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
-
-            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-            return;
-        }
-
-        int eventType = EventTypeEnum.Transfer.type();
-        String assetName = "";
-        if (paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
-            assetName = ConstantParam.ASSET_NAME_ONT;
-        } else if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
-            assetName = ConstantParam.ASSET_NAME_ONG;
-        }
-
-        String action = (String) stateList.get(0);
-        //手续费不为0的情况下，notifylist的最后一个一定是收取手续费event
-        if (gasConsumed.compareTo(ConstantParam.ZERO) != 0 && (indexInTx == notifyListSize) && paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
-            action = EventTypeEnum.Gasconsume.des();
-            eventType = EventTypeEnum.Gasconsume.type();
-        }
-
-        String fromAddress = (String) stateList.get(1);
-        String toAddress = (String) stateList.get(2);
-        BigDecimal amount = new BigDecimal((stateList.get(3)).toString());
-        log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
-
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
-                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, eventType, contractAddress, payer, calledContractHash);
-
-        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-        // OEP交易的手续费入库
-        if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
-            // OEP合约交易插入对应的子表
-            if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_OEP8TX)) {
-                ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
-            } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_OEP5TX)) {
-                ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
-            } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_OEP4TX)) {
-                ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
-            }
-        }
-
-    }
-
-    /**
-     * 处理ontid交易
-     *
-     * @param stateList
-     * @param txType
-     * @param txHash
-     * @param blockHeight
-     * @param blockTime
-     * @param indexInBlock
-     * @param gasConsumed
-     * @param indexInTx
-     * @param contractAddress
-     * @throws Exception
-     */
-    private void handleOntIdTxn(JSONArray stateList, int txType, String txHash, int blockHeight,
-                                int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx,
-                                String contractAddress, String payer, String calledContractHash) throws Exception {
-
-        String action = stateList.getString(0);
-        String ontId = "";
-        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
-            ontId = stateList.getString(1);
-        } else {
-            ontId = stateList.getString(2);
-        }
-        String descriptionStr = formatOntIdOperation(ontId, action, stateList);
-
-        OntidTxDetail ontidTxDetail = OntidTxDetail.builder()
-                .blockHeight(blockHeight)
-                .txHash(txHash)
-                .txType(txType)
-                .txTime(blockTime)
-                .ontid(ontId)
-                .fee(gasConsumed)
-                .description(descriptionStr)
-                .build();
-        ConstantParam.BATCHBLOCKDTO.getOntidTxDetails().add(ontidTxDetail);
-
-        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, 1, EventTypeEnum.Ontid.des() + action,
-                gasConsumed, indexInTx, EventTypeEnum.Ontid.type(), contractAddress, payer, calledContractHash);
-
-        //如果是注册ontid交易，ontid数量加1
-        if (ConstantParam.REGISTER.equals(action)) {
-            addOneBlockOntIdCount();
-        }
-    }
-
-    /**
-     * 处理存证交易
-     *
-     * @param stateList
-     * @param txType
-     * @param txHash
-     * @param blockHeight
-     * @param blockTime
-     * @param indexInBlock
-     * @param gasConsumed
-     * @param indexInTx
-     * @param contractAddress
-     * @throws Exception
-     */
-    private void handleClaimRecordTxn(JSONArray stateList, int txType, String txHash, int blockHeight,
-                                      int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx,
-                                      String contractAddress, String payer, String calledContractHash) throws Exception {
-
-        String actionType = new String(Helper.hexToBytes(stateList.getString(0)));
-        StringBuilder sb = new StringBuilder(140);
-        sb.append(EventTypeEnum.Claimrecord.des());
-
-        if (ConstantParam.CLAIMRECORD_OPE_PREFIX.equals(actionType)) {
-            if (stateList.size() >= 4) {
-                String issuerOntId = new String(Helper.hexToBytes(stateList.getString(1)));
-                String action = new String(Helper.hexToBytes(stateList.getString(2)));
-                String claimId = new String(Helper.hexToBytes(stateList.getString(3)));
-                log.info("####ClaimRecord:action:{}, issuerOntId:{}, claimId:{}#####", action, issuerOntId, claimId);
-                sb.append(issuerOntId);
-                sb.append(action);
-                sb.append("claimId:");
-                sb.append(claimId);
-                //创建claim的动作也记录到ontid的表中
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(action);
-                stringBuilder.append("claimId:");
-                stringBuilder.append(claimId);
-
-                OntidTxDetail ontidTxDetail = OntidTxDetail.builder()
-                        .blockHeight(blockHeight)
-                        .txHash(txHash)
-                        .txType(txType)
-                        .txTime(blockTime)
-                        .ontid(issuerOntId)
-                        .fee(gasConsumed)
-                        .description(stringBuilder.toString())
-                        .build();
-                ConstantParam.BATCHBLOCKDTO.getOntidTxDetails().add(ontidTxDetail);
-            }
-        }
-
-        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, 1, sb.toString(),
-                gasConsumed, indexInTx, EventTypeEnum.Claimrecord.type(), contractAddress, payer, calledContractHash);
-    }
-
-    /**
      * 构造基本交易信息dao
      *
      * @param fromAddress
@@ -803,152 +959,6 @@ public class TxHandlerThread {
         }
     }
 
-
-    /**
-     * 记录合约基本信息
-     *
-     * @param contractHash
-     * @param blockTime
-     * @param contractObj
-     * @param player
-     */
-    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String player) {
-
-        Contract contract = Contract.builder()
-                .contractHash(contractHash)
-                .name(contractObj.getString("Name"))
-                .description(contractObj.getString("Description"))
-                .abi("")
-                .code("")
-                .sourceCode("")
-                .createTime(blockTime)
-                .updateTime(blockTime)
-                .creator(player)
-                .txCount(0)
-                .addressCount(0)
-                .ongSum(ConstantParam.ZERO)
-                .ontSum(ConstantParam.ZERO)
-                .tokenSum(new JSONObject().toJSONString())
-                .dappstoreFlag(false)
-                .auditFlag(false)
-                .category("")
-                .contactInfo("")
-                .type("")
-                .logo("")
-                .dappName("")
-                .totalReward(ConstantParam.ZERO)
-                .lastweekReward(ConstantParam.ZERO)
-                .build();
-        ConstantParam.BATCHBLOCKDTO.getContracts().add(contract);
-    }
-
-    /**
-     * 原生合约hash需要特殊转换
-     *
-     * @param contractHash
-     * @return
-     */
-    private String getNativeContractHash(String contractHash) {
-        switch (contractHash) {
-            case "0239dcf9b4a46f15c5f23f20d52fac916a0bac0d":
-                contractHash = paramsConfig.ONT_CONTRACTHASH;
-                break;
-            case "08b6dcfed2aace9190a44ae34a320e42c04b46ac":
-                contractHash = paramsConfig.ONG_CONTRACTHASH;
-                break;
-            case "6815cbe7b4dbad4d2d09ae035141b5254a002f79":
-                contractHash = paramsConfig.ONTID_CONTRACTHASH;
-                break;
-            case "24a15c6aed092dfaa711c4974caf1e9d307bf4b5":
-                contractHash = paramsConfig.AUTH_CONTRACTHASH;
-                break;
-            default:
-                contractHash = contractHash;
-        }
-
-        return contractHash;
-    }
-
-    /**
-     * format ontId operation description
-     *
-     * @param action
-     * @param stateList
-     * @return
-     */
-    private String formatOntIdOperation(String ontId, String action, JSONArray stateList) throws Exception {
-
-        String str = "";
-        StringBuilder descriptionSb = new StringBuilder(140);
-        descriptionSb.append(action);
-        descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-
-        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
-
-            descriptionSb.append(ontId);
-            str = descriptionSb.toString();
-            log.info("####Register OntId:{}", ontId);
-
-        } else if (OntIdEventDesEnum.PUBLICKEYOPE.des().equals(action)) {
-
-            String op = stateList.getString(1);
-            int publickeyNumber = stateList.getInteger(3);
-            String publicKey = stateList.getString(4);
-            log.info("####PublicKey op:{},keyNumber:{},publicKey:{}####", op, publickeyNumber, publicKey);
-
-            descriptionSb.append(op);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-            descriptionSb.append(ontId);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-            descriptionSb.append(publicKey);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-            descriptionSb.append(publickeyNumber);
-            str = descriptionSb.toString();
-
-        } else if (OntIdEventDesEnum.ATTRIBUTEOPE.des().equals(action)) {
-
-            String op = stateList.getString(1);
-            log.info("####Attribute op:{}####", op);
-
-            descriptionSb.append(op);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-            descriptionSb.append(ontId);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-
-            if (ConstantParam.ADD.equals(op)) {
-                JSONArray attrNameArray = stateList.getJSONArray(3);
-                log.info("####attrName:{}####", attrNameArray.toArray());
-                for (Object obj :
-                        attrNameArray) {
-                    String attrName = (String) obj;
-                    attrName = new String(com.github.ontio.common.Helper.hexToBytes(attrName));
-                    descriptionSb.append(attrName);
-                    descriptionSb.append(ConstantParam.ONTID_SEPARATOR2);
-                }
-            } else {
-                String attrName = stateList.getString(3);
-                log.info("####attrName:{}####", attrName);
-                descriptionSb.append(attrName);
-                descriptionSb.append(ConstantParam.ONTID_SEPARATOR2);
-            }
-            str = descriptionSb.substring(0, descriptionSb.length() - 1);
-
-        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equals(action)) {
-
-            String op = stateList.getString(1);
-            String address = Address.parse(stateList.getString(3)).toBase58();
-            log.info("####Recovery op:{}, ontid:{}, address:{}####", op, ontId, address);
-
-            descriptionSb.append(op);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-            descriptionSb.append(ontId);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-            descriptionSb.append(address);
-
-            str = descriptionSb.toString();
-        }
-        return str;
-    }
 
 
     /**
