@@ -78,15 +78,19 @@ public class BlockHandleService {
         for (int j = 0; j < futureList.size(); j++) {
             futureList.get(j).get();
         }
-        ConstantParam.BATCHBLOCK_TX_COUNT += txCountInBlock;
-
         insertBlock(blockJson);
+
+        ConstantParam.BATCHBLOCK_TX_COUNT += txCountInBlock;
 
         log.info("{} end-------height:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
     }
 
 
-    public void insertBlock(JSONObject blockJson) {
+    /**
+     * 处理block
+     * @param blockJson
+     */
+    private void insertBlock(JSONObject blockJson) {
         String blockKeeperStr = "";
         StringBuilder sb = new StringBuilder(400);
 
