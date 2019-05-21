@@ -265,8 +265,11 @@ public class CommonService {
         int tryTime = 1;
         while (true) {
             try {
-                blockObj = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getBlockJson(height);
-                break;
+                Object obj = ConstantParam.ONT_SDKSERVICE.getConnect().getBlockJson(height);
+                if (obj instanceof JSONObject) {
+                    blockObj = (JSONObject) obj;
+                    break;
+                }
             } catch (ConnectorException ex) {
                 log.error("getBlockJsonByHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
                 if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
@@ -300,11 +303,11 @@ public class CommonService {
         while (true) {
             try {
                 //返回空字符串或JSONArray
-                Object object = (Object) ConstantParam.ONT_SDKSERVICE.getConnect().getSmartCodeEvent(height);
+                Object object = ConstantParam.ONT_SDKSERVICE.getConnect().getSmartCodeEvent(height);
                 if (object instanceof JSONArray) {
                     txEventLogArray = (JSONArray) object;
+                    break;
                 }
-                break;
             } catch (ConnectorException ex) {
                 log.error("getTxEventLogsByHeight error, try again...restful:{},error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
                 if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
