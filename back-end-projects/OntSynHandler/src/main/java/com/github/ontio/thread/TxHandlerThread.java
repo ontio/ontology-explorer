@@ -60,7 +60,7 @@ import java.util.concurrent.Future;
 @Component
 public class TxHandlerThread {
 
-    public ThreadLocal<Map<String, Boolean>> IS_OEPTX_FLAG = new ThreadLocal<>();
+    private static ThreadLocal<Map<String, Boolean>> IS_OEPTX_FLAG = new ThreadLocal<>();
 
     private final ParamsConfig paramsConfig;
 
