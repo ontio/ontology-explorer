@@ -34,6 +34,8 @@ public class RedisCache implements Cache {
 
     private RedisTemplate<String, Object> redisTemplate = ApplicationContextProvider.getBean("redisTemplate");
 
+    private ParamsConfig paramsConfig = ApplicationContextProvider.getBean("ParamsConfig");
+
     private String id = "defaultrediscacheid001";
 
     public RedisCache(final String id) {
@@ -59,9 +61,11 @@ public class RedisCache implements Cache {
     public void putObject(Object key, Object value) {
         log.info("##{}.{} key:{}, value:{}##", CLASS_NAME, Helper.currentMethod(), key, value);
         if (Helper.isBelongRedisLongExpireMapper(key.toString())) {
-            redisTemplate.opsForValue().set(key.toString(), value, 2 * 60, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(key.toString(), value, paramsConfig.REDIS_LONG_EXPIRE_MINUTE, TimeUnit.MINUTES);
+        } else if (Helper.isBelongRedisMediumExpireMapper(key.toString())) {
+            redisTemplate.opsForValue().set(key.toString(), value, paramsConfig.REDIS_MEDIUM_EXPIRE_SECOND, TimeUnit.SECONDS);
         } else {
-            redisTemplate.opsForValue().set(key.toString(), value, 6, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(key.toString(), value, paramsConfig.REDIS_SHROT_EXPIRE_SECOND, TimeUnit.SECONDS);
         }
     }
 

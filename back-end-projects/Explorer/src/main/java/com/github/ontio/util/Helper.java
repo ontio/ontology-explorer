@@ -131,6 +131,27 @@ public class Helper {
         return false;
     }
 
+
+    /**
+     * 判断redis的key是否属于REDIS_MEDIUMEXPIRETIME_KEYLIST
+     * @param redisKey
+     * @return
+     */
+    public static Boolean isBelongRedisMediumExpireMapper(String redisKey) {
+
+        String packageName = BlockMapper.class.getPackage().getName();
+        int index = redisKey.indexOf(packageName);
+        if (index > 0) {
+            String str = redisKey.substring(index + packageName.length() + 1, redisKey.length());
+            int dex = str.indexOf(":");
+            String mapperName = str.substring(0, dex);
+            if (ConstantParam.REDIS_MEDIUMEXPIRETIME_KEYLIST.contains(mapperName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * 获取真实请求ip
      *

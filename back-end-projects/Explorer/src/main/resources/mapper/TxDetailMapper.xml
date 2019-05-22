@@ -100,7 +100,7 @@
         and event_type in (2,3)
     </select>
 
-    <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer">
+    <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
         select tx_time as txTime
         from tbl_tx_detail
         where (from_address = #{address} or to_address = #{address})
