@@ -130,6 +130,9 @@ public class ConstantParam {
                     "Oep4Mapper.selectOep4Tokens",
                     "Oep5Mapper.selectOep5Tokens",
                     "Oep8Mapper.selectOep8Tokens",
+                    "Oep4Mapper.selectOep4TokenDetail",
+                    "Oep5Mapper.selectOep5TokenDetail",
+                    "Oep8Mapper.selectOep8TokenDetail",
                     "Oep8Mapper.selectAuditPassedOep8",
                     "TxEventLogMapper.queryTxCount"
             )
