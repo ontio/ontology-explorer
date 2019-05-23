@@ -50,7 +50,7 @@ public enum ErrorInfo {
     /**
      * not exist
      */
-    NOT_EXIST(61004, "FAIL, not exist."),
+    TIME_RANGE_EXCEED(61004, "Time range exceeds limit."),
 
     /**
      * no permission
