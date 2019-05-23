@@ -55,7 +55,7 @@ public class TransactionController {
 
     @ApiOperation(value = "Get latest transaction list")
     @GetMapping(value = "/latest-transactions")
-    public ResponseBean queryLatestTxs(@RequestParam("count") @Max(50) int count) {
+    public ResponseBean queryLatestTxs(@RequestParam("count") @Max(50) @Min(1) int count) {
 
         log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
@@ -76,7 +76,7 @@ public class TransactionController {
 
     @ApiOperation(value = "Get latest nonontid transaction list")
     @GetMapping(value = "/latest-nonontid-transactions")
-    public ResponseBean queryLatestNonontidTxs(@RequestParam("count") @Max(50) int count) {
+    public ResponseBean queryLatestNonontidTxs(@RequestParam("count") @Max(50) @Min(1) int count) {
 
         log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 

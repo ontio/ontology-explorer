@@ -55,7 +55,7 @@ public class OntIdController {
 
     @ApiOperation(value = "Get latest ONT ID transaction list")
     @GetMapping(value = "/latest-ontids")
-    public ResponseBean queryLatestOntIdTxs(@RequestParam("count") @Max(50) int count) {
+    public ResponseBean queryLatestOntIdTxs(@RequestParam("count") @Max(50) @Min(1) int count) {
 
         log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 

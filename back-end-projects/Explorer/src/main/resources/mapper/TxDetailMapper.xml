@@ -110,14 +110,6 @@
     </select>
 
 
-    <select id="queryTxCount" resultType="java.lang.Integer">
-        select count(DISTINCT(tx_hash))
-        from tbl_tx_detail
-        where tx_time &gt;= #{startTime}
-        and <![CDATA[ tx_time <= #{endTime} ]]>
-    </select>
-
-
     <select id="selectTxsByBlockHeight" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxBasicDto">
         select distinct <include refid="txBasicColumns" />
         from tbl_tx_detail
