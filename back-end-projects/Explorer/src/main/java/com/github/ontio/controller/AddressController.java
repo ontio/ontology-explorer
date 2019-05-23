@@ -67,7 +67,7 @@ public class AddressController {
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
 
             if (Helper.isTimeRangeExceedLimit(beginTime, endTime)) {
-                return new ResponseBean(ErrorInfo.REQ_TIME_EXCEED.code(), ErrorInfo.REQ_TIME_EXCEED.desc(), false);
+                return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
             }
             rs = addressService.queryTransferTxsByTime(address, "", beginTime, endTime);
         }
@@ -93,7 +93,7 @@ public class AddressController {
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
 
             if (Helper.isTimeRangeExceedLimit(beginTime, endTime)) {
-                return new ResponseBean(ErrorInfo.REQ_TIME_EXCEED.code(), ErrorInfo.REQ_TIME_EXCEED.desc(), false);
+                return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
             }
             rs = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
         } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {
