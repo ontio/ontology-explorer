@@ -13,6 +13,7 @@ import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -75,27 +76,7 @@ public class TokenServiceImpl implements ITokenService {
                 total = ((Long) ((Page) oep8DetailDtos).getTotal()).intValue();
                 //OEP8同一个合约hash有多种token，需要根据tokenId分类
                 oep8DetailDtos.forEach(item -> {
-
-                    Map tokenIdMap = new HashMap();
-                    Map totalSupplyMap = new HashMap();
-                    Map symbolMap = new HashMap();
-                    Map tokenNameMap = new HashMap();
-
-                    String[] tokenIds = ((String) item.getTokenId()).split(",");
-                    String[] totalSupplys = ((String) item.getTotalSupply()).split(",");
-                    String[] symbols = ((String) item.getSymbol()).split(",");
-                    String[] tokenNames = ((String) item.getTokenName()).split(",");
-
-                    for (int i = 0; i < tokenIds.length; i++) {
-                        tokenIdMap.put(tokenIds[i], tokenIds[i]);
-                        totalSupplyMap.put(tokenIds[i], totalSupplys[i]);
-                        symbolMap.put(tokenIds[i], symbols[i]);
-                        tokenNameMap.put(tokenIds[i], tokenNames[i]);
-                    }
-                    item.setTotalSupply(totalSupplyMap);
-                    item.setSymbol(symbolMap);
-                    item.setTokenName(tokenNameMap);
-                    item.setTokenId(tokenIdMap);
+                    item = formatOep8DetailDto(item);
                 });
 
                 pageResponseBean.setTotal(total);
@@ -104,6 +85,61 @@ public class TokenServiceImpl implements ITokenService {
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
+    }
+
+    private Oep8DetailDto formatOep8DetailDto(Oep8DetailDto oep8DetailDto) {
+
+        Map tokenIdMap = new HashMap();
+        Map totalSupplyMap = new HashMap();
+        Map symbolMap = new HashMap();
+        Map tokenNameMap = new HashMap();
+
+        String[] tokenIds = ((String) oep8DetailDto.getTokenId()).split(",");
+        String[] totalSupplys = ((String) oep8DetailDto.getTotalSupply()).split(",");
+        String[] symbols = ((String) oep8DetailDto.getSymbol()).split(",");
+        String[] tokenNames = ((String) oep8DetailDto.getTokenName()).split(",");
+
+        for (int i = 0; i < tokenIds.length; i++) {
+            tokenIdMap.put(tokenIds[i], tokenIds[i]);
+            totalSupplyMap.put(tokenIds[i], totalSupplys[i]);
+            symbolMap.put(tokenIds[i], symbols[i]);
+            tokenNameMap.put(tokenIds[i], tokenNames[i]);
+        }
+        oep8DetailDto.setTotalSupply(totalSupplyMap);
+        oep8DetailDto.setSymbol(symbolMap);
+        oep8DetailDto.setTokenName(tokenNameMap);
+        oep8DetailDto.setTokenId(tokenIdMap);
+
+        return oep8DetailDto;
+    }
+
+
+    @Override
+    public ResponseBean queryTokenDetail(String tokenType, String contractHash) {
+
+        Object obj = new Object();
+
+        switch (tokenType.toLowerCase()) {
+            case ConstantParam.ASSET_TYPE_OEP4:
+                Oep4DetailDto oep4DetailDto = oep4Mapper.selectOep4TokenDetail(contractHash);
+                obj = oep4DetailDto;
+                break;
+            case ConstantParam.ASSET_TYPE_OEP5:
+                Oep5DetailDto oep5DetailDto = oep5Mapper.selectOep5TokenDetail(contractHash);
+                obj = oep5DetailDto;
+                break;
+            case ConstantParam.ASSET_TYPE_OEP8:
+                Oep8DetailDto oep8DetailDto = oep8Mapper.selectOep8TokenDetail(contractHash);
+                if (Helper.isNotEmptyOrNull(oep8DetailDto)) {
+                    oep8DetailDto = formatOep8DetailDto(oep8DetailDto);
+                }
+                obj = oep8DetailDto;
+                break;
+        }
+        if (Helper.isEmptyOrNull(obj)) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), obj);
     }
 
     @Override
