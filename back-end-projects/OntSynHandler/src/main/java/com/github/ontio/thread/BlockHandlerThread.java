@@ -34,6 +34,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Slf4j
 @Component("BlockHandlerThread")
 @Scope("prototype")
@@ -172,6 +174,7 @@ public class BlockHandlerThread extends Thread {
         ConstantParam.BATCHBLOCK_TX_COUNT = 0;
         ConstantParam.BATCHBLOCK_ONTID_COUNT = 0;
         ConstantParam.BATCHBLOCK_ONTIDTX_COUNT = 0;
+        ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
     }
 
 }
