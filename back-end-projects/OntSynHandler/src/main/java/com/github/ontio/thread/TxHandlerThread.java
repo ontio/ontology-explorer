@@ -220,8 +220,8 @@ public class TxHandlerThread {
         String code = txJson.getJSONObject("Payload").getString("Code");
         String calledContractHash = "";
 
-        while (code.contains("67")) {
-            int index = code.indexOf("67");
+        while (code.contains(ConstantParam.TXPAYLOAD_CODE_FLAG)) {
+            int index = code.indexOf(ConstantParam.TXPAYLOAD_CODE_FLAG);
             code = code.substring(index + 2);
             if (code.length() < 40) {
                 //native合约都是792e4e61746976652e496e766f6b65
@@ -344,32 +344,35 @@ public class TxHandlerThread {
      */
     private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String player) {
 
-        Contract contract = Contract.builder()
-                .contractHash(contractHash)
-                .name(contractObj.getString("Name"))
-                .description(contractObj.getString("Description"))
-                .abi("")
-                .code("")
-                .sourceCode("")
-                .createTime(blockTime)
-                .updateTime(blockTime)
-                .creator(player)
-                .txCount(0)
-                .addressCount(0)
-                .ongSum(ConstantParam.ZERO)
-                .ontSum(ConstantParam.ZERO)
-                .tokenSum(new JSONObject().toJSONString())
-                .dappstoreFlag(false)
-                .auditFlag(false)
-                .category("")
-                .contactInfo("")
-                .type("")
-                .logo("")
-                .dappName("")
-                .totalReward(ConstantParam.ZERO)
-                .lastweekReward(ConstantParam.ZERO)
-                .build();
-        ConstantParam.BATCHBLOCKDTO.getContracts().add(contract);
+        if (!ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST.contains(contractHash)) {
+            Contract contract = Contract.builder()
+                    .contractHash(contractHash)
+                    .name(contractObj.getString("Name"))
+                    .description(contractObj.getString("Description"))
+                    .abi("")
+                    .code("")
+                    .sourceCode("")
+                    .createTime(blockTime)
+                    .updateTime(blockTime)
+                    .creator(player)
+                    .txCount(0)
+                    .addressCount(0)
+                    .ongSum(ConstantParam.ZERO)
+                    .ontSum(ConstantParam.ZERO)
+                    .tokenSum(new JSONObject().toJSONString())
+                    .dappstoreFlag(false)
+                    .auditFlag(false)
+                    .category("")
+                    .contactInfo("")
+                    .type("")
+                    .logo("")
+                    .dappName("")
+                    .totalReward(ConstantParam.ZERO)
+                    .lastweekReward(ConstantParam.ZERO)
+                    .build();
+            ConstantParam.BATCHBLOCKDTO.getContracts().add(contract);
+            ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST.add(contractHash);
+        }
     }
 
 
@@ -958,7 +961,6 @@ public class TxHandlerThread {
             ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
         }
     }
-
 
 
     /**

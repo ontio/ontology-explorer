@@ -48,19 +48,24 @@ public final class ConstantParam {
     public static OntSdk ONT_SDKSERVICE = null;
 
     /**
-     * the number of ontid transactions of one block
+     * the number of ontid transactions of batch block
      */
     public static int BATCHBLOCK_ONTID_COUNT = 0;
 
     /**
-     * the number of nonontid transactions of one block
+     * the number of nonontid transactions of batch block
      */
     public static int BATCHBLOCK_ONTIDTX_COUNT = 0;
 
     /**
-     * the number of nonontid transactions of one block
+     * the number of nonontid transactions of batch block
      */
     public static int BATCHBLOCK_TX_COUNT = 0;
+
+    /**
+     * the contracthash list of batch block
+     */
+    public static List<String> BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
 
     /**
      * Push
@@ -116,5 +121,7 @@ public final class ConstantParam {
     public static final String IS_OEP8TX = "is_oep8tx";
 
     public static BatchBlockDto BATCHBLOCKDTO = new BatchBlockDto();
+
+    public static final String TXPAYLOAD_CODE_FLAG = "67";
 
 }
