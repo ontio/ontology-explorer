@@ -252,4 +252,12 @@
         limit #{pageSize}
     </select>
 
+
+    <select id="selectTransferTxCountByAddr" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        OR to_address = #{address}
+    </select>
+
 </mapper>

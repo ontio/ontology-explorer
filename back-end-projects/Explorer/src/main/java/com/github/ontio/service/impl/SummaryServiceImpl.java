@@ -8,7 +8,9 @@ import com.github.ontio.model.dto.ContractDailySummaryDto;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.DailySummaryDto;
 import com.github.ontio.service.ISummaryService;
+import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ import java.util.Map;
 public class SummaryServiceImpl implements ISummaryService {
 
     private final ParamsConfig paramsConfig;
-    private final TxEventLogMapper  txEventLogMapper;
+    private final TxEventLogMapper txEventLogMapper;
     private final DailySummaryMapper dailySummaryMapper;
     private final ContractDailySummaryMapper contractDailySummaryMapper;
     private final CurrentMapper currentMapper;
@@ -41,14 +43,13 @@ public class SummaryServiceImpl implements ISummaryService {
     }
 
 
-
     @Override
     public ResponseBean getBlockChainLatestInfo() {
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
         currentDto.setNodeCount(paramsConfig.BLOCKCHAIN_NODE_COUNT);
 
-        Integer addressCount = addressDailySummaryMapper.selectAllAddressCount();
+        Integer addressCount = addressDailySummaryMapper.selectAllAddressCount(ConstantParam.ADDR_DAILY_SUMMARY_CONTRACTHASH);
         currentDto.setAddressCount(addressCount);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentDto);
@@ -84,9 +85,13 @@ public class SummaryServiceImpl implements ISummaryService {
         List<DailySummaryDto> dailySummaryDtos = dailySummaryMapper.selectSummaryByTime(startTime, endTime);
         if (dailySummaryDtos.size() > 0) {
             Map<String, BigDecimal> addrAndOntidCountMap = dailySummaryMapper.selectAddrAndOntIdTotal(startTime);
-
-            dailySummaryDtos.get(0).setAddressTotal(addrAndOntidCountMap.get("addressTotal").intValue());
-            dailySummaryDtos.get(0).setOntidTotal(addrAndOntidCountMap.get("ontidTotal").intValue());
+            if (Helper.isEmptyOrNull(addrAndOntidCountMap)) {
+                dailySummaryDtos.get(0).setOntidTotal(0);
+                dailySummaryDtos.get(0).setAddressTotal(0);
+            } else {
+                dailySummaryDtos.get(0).setAddressTotal(addrAndOntidCountMap.get("addressTotal").intValue());
+                dailySummaryDtos.get(0).setOntidTotal(addrAndOntidCountMap.get("ontidTotal").intValue());
+            }
 
             for (int i = 1; i < dailySummaryDtos.size(); i++) {
                 DailySummaryDto dailySummaryDto = dailySummaryDtos.get(i);
