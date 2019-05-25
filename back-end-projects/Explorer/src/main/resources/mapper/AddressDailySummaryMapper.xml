@@ -18,10 +18,10 @@
   </cache>
 
 
-  <select id="selectAllAddressCount" resultType="java.lang.Integer">
+  <select id="selectAllAddressCount" parameterType="java.lang.String" resultType="java.lang.Integer">
     select count(1)
     from tbl_address_daily_summary
-    where contract_hash = '00'
+    where contract_hash = #{contract_hash}
   </select>
 
 </mapper>

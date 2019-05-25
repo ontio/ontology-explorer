@@ -87,6 +87,11 @@ public class TokenServiceImpl implements ITokenService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
+    /**
+     * 根据tokenid格式化oep8 token信息
+     * @param oep8DetailDto
+     * @return
+     */
     private Oep8DetailDto formatOep8DetailDto(Oep8DetailDto oep8DetailDto) {
 
         Map tokenIdMap = new HashMap();

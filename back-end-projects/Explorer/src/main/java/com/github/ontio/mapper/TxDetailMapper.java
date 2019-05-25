@@ -40,5 +40,6 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     List<TransferTxDto> selectDragonTransferTxsByTimeAndPage(@Param("address") String address, @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
 
+    Integer selectTransferTxCountByAddr(@Param("address") String address);
 
 }

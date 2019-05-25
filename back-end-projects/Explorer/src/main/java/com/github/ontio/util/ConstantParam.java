@@ -115,7 +115,8 @@ public class ConstantParam {
                     "ContractMapper.selectContractDetail",
                     "ContractDailySummaryMapper.selectDailySummaryByContractHash",
                     "DailySummaryMapper.selectSummaryByTime",
-                    "DailySummaryMapper.selectAddrAndOntIdTotal"
+                    "DailySummaryMapper.selectAddrAndOntIdTotal",
+                    "OntidTxDetailMapper.selectOneByTxHash"
             )
     );
 
@@ -138,6 +139,7 @@ public class ConstantParam {
             )
     );
 
+    public static final String ADDR_DAILY_SUMMARY_CONTRACTHASH = "0100000000000000000000000000000000000000";
 
 
 }
