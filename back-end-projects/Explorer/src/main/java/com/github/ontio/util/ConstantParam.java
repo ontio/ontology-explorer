@@ -141,5 +141,7 @@ public class ConstantParam {
 
     public static final String ADDR_DAILY_SUMMARY_CONTRACTHASH = "0100000000000000000000000000000000000000";
 
+    public static final Integer REQTIME_MAX_RANGE = 40 * 24 * 60 * 60;
+
 
 }

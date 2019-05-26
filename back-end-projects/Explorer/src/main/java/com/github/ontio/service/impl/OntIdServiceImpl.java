@@ -97,7 +97,7 @@ public class OntIdServiceImpl implements IOntIdService {
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(ontidTxDetailDtos, currentDto.getNonontidTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(ontidTxDetailDtos, currentDto.getTxCount() - currentDto.getNonontidTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }

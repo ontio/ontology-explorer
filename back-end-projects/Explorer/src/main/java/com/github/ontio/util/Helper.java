@@ -66,7 +66,7 @@ public class Helper {
      */
     public static Boolean isTimeRangeExceedLimit(Long beginTime, Long endTime) {
 
-        if ((endTime - beginTime) > (30 * 24 * 60 * 60)) {
+        if ((endTime - beginTime) > (ConstantParam.REQTIME_MAX_RANGE)) {
             return true;
         }
         return false;
