@@ -197,7 +197,7 @@ public class CommonService {
                 .blockHeight(tHeight)
                 .txCount(txCount + ConstantParam.BATCHBLOCK_TX_COUNT)
                 .ontidCount(ontIdCount + ConstantParam.BATCHBLOCK_ONTID_COUNT)
-                .nonontidTxCount(nonOntIdTxCount + ConstantParam.BATCHBLOCK_TX_COUNT - ConstantParam.BATCHBLOCK_ONTIDTX_COUNT)
+                .nonontidTxCount(nonOntIdTxCount + ConstantParam.BATCHBLOCK_TX_COUNT - batchBlockDto.getOntidTxDetails().size())
                 .build();
         currentMapper.update(current);
     }
