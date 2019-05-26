@@ -58,5 +58,8 @@ public class ParamsConfig {
     @Value("${redis.expire.short.second}")
     public Integer REDIS_SHROT_EXPIRE_SECOND;
 
+    @Value("${oep5.dragon.contractHash}")
+    public String OEP5_DRAGON_CONTRACTHASH;
+
 
 }
