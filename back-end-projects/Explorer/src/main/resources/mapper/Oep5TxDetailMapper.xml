@@ -50,6 +50,35 @@
     limit #{startIndex}, #{pageSize}
   </select>
 
+  <select id="selectTxs4Dragon" resultType="com.github.ontio.model.dto.Oep5TxDetailDto">
+      SELECT
+      a.*, b.json_url as jsonUrl
+      FROM
+      (
+        SELECT DISTINCT
+          tx_hash AS txHash,
+          block_height AS blockHeight,
+          tx_type AS txType,
+          tx_time AS txTime,
+          block_index AS blockIndex,
+          confirm_flag AS confirmFlag,
+          fee AS fee,
+          called_contract_hash AS calledContractHash,
+          asset_name AS assetName
+        FROM
+          tbl_oep5_tx_detail
+        WHERE
+          called_contract_hash = #{calledContractHash}
+        ORDER BY
+          block_height DESC
+          LIMIT #{startIndex}, #{pageSize}
+      ) a
+      LEFT JOIN tbl_oep5_dragon b ON a.calledContractHash = b.contract_hash
+      AND a.assetname = b.asset_name
+      ORDER BY
+      a.blockHeight DESC
+  </select>
+
 
   <select id="selectCountByCalledContracthash" resultType="java.lang.Integer">
     select count(DISTINCT (tx_hash))
