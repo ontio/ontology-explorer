@@ -215,19 +215,7 @@
       this.getStatisticsData();
     },
     watch: {
-      '$route': ['getContractData', 'getStatisticsData'],
-      'contract':function(){
-          if(this.$route.params.contractHash == "cae215265a5e348bfd603b8db22893aa74b42417"){
-              this.contract.list.AddressCount = this.contract.list.AddressCount + 32620
-              this.contract.list.Total = this.contract.list.Total + 63617
-              var cacuOng = parseFloat(this.contract.list.OngCount)*1000000000
-              var cacuOnt = parseFloat(this.contract.list.OntCount)
-              cacuOng = cacuOng + 116055.79681789*1000000000
-              this.contract.list.OntCount = cacuOnt.toString()
-              this.contract.list.OngCount = (cacuOng/1000000000).toString()
-
-          }
-      }
+      '$route': ['getContractData', 'getStatisticsData']
     },
     computed: {
       ...mapState({
