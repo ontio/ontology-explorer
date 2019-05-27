@@ -2,7 +2,10 @@ package com.github.ontio.model.dao;
 
 import lombok.Builder;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.math.BigDecimal;
 
 @Table(name = "tbl_tx_eventlog")
 public class TxEventLog {
@@ -38,10 +41,15 @@ public class TxEventLog {
     private Integer blockIndex;
 
     /**
-     * 该交易真正调用的合约hash
+     * 交易手续费
      */
-    @Column(name = "called_contract_hash")
-    private String calledContractHash;
+    private BigDecimal fee;
+
+    /**
+     * 交易落账标识  1：成功 0：失败
+     */
+    @Column(name = "confirm_flag")
+    private Integer confirmFlag;
 
     /**
      * 交易的event log
@@ -49,15 +57,30 @@ public class TxEventLog {
     @Column(name = "event_log")
     private String eventLog;
 
+    /**
+     * 该交易真正调用的合约hash
+     */
+    @Column(name = "called_contract_hash")
+    private String calledContractHash;
+
+    /**
+     * 是否属于ontid事件交易 true:属于 false：不属于
+     */
+    @Column(name = "ontid_tx_flag")
+    private Boolean ontidTxFlag;
+
     @Builder
-    public TxEventLog(String txHash, Integer txType, Integer txTime, Integer blockHeight, Integer blockIndex, String calledContractHash, String eventLog) {
+    public TxEventLog(String txHash, Integer txType, Integer txTime, Integer blockHeight, Integer blockIndex, BigDecimal fee, Integer confirmFlag, String eventLog, String calledContractHash, Boolean ontidTxFlag) {
         this.txHash = txHash;
         this.txType = txType;
         this.txTime = txTime;
         this.blockHeight = blockHeight;
         this.blockIndex = blockIndex;
-        this.calledContractHash = calledContractHash;
+        this.fee = fee;
+        this.confirmFlag = confirmFlag;
         this.eventLog = eventLog;
+        this.calledContractHash = calledContractHash;
+        this.ontidTxFlag = ontidTxFlag;
     }
 
     /**
@@ -151,21 +174,39 @@ public class TxEventLog {
     }
 
     /**
-     * 获取该交易真正调用的合约hash
+     * 获取交易手续费
      *
-     * @return called_contract_hash - 该交易真正调用的合约hash
+     * @return fee - 交易手续费
      */
-    public String getCalledContractHash() {
-        return calledContractHash;
+    public BigDecimal getFee() {
+        return fee;
     }
 
     /**
-     * 设置该交易真正调用的合约hash
+     * 设置交易手续费
      *
-     * @param calledContractHash 该交易真正调用的合约hash
+     * @param fee 交易手续费
      */
-    public void setCalledContractHash(String calledContractHash) {
-        this.calledContractHash = calledContractHash == null ? null : calledContractHash.trim();
+    public void setFee(BigDecimal fee) {
+        this.fee = fee;
+    }
+
+    /**
+     * 获取交易落账标识  1：成功 0：失败
+     *
+     * @return confirm_flag - 交易落账标识  1：成功 0：失败
+     */
+    public Integer getConfirmFlag() {
+        return confirmFlag;
+    }
+
+    /**
+     * 设置交易落账标识  1：成功 0：失败
+     *
+     * @param confirmFlag 交易落账标识  1：成功 0：失败
+     */
+    public void setConfirmFlag(Integer confirmFlag) {
+        this.confirmFlag = confirmFlag;
     }
 
     /**
@@ -184,5 +225,41 @@ public class TxEventLog {
      */
     public void setEventLog(String eventLog) {
         this.eventLog = eventLog == null ? null : eventLog.trim();
+    }
+
+    /**
+     * 获取该交易真正调用的合约hash
+     *
+     * @return called_contract_hash - 该交易真正调用的合约hash
+     */
+    public String getCalledContractHash() {
+        return calledContractHash;
+    }
+
+    /**
+     * 设置该交易真正调用的合约hash
+     *
+     * @param calledContractHash 该交易真正调用的合约hash
+     */
+    public void setCalledContractHash(String calledContractHash) {
+        this.calledContractHash = calledContractHash == null ? null : calledContractHash.trim();
+    }
+
+    /**
+     * 获取是否属于ontid事件交易 true:属于 false：不属于
+     *
+     * @return ontid_tx_flag - 是否属于ontid事件交易 true:属于 false：不属于
+     */
+    public Boolean getOntidTxFlag() {
+        return ontidTxFlag;
+    }
+
+    /**
+     * 设置是否属于ontid事件交易 true:属于 false：不属于
+     *
+     * @param ontidTxFlag 是否属于ontid事件交易 true:属于 false：不属于
+     */
+    public void setOntidTxFlag(Boolean ontidTxFlag) {
+        this.ontidTxFlag = ontidTxFlag;
     }
 }

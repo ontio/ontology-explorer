@@ -45,21 +45,21 @@
 
 <!--        <table tableName="tbl_block" domainObjectName="Block">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
-        <table tableName="tbl_current" domainObjectName="Current">
+<!--        <table tableName="tbl_current" domainObjectName="Current">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
-        <table tableName="tbl_tx_detail" domainObjectName="TxDetail">
+<!--        <table tableName="tbl_tx_detail" domainObjectName="TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
         <table tableName="tbl_tx_eventlog" domainObjectName="TxEventLog">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
-        <table tableName="tbl_ontid_tx_detail" domainObjectName="OntidTxDetail">
+<!--        <table tableName="tbl_ontid_tx_detail" domainObjectName="OntidTxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>-->
 
@@ -74,9 +74,9 @@
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>-->
 
-        <table tableName="tbl_oep5" domainObjectName="Oep5">
+<!--        <table tableName="tbl_oep5" domainObjectName="Oep5">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
 <!--        <table tableName="tbl_oep5_tx_detail" domainObjectName="Oep5TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
