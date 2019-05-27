@@ -25,17 +25,17 @@ public class Current {
     private Integer ontidCount;
 
     /**
-     * 当前同步的最新非ONT ID相关的交易数量
+     * 当前同步的最新ONT ID相关的交易数量
      */
-    @Column(name = "nonontid_tx_count")
-    private Integer nonontidTxCount;
+    @Column(name = "ontid_tx_count")
+    private Integer ontidTxCount;
 
     @Builder
-    public Current(Integer blockHeight, Integer txCount, Integer ontidCount, Integer nonontidTxCount) {
+    public Current(Integer blockHeight, Integer txCount, Integer ontidCount, Integer ontidTxCount) {
         this.blockHeight = blockHeight;
         this.txCount = txCount;
         this.ontidCount = ontidCount;
-        this.nonontidTxCount = nonontidTxCount;
+        this.ontidTxCount = ontidTxCount;
     }
 
     /**
@@ -93,20 +93,20 @@ public class Current {
     }
 
     /**
-     * 获取当前同步的最新非ONT ID相关的交易数量
+     * 获取当前同步的最新ONT ID相关的交易数量
      *
-     * @return nonontid_tx_count - 当前同步的最新非ONT ID相关的交易数量
+     * @return ontid_tx_count - 当前同步的最新ONT ID相关的交易数量
      */
-    public Integer getNonontidTxCount() {
-        return nonontidTxCount;
+    public Integer getOntidTxCount() {
+        return ontidTxCount;
     }
 
     /**
-     * 设置当前同步的最新非ONT ID相关的交易数量
+     * 设置当前同步的最新ONT ID相关的交易数量
      *
-     * @param nonontidTxCount 当前同步的最新非ONT ID相关的交易数量
+     * @param ontidTxCount 当前同步的最新ONT ID相关的交易数量
      */
-    public void setNonontidTxCount(Integer nonontidTxCount) {
-        this.nonontidTxCount = nonontidTxCount;
+    public void setOntidTxCount(Integer ontidTxCount) {
+        this.ontidTxCount = ontidTxCount;
     }
 }
