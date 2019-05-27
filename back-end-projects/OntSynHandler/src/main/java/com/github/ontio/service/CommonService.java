@@ -192,12 +192,12 @@ public class CommonService {
         List<Current> currents = currentMapper.selectAll();
         int txCount = currents.get(0).getTxCount();
         int ontIdCount = currents.get(0).getOntidCount();
-        int nonOntIdTxCount = currents.get(0).getNonontidTxCount();
+        int ontIdTxCount = currents.get(0).getOntidTxCount();
         Current current = Current.builder()
                 .blockHeight(tHeight)
                 .txCount(txCount + ConstantParam.BATCHBLOCK_TX_COUNT)
                 .ontidCount(ontIdCount + ConstantParam.BATCHBLOCK_ONTID_COUNT)
-                .nonontidTxCount(nonOntIdTxCount + ConstantParam.BATCHBLOCK_TX_COUNT - batchBlockDto.getOntidTxDetails().size())
+                .ontidTxCount(ontIdTxCount + batchBlockDto.getOntidTxDetails().size())
                 .build();
         currentMapper.update(current);
     }
