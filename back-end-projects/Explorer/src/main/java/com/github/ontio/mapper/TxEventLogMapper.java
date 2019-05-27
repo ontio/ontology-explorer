@@ -1,5 +1,6 @@
 package com.github.ontio.mapper;
 
+import com.github.ontio.model.dto.TxBasicDto;
 import com.github.ontio.model.dto.TxEventLogDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,8 @@ public interface TxEventLogMapper extends Mapper<TxEventLogDto> {
     List<TxEventLogDto> selectTxsByCalledContractHash(@Param("calledContractHash") String contractHash, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 
     Integer selectCountByCalledContracthash(@Param("calledContractHash") String calledContractHash);
+
+    List<TxBasicDto> selectTxsByBlockHeight(@Param("blockHeight") Integer blockHeight);
+
 
 }

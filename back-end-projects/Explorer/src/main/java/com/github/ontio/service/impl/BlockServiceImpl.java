@@ -21,7 +21,7 @@ package com.github.ontio.service.impl;
 
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.mapper.CurrentMapper;
-import com.github.ontio.mapper.TxDetailMapper;
+import com.github.ontio.mapper.TxEventLogMapper;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dto.BlockDto;
@@ -44,13 +44,13 @@ import java.util.Map;
 public class BlockServiceImpl implements IBlockService {
 
     private final BlockMapper blockMapper;
-    private final TxDetailMapper txDetailMapper;
+    private final TxEventLogMapper txEventLogMapper;
     private final CurrentMapper currentMapper;
 
     @Autowired
-    public BlockServiceImpl(BlockMapper blockMapper, TxDetailMapper txDetailMapper, CurrentMapper currentMapper) {
+    public BlockServiceImpl(BlockMapper blockMapper, TxEventLogMapper txEventLogMapper, CurrentMapper currentMapper) {
         this.blockMapper = blockMapper;
-        this.txDetailMapper = txDetailMapper;
+        this.txEventLogMapper = txEventLogMapper;
         this.currentMapper = currentMapper;
     }
 
@@ -81,7 +81,7 @@ public class BlockServiceImpl implements IBlockService {
         if (Helper.isEmptyOrNull(blockDto)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
-        List<TxBasicDto> txBasicDtos = txDetailMapper.selectTxsByBlockHeight(blockHeight);
+        List<TxBasicDto> txBasicDtos = txEventLogMapper.selectTxsByBlockHeight(blockHeight);
         if (Helper.isNotEmptyOrNull(txBasicDtos)) {
             blockDto.setTxs(txBasicDtos);
         }
@@ -98,7 +98,7 @@ public class BlockServiceImpl implements IBlockService {
         }
         int blockHeight = blockDto.getBlockHeight();
 
-        List<TxBasicDto> txBasicDtos = txDetailMapper.selectTxsByBlockHeight(blockHeight);
+        List<TxBasicDto> txBasicDtos = txEventLogMapper.selectTxsByBlockHeight(blockHeight);
         if (Helper.isNotEmptyOrNull(txBasicDtos)) {
             blockDto.setTxs(txBasicDtos);
         }
