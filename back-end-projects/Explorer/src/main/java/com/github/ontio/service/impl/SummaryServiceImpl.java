@@ -49,7 +49,7 @@ public class SummaryServiceImpl implements ISummaryService {
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
         currentDto.setNodeCount(paramsConfig.BLOCKCHAIN_NODE_COUNT);
 
-        Integer addressCount = addressDailySummaryMapper.selectAllAddressCount(ConstantParam.ADDR_DAILY_SUMMARY_CONTRACTHASH);
+        Integer addressCount = addressDailySummaryMapper.selectAllAddressCount(ConstantParam.ADDR_DAILY_SUMMARY_ONTONG_CONTRACTHASH);
         currentDto.setAddressCount(addressCount);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentDto);

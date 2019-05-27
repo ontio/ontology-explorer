@@ -68,22 +68,6 @@
     </sql>
 
 
-  <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxDetailDto">
-    select distinct <include refid="txBasicColumns" />
-    from tbl_tx_detail
-    order by block_height DESC
-    limit #{startIndex}, #{pageSize}
-  </select>
-
-
-    <select id="selectNonontidTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxDetailDto">
-        select distinct <include refid="txBasicColumns" />
-        from tbl_tx_detail
-        where event_type not in(2, 4, 5)
-        order by block_height DESC
-        limit #{startIndex}, #{pageSize}
-    </select>
-
 
     <select id="selectTxByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
         select <include refid="txDetailColumns" />

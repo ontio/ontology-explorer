@@ -68,8 +68,8 @@ public class BlockServiceImpl implements IBlockService {
         List<BlockDto> blockDtos = blockMapper.selectBlocksByPage(start, pageSize);
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
-
-        PageResponseBean pageResponseBean = new PageResponseBean(blockDtos, currentDto.getBlockHeight());
+        //区块高度从0开始，区块个数=区块高度+1
+        PageResponseBean pageResponseBean = new PageResponseBean(blockDtos, currentDto.getBlockHeight() + 1);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -82,7 +82,7 @@ public class BlockServiceImpl implements IBlockService {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
         List<TxBasicDto> txBasicDtos = txDetailMapper.selectTxsByBlockHeight(blockHeight);
-        if(Helper.isNotEmptyOrNull(txBasicDtos)){
+        if (Helper.isNotEmptyOrNull(txBasicDtos)) {
             blockDto.setTxs(txBasicDtos);
         }
 
@@ -99,7 +99,7 @@ public class BlockServiceImpl implements IBlockService {
         int blockHeight = blockDto.getBlockHeight();
 
         List<TxBasicDto> txBasicDtos = txDetailMapper.selectTxsByBlockHeight(blockHeight);
-        if(Helper.isNotEmptyOrNull(txBasicDtos)){
+        if (Helper.isNotEmptyOrNull(txBasicDtos)) {
             blockDto.setTxs(txBasicDtos);
         }
 

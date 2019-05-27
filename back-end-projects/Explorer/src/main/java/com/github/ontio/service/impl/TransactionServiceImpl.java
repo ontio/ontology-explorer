@@ -23,12 +23,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.mapper.TxDetailMapper;
+import com.github.ontio.mapper.TxEventLogMapper;
 import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.OntidTxDetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
+import com.github.ontio.model.dto.TxEventLogDto;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -53,21 +55,23 @@ public class TransactionServiceImpl implements ITransactionService {
     private final TxDetailMapper txDetailMapper;
     private final CurrentMapper currentMapper;
     private final OntidTxDetailMapper ontidTxDetailMapper;
+    private final TxEventLogMapper txEventLogMapper;
 
     @Autowired
-    public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper) {
+    public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper) {
         this.txDetailMapper = txDetailMapper;
         this.currentMapper = currentMapper;
         this.ontidTxDetailMapper = ontidTxDetailMapper;
+        this.txEventLogMapper = txEventLogMapper;
     }
 
 
     @Override
     public ResponseBean queryLatestTxs(int count) {
 
-        List<TxDetailDto> txDetails = txDetailMapper.selectTxsByPage(0, count);
+        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(0, count);
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetails);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txEventLogDtos);
     }
 
     @Override
@@ -75,11 +79,11 @@ public class TransactionServiceImpl implements ITransactionService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<TxDetailDto> txDetails = txDetailMapper.selectTxsByPage(start, pageSize);
+        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(start, pageSize);
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDto.getTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(txEventLogDtos, currentDto.getTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -87,9 +91,9 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public ResponseBean queryLatestNonontidTxs(int count) {
 
-        List<TxDetailDto> txDetails = txDetailMapper.selectNonontidTxsByPage(0, count);
+        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectNonontidTxsByPage(0, count);
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetails);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txEventLogDtos);
     }
 
     @Override
@@ -97,11 +101,11 @@ public class TransactionServiceImpl implements ITransactionService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<TxDetailDto> txDetails = txDetailMapper.selectNonontidTxsByPage(start, pageSize);
+        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectNonontidTxsByPage(start, pageSize);
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(txDetails, currentDto.getNonontidTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(txEventLogDtos, currentDto.getTxCount() - currentDto.getOntidTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -121,7 +125,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
 
-            txDetailDtos.forEach(item->{
+            txDetailDtos.forEach(item -> {
                 //ONG转换好精度给前端
                 String assetName = item.getAssetName();
                 if (ConstantParam.ONG.equals(assetName)) {
