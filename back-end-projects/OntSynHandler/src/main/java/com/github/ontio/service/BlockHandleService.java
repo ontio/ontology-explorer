@@ -62,12 +62,12 @@ public class BlockHandleService {
         int blockHeight = blockHeader.getInteger("Height");
         int blockTime = blockHeader.getInteger("Timestamp");
         JSONArray txArray = blockJson.getJSONArray("Transactions");
-        int txCountInBlock = txArray.size();
-        log.info("{} run-------blockHeight:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
+        int txCountInOneBlock = txArray.size();
+        log.info("{} run-------blockHeight:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInOneBlock);
 
         List<Future> futureList = new ArrayList<>();
         //asynchronize handle transaction
-        for (int i = 0; i < txCountInBlock; i++) {
+        for (int i = 0; i < txCountInOneBlock; i++) {
             JSONObject txJson = (JSONObject) txArray.get(i);
             txJson.put("EventLog", txEventLogArray.get(i));
             Future future = txHandlerThread.asyncHandleTx(txJson, blockHeight, blockTime, i + 1);
@@ -80,14 +80,15 @@ public class BlockHandleService {
         }
         insertBlock(blockJson);
 
-        ConstantParam.BATCHBLOCK_TX_COUNT += txCountInBlock;
+        ConstantParam.BATCHBLOCK_TX_COUNT += txCountInOneBlock;
 
-        log.info("{} end-------height:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInBlock);
+        log.info("{} end-------height:{},txCount:{}", Helper.currentMethod(), blockHeight, txCountInOneBlock);
     }
 
 
     /**
      * 处理block
+     *
      * @param blockJson
      */
     private void insertBlock(JSONObject blockJson) {
