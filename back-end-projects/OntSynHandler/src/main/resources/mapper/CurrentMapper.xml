@@ -8,7 +8,7 @@
     <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
     <result column="tx_count" jdbcType="INTEGER" property="txCount" />
     <result column="ontid_count" jdbcType="INTEGER" property="ontidCount" />
-    <result column="nonontid_tx_count" jdbcType="INTEGER" property="nonontidTxCount" />
+    <result column="ontid_tx_count" jdbcType="INTEGER" property="ontidTxCount" />
   </resultMap>
 
 
@@ -17,7 +17,7 @@
     set block_height = #{blockHeight},
     tx_count = #{txCount},
     ontid_count = #{ontidCount},
-    nonontid_tx_count = #{nonontidTxCount}
+    ontid_tx_count = #{ontidTxCount}
   </update>
 
   <select id="selectBlockHeight" resultType="java.lang.Integer">
