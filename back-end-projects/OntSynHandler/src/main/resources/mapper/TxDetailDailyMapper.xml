@@ -24,16 +24,7 @@
     <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
   </resultMap>
 
-  <delete id="deleteByHeight" parameterType="java.lang.Integer">
-    delete from tbl_tx_detail_daily
-    where block_height = #{blockHeight}
-  </delete>
 
-  <select id="selectCountByHeight" resultType="java.lang.Integer">
-    select count(1)
-    from tbl_tx_detail_daily
-    where block_height = #{blockHeight}
-  </select>
 
   <insert id="batchInsert" parameterType="java.util.List">
     INSERT INTO tbl_tx_detail_daily (

@@ -10,21 +10,14 @@
     <result column="tx_time" jdbcType="INTEGER" property="txTime" />
     <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
     <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
+    <result column="event_log" jdbcType="VARCHAR" property="eventLog" />
     <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
-    <result column="event_log" jdbcType="LONGVARCHAR" property="eventLog" />
+    <result column="ontid_tx_flag" jdbcType="BIT" property="ontidTxFlag" />
   </resultMap>
 
 
-  <delete id="deleteByHeight" parameterType="java.lang.Integer">
-    delete from tbl_tx_eventlog
-    where block_height = #{blockHeight}
-  </delete>
-
-  <select id="selectCountByHeight" resultType="java.lang.Integer">
-    select count(1)
-    from tbl_tx_eventlog
-    where block_height = #{blockHeight}
-  </select>
 
   <insert id="batchInsert" parameterType="java.util.List">
     INSERT INTO `tbl_tx_eventlog` (
@@ -33,19 +26,25 @@
     `tx_time`,
     `block_height`,
     `block_index`,
+    `fee`,
+    `confirm_flag`,
     `event_log`,
-    `called_contract_hash`
+    `called_contract_hash`,
+    `ontid_tx_flag`
     )
     VALUES
-    <foreach collection="list" item="item" index="index" separator=",">
+    <foreach collection="list" index="index" item="item" separator=",">
       (
       #{item.txHash},
       #{item.txType},
       #{item.txTime},
       #{item.blockHeight},
       #{item.blockIndex},
+      #{item.fee},
+      #{item.confirmFlag},
       #{item.eventLog},
-      #{item.calledContractHash}
+      #{item.calledContractHash},
+      #{item.ontidTxFlag}
       )
     </foreach>
   </insert>
