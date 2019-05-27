@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.github.ontio</groupId>
 	<artifactId>ontsynhandler</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>ontsynhandler</name>
 	<description>explorer information sync handler for Ontology</description>
 	<packaging>jar</packaging>
