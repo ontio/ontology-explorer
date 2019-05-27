@@ -16,4 +16,8 @@ public interface TxEventLogMapper extends Mapper<TxEventLogDto> {
 
     Integer queryTxCount(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
+    List<TxEventLogDto> selectTxsByCalledContractHash(@Param("calledContractHash") String contractHash, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
+
+    Integer selectCountByCalledContracthash(@Param("calledContractHash") String calledContractHash);
+
 }

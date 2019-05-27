@@ -101,20 +101,6 @@
         order by block_index
     </select>
 
-    <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.TxDetailDto">
-        select DISTINCT <include refid="txBasicColumns"/>
-        from tbl_tx_detail
-        where called_contract_hash = #{calledContractHash}
-        order by block_height desc
-        limit #{startIndex}, #{pageSize}
-    </select>
-
-    <select id="selectCountByCalledContracthash" resultType="java.lang.Integer">
-        select count(DISTINCT (tx_hash))
-        from tbl_tx_detail
-        where called_contract_hash = #{calledContractHash}
-    </select>
-
 
     <select id="selectTransferTxsByPage" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT *
