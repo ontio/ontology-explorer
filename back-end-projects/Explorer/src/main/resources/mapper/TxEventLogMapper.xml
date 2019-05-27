@@ -70,4 +70,11 @@
     where called_contract_hash = #{calledContractHash}
   </select>
 
+  <select id="selectTxsByBlockHeight" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxBasicDto">
+    select <include refid="txBasicColumns" />
+    from tbl_tx_eventlog
+    where block_height = #{blockHeight}
+    order by block_index
+  </select>
+
 </mapper>

@@ -1,7 +1,6 @@
 package com.github.ontio.mapper;
 
 import com.github.ontio.model.dto.TransferTxDto;
-import com.github.ontio.model.dto.TxBasicDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -19,8 +18,6 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
     List<TxDetailDto> selectTransferTxDetailByHash(@Param("txHash") String txHash);
 
     Integer selectLatestOntTransferTxTime(@Param("address") String address);
-
-    List<TxBasicDto> selectTxsByBlockHeight(@Param("blockHeight") Integer blockHeight);
 
     List<TransferTxDto> selectTransferTxsByPage(@Param("address") String address, @Param("assetName") String assetName, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 

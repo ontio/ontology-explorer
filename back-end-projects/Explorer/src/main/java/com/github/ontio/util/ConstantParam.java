@@ -111,7 +111,7 @@ public class ConstantParam {
                     "BlockMapper.selectOneByHash",
                     "TxDetailMapper.selectTxByHash",
                     "TxDetailMapper.selectTransferTxDetailByHash",
-                    "TxDetailMapper.selectTxsByBlockHeight",
+                    "TxEventLogMapper.selectTxsByBlockHeight",
                     "ContractMapper.selectContractDetail",
                     "ContractDailySummaryMapper.selectDailySummaryByContractHash",
                     "DailySummaryMapper.selectSummaryByTime",
