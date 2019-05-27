@@ -173,7 +173,6 @@ public class BlockHandlerThread extends Thread {
         ConstantParam.BATCHBLOCKDTO = new BatchBlockDto();
         ConstantParam.BATCHBLOCK_TX_COUNT = 0;
         ConstantParam.BATCHBLOCK_ONTID_COUNT = 0;
-        ConstantParam.BATCHBLOCK_ONTIDTX_COUNT = 0;
         ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
     }
 

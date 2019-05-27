@@ -48,17 +48,12 @@ public final class ConstantParam {
     public static OntSdk ONT_SDKSERVICE = null;
 
     /**
-     * the number of ontid transactions of batch block
+     * the number of new ontid of batch block
      */
     public static int BATCHBLOCK_ONTID_COUNT = 0;
 
     /**
-     * the number of nonontid transactions of batch block
-     */
-    public static int BATCHBLOCK_ONTIDTX_COUNT = 0;
-
-    /**
-     * the number of nonontid transactions of batch block
+     * the number of transactions of batch block
      */
     public static int BATCHBLOCK_TX_COUNT = 0;
 
@@ -66,6 +61,11 @@ public final class ConstantParam {
      * the contracthash list of batch block
      */
     public static List<String> BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
+
+    /**
+     * the batchblockdto of batch block
+     */
+    public static BatchBlockDto BATCHBLOCKDTO = new BatchBlockDto();
 
     /**
      * Push
@@ -120,8 +120,15 @@ public final class ConstantParam {
 
     public static final String IS_OEP8TX = "is_oep8tx";
 
-    public static BatchBlockDto BATCHBLOCKDTO = new BatchBlockDto();
-
     public static final String TXPAYLOAD_CODE_FLAG = "67";
+
+    public static final String ONG_CONTRACTHASH = "08b6dcfed2aace9190a44ae34a320e42c04b46ac";
+
+    public static final String ONT_CONTRACTHASH = "0239dcf9b4a46f15c5f23f20d52fac916a0bac0d";
+
+    public static final String ONTID_CONTRACTHASH = "6815cbe7b4dbad4d2d09ae035141b5254a002f79";
+
+    public static final String AUTH_CONTRACTHASH = "24a15c6aed092dfaa711c4974caf1e9d307bf4b5";
+
 
 }
