@@ -10,8 +10,11 @@
     <result column="tx_time" jdbcType="INTEGER" property="txTime" />
     <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
     <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
+    <result column="event_log" jdbcType="VARCHAR" property="eventLog" />
     <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
-    <result column="event_log" jdbcType="LONGVARCHAR" property="eventLog" />
+    <result column="ontid_tx_flag" jdbcType="BIT" property="ontidTxFlag" />
   </resultMap>
 
   <cache type="com.github.ontio.config.RedisCache">
@@ -20,6 +23,17 @@
     <property name="readOnly" value="false" />
   </cache>
 
+  <sql id="txBasicColumns">
+    tx_hash as txHash,
+    tx_type as txType,
+    tx_time as txTime,
+    block_height as blockHeight,
+    confirm_flag as confirmFlag,
+    block_index as blockIndex,
+    fee as fee
+  </sql>
+
+
   <select id="queryTxCount" resultType="java.lang.Integer">
     select count(1)
     from tbl_tx_eventlog
@@ -27,5 +41,19 @@
     and <![CDATA[ tx_time <= #{endTime} ]]>
   </select>
 
+  <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
+    select <include refid="txBasicColumns" />
+    from tbl_tx_eventlog
+    order by block_height DESC
+    limit #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="selectNonontidTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
+    select <include refid="txBasicColumns" />
+    from tbl_tx_eventlog
+    where ontid_tx_flag = false
+    order by block_height DESC
+    limit #{startIndex}, #{pageSize}
+  </select>
 
 </mapper>

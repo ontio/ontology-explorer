@@ -14,10 +14,6 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     // self-defined SQL
 
-    List<TxDetailDto> selectTxsByPage(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
-
-    List<TxDetailDto> selectNonontidTxsByPage(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
-
     TxDetailDto selectTxByHash(@Param("txHash") String txHash);
 
     List<TxDetailDto> selectTransferTxDetailByHash(@Param("txHash") String txHash);

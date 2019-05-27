@@ -8,7 +8,7 @@
     <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
     <result column="tx_count" jdbcType="INTEGER" property="txCount" />
     <result column="ontid_count" jdbcType="INTEGER" property="ontidCount" />
-    <result column="nonontid_tx_count" jdbcType="INTEGER" property="nonontidTxCount" />
+    <result column="ontid_tx_count" jdbcType="INTEGER" property="ontidTxCount" />
   </resultMap>
 
 
@@ -22,11 +22,11 @@
     block_height as blockHeight,
     tx_count as txCount,
     ontid_count as ontidCount,
-    nonontid_tx_count as nonontidTxCount
+    ontid_tx_count as ontidTxCount
   </sql>
 
   <select id="selectSummaryInfo" resultType="com.github.ontio.model.dto.CurrentDto">
-    select <include refid="baseColumns"/>
+    select <include refid="baseColumns" />
     from tbl_current
   </select>
 
