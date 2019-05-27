@@ -56,4 +56,18 @@
     limit #{startIndex}, #{pageSize}
   </select>
 
+  <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.TxEventLogDto">
+    select <include refid="txBasicColumns"/>
+    from tbl_tx_eventlog
+    where called_contract_hash = #{calledContractHash}
+    order by block_height desc
+    limit #{startIndex}, #{pageSize}
+  </select>
+
+  <select id="selectCountByCalledContracthash" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_tx_eventlog
+    where called_contract_hash = #{calledContractHash}
+  </select>
+
 </mapper>
