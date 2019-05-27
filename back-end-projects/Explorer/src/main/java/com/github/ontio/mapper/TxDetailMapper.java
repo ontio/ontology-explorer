@@ -22,10 +22,6 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     List<TxBasicDto> selectTxsByBlockHeight(@Param("blockHeight") Integer blockHeight);
 
-    List<TxDetailDto> selectTxsByCalledContractHash(@Param("calledContractHash") String contractHash, @Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
-
-    Integer selectCountByCalledContracthash(@Param("calledContractHash") String calledContractHash);
-
     List<TransferTxDto> selectTransferTxsByPage(@Param("address") String address, @Param("assetName") String assetName, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
     List<TransferTxDto> selectTransferTxsByTime(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
