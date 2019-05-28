@@ -14,4 +14,32 @@
     <result column="tx_count" jdbcType="INTEGER" property="txCount" />
     <result column="block_size" jdbcType="INTEGER" property="blockSize" />
   </resultMap>
+
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO `tbl_block` (
+      `block_height`,
+      `block_hash`,
+      `txs_root`,
+      `block_time`,
+      `consensus_data`,
+      `bookkeepers`,
+      `tx_count`,
+      `block_size`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.blockHeight},
+      #{item.blockHash},
+      #{item.txsRoot},
+      #{item.blockTime},
+      #{item.consensusData},
+      #{item.bookkeepers},
+      #{item.txCount},
+      #{item.blockSize}
+      )
+    </foreach>
+  </insert>
+
 </mapper>

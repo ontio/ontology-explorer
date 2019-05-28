@@ -14,4 +14,6 @@ public interface OntidTxDetailMapper extends Mapper<OntidTxDetailDto> {
 
     Integer selectTxCountByOntid(@Param("ontid") String ontId);
 
+    OntidTxDetailDto selectOneByTxHash(@Param("txHash") String txHash);
+
 }

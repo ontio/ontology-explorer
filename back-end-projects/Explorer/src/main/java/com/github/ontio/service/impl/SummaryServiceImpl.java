@@ -1,17 +1,16 @@
 package com.github.ontio.service.impl;
 
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.ContractDailySummaryMapper;
-import com.github.ontio.mapper.CurrentMapper;
-import com.github.ontio.mapper.DailySummaryMapper;
-import com.github.ontio.mapper.TxEventLogMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dto.ContractDailySummaryDto;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.DailySummaryDto;
 import com.github.ontio.service.ISummaryService;
+import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,20 +26,21 @@ import java.util.Map;
 public class SummaryServiceImpl implements ISummaryService {
 
     private final ParamsConfig paramsConfig;
-    private final TxEventLogMapper  txEventLogMapper;
+    private final TxEventLogMapper txEventLogMapper;
     private final DailySummaryMapper dailySummaryMapper;
     private final ContractDailySummaryMapper contractDailySummaryMapper;
     private final CurrentMapper currentMapper;
+    private final AddressDailySummaryMapper addressDailySummaryMapper;
 
     @Autowired
-    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper) {
+    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper) {
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.dailySummaryMapper = dailySummaryMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.currentMapper = currentMapper;
+        this.addressDailySummaryMapper = addressDailySummaryMapper;
     }
-
 
 
     @Override
@@ -48,6 +48,9 @@ public class SummaryServiceImpl implements ISummaryService {
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
         currentDto.setNodeCount(paramsConfig.BLOCKCHAIN_NODE_COUNT);
+
+        Integer addressCount = addressDailySummaryMapper.selectAllAddressCount(ConstantParam.ADDR_DAILY_SUMMARY_CONTRACTHASH);
+        currentDto.setAddressCount(addressCount);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentDto);
 
@@ -81,10 +84,14 @@ public class SummaryServiceImpl implements ISummaryService {
 
         List<DailySummaryDto> dailySummaryDtos = dailySummaryMapper.selectSummaryByTime(startTime, endTime);
         if (dailySummaryDtos.size() > 0) {
-            Map<String, BigDecimal> addrAndOntidCountMap = dailySummaryMapper.selectAddrAndOntIdCount(startTime);
-
-            dailySummaryDtos.get(0).setAddressTotal(addrAndOntidCountMap.get("addressTotal").intValue());
-            dailySummaryDtos.get(0).setOntidTotal(addrAndOntidCountMap.get("ontidTotal").intValue());
+            Map<String, BigDecimal> addrAndOntidCountMap = dailySummaryMapper.selectAddrAndOntIdTotal(startTime);
+            if (Helper.isEmptyOrNull(addrAndOntidCountMap)) {
+                dailySummaryDtos.get(0).setOntidTotal(0);
+                dailySummaryDtos.get(0).setAddressTotal(0);
+            } else {
+                dailySummaryDtos.get(0).setAddressTotal(addrAndOntidCountMap.get("addressTotal").intValue());
+                dailySummaryDtos.get(0).setOntidTotal(addrAndOntidCountMap.get("ontidTotal").intValue());
+            }
 
             for (int i = 1; i < dailySummaryDtos.size(); i++) {
                 DailySummaryDto dailySummaryDto = dailySummaryDtos.get(i);

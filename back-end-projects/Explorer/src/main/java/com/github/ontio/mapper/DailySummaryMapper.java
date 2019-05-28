@@ -12,7 +12,7 @@ public interface DailySummaryMapper extends Mapper<DailySummaryDto> {
 
     List<DailySummaryDto> selectSummaryByTime(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
-    Map<String,BigDecimal> selectAddrAndOntIdCount(@Param("startTime") Long startTime);
+    Map<String,BigDecimal> selectAddrAndOntIdTotal(@Param("startTime") Long startTime);
 
 
 }

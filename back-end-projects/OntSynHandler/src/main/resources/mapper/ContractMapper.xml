@@ -29,4 +29,62 @@
     <result column="code" jdbcType="LONGVARCHAR" property="code" />
     <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
   </resultMap>
+  
+  
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO `tbl_contract` (
+    `contract_hash`,
+    `name`,
+    `abi`,
+    `code`,
+    `source_code`,
+    `create_time`,
+    `update_time`,
+    `audit_flag`,
+    `contact_info`,
+    `description`,
+    `type`,
+    `logo`,
+    `creator`,
+    `address_count`,
+    `tx_count`,
+    `ont_sum`,
+    `ong_sum`,
+    `token_sum`,
+    `category`,
+    `dapp_name`,
+    `dappstore_flag`,
+    `total_reward`,
+    `lastweek_reward`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.contractHash},
+      #{item.name},
+      #{item.abi},
+      #{item.code},
+      #{item.sourceCode},
+      #{item.createTime},
+      #{item.updateTime},
+      #{item.auditFlag},
+      #{item.contactInfo},
+      #{item.description},
+      #{item.type},
+      #{item.logo},
+      #{item.creator},
+      #{item.addressCount},
+      #{item.txCount},
+      #{item.ontSum},
+      #{item.ongSum},
+      #{item.tokenSum},
+      #{item.category},
+      #{item.dappName},
+      #{item.dappstoreFlag},
+      #{item.totalReward},
+      #{item.lastweekReward}
+      )
+    </foreach>
+  </insert>
+  
 </mapper>

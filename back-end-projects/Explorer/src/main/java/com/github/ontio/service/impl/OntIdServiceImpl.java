@@ -97,7 +97,7 @@ public class OntIdServiceImpl implements IOntIdService {
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(ontidTxDetailDtos, currentDto.getNonontidTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(ontidTxDetailDtos, currentDto.getTxCount() - currentDto.getNonontidTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -127,13 +127,15 @@ public class OntIdServiceImpl implements IOntIdService {
         initSDK();
         String ddoStr = sdkService.getDDO(ontId);
         log.info("{} query ddo info:{}", ontId, ddoStr);
+        if (Helper.isEmptyOrNull(ddoStr)) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        }
 
         JSONObject ddoObj = JSON.parseObject(ddoStr);
         if (ddoObj.containsKey("Attributes")) {
             List<Object> formatedAttrList = formatDDOAttribute(ddoObj);
             ddoObj.replace("Attributes", formatedAttrList);
         }
-
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), ddoObj);
     }
 

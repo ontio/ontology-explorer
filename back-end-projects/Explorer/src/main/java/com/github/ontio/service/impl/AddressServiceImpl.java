@@ -56,7 +56,7 @@ public class AddressServiceImpl implements IAddressService {
 
     private OntologySDKService sdk;
 
-    private void initSDK() {
+    private synchronized void initSDK() {
         if (sdk == null) {
             sdk = OntologySDKService.getInstance(paramsConfig);
         }
@@ -88,6 +88,7 @@ public class AddressServiceImpl implements IAddressService {
 
     /**
      * 获取原生资产余额
+     *
      * @param address
      * @return
      */
@@ -139,10 +140,11 @@ public class AddressServiceImpl implements IAddressService {
 
     /**
      * 获取OEP4余额
+     *
      * @param address
      * @return
      */
-    private List<BalanceDto> getOep4Balance(String address){
+    private List<BalanceDto> getOep4Balance(String address) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
@@ -169,10 +171,11 @@ public class AddressServiceImpl implements IAddressService {
 
     /**
      * 获取OEP5余额
+     *
      * @param address
      * @return
      */
-    private List<BalanceDto> getOep5Balance(String address){
+    private List<BalanceDto> getOep5Balance(String address) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
@@ -199,10 +202,11 @@ public class AddressServiceImpl implements IAddressService {
 
     /**
      * 获取OEP8余额
+     *
      * @param address
      * @return
      */
-    private List<BalanceDto> getOep8Balance(String address){
+    private List<BalanceDto> getOep8Balance(String address) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
@@ -371,28 +375,65 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
 
-        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+        List<TransferTxDto> returnList = new ArrayList<>();
+        //查询前（pageNumber * pageSize * 3）条记录
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, 0, pageNumber * pageSize * 3);
+        //合并和格式化转账交易记录
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
-        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
+        if (formattedTransferTxDtos.size() > 0 && formattedTransferTxDtos.size() < pageSize * pageNumber) {
+            //合并和格式化转账交易记录数 < （pageNumber * pageSize），根据总记录数再重新查询所有的记录
+            int transferTxTotal = txDetailMapper.selectTransferTxCountByAddr(address);
+            if (transferTxTotal > pageNumber * pageSize * 3) {
+                //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
+                List<TransferTxDto> transferTxDtos2 = txDetailMapper.selectTransferTxsByPage(address, assetName, 0, transferTxTotal);
+                List<TransferTxDto> formattedTransferTxDtos2 = formatTransferTxDtos(transferTxDtos2);
 
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
+                returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos2);
+            } else {
+                //总的交易数 < （pageNumber * pageSize * 3），直接根据请求条数进行分页
+                returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
+            }
+        } else {
+            //格式化后的txlist条数满足分页条件，直接根据请求条数参数进行分页
+            //根据分页确认start，end=start+pageSize
+            returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
+        }
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList);
+    }
+
+
+    /**
+     * 获取分页后的转账交易列表
+     *
+     * @param pageNumber
+     * @param pageSize
+     * @param formattedTransferTxDtos
+     * @return
+     */
+    private List<TransferTxDto> getTransferTxDtosByPage(int pageNumber, int pageSize, List<TransferTxDto> formattedTransferTxDtos) {
+
+        int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+        int end = (pageSize + start) > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageSize + start);
+
+        return formattedTransferTxDtos.subList(start, end);
     }
 
     @Override
     public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
-        List<TransferTxDto> transferTxDtos = new ArrayList<>();
         //云斗龙资产使用like查询, for ONTO
-        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+/*        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
             assetName = assetName + "%";
             transferTxDtos = txDetailMapper.selectDragonTransferTxsByTime(address, assetName, beginTime, endTime);
         } else {
             transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
-        }
+        }*/
 
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
+
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
@@ -402,7 +443,7 @@ public class AddressServiceImpl implements IAddressService {
     public ResponseBean queryTransferTxsByTimeAndPage(String address, String assetName, Long endTime, Integer pageSize) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
-        //云斗龙资产使用like查询
+        //云斗龙资产使用like查询，for ONTO，只查询转账不包括ong手续费记录
         if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
             assetName = assetName + "%";
             transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
@@ -410,7 +451,7 @@ public class AddressServiceImpl implements IAddressService {
             transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
         }
 
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxs(transferTxDtos);
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
 
@@ -421,7 +462,7 @@ public class AddressServiceImpl implements IAddressService {
      *
      * @return
      */
-    private List<TransferTxDto> formatTransferTxs(List<TransferTxDto> transferTxDtos) {
+    private List<TransferTxDto> formatTransferTxDtos(List<TransferTxDto> transferTxDtos) {
 
         List<TransferTxDto> formattedTransferTxs = new ArrayList<>();
 
@@ -440,7 +481,7 @@ public class AddressServiceImpl implements IAddressService {
             log.info("txHash:{}", txHash);
 
             if (txHash.equals(previousTxHash)) {
-                //自己给自己转账，sql会查询出两条记录.
+                //自己给自己转账，sql会查询出两条记录.需要判断tx_index是否一样
                 if (previousTxIndex != transferTxDto.getTxIndex()) {
 
                     TransferTxDetailDto transferTxDetailDto = TransferTxDetailDto.builder()
@@ -452,7 +493,6 @@ public class AddressServiceImpl implements IAddressService {
 
                     List<TransferTxDetailDto> transferTxnList = (List<TransferTxDetailDto>) (formattedTransferTxs.get(formattedTransferTxs.size() - 1)).getTransfers();
                     transferTxnList.add(transferTxDetailDto);
-
                 }
                 previousTxIndex = transferTxDto.getTxIndex();
             } else {

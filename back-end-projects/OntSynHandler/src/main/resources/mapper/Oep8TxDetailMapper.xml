@@ -36,4 +36,48 @@
     where block_height = #{blockHeight}
   </select>
 
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO tbl_oep8_tx_detail (
+    `tx_hash`,
+    `tx_type`,
+    `tx_time`,
+    `block_height`,
+    `amount`,
+    `fee`,
+    `asset_name`,
+    `from_address`,
+    `to_address`,
+    `description`,
+    `block_index`,
+    `tx_index`,
+    `confirm_flag`,
+    `event_type`,
+    `contract_hash`,
+    `payer`,
+    `called_contract_hash`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.txHash},
+      #{item.txType},
+      #{item.txTime},
+      #{item.blockHeight},
+      #{item.amount},
+      #{item.fee},
+      #{item.assetName},
+      #{item.fromAddress},
+      #{item.toAddress},
+      #{item.description},
+      #{item.blockIndex},
+      #{item.txIndex},
+      #{item.confirmFlag},
+      #{item.eventType},
+      #{item.contractHash},
+      #{item.payer},
+      #{item.calledContractHash}
+      )
+    </foreach>
+  </insert>
+
 </mapper>

@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
+import com.github.ontio.model.common.BatchBlockDto;
 import com.github.ontio.service.BlockHandleService;
 import com.github.ontio.service.CommonService;
 import com.github.ontio.utils.ConstantParam;
@@ -32,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 @Slf4j
 @Component("BlockHandlerThread")
@@ -43,34 +46,21 @@ public class BlockHandlerThread extends Thread {
     private final ParamsConfig paramsConfig;
     private final BlockHandleService blockManagementService;
     private final CurrentMapper currentMapper;
-    private final OntidTxDetailMapper ontidTxDetailMapper;
-    private final TxDetailMapper txDetailMapper;
-    private final Oep4TxDetailMapper oep4TxDetailMapper;
-    private final Oep5TxDetailMapper oep5TxDetailMapper;
-    private final Oep8TxDetailMapper oep8TxDetailMapper;
-    private final TxDetailDailyMapper txDetailDailyMapper;
-    private final TxEventLogMapper txEventLogMapper;
     private final Environment env;
     private final CommonService commonService;
 
     @Autowired
-    public BlockHandlerThread(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, BlockHandleService blockManagementService, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper, Oep4TxDetailMapper oep4TxDetailMapper, Environment env, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailDailyMapper txDetailDailyMapper, TxEventLogMapper txEventLogMapper, CommonService commonService) {
-        this.txDetailMapper = txDetailMapper;
+    public BlockHandlerThread(ParamsConfig paramsConfig, BlockHandleService blockManagementService, CurrentMapper currentMapper,
+                               Environment env, CommonService commonService) {
         this.paramsConfig = paramsConfig;
         this.blockManagementService = blockManagementService;
         this.currentMapper = currentMapper;
-        this.ontidTxDetailMapper = ontidTxDetailMapper;
-        this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.env = env;
-        this.oep5TxDetailMapper = oep5TxDetailMapper;
-        this.oep8TxDetailMapper = oep8TxDetailMapper;
-        this.txDetailDailyMapper = txDetailDailyMapper;
-        this.txEventLogMapper = txEventLogMapper;
         this.commonService = commonService;
     }
 
     /**
-     * BlockHandlerThread
+     * main thread
      */
     @Override
     public void run() {
@@ -109,24 +99,21 @@ public class BlockHandlerThread extends Thread {
                 }
                 oneBlockTryTime = 1;
 
-                //每次删除当前current表height+1的交易，防止上次程序异常退出时，因为多线程事务插入了height+1的交易
-                //而current表height未更新，则本次同步再次插入会报主键重复异常
-                ontidTxDetailMapper.deleteByHeight(dbBlockHeight + 1);
-                txDetailMapper.deleteByHeight(dbBlockHeight + 1);
-                txDetailDailyMapper.deleteByHeight(dbBlockHeight + 1);
-                oep4TxDetailMapper.deleteByHeight(dbBlockHeight + 1);
-                oep5TxDetailMapper.deleteByHeight(dbBlockHeight + 1);
-                oep8TxDetailMapper.deleteByHeight(dbBlockHeight + 1);
-                txEventLogMapper.deleteByHeight(dbBlockHeight + 1);
+                //初始化全局参数
+                initConstantParam();
 
-                //handle blocks and transactions
-                for (int tHeight = dbBlockHeight + 1; tHeight <= remoteBlockHieght; tHeight++) {
-                    JSONObject blockJson = commonService.getBlockJsonByHeight(tHeight);
-                    JSONArray txEventLogArray = commonService.getTxEventLogsByHeight(tHeight);
-                    long time1 = System.currentTimeMillis();
-                    blockManagementService.handleOneBlock(blockJson, txEventLogArray);
-                    long time2 = System.currentTimeMillis();
-                    log.info("handle block {} used time:{}", tHeight, (time2 - time1));
+                int blockCount = remoteBlockHieght - dbBlockHeight;
+                if (blockCount >= paramsConfig.BATCHINSERT_BLOCK_COUNT) {
+                    for (int j = 0; j <= blockCount / paramsConfig.BATCHINSERT_BLOCK_COUNT; j++) {
+                        int beginHeight = dbBlockHeight + 1 + j * paramsConfig.BATCHINSERT_BLOCK_COUNT;
+                        int endHeight = dbBlockHeight + (j + 1) * paramsConfig.BATCHINSERT_BLOCK_COUNT > remoteBlockHieght ? remoteBlockHieght : dbBlockHeight + (j + 1) * paramsConfig.BATCHINSERT_BLOCK_COUNT;
+                        //刚好差paramsConfig.BATCHINSERT_BLOCK_COUNT整数倍的情况
+                        if (beginHeight <= remoteBlockHieght) {
+                            batchHandleBlockAndInsertDb(beginHeight, endHeight);
+                        }
+                    }
+                } else {
+                    batchHandleBlockAndInsertDb(dbBlockHeight + 1, remoteBlockHieght);
                 }
             }
 
@@ -134,7 +121,6 @@ public class BlockHandlerThread extends Thread {
             log.error("Exception occured，Synchronization thread can't work,error ...", e);
         }
     }
-
 
     /**
      * initialize node list for synchronization thread
@@ -155,4 +141,40 @@ public class BlockHandlerThread extends Thread {
         sdkService.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
         ConstantParam.ONT_SDKSERVICE = sdkService;
     }
+
+
+    /**
+     * 批量处理区块和插入DB
+     *
+     * @param beginHeight
+     * @param endHeight
+     * @throws Exception
+     */
+    private void batchHandleBlockAndInsertDb(int beginHeight, int endHeight) throws Exception {
+        long beginTime = System.currentTimeMillis();
+        //handle blocks and transactions
+        for (int tHeight = beginHeight; tHeight <= endHeight; tHeight++) {
+            JSONObject blockJson = commonService.getBlockJsonByHeight(tHeight);
+            JSONArray txEventLogArray = commonService.getTxEventLogsByHeight(tHeight);
+            blockManagementService.handleOneBlock(blockJson, txEventLogArray);
+        }
+        long endTime1 = System.currentTimeMillis();
+        log.info("batch handle {} block from {} use time:{},txCount:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight, (endTime1 - beginTime), ConstantParam.BATCHBLOCK_TX_COUNT);
+        commonService.batchInsertDb(endHeight, ConstantParam.BATCHBLOCKDTO);
+        long endTime2 = System.currentTimeMillis();
+        log.info("batch handle {} block from {} insert to db use time:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight, (endTime2 - endTime1));
+        initConstantParam();
+    }
+
+    /**
+     * 重新初始化全局参数
+     */
+    private void initConstantParam() {
+        ConstantParam.BATCHBLOCKDTO = new BatchBlockDto();
+        ConstantParam.BATCHBLOCK_TX_COUNT = 0;
+        ConstantParam.BATCHBLOCK_ONTID_COUNT = 0;
+        ConstantParam.BATCHBLOCK_ONTIDTX_COUNT = 0;
+        ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
+    }
+
 }

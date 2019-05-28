@@ -5,10 +5,14 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.common.Mapper;
 
+import java.util.List;
+
 @Component
 public interface TxDetailMapper extends Mapper<TxDetail> {
 
     void deleteByHeight(@Param("blockHeight") int height);
 
     int selectCountByHeight(@Param("blockHeight") int height);
+
+    void batchInsert(List<TxDetail> list);
 }

@@ -25,4 +25,28 @@
     where block_height = #{blockHeight}
   </select>
 
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO tbl_ontid_tx_detail (
+      `tx_hash`,
+      `tx_type`,
+      `ontid`,
+      `tx_time`,
+      `block_height`,
+      `description`,
+      `fee`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.txHash},
+      #{item.txType},
+      #{item.ontid},
+      #{item.txTime},
+      #{item.blockHeight},
+      #{item.description},
+      #{item.fee}
+      )
+    </foreach>
+  </insert>
+
 </mapper>

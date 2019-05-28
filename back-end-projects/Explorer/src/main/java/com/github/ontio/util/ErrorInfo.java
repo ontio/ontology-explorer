@@ -40,7 +40,7 @@ public enum ErrorInfo {
     /**
      * already exist
      */
-    TIME_EXCEED(61002, "Time interval exceed limit."),
+    REQ_TIME_EXCEED(61002, "Request frequency exceeded limit."),
 
     /**
      * not found in db
@@ -50,7 +50,7 @@ public enum ErrorInfo {
     /**
      * not exist
      */
-    NOT_EXIST(61004, "FAIL, not exist."),
+    TIME_RANGE_EXCEED(61004, "Time range exceeds limit."),
 
     /**
      * no permission

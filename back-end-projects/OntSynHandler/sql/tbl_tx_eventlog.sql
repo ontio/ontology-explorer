@@ -25,7 +25,9 @@ CREATE TABLE `tbl_tx_eventlog`
     `block_index`          int(11)      NOT NULL COMMENT '交易在区块里的索引',
     `event_log`            varchar(5000)NOT NULL COMMENT '交易的event log',
     `called_contract_hash` varchar(255) NOT NULL DEFAULT '' COMMENT '该交易真正调用的合约hash',
-    PRIMARY KEY (`tx_hash`)
+    PRIMARY KEY (`tx_hash`),
+    KEY `idx_block_height` (`block_height`),
+    KEY `idx_called_contract_hash` (`called_contract_hash`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 

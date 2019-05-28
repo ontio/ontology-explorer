@@ -28,4 +28,6 @@ public interface IContractService {
 
     ResponseBean queryTxsByContractHash(String contractType, String contractHash, Integer pageNumber, Integer pageSize);
 
+    ResponseBean queryTxsByContractHash(String contractHash, Integer pageNumber, Integer pageSize);
+
 }
