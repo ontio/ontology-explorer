@@ -25,7 +25,7 @@ public class CandidateNodeController {
         this.candidateNodeService = candidateNodeService;
     }
 
-    @ApiOperation(value = "Get blockchain latest summary information")
+    @ApiOperation(value = "Get candidate nodes information")
     @GetMapping(value = "/current_stake")
     public ResponseBean getBlockChainLatestInfo() {
         List<CandidateNodeSummary> nodeInfoList = candidateNodeService.getCandidateNodesInfo();
