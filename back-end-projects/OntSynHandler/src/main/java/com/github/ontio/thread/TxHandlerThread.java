@@ -130,79 +130,79 @@ public class TxHandlerThread {
 
             //deploy smart contract transaction
             if (TransactionTypeEnum.DEPLOYCODE.type() == txType) {
-
                 handleDeployContractTx(txJson, blockHeight, blockTime, indexInBlock, confirmFlag, gasConsumed, payer, calledContractHash);
+            }
+
+            //invoke smart contract transaction
+            JSONArray notifyArray = eventLogObj.getJSONArray("Notify");
+            //no event transaction or deploy smart contract transaction
+            if (notifyArray.size() == 0) {
+                insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+                        gasConsumed, 1, EventTypeEnum.Others.type(), "", payer, calledContractHash);
             } else {
-                //invoke smart contract transaction
-                JSONArray notifyArray = eventLogObj.getJSONArray("Notify");
-                //no event transaction or deploy smart contract transaction
-                if (notifyArray.size() == 0) {
-                    insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                            gasConsumed, 1, EventTypeEnum.Others.type(), "", payer, calledContractHash);
-                } else {
-                    JSONArray stateArray = null;
-                    for (int i = 0, len = notifyArray.size(); i < len; i++) {
-                        JSONObject notifyObj = (JSONObject) notifyArray.get(i);
-                        String contractAddress = notifyObj.getString("ContractAddress");
+                JSONArray stateArray = null;
+                for (int i = 0, len = notifyArray.size(); i < len; i++) {
+                    JSONObject notifyObj = (JSONObject) notifyArray.get(i);
+                    String contractAddress = notifyObj.getString("ContractAddress");
 
-                        Object object = notifyObj.get("States");
-                        if (object instanceof JSONArray) {
-                            stateArray = (JSONArray) object;
-                        } else {
-                            //other transaction
-                            insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                    gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
-                            continue;
-                        }
+                    Object object = notifyObj.get("States");
+                    if (object instanceof JSONArray) {
+                        stateArray = (JSONArray) object;
+                    } else {
+                        //other transaction
+                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+                        continue;
+                    }
 
-                        if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress) || paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
-                            //transfer transaction
-                            handleNativeTransferTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
-                                    contractAddress, gasConsumed, i + 1, notifyArray.size(), confirmFlag, payer, calledContractHash);
+                    if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress) || paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
+                        //transfer transaction
+                        handleNativeTransferTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                                contractAddress, gasConsumed, i + 1, notifyArray.size(), confirmFlag, payer, calledContractHash);
 
-                        } else if (paramsConfig.ONTID_CONTRACTHASH.equals(contractAddress)) {
+                    } else if (paramsConfig.ONTID_CONTRACTHASH.equals(contractAddress)) {
+                        isOntidTx = true;
+                        //ontId operation transaction
+                        handleOntIdTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                                gasConsumed, i + 1, contractAddress, payer, calledContractHash);
+
+                    } else if (paramsConfig.CLAIMRECORD_CONTRACTHASH.equals(contractAddress)) {
+
+                        if (stateArray.size() >= 4 && ConstantParam.CLAIMRECORD_OPE_PREFIX.equals(new String(Helper.hexToBytes(stateArray.getString(0))))) {
                             isOntidTx = true;
-                            //ontId operation transaction
-                            handleOntIdTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
-                                    gasConsumed, i + 1, contractAddress, payer, calledContractHash);
-
-                        } else if (paramsConfig.CLAIMRECORD_CONTRACTHASH.equals(contractAddress)) {
-
-                            if (stateArray.size() >= 4 && ConstantParam.CLAIMRECORD_OPE_PREFIX.equals(new String(Helper.hexToBytes(stateArray.getString(0))))) {
-                                isOntidTx = true;
-                            }
-                            //claimrecord transaction
-                            handleClaimRecordTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
-                                    gasConsumed, i + 1, contractAddress, payer, calledContractHash);
-
-                        } else if (paramsConfig.AUTH_CONTRACTHASH.equals(contractAddress)) {
-                            //auth transaction
-                            insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, EventTypeEnum.Auth.des(),
-                                    gasConsumed, i + 1, EventTypeEnum.Auth.type(), contractAddress, payer, calledContractHash);
-
-                        } else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)) {
-                            //OEP8交易
-                            handleOep8TransferTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
-                                    gasConsumed, i + 1, confirmFlag, contractAddress, notifyArray.size(), payer, calledContractHash);
-
-                        } else if (ConstantParam.OEP5CONTRACTS.contains(contractAddress)) {
-                            //OEP5交易
-                            handleOep5TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
-                                    gasConsumed, i + 1, confirmFlag, contractAddress, ConstantParam.OEP5MAP.get(contractAddress), payer, calledContractHash);
-
-                        } else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)) {
-                            //OEP4交易
-                            handleOep4TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
-                                    gasConsumed, i + 1, confirmFlag, (JSONObject) ConstantParam.OEP4MAP.get(contractAddress), contractAddress, payer, calledContractHash);
-
-                        } else {
-                            //other transaction
-                            insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                    gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
                         }
+                        //claimrecord transaction
+                        handleClaimRecordTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                                gasConsumed, i + 1, contractAddress, payer, calledContractHash);
+
+                    } else if (paramsConfig.AUTH_CONTRACTHASH.equals(contractAddress)) {
+                        //auth transaction
+                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, EventTypeEnum.Auth.des(),
+                                gasConsumed, i + 1, EventTypeEnum.Auth.type(), contractAddress, payer, calledContractHash);
+
+                    } else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)) {
+                        //OEP8交易
+                        handleOep8TransferTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                                gasConsumed, i + 1, confirmFlag, contractAddress, notifyArray.size(), payer, calledContractHash);
+
+                    } else if (ConstantParam.OEP5CONTRACTS.contains(contractAddress)) {
+                        //OEP5交易
+                        handleOep5TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                                gasConsumed, i + 1, confirmFlag, contractAddress, ConstantParam.OEP5MAP.get(contractAddress), payer, calledContractHash);
+
+                    } else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)) {
+                        //OEP4交易
+                        handleOep4TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
+                                gasConsumed, i + 1, confirmFlag, (JSONObject) ConstantParam.OEP4MAP.get(contractAddress), contractAddress, payer, calledContractHash);
+
+                    } else {
+                        //other transaction
+                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
                     }
                 }
             }
+
             //记录交易基本信息和eventlog详情
             insertTxEventLog(txHash, blockTime, txType, blockHeight, indexInBlock, gasConsumed, confirmFlag, calledContractHash, eventLogObj.toJSONString(), isOntidTx);
 
@@ -309,7 +309,7 @@ public class TxHandlerThread {
         contractObj.remove("ContractHash");
 
         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, contractObj.toString(),
-                gasConsumed, 1, EventTypeEnum.DeployContract.type(), contractHash, payer, calledContractHash);
+                gasConsumed, 0, EventTypeEnum.DeployContract.type(), contractHash, payer, calledContractHash);
         //部署成功的合约才记录
         if (confirmFlag == 1) {
             Contract contract = Contract.builder()
