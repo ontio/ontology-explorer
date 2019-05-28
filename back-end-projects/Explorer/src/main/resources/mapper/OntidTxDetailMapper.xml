@@ -49,4 +49,10 @@
     where ontid = #{ontid}
   </select>
 
+  <select id="selectOneByTxHash" resultType="com.github.ontio.model.dto.OntidTxDetailDto">
+    select <include refid="detailColumns"/>
+    from tbl_ontid_tx_detail
+    where tx_hash = #{txHash}
+  </select>
+
 </mapper>

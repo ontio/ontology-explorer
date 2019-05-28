@@ -10,4 +10,22 @@
     <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
     <result column="json_url" jdbcType="VARCHAR" property="jsonUrl" />
   </resultMap>
+
+
+  <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO `tbl_oep5_dragon` (
+      `contract_hash`,
+      `asset_name`,
+      `json_url`
+    )VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.contractHash},
+      #{item.assetName},
+      #{item.jsonUrl}
+      )
+    </foreach>
+
+  </insert>
+
 </mapper>

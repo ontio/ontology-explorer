@@ -19,15 +19,10 @@
 
 package com.github.ontio.util;
 
+import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author zhouq
@@ -62,27 +57,19 @@ public class Helper {
     }
 
 
+    /**
+     * 判断时间范围是否超过一个月
+     *
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
     public static Boolean isTimeRangeExceedLimit(Long beginTime, Long endTime) {
 
-        if ((endTime - beginTime) > (30 * 24 * 60 * 60)) {
+        if ((endTime - beginTime) > (ConstantParam.REQTIME_MAX_RANGE)) {
             return true;
         }
         return false;
-    }
-
-
-    /**
-     * merge byte[] head and byte[] tail ->byte[head+tail] rs
-     *
-     * @param head
-     * @param tail
-     * @return byte[]
-     */
-    public static byte[] byteMerrage(byte[] head, byte[] tail) {
-        byte[] temp = new byte[head.length + tail.length];
-        System.arraycopy(head, 0, temp, 0, head.length);
-        System.arraycopy(tail, 0, temp, head.length, tail.length);
-        return temp;
     }
 
 
@@ -124,73 +111,93 @@ public class Helper {
         return descriptionSb.toString();
     }
 
+    /**
+     * 判断redis的key是否属于REDIS_LONGEXPIRETIME_KEYLIST
+     * @param redisKey
+     * @return
+     */
+    public static Boolean isBelongRedisLongExpireMapper(String redisKey) {
 
-    public static String currentMethod() {
-        return new Exception("").getStackTrace()[1].getMethodName();
+        String packageName = BlockMapper.class.getPackage().getName();
+        int index = redisKey.indexOf(packageName);
+        if (index > 0) {
+            String str = redisKey.substring(index + packageName.length() + 1, redisKey.length());
+            int dex = str.indexOf(":");
+            String mapperName = str.substring(0, dex);
+            if (ConstantParam.REDIS_LONGEXPIRETIME_KEYLIST.contains(mapperName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
     /**
-     * get请求
-     *
-     * @param urlParam
-     * @param params
+     * 判断redis的key是否属于REDIS_MEDIUMEXPIRETIME_KEYLIST
+     * @param redisKey
      * @return
-     * @throws IOException
      */
-    public static String sendGet(String urlParam, Map<String, Object> params) throws IOException {
+    public static Boolean isBelongRedisMediumExpireMapper(String redisKey) {
 
-        // 构建请求参数
-        StringBuffer sbParams = new StringBuffer();
-        if (params != null && params.size() > 0) {
-            sbParams.append("?");
-            for (Map.Entry<String, Object> e : params.entrySet()) {
-                sbParams.append(e.getKey());
-                sbParams.append("=");
-                sbParams.append(e.getValue());
-                sbParams.append("&");
+        String packageName = BlockMapper.class.getPackage().getName();
+        int index = redisKey.indexOf(packageName);
+        if (index > 0) {
+            String str = redisKey.substring(index + packageName.length() + 1, redisKey.length());
+            int dex = str.indexOf(":");
+            String mapperName = str.substring(0, dex);
+            if (ConstantParam.REDIS_MEDIUMEXPIRETIME_KEYLIST.contains(mapperName)) {
+                return true;
             }
         }
-        HttpURLConnection connection = null;
-        OutputStream out = null;
-        BufferedReader responseReader = null;
-        // 发送请求
-        try {
-            URL url = new URL(urlParam + sbParams.toString());
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            //connection.setDoOutput(true);
-            //设置超时时间
-            connection.setConnectTimeout(30000);
-            connection.setReadTimeout(30000);
-            //connection.setRequestProperty("Content-type", "application/json");
-            connection.connect();
+        return false;
+    }
 
-            //获取输出
-            StringBuffer sb = new StringBuffer();
-            String readLine = "";
-            responseReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-            while ((readLine = responseReader.readLine()) != null) {
-                sb.append(readLine);
-            }
+    /**
+     * 获取真实请求ip
+     *
+     * @param request
+     * @return
+     */
+    public static String getHttpReqRealIp(HttpServletRequest request) {
 
-            return sb.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-                connection = null;
-            }
-            if (out != null) {
-                out.close();
-            }
-            if (responseReader != null) {
-                responseReader.close();
-            }
+        String ip = "";
+        //X-Forwarded-For：Squid 服务代理
+        String ipAddresses = request.getHeader("X-Forwarded-For");
+
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            //Proxy-Client-IP：apache 服务代理
+            ipAddresses = request.getHeader("Proxy-Client-IP");
+        }
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            //WL-Proxy-Client-IP：weblogic 服务代理
+            ipAddresses = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            //HTTP_CLIENT_IP：有些代理服务器
+            ipAddresses = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            //X-Real-IP：nginx服务代理
+            ipAddresses = request.getHeader("X-Real-IP");
+        }
+        //有些网络通过多层代理，那么获取到的ip就会有多个，一般都是通过逗号（,）分割开来，并且第一个ip为客户端的真实IP
+        if (ipAddresses != null && ipAddresses.length() != 0) {
+            ip = ipAddresses.split(",")[0];
+        }
+        //还是不能获取到，最后再通过request.getRemoteAddr();获取
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ip = request.getRemoteAddr();
         }
 
+        if (ip.contains(":")) {
+            int index = ip.indexOf(":");
+            ip = ip.substring(0, index);
+        }
+        return ip;
+    }
+
+    public static String currentMethod() {
+        return new Exception("").getStackTrace()[1].getMethodName();
     }
 
 
