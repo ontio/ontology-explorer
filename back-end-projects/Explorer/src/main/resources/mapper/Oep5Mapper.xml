@@ -40,5 +40,32 @@
     order by a.create_time desc
   </select>
 
+  <select id="selectOep5TokenDetail" resultType="com.github.ontio.model.dto.Oep5DetailDto">
+    SELECT
+      a.contract_hash AS contractHash,
+      a.name AS name,
+      a.abi as abi,
+      a.code as code,
+      a.source_code as sourceCode,
+      a.category as category,
+      a.creator AS creator,
+      a.description as description,
+      a.logo as logo,
+      a.create_time as createTime,
+      a.update_time as updateTime,
+      a.contact_info as contactInfo,
+      a.type as type,
+      a.ong_sum as ongSum,
+      a.ont_sum as ontSum,
+      a.token_sum as tokenSum,
+      a.address_count as addressCount,
+      a.tx_count as txCount,
+      b.total_supply as totalSupply,
+      b.symbol as symbol
+    FROM tbl_contract a, tbl_oep5 b
+    where a.contract_hash = b.contract_hash
+	and b.contract_hash = #{contractHash}
+  </select>
+
 
 </mapper>

@@ -43,14 +43,14 @@ public class SummaryController {
     }
 
     @ApiOperation(value = "Get blockchain daily summary information")
-    @GetMapping(value = "/blockchain/daily/")
+    @GetMapping(value = "/blockchain/daily")
     public ResponseBean getBlockChainSummary(@RequestParam("start_time") Long startTime,
                                         @RequestParam("end_time") Long endTime) {
 
         log.info("####{}.{} begin...start_time:{},end_time:{}", CLASS_NAME, Helper.currentMethod(), startTime, endTime);
 
         if (Helper.isTimeRangeExceedLimit(startTime, endTime)) {
-            return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
+            return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
         }
         return summaryService.getBlockChainDailySummary(startTime, endTime);
     }
@@ -65,7 +65,7 @@ public class SummaryController {
         log.info("####{}.{} begin...start_time:{},end_time:{}", CLASS_NAME, Helper.currentMethod(), startTime, endTime);
 
         if (Helper.isTimeRangeExceedLimit(startTime, endTime)) {
-            return new ResponseBean(ErrorInfo.TIME_EXCEED.code(), ErrorInfo.TIME_EXCEED.desc(), false);
+            return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
         }
         return summaryService.getContractDailySummary(contractHash, startTime, endTime);
     }

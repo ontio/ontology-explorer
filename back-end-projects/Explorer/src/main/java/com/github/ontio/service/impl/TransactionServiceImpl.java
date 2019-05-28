@@ -131,10 +131,7 @@ public class TransactionServiceImpl implements ITransactionService {
             detailObj.put("transfers", txDetailDtos);
         } else if (EventTypeEnum.Ontid.getType() == eventType) {
             //ONTID交易获取ONTID动作详情
-            OntidTxDetailDto ontidTxDetailDtoTemp = OntidTxDetailDto.builder()
-                    .txHash(txHash)
-                    .build();
-            OntidTxDetailDto ontidTxDetailDto = ontidTxDetailMapper.selectOne(ontidTxDetailDtoTemp);
+            OntidTxDetailDto ontidTxDetailDto = ontidTxDetailMapper.selectOneByTxHash(txHash);
 
             String ontIdDes = Helper.templateOntIdOperation(ontidTxDetailDto.getDescription());
 

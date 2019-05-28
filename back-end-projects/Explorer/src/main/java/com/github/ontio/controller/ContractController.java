@@ -48,7 +48,6 @@ public class ContractController {
     }
 
 
-
     @ApiOperation(value = "Get contract list by page")
     @GetMapping
     public ResponseBean queryContractsByPage(@RequestParam("page_size") @Max(20) @Min(1) Integer pageSize,
@@ -79,7 +78,19 @@ public class ContractController {
 
         log.info("####{}.{} begin...contract_type:{},contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractType, contractHash);
 
-        return contractService.queryTxsByContractHash(contractType, contractHash, pageNumber,pageSize);
+        return contractService.queryTxsByContractHash(contractType, contractHash, pageNumber, pageSize);
+    }
+
+
+    @ApiOperation(value = "Get contract transaction list by contracthash(no contract_type param)")
+    @GetMapping(value = "/{contract_hash}/transactions")
+    public ResponseBean queryContractTxsByPage(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+                                               @RequestParam("page_number") @Min(1) Integer pageNumber,
+                                               @RequestParam("page_size") @Max(20) @Min(1) Integer pageSize) {
+
+        log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
+
+        return contractService.queryTxsByContractHash(contractHash, pageNumber, pageSize);
     }
 
 

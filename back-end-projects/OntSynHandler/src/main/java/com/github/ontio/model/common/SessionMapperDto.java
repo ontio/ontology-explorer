@@ -3,12 +3,14 @@ package com.github.ontio.model.common;
 import com.github.ontio.mapper.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author zhouq
  * @version 1.0
  * @date 2019/4/30
  */
+@NoArgsConstructor
 @Data
 public class SessionMapperDto {
 

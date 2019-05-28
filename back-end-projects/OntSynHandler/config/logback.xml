@@ -47,7 +47,7 @@
     <appender-ref ref="STDOUT" />  
   </root>  
   
-    <logger name="dao" level="DEBUG" additivity="false">
+    <logger name="dao" level="INFO" additivity="false">
     	<appender-ref ref="STDOUT"/>
     	<appender-ref ref="FILE_EXPLORER" />
    </logger>  

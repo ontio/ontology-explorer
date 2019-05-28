@@ -30,6 +30,13 @@
     <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
   </resultMap>
 
+
+  <cache type="com.github.ontio.config.RedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
   <sql id="basicColumns">
     contract_hash as contractHash,
     name as name,

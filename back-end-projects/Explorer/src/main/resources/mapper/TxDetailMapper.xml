@@ -79,7 +79,7 @@
     <select id="selectNonontidTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxDetailDto">
         select distinct <include refid="txBasicColumns" />
         from tbl_tx_detail
-        where event_type not in(2, 4)
+        where event_type not in(2, 4, 5)
         order by block_height DESC
         limit #{startIndex}, #{pageSize}
     </select>
@@ -100,54 +100,13 @@
         and event_type in (2,3)
     </select>
 
-    <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer">
+    <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
         select tx_time as txTime
         from tbl_tx_detail
         where (from_address = #{address} or to_address = #{address})
         and asset_name = 'ont'
         order by block_height DESC
         limit 1
-    </select>
-
-
-    <select id="selectTransferTxByFromAddr" parameterType="java.util.Map" resultType="java.util.Map">
-        select <include refid="transferTxDetailColumns"/>
-        from tbl_tx_detail
-        where from_address = #{address}
-        <if test="assetName != '' and assetName != null">
-            and asset_name = #{assetName}
-        </if>
-        and event_type in (2,3)
-        order by block_height DESC
-        limit #{startIndex}, #{pageSize}
-    </select>
-
-
-    <select id="selectTransferTxByToAddr" parameterType="java.util.Map" resultType="java.util.Map">
-        select <include refid="transferTxDetailColumns" />
-        from tbl_tx_detail
-        where to_address = #{address}
-        <if test="assetName != '' and assetName != null">
-            and asset_name = #{assetName}
-        </if>
-        and event_type in (2,3)
-        order by block_height DESC
-        limit #{startIndex}, #{pageSize}
-    </select>
-
-
-    <select id="selectTxCountByAddr" resultType="java.lang.Integer">
-        SELECT count(1)
-        FROM tbl_tx_detail
-        WHERE from_address = #{address}
-        OR to_address = #{address}
-    </select>
-
-    <select id="queryTxCount" resultType="java.lang.Integer">
-        select count(DISTINCT(tx_hash))
-        from tbl_tx_detail
-        where tx_time &gt;= #{startTime}
-        and <![CDATA[ tx_time <= #{endTime} ]]>
     </select>
 
 
@@ -291,6 +250,14 @@
         where <![CDATA[ a.txTime < #{endTime} ]]>
         ORDER BY a.txTime DESC
         limit #{pageSize}
+    </select>
+
+
+    <select id="selectTransferTxCountByAddr" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        OR to_address = #{address}
     </select>
 
 </mapper>

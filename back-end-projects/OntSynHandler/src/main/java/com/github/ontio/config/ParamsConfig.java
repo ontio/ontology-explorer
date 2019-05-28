@@ -100,4 +100,11 @@ public class ParamsConfig {
     @Value("${threadPoolSize.keepalive}")
     public int THREADPOOLSIZE_KEEPALIVE_SECOND;
 
+
+    @Value("${batchInsert.blockCount}")
+    public int BATCHINSERT_BLOCK_COUNT;
+
+    @Value("${batchInsert.sqlCount}")
+    public int BATCHINSERT_SQL_COUNT;
+
 }

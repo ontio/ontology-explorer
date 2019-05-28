@@ -20,6 +20,7 @@
 package com.github.ontio.util;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -101,6 +102,46 @@ public class ConstantParam {
     public static final String CONTRACT_TYPE_OTHER = "other";
 
 
+    /**
+     * 对外访问实时性要求不高的接口中对应的mapper，属于历史数据和统计数据，基本不会修改。redis中可以设置过期时间较长，
+     */
+    public static final List<String> REDIS_LONGEXPIRETIME_KEYLIST = new ArrayList<String>(
+            Arrays.asList(
+                    "BlockMapper.selectOneByHeight",
+                    "BlockMapper.selectOneByHash",
+                    "TxDetailMapper.selectTxByHash",
+                    "TxDetailMapper.selectTransferTxDetailByHash",
+                    "TxDetailMapper.selectTxsByBlockHeight",
+                    "ContractMapper.selectContractDetail",
+                    "ContractDailySummaryMapper.selectDailySummaryByContractHash",
+                    "DailySummaryMapper.selectSummaryByTime",
+                    "DailySummaryMapper.selectAddrAndOntIdTotal",
+                    "OntidTxDetailMapper.selectOneByTxHash"
+            )
+    );
+
+
+    /**
+     * 对外访问实时性要求不高的接口中对应的mapper，数据变动频率小，redis中可以设置过期时间较长
+     */
+    public static final List<String> REDIS_MEDIUMEXPIRETIME_KEYLIST = new ArrayList<String>(
+            Arrays.asList(
+                    "ContractMapper.selectApprovedContract",
+                    "ContractMapper.selectApprovedContractCount",
+                    "Oep4Mapper.selectOep4Tokens",
+                    "Oep5Mapper.selectOep5Tokens",
+                    "Oep8Mapper.selectOep8Tokens",
+                    "Oep4Mapper.selectOep4TokenDetail",
+                    "Oep5Mapper.selectOep5TokenDetail",
+                    "Oep8Mapper.selectOep8TokenDetail",
+                    "Oep8Mapper.selectAuditPassedOep8",
+                    "TxEventLogMapper.queryTxCount"
+            )
+    );
+
+    public static final String ADDR_DAILY_SUMMARY_CONTRACTHASH = "0100000000000000000000000000000000000000";
+
+    public static final Integer REQTIME_MAX_RANGE = 40 * 24 * 60 * 60;
 
 
 }

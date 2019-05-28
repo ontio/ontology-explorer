@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  * @date 2018/3/13
  */
-@Component
+@Component("applicationContextProviderExplorer")
 public class ApplicationContextProvider implements ApplicationContextAware {
 
     private static ApplicationContext context;

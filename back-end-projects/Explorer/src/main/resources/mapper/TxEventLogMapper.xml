@@ -14,6 +14,11 @@
     <result column="event_log" jdbcType="LONGVARCHAR" property="eventLog" />
   </resultMap>
 
+  <cache type="com.github.ontio.config.RedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
 
   <select id="queryTxCount" resultType="java.lang.Integer">
     select count(1)

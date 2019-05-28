@@ -9,4 +9,5 @@ import java.util.List;
 public interface Oep8Mapper extends Mapper<Oep8> {
 
     List<Oep8> selectApprovedRecords();
+
 }
