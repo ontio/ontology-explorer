@@ -41,11 +41,12 @@ public class CommonService {
     private final Oep5DragonMapper oep5DragonMapper;
     private final BlockMapper blockMapper;
     private final ContractMapper contractMapper;
+    private final TxDetailDailyMapper txDetailDailyMapper;
 
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
                          Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
-                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, ContractMapper contractMapper) {
+                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper) {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.currentMapper = currentMapper;
@@ -57,6 +58,7 @@ public class CommonService {
         this.blockMapper = blockMapper;
         this.oep5DragonMapper = oep5DragonMapper;
         this.contractMapper = contractMapper;
+        this.txDetailDailyMapper = txDetailDailyMapper;
     }
 
     /**
@@ -81,9 +83,8 @@ public class CommonService {
                 txDetailMapper.batchInsert(batchBlockDto.getTxDetails());
             }
         }
-        //TODO 线上放开
         //插入tbl_tx_detail_daily表
-/*        if (batchBlockDto.getTxDetailDailys().size() > 0) {
+        if (batchBlockDto.getTxDetailDailys().size() > 0) {
             int count = batchBlockDto.getTxDetailDailys().size();
             if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
                 for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
@@ -95,7 +96,7 @@ public class CommonService {
             } else {
                 txDetailDailyMapper.batchInsert(batchBlockDto.getTxDetailDailys());
             }
-        }*/
+        }
         //插入tbl_tx_eventlog表
         if (batchBlockDto.getTxEventLogs().size() > 0) {
             int count = batchBlockDto.getTxEventLogs().size();
