@@ -53,25 +53,23 @@ public class TokenServiceImpl implements ITokenService {
         int total = 0;
         PageResponseBean pageResponseBean = new PageResponseBean(new ArrayList(), total);
 
-        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
-
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_OEP4:
-                PageHelper.startPage(start, pageSize);
+                PageHelper.startPage(pageNumber, pageSize);
                 List<Oep4DetailDto> oep4DetailDtos = oep4Mapper.selectOep4Tokens();
                 total = ((Long) ((Page) oep4DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep4DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP5:
-                PageHelper.startPage(start, pageSize);
+                PageHelper.startPage(pageNumber, pageSize);
                 List<Oep5DetailDto> oep5DetailDtos = oep5Mapper.selectOep5Tokens();
                 total = ((Long) ((Page) oep5DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep5DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP8:
-                PageHelper.startPage(start, pageSize);
+                PageHelper.startPage(pageNumber, pageSize);
                 List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens();
                 total = ((Long) ((Page) oep8DetailDtos).getTotal()).intValue();
                 //OEP8同一个合约hash有多种token，需要根据tokenId分类
