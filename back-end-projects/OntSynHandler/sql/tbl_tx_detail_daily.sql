@@ -36,10 +36,8 @@ CREATE TABLE `tbl_tx_detail_daily`
     `payer`                varchar(255)   NOT NULL DEFAULT '' COMMENT '交易的payer',
     `called_contract_hash` varchar(255)   NOT NULL DEFAULT '' COMMENT '该交易真正调用的合约hash',
     PRIMARY KEY (`tx_hash`, `tx_index`),
-    KEY `idx_from_address` (`from_address`),
-    KEY `idx_to_address` (`to_address`),
-    KEY `idx_block_height` (`block_height`) USING BTREE,
-    KEY `idx_called_contract_hash` (`called_contract_hash`)
+    KEY `idx_called_contract_hash` (`called_contract_hash`),
+    KEY `idx_tx_time` (`tx_time`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
