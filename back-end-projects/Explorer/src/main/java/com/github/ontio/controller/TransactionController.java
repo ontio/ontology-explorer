@@ -19,6 +19,7 @@
 
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.Helper;
@@ -63,6 +64,7 @@ public class TransactionController {
         return rs;
     }
 
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get transaction list by page")
     @GetMapping(value = "/transactions")
     public ResponseBean queryTxsByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,

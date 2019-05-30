@@ -19,6 +19,7 @@
 
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.OntIdServiceImpl;
 import com.github.ontio.util.Helper;
@@ -75,7 +76,7 @@ public class OntIdController {
         return rs;
     }
 
-
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get ONT ID transaction list by page")
     @GetMapping(value = "/ontids/{ontid}/transactions")
     public ResponseBean queryOntIdTxsByOntid(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{33}", message = "Incorrect ONT ID format") String ontid,

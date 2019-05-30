@@ -1,5 +1,6 @@
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IAddressService;
 import com.github.ontio.util.ErrorInfo;
@@ -36,7 +37,7 @@ public class AddressController {
     }
 
 
-    //@RequestLimit(count = 120)
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get address balance")
     @GetMapping(value = "/{address}/{token_type}/balances")
     public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
@@ -49,7 +50,7 @@ public class AddressController {
     }
 
 
-    //@RequestLimit(count = 120)
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(begin_time+end_time) or (page_number+page_size)")
     @GetMapping(value = "/{address}/transactions")
     public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
@@ -65,8 +66,8 @@ public class AddressController {
 
             rs = addressService.queryTransferTxsByPage(address, "", pageNumber, pageSize);
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
-
-            if (Helper.isTimeRangeExceedLimit(beginTime, endTime)) {
+            //request time max range is one week
+            if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
                 return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
             }
             rs = addressService.queryTransferTxsByTime(address, "", beginTime, endTime);
@@ -74,7 +75,7 @@ public class AddressController {
         return rs;
     }
 
-    //@RequestLimit(count = 120)
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get address transfer transaction list by params+assetName", notes = "(begin_time+end_time) or (page_number+page_size) or (end_time+page_size)")
     @GetMapping(value = "/{address}/{asset_name}/transactions")
     public ResponseBean queryAddressTransferTxsByPageAndAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "error address format") String address,
@@ -91,8 +92,8 @@ public class AddressController {
 
             rs = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
         } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
-
-            if (Helper.isTimeRangeExceedLimit(beginTime, endTime)) {
+            //request time max range is one week
+            if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
                 return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
             }
             rs = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);

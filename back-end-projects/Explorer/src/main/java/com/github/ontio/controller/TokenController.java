@@ -1,5 +1,6 @@
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.Helper;
@@ -59,7 +60,7 @@ public class TokenController {
         return rs;
     }
 
-
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get oep8 token transaction list by token name")
     @GetMapping(value = "/oep8/{contract_hash}/{token_name}/transactions")
     public ResponseBean queryOep8TxsByPage(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,

@@ -18,6 +18,7 @@
 
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.ContractServiceImpl;
 import com.github.ontio.util.Helper;
@@ -68,7 +69,7 @@ public class ContractController {
         return contractService.queryContractDetail(contractHash);
     }
 
-
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get contract transaction list by contracthash")
     @GetMapping(value = "/{contract_type}/{contract_hash}/transactions")
     public ResponseBean queryContractTxsByPage(@PathVariable("contract_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|other|OTHER", message = "Incorrect contract type") String contractType,
@@ -81,7 +82,7 @@ public class ContractController {
         return contractService.queryTxsByContractHash(contractType, contractHash, pageNumber, pageSize);
     }
 
-
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get contract transaction list by contracthash(no contract_type param)")
     @GetMapping(value = "/{contract_hash}/transactions")
     public ResponseBean queryContractTxsByPage(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
