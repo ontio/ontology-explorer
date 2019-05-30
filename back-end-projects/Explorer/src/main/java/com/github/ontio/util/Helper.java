@@ -74,6 +74,22 @@ public class Helper {
 
 
     /**
+     * 判断时间范围是否超过一周
+     *
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    public static Boolean isTimeRangeExceedWeek(Long beginTime, Long endTime) {
+
+        if ((endTime - beginTime) > (ConstantParam.REQTIME_MAX_RANGE_WEEK)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * format ontId operation description
      *
      * @param inputStr

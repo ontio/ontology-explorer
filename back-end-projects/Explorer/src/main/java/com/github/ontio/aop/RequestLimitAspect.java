@@ -45,7 +45,11 @@ public class RequestLimitAspect {
 
         String ip = Helper.getHttpReqRealIp(request);
         String url = request.getRequestURL().toString();
-        String key = "req_limit_".concat(url).concat("_").concat(ip);
+        String queryStr = request.getQueryString();
+        if(Helper.isEmptyOrNull(queryStr)){
+            queryStr = "";
+        }
+        String key = "req_limit_".concat(url).concat(queryStr).concat("_").concat(ip);
 
         //加1后看看值
         long count = redisTemplate.opsForValue().increment(key, 1);
@@ -55,7 +59,7 @@ public class RequestLimitAspect {
             redisTemplate.expire(key, paramsConfig.REQLIMIT_EXPIRE_SECOND, TimeUnit.SECONDS);
         }
         if (count > limit.count()) {
-            log.warn("用户IP[" + ip + "]访问地址[" + url + "]超过了限定的次数[" + limit.count() + "]");
+            log.warn("用户IP[" + ip + "]访问地址[" + url + "?" + queryStr + "]超过了限定的次数[" + limit.count() + "]");
             throw new ExplorerException(ErrorInfo.REQ_TIME_EXCEED.code(), ErrorInfo.REQ_TIME_EXCEED.desc(), false);
         }
     }

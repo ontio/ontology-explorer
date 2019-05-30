@@ -143,5 +143,7 @@ public class ConstantParam {
 
     public static final Integer REQTIME_MAX_RANGE = 40 * 24 * 60 * 60;
 
+    public static final Integer REQTIME_MAX_RANGE_WEEK = 7 * 24 * 60 * 60;
+
 
 }
