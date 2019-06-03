@@ -102,6 +102,15 @@
     where contract_hash = #{contractHash}
   </select>
 
-
+  <select id="selectContractHashByDappName" parameterType="java.util.List" resultType="java.util.Map">
+    select contract_hash, dapp_name, tx_count
+    from tbl_contract
+    where dapp_name in
+    <foreach collection="dappNameList" item="item" index="index" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+    and audit_flag = 1
+    order by dapp_name
+  </select>
 
 </mapper>

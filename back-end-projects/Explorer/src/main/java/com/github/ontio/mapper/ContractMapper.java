@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface ContractMapper extends Mapper<ContractDto> {
@@ -15,4 +16,6 @@ public interface ContractMapper extends Mapper<ContractDto> {
     Integer selectApprovedContractCount();
 
     ContractDto selectContractDetail(@Param("contractHash") String contractHash);
+
+    List<Map<String,Object>> selectContractHashByDappName(@Param("dappNameList") List<String> dappNameList);
 }

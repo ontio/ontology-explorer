@@ -22,14 +22,20 @@ package com.github.ontio.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +45,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class OntologySDKService {
-    
+
     private static OntologySDKService instance = null;
 
     @Autowired
@@ -158,7 +164,45 @@ public class OntologySDKService {
             return null;
         }
     }
-    
+
+    /**
+     * 根据dapp合约hash获取绑定的节点信息
+     * @param contractHash
+     * @param dappContractHash
+     * @return
+     */
+    public Map getDappBindedNodeInfo(String contractHash, String dappContractHash) {
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("node_name", "");
+        rsMap.put("node_pubkey", "");
+        try {
+            OntSdk ontSdk = getOntSdk();
+
+            List paramList = new ArrayList();
+            paramList.add("get_binded_node".getBytes());
+
+            List args = new ArrayList();
+            args.add(Helper.hexToBytes(dappContractHash));
+            paramList.add(args);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, null, 20000, 500);
+            Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+
+            String result = ((JSONObject) obj).getString("Result");
+            log.info("contracthash:{},bindedinfo:{}", dappContractHash, result);
+            if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
+
+                Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
+                rsMap.put("node_name", new String(Helper.hexToBytes(((String) map.get("node_name")))));
+                rsMap.put("node_pubkey", map.get("node_pubkey"));
+            }
+            return rsMap;
+        } catch (Exception e) {
+            log.error("getDappBindedNodeInfo error...", e);
+        }
+        return rsMap;
+    }
 
 
     private OntSdk getOntSdk() {

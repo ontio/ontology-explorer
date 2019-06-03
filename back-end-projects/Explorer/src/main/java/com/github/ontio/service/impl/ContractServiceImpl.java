@@ -30,11 +30,14 @@ import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
+import com.github.ontio.util.OntologySDKService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service("ContractService")
 public class ContractServiceImpl implements IContractService {
@@ -58,6 +61,13 @@ public class ContractServiceImpl implements IContractService {
         this.txEventLogMapper = txEventLogMapper;
     }
 
+    private OntologySDKService sdk;
+
+    private synchronized void initSDK() {
+        if (sdk == null) {
+            sdk = OntologySDKService.getInstance(paramsConfig);
+        }
+    }
 
     @Override
     public ResponseBean queryContractsByPage(Integer pageSize, Integer pageNumber) {
@@ -169,5 +179,21 @@ public class ContractServiceImpl implements IContractService {
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
+    }
+
+    @Override
+    public ResponseBean queryDappBindedNodeInfo(String dappName) {
+
+        initSDK();
+
+        String[] dappNameArray = dappName.split("&");
+        List<Map<String, Object>> list = contractMapper.selectContractHashByDappName(Arrays.asList(dappNameArray));
+        list.forEach(item -> {
+            String dappContractHash = (String) item.get("contract_hash");
+            Map bindedNodeInfo = sdk.getDappBindedNodeInfo(paramsConfig.DAPPBIND_CONTRACTHASH, dappContractHash);
+            item.put("binded_node", bindedNodeInfo);
+        });
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), list);
     }
 }
