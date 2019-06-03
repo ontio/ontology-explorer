@@ -186,7 +186,7 @@ public class ContractServiceImpl implements IContractService {
 
         initSDK();
 
-        String[] dappNameArray = dappName.split("&");
+        String[] dappNameArray = dappName.split(",");
         List<Map<String, Object>> list = contractMapper.selectContractHashByDappName(Arrays.asList(dappNameArray));
         list.forEach(item -> {
             String dappContractHash = (String) item.get("contract_hash");
