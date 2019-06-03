@@ -61,5 +61,8 @@ public class ParamsConfig {
     @Value("${oep5.dragon.contractHash}")
     public String OEP5_DRAGON_CONTRACTHASH;
 
+    @Value("${dappbind.contracthash}")
+    public String DAPPBIND_CONTRACTHASH;
+
 
 }
