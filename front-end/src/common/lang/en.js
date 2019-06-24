@@ -6,6 +6,7 @@ module.exports = {
     en: 'EN',
   },
   navbar: {
+    flag:"en",
     blockHeight: 'block height',
     wallet: 'wallet',
     blocks: 'Blocks',
@@ -105,7 +106,7 @@ module.exports = {
     rank: 'Rank',
     name: 'Address',
     nickname: 'ADDRESSES - Position Ranking',
-    balance: 'ONT Balance',
+    balance: ' Balance',
     percent: 'Percent'
   },
   addressDetail: {
@@ -215,7 +216,7 @@ module.exports = {
       tit: {
         currently: 'There are currently',
         contracts: 'contracts',
-        checkIn: 'Check in'
+        checkIn: 'Join'
       },
       tab: {
         hash: 'Hash',
@@ -238,7 +239,7 @@ module.exports = {
       logo: 'Logo',
       ontFlow: 'ONT Flow: ',
       ongFlow: 'ONG Flow: ',
-      amount: 'Total Flow: '
+      amount: 'Total Flow: ',
     }
   },
   tokens: {
@@ -280,7 +281,7 @@ module.exports = {
       statistic: 'Statistics',
       tokenLbl: 'Token Label',
       tokenImg: 'Token Image',
-      tip: 'Please note: Here is daily cumulative statistics, not real-time summary, there is up to one day statistical difference.'
+      tip: 'Please note: Here is daily cumulative statistics, there is up to 10 minutes statistical difference.'
     }
   },
   statistics: {
@@ -296,5 +297,55 @@ module.exports = {
     txnLbl: 'Transaction History',
     ontLbl: 'ONT Amount',
     ongLbl: 'ONG Amount'
+  },
+  footer: {
+    flag:"en",
+    Development: 'Development',
+    DeveloperCenter: 'Developer Center',
+    dApp:"dApps List",
+    Tutorials: 'Tutorials',
+    Documentation: 'Documentation',
+    Bounty: 'Bounty',
+    SmartX: 'SmartX',
+    Github: 'Github',
+    Cooperation: 'Cooperation',
+    CooperateWithOntology: 'Cooperate with Ontology',
+    TrustEcosystem: 'Trust Ecosystem',
+    Nodes: 'Nodes',
+    About: 'About',
+    Press: 'Press',
+    TechNews: 'Tech News',
+    Team: 'Team',
+    AboutOntology: 'About Ontology',
+    WhitePaper: 'White Paper',
+    Explorer: 'Explorer',
+    dApps: 'dApps',
+    dAppsList: 'dApps List',
+    SubmitAdApp: 'Submit a dApp',
+
+  },
+  form:{
+    contractForm:"CONTRACT REGISTRATION FORM",
+    name:"Project name",
+    logo:"Project logo",
+    description:"Project description",
+    webLink:"Project official website and social media links",
+    gitHubURL:"Project GitHub URL",
+    ONTID:"ONT ID",
+    contractHash:"Contract hash ",
+    contractABI:"Contract ABI ",
+    contractByteCode:"Contract ByteCode ",
+    add:"Add",
+    delete:"Delete",
+    addFile:"Add File",
+    required:"Required",
+    requiredtext:"* Required",
+    requiredstar:"*",
+    
+  },
+  error:{
+    format:"Sorry, the search string you entered could not be found.",
+    copied:"Copied!",
+    pagesize:"pageSize limit 30"
   }
 };
