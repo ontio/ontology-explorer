@@ -95,13 +95,15 @@ public class ContractController {
     }
 
 
-    @ApiOperation(value = "Get dapp binded node information")
-    @GetMapping(value = "/bindednodes")
-    public ResponseBean queryDappBindedNodeInfo(@RequestParam("dapp_name") String dappName) {
+    @ApiOperation(value = "Get dapp binded information")
+    @GetMapping(value = "/bindedinfo")
+    public ResponseBean queryDappBindedInfo(@RequestParam("dapp_name") String dappNameArrayStr,
+                                                @RequestParam("start_time") long startTime,
+                                                @RequestParam("end_time") long endTime) {
 
-        log.info("####{}.{} begin...dappName:{}", CLASS_NAME, Helper.currentMethod(), dappName);
+        log.info("####{}.{} begin...dappNameArrayStr:{}", CLASS_NAME, Helper.currentMethod(), dappNameArrayStr);
 
-        return contractService.queryDappBindedNodeInfo(dappName);
+        return contractService.queryDappBindedInfo(dappNameArrayStr,startTime,endTime);
     }
 
 

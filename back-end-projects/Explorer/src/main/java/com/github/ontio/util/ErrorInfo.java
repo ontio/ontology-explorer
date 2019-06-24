@@ -55,7 +55,7 @@ public enum ErrorInfo {
     /**
      * no permission
      */
-    NO_PERMISSION(61005, "FAIL, no permission"),
+    REQ_NUMBER_RANGE_EXCEED(61005, "Request number exceeded limit."),
 
     /**
      * not register

@@ -30,6 +30,6 @@ public interface IContractService {
 
     ResponseBean queryTxsByContractHash(String contractHash, Integer pageNumber, Integer pageSize);
 
-    ResponseBean queryDappBindedNodeInfo(String dappName);
+    ResponseBean queryDappBindedInfo(String dappNameArrayStr, long startTime, long endTime);
 
 }
