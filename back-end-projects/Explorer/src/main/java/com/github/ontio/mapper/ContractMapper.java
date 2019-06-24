@@ -17,5 +17,5 @@ public interface ContractMapper extends Mapper<ContractDto> {
 
     ContractDto selectContractDetail(@Param("contractHash") String contractHash);
 
-    List<Map<String,Object>> selectContractHashByDappName(@Param("dappNameList") List<String> dappNameList);
+    List<Map<String,String>> selectContractHashByDappName(@Param("dappNameList") List<String> dappNameList);
 }
