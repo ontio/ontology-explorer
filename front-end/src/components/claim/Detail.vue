@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div class="e-container container-margin-top">
     <list-title :name="$t('claimDetail.name')"></list-title>
 
     <div class="background-body" style="margin-top:60px;">
