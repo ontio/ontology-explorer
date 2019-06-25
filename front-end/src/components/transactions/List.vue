@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div class="e-container container-margin-top">
     <list-title :name="$t('transList.name')"></list-title>
 
     <ont-pagination :total="transactions.total"></ont-pagination>
@@ -68,7 +68,18 @@
     },
     methods: {
       getTransactions() {
+        this.testNetPageSizeCheck()
         this.$store.dispatch('GetTransactions', this.$route.params).then()
+      },
+      testNetPageSizeCheck(){
+        if(this.$route.params.net == "testnet"){
+          if(this.$route.params.pageSize > 30){
+            this.$message({message: this.$t('error.pagesize')});
+            this.$route.params.pageSize = 30
+            this.$router.push({name: this.$route.name, params: this.$route.params})
+            return
+          }
+        }
       },
       toTransactionDetailPage($TxnId) {
         if (this.$route.params.net == undefined) {
