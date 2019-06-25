@@ -42,58 +42,50 @@
         </javaClientGenerator>
 
 
-<!--        <table tableName="tbl_block" domainObjectName="Block">
+        <table tableName="tbl_block" domainObjectName="Block">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
+        <table tableName="tbl_current" domainObjectName="Current">
+            <generatedKey column="id" sqlStatement="JDBC"/>
+        </table>
 
-<!--        <table tableName="tbl_current" domainObjectName="Current">
+        <table tableName="tbl_tx_detail" domainObjectName="TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
-
-<!--        <table tableName="tbl_tx_detail" domainObjectName="TxDetail">
-            <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
         <table tableName="tbl_tx_eventlog" domainObjectName="TxEventLog">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
-<!--        <table tableName="tbl_ontid_tx_detail" domainObjectName="OntidTxDetail">
+        <table tableName="tbl_ontid_tx_detail" domainObjectName="OntidTxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
-
-
-
-<!--        <table tableName="tbl_oep4" domainObjectName="Oep4">
+        <table tableName="tbl_oep4" domainObjectName="Oep4">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
-<!--        <table tableName="tbl_oep4_tx_detail" domainObjectName="Oep4TxDetail">
+        <table tableName="tbl_oep4_tx_detail" domainObjectName="Oep4TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
-<!--        <table tableName="tbl_oep5" domainObjectName="Oep5">
+        <table tableName="tbl_oep5" domainObjectName="Oep5">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
-  <!--      <table tableName="tbl_oep5_tx_detail" domainObjectName="Oep5TxDetail">
+        <table tableName="tbl_oep5_tx_detail" domainObjectName="Oep5TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
-<!--        <table tableName="tbl_oep8" domainObjectName="Oep8">
+        <table tableName="tbl_oep8" domainObjectName="Oep8">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
-<!--        <table tableName="tbl_daily_summary" domainObjectName="DailySummary">
+        <table tableName="tbl_oep8_tx_detail" domainObjectName="Oep8TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
-<!--        <table tableName="tbl_oep8_tx_detail" domainObjectName="Oep8TxDetail">
-            <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
-
-<!--        <table tableName="tbl_oep5_dragon" domainObjectName="Oep5Dragon">
+        <table tableName="tbl_oep5_dragon" domainObjectName="Oep5Dragon">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
@@ -104,11 +96,6 @@
         <table tableName="tbl_oep5_tx_detail" domainObjectName="Oep5TxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
-
-        <table tableName="tbl_tx_detail_tmp" domainObjectName="TxDetailTmp">
-            <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
-
 
         <table tableName="tbl_tx_detail_tmp" domainObjectName="TxDetailTmp">
             <generatedKey column="id" sqlStatement="JDBC"/>
@@ -132,8 +119,19 @@
 
         <table tableName="tbl_address_daily_summary" domainObjectName="AddressDailySummary">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>-->
+        </table>
 
+        <table tableName="tbl_candidate_node_summary" domainObjectName="CandidateNodeSummary">
+            <generatedKey column="id" sqlStatement="JDBC"/>
+        </table>
+
+        <table tableName="tbl_node_info_register" domainObjectName="NodeInfoRegister">
+            <generatedKey column="public_key" sqlStatement="JDBC"/>
+        </table>
+
+        <table tableName="tbl_node_info_onchain" domainObjectName="NodeInfoOnChain">
+            <generatedKey column="node_rank" sqlStatement="JDBC"/>
+        </table>
 
     </context>
 </generatorConfiguration>
