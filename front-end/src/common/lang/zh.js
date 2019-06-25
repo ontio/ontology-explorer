@@ -6,6 +6,7 @@ module.exports = {
     en: 'EN',
   },
   navbar: {
+    flag:"zh",
     blockHeight: '区块高度',
     wallet: '钱包',
     blocks: '区块列表',
@@ -105,7 +106,7 @@ module.exports = {
     rank: '排名',
     name: '地址',
     nickname: '持仓排名',
-    balance: 'ONT',
+    balance: '余额',
     percent: '占比'
   },
   addressDetail: {
@@ -280,7 +281,7 @@ module.exports = {
       statistic: '数据统计',
       tokenLbl: '通证标签',
       tokenImg: '通证图片',
-      tip: '注意：该项为累积统计，非实时数据，可能有最多24小时的统计差异。'
+      tip: '注意：该项为累积统计，可能有最多10分钟的统计差异。'
     }
   },
   statistics: {
@@ -296,5 +297,35 @@ module.exports = {
     txnLbl: '交易数',
     ontLbl: 'ONT交易总额',
     ongLbl: 'ONG交易总额'
+  },
+  footer:{
+    flag:"zh",
+    Development: '开发',
+    DeveloperCenter: '开发者中心',
+    dApp:"dApp 信息",
+    Tutorials:'教程',
+    Documentation:'文档',
+    Bounty:'悬赏',
+    SmartX:'SmartX',
+    Github:'Github',
+    Cooperation:'合作',
+    CooperateWithOntology:'与本体合作',
+    TrustEcosystem:'信任生态',
+    Nodes:'节点',
+    About:'关于',
+    Press:'新闻',
+    TechNews:'本体视点',
+    Team:'团队',
+    AboutOntology:'关于本体',
+    WhitePaper:'白皮书',
+    Explorer:'区块链浏览器',
+    dApps:'dApps',
+    dAppsList:'dApps列表',
+    SubmitAdApp:'提交dApp',
+  },
+  error:{
+    format:"对不起，无法找到您输入的搜索内容。",
+    copied:"已复制!",
+    pagesize:"pageSize limit 30"
   }
 };

@@ -1,22 +1,23 @@
 <template>
   <div>
     <div class="container-top">
-      <nav-bar></nav-bar>
+      <nav-bar-1 class="nav-pc-display"></nav-bar-1>
+      <nav-bar  class="nav-mobile-display"></nav-bar>
 
       <search-input></search-input>
     </div>
 
     <run-status></run-status>
 
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+    <div class="e-container">
+      <div class="row list-wrapper">
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 list-item">
           <block-list></block-list>
         </div>
-        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 list-item">
           <transaction-list></transaction-list>
         </div>
-        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4">
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 list-item">
           <OntIdList></OntIdList>
         </div>
       </div>
@@ -53,5 +54,11 @@
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #2C92A5), color-stop(100, #37B6D3));
     background-image: -webkit-linear-gradient(bottom, #2C92A5 0%, #37B6D3 100%);
     background-image: linear-gradient(to top, #2C92A5 0%, #37B6D3 100%);
+  }
+  .list-wrapper{
+    padding:0 3px;
+  }
+  .list-item{
+    padding:0 12px;
   }
 </style>
