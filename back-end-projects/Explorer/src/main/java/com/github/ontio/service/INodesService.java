@@ -18,12 +18,14 @@
 
 package com.github.ontio.service;
 
-import com.github.ontio.model.dao.CandidateNodeSummary;
+import com.github.ontio.model.dao.NodeInfoOffChain;
+import com.github.ontio.model.dao.NodeInfoOnChain;
 
 import java.util.List;
 
 public interface INodesService {
 
-    public List<CandidateNodeSummary> getCandidateNodesInfo();
+    List<NodeInfoOnChain> getCurrentInChainInfo();
 
+    List<NodeInfoOffChain> getCurrentOffChainInfo();
 }

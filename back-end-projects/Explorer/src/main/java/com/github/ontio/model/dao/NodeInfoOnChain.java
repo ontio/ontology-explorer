@@ -2,7 +2,7 @@ package com.github.ontio.model.dao;
 
 import javax.persistence.*;
 
-@Table(name = "tbl_node_info_onchain")
+@Table(name = "tbl_node_info_on_chain")
 public class NodeInfoOnChain {
     @Id
     @Column(name = "node_rank")

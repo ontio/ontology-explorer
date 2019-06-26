@@ -1,11 +1,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
--- --------------------------------
--- Table structure for tbl_candidate_node
--- --------------------------------
-
-DROP TABLE IF EXISTS `tbl_node_info_register`;
-CREATE TABLE IF NOT EXISTS `tbl_node_info_register`
+DROP TABLE IF EXISTS `tbl_node_info_off_chain`;
+CREATE TABLE IF NOT EXISTS `tbl_node_info_off_chain`
 (
     name         VARCHAR(64)   NOT NULL DEFAULT '',
     address      CHARACTER(34) NOT NULL,

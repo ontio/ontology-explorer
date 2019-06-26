@@ -129,11 +129,11 @@
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
-        <table tableName="tbl_node_info_register" domainObjectName="NodeInfoRegister">
+        <table tableName="tbl_node_info_off_chain" domainObjectName="NodeInfoOffChain">
             <generatedKey column="public_key" sqlStatement="JDBC"/>
         </table>
 
-        <table tableName="tbl_node_info_onchain" domainObjectName="NodeInfoOnChain">
+        <table tableName="tbl_node_info_on_chain" domainObjectName="NodeInfoOnChain">
             <generatedKey column="node_rank" sqlStatement="JDBC"/>
         </table>
 
