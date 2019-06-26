@@ -20,7 +20,7 @@ package com.github.ontio.service.impl;
 
 import com.github.ontio.mapper.CandidateNodeSummaryMapper;
 import com.github.ontio.model.dao.CandidateNodeSummary;
-import com.github.ontio.service.ICandidateNodeService;
+import com.github.ontio.service.INodesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,13 +28,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Slf4j
-@Service("CandidateNodeServiceImpl")
-public class CandidateNodeServiceImpl implements ICandidateNodeService {
+@Service("NodesServiceImpl")
+public class NodesServiceImpl implements INodesService {
 
     private final CandidateNodeSummaryMapper candidateNodeSummaryMapper;
 
     @Autowired
-    public CandidateNodeServiceImpl(CandidateNodeSummaryMapper candidateNodeSummaryMapper) {
+    public NodesServiceImpl(CandidateNodeSummaryMapper candidateNodeSummaryMapper) {
         this.candidateNodeSummaryMapper = candidateNodeSummaryMapper;
     }
 

@@ -22,7 +22,7 @@ import com.github.ontio.model.dao.CandidateNodeSummary;
 
 import java.util.List;
 
-public interface ICandidateNodeService {
+public interface INodesService {
 
     public List<CandidateNodeSummary> getCandidateNodesInfo();
 
