@@ -1,7 +1,8 @@
 package com.github.ontio.controller;
 
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dao.CandidateNodeSummary;
+import com.github.ontio.model.dao.NodeInfoOffChain;
+import com.github.ontio.model.dao.NodeInfoOnChain;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.util.ErrorInfo;
 import io.swagger.annotations.ApiOperation;
@@ -21,20 +22,21 @@ public class NodesController {
     private final NodesServiceImpl nodesService;
 
     @Autowired
-    public NodesController(CandidateNodeServiceImpl nodesService) {
+    public NodesController(NodesServiceImpl nodesService) {
         this.nodesService = nodesService;
     }
 
     @ApiOperation(value = "Get candidate nodes information")
     @GetMapping(value = "/current-stake")
     public ResponseBean getCurrentStake() {
-        List<CandidateNodeSummary> nodeInfoList = nodesService.getCandidateNodesInfo();
+        List<NodeInfoOnChain> nodeInfoList = nodesService.getCurrentInChainInfo();
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
 
     @ApiOperation(value = "Get nodes register information")
     @GetMapping(value = "/off-chain-info")
     public ResponseBean getOffChainInfo() {
-
+        List<NodeInfoOffChain> nodeInfoList = nodesService.getCurrentOffChainInfo();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
 }
