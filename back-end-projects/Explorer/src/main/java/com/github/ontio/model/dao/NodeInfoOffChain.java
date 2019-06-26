@@ -3,8 +3,8 @@ package com.github.ontio.model.dao;
 import java.math.BigDecimal;
 import javax.persistence.*;
 
-@Table(name = "tbl_node_info_register")
-public class NodeInfoRegister {
+@Table(name = "tbl_node_info_off_chain")
+public class NodeInfoOffChain {
     @Id
     @Column(name = "public_key")
     @GeneratedValue(generator = "JDBC")
