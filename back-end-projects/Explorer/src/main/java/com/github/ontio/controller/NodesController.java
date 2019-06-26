@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/v2/candidate-nodes")
+@RequestMapping(value = "/v2/nodes")
 public class CandidateNodeController {
 
     private final CandidateNodeServiceImpl candidateNodeService;
@@ -26,9 +26,15 @@ public class CandidateNodeController {
     }
 
     @ApiOperation(value = "Get candidate nodes information")
-    @GetMapping(value = "/current_stake")
-    public ResponseBean getBlockChainLatestInfo() {
+    @GetMapping(value = "/current-stake")
+    public ResponseBean getCurrentStake() {
         List<CandidateNodeSummary> nodeInfoList = candidateNodeService.getCandidateNodesInfo();
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
+    }
+
+    @ApiOperation(value = "Get nodes register information")
+    @GetMapping(value = "/off-chain-info")
+    public ResponseBean getOffChainInfo() {
+        
     }
 }
