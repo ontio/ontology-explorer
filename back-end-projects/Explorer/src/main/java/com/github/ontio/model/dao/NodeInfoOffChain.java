@@ -1,8 +1,13 @@
 package com.github.ontio.model.dao;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import javax.persistence.*;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tbl_node_info_off_chain")
 public class NodeInfoOffChain {
     @Id
