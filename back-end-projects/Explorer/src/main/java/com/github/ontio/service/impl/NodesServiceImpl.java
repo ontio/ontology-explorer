@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -45,13 +46,43 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public List<NodeInfoOnChain> getCurrentInChainInfo() {
-        return nodeInfoOnChainMapper.selectAll();
+    public List<NodeInfoOnChain> getCurrentOnChainInfo() {
+        try {
+            return nodeInfoOnChainMapper.selectAll();
+        } catch (Exception e) {
+            log.error("Select node infos in chain failed: {}.", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public NodeInfoOnChain getCurrentOnChainInfo(String publicKey) {
+        try {
+            return nodeInfoOnChainMapper.selectByPublicKey(publicKey);
+        } catch (Exception e) {
+            log.warn("Select node off chain info by public key {} failed: {}.", publicKey, e.getMessage());
+            return new NodeInfoOnChain();
+        }
     }
 
     @Override
     public List<NodeInfoOffChain> getCurrentOffChainInfo() {
-        return nodeInfoOffChainMapper.selectAll();
+        try {
+            return nodeInfoOffChainMapper.selectAll();
+        } catch (Exception e) {
+            log.error("Select node infos off chain failed: {}.", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public NodeInfoOffChain getCurrentOffChainInfo(String publicKey) {
+        try {
+            return nodeInfoOffChainMapper.selectByPublicKey(publicKey);
+        } catch (Exception e) {
+            log.warn("Select node off chain info by public key {} failed: {}.", publicKey, e.getMessage());
+            return new NodeInfoOffChain();
+        }
     }
 
 }
