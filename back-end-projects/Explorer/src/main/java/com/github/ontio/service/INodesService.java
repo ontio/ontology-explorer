@@ -25,7 +25,12 @@ import java.util.List;
 
 public interface INodesService {
 
-    List<NodeInfoOnChain> getCurrentInChainInfo();
+    List<NodeInfoOnChain> getCurrentOnChainInfo();
+
+    NodeInfoOffChain getCurrentOffChainInfo(String publicKey);
 
     List<NodeInfoOffChain> getCurrentOffChainInfo();
+
+    NodeInfoOnChain getCurrentOnChainInfo(String publicKey);
+
 }
