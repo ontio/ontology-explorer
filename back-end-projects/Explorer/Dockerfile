@@ -32,7 +32,7 @@ COPY --from=builder /ontology-explorer/back-end-projects/Explorer/target/explore
 COPY --from=builder /ontology-explorer/back-end-projects/Explorer/config /home/ontology/config
 
 # # Run as non root
-#USER ontology
+USER ontology
 WORKDIR /home/ontology
 
 EXPOSE 8090
