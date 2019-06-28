@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div class="e-container container-margin-top">
     <list-title :name="$t('nodes.detailTit')"></list-title>
     <detail-title-2 :name1="$t('nodes.nodeName')" :val="nodeInfo.nodename"
                     :name2="$t('nodes.stakeOWallet')" url="https://github.com/ontio/OWallet/releases">

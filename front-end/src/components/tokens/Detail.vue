@@ -1,5 +1,5 @@
 <template>
-  <div class="container margin-top-15 explorer-detail-tab">
+  <div class="e-container margin-top-15 explorer-detail-tab">
     <list-title :name="$t('tokens.detail.name')"></list-title>
     <detail-title :name="$t('tokens.detail.hash')" :val="$route.params.contractHash"></detail-title>
 
@@ -67,32 +67,32 @@
 
     <!--addresses & transactions & volume-->
     <div class="row">
-      <div class="col">
+      <div class="vol-col">
         <div class="detail-col detail-col-left">
           <div class="f-color">{{ $t('tokens.list.tab.addressCount') }}&nbsp;
             <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
               <i class="fa fa-info-circle" aria-hidden="true"></i>
             </a>
           </div>
-          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(tokenData.list.AddressCount) }}</div>
+          <div class="important_color font-size24 text-center line-height72">{{ $HelperTools.toFinancialVal(tokenData.list.AddressCount) }}</div>
         </div>
       </div>
-      <div class="col">
+      <div class="vol-col">
         <div class="detail-col detail-col-middle">
           <div class="f-color">{{ $t('tokens.detail.txn') }}</div>
-          <div class="important_color font-size24 text-center">{{ $HelperTools.toFinancialVal(tokenData.list.Total) }}</div>
+          <div class="important_color font-size24 text-center line-height72">{{ $HelperTools.toFinancialVal(tokenData.list.Total) }}</div>
         </div>
       </div>
-      <div class="col">
+      <div class="vol-col">
         <div class="detail-col detail-col-right">
           <div class="f-color">{{ $t('tokens.detail.volume') }}&nbsp;
             <a href="#" data-toggle="tooltip" class="tooltip-style" :title="$t('tokens.detail.tip')">
               <i class="fa fa-info-circle" aria-hidden="true"></i>
             </a>
           </div>
-          <div class="important_color font-size24 text-center">
-            {{ $HelperTools.toFinancialVal(parseInt(tokenData.list.OntCount)) + ' ONT, ' +
-            $HelperTools.toFinancialVal(tokenData.list.OngCount) + ' ONG'}}
+          <div  class="important_color  text-center volume-height font-size24 " >
+            <div class="volume-font">{{$HelperTools.toFinancialVal(parseInt(tokenData.list.OntCount)) + ' ONT'}}</div>
+            <div class="volume-font">{{$HelperTools.toFinancialVal(tokenData.list.OngCount) + ' ONG'}}</div>
           </div>
         </div>
       </div>
@@ -113,9 +113,9 @@
 
     <!-- Tab panes -->
     <div class="tab-content">
-      <div id="scTxn" class="container tab-pane active">
+      <div id="scTxn" class=" tab-pane active">
         <div class="row" v-if="tokenData.Total !== 0">
-          <div class="col">
+          <div class="col ">
             <div class="detail-col">
               <ont-pagination :total="tokenData.total"></ont-pagination>
 
@@ -163,9 +163,9 @@
           </div>
         </div>
       </div>
-      <div id="scCode" class="container tab-pane">
+      <div id="scCode" class=" tab-pane">
         <div class="row">
-          <div class="col">
+          <div class="col ">
             <div class="detail-col">
               <div class="copy-bottom">
                 <span class="pull-right pointer font-size14">
@@ -181,9 +181,9 @@
           </div>
         </div>
       </div>
-      <div id="scABI" class="container tab-pane">
+      <div id="scABI" class=" tab-pane">
         <div class="row">
-          <div class="col">
+          <div class="col ">
             <div class="detail-col"><div class="copy-bottom">
                 <span class="pull-right pointer font-size14">
                   <i @click="copyDetailVal('scABIData')"
@@ -328,4 +328,7 @@
   .copy-bottom {
     margin-bottom: 5px;
   }
+.padding0{
+  padding:0 !important;
+}
 </style>

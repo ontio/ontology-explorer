@@ -77,4 +77,27 @@
     order by block_index
   </select>
 
+  <select id="queryTxFeeByParam" resultType="java.math.BigDecimal">
+    select sum(fee)
+    from tbl_tx_eventlog
+    where called_contract_hash in
+    <foreach collection="contractList" item="item" index="index" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+    and tx_time >= #{startTime}
+    and <![CDATA[ tx_time <= #{endTime} ]]>
+  </select>
+
+
+  <select id="queryTxCountByParam" resultType="java.lang.Integer">
+    select count(1)
+    from tbl_tx_eventlog
+    where called_contract_hash in
+    <foreach collection="contractList" item="item" index="index" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+    and tx_time >= #{startTime}
+    and <![CDATA[ tx_time <= #{endTime} ]]>
+  </select>
+
 </mapper>

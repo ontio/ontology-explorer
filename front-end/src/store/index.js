@@ -31,6 +31,6 @@ export default new Vuex.Store({
     NodeAuthorization,
     Contracts,
     Tokens,
-    Statistics
+    Statistics,
   }
 })

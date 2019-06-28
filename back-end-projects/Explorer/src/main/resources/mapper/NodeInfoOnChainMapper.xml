@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodeInfoOnChainMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodeInfoOnChain">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="node_rank" jdbcType="INTEGER" property="nodeRank"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="current_stake" jdbcType="BIGINT" property="currentStake"/>
+        <result column="progress" jdbcType="VARCHAR" property="progress"/>
+        <result column="detail_url" jdbcType="VARCHAR" property="detailUrl"/>
+        <result column="public_key" jdbcType="VARCHAR" property="publicKey"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="init_pos" jdbcType="BIGINT" property="initPos"/>
+        <result column="total_pos" jdbcType="BIGINT" property="totalPos"/>
+        <result column="max_authorize" jdbcType="BIGINT" property="maxAuthorize"/>
+        <result column="node_proportion" jdbcType="VARCHAR" property="nodeProportion"/>
+    </resultMap>
+    <!--
+  self-defined SQL
+  -->
+    <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="false">
+        SELECT node_rank,
+               name,
+               current_stake,
+               progress,
+               detail_url,
+               public_key,
+               address,
+               status,
+               init_pos,
+               total_pos,
+               max_authorize,
+               node_proportion
+        FROM tbl_node_info_on_chain
+        WHERE public_key = #{publicKey}
+        LIMIT 1;
+    </select>
+</mapper>

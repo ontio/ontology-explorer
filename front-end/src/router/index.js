@@ -19,6 +19,7 @@ import ContractDetail from '@/components/contracts/Detail'
 import TokenList from '@/components/tokens/List'
 import TokenDetail from '@/components/tokens/Detail'
 import StatisticsTable from '@/components/statistics/Table'
+import ContractForm from '@/components/form/ContractForm'
 
 Vue.use(Router);
 
@@ -69,12 +70,12 @@ let routes = [
     component: AddressDetailPage
   },
   {
-    path: '/addresses/:pageSize/:pageNumber',
+    path: '/addresses/:token/:pageSize/:pageNumber',
     name: 'addressList',
     component: AddressList
   },
   {
-    path: '/addresses/:pageSize/:pageNumber/:net',
+    path: '/addresses/:token/:pageSize/:pageNumber/:net',
     name: 'addressListTest',
     component: AddressList
   },
@@ -178,6 +179,16 @@ let routes = [
     name: 'ContractDetailTest',
     component: ContractDetail
   },
+/*   {
+    path: '/contract/RegistrationForm',
+    name: 'ContractRegistrationForm',
+    component: ContractRegistrationForm
+  },
+  {
+    path: '/contract/RegistrationForm/:net',
+    name: 'ContractRegistrationFormTest',
+    component: ContractRegistrationForm
+  }, */
   {
     path: '/token/list/:type/:pageSize/:pageNumber',
     name: 'TokenList',
@@ -217,7 +228,17 @@ let routes = [
     path: '/statistics/contract/:contractHash/:day/:net',
     name: 'StatisticsContractTest',
     component: StatisticsTable
-  }
+  },
+  {
+    path: '/form/contractform',
+    name: 'ContractForm',
+    component: ContractForm
+  },
+  {
+    path: '/addresses/:pageSize/:pageNumber/:net',
+    name: 'ContractFormTest',
+    component: ContractForm
+  },
 ];
 
 const router = new Router({
