@@ -14,6 +14,7 @@
           layout="sizes, prev, pager, next"
           :current-page="currentPage"
           :page-size="pageSize"
+          :pageSizes="pageSizes"
           :total="total">
         </el-pagination>
       </div>
@@ -33,18 +34,30 @@
     props: ['total', 'paramVal'],
     data() {
       return {
-        pageSize: 20,
-        currentPage: 0
+        pageSize: 0,
+        currentPage: 0,
+        pageSizesTest:[10,20,30],
+        pageSizesMain:[10,20,30,50,100],
+        pageSizes:[10,20,30,50,100]
       }
     },
     watch: {
       '$route': 'setParams',
       'total': 'setParams'
     },
+    created(){
+      this.setParams()
+      /* console.log(this.$route.params) */
+    },
     methods: {
       setParams() {
         this.currentPage = Number(this.$route.params.pageNumber);
         this.pageSize = Number(this.$route.params.pageSize)
+        if(this.$route.params.net === 'testnet' ){
+          this.pageSizes = this.pageSizesTest
+        }else{
+          this.pageSizes = this.pageSizesMain
+        }
       },
       handleCurrentChange(val) {
         let params = {pageSize: this.$route.params.pageSize, pageNumber: val};

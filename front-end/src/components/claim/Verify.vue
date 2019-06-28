@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div class="e-container container-margin-top">
     <div class="div-ont-id-detail-page form-group">
       <div class="row">
         <div class="col">

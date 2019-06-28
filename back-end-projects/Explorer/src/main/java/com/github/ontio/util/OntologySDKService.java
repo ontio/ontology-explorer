@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.transaction.Transaction;
@@ -190,9 +191,8 @@ public class OntologySDKService {
             Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
 
             String result = ((JSONObject) obj).getString("Result");
-            log.info("contracthash:{},bindedinfo:{}", dappContractHash, result);
+            log.info("contracthash:{},bindedNodeinfo:{}", dappContractHash, result);
             if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
-
                 Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
                 rsMap.put("node_name", new String(Helper.hexToBytes(((String) map.get("node_name")))));
                 rsMap.put("node_pubkey", map.get("node_pubkey"));
@@ -200,6 +200,45 @@ public class OntologySDKService {
             return rsMap;
         } catch (Exception e) {
             log.error("getDappBindedNodeInfo error...", e);
+        }
+        return rsMap;
+    }
+
+
+    /**
+     * 根据dapp合约hash获取绑定的onid和钱包账户
+     * @param contractHash
+     * @param dappContractHash
+     * @return
+     */
+    public Map getDappBindedOntidAndAccount(String contractHash, String dappContractHash) {
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("receive_account", "");
+        rsMap.put("ontid", "");
+        try {
+            OntSdk ontSdk = getOntSdk();
+
+            List paramList = new ArrayList();
+            paramList.add("get_binded_dapp".getBytes());
+
+            List args = new ArrayList();
+            args.add(Helper.hexToBytes(dappContractHash));
+            paramList.add(args);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, null, 20000, 500);
+            Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+
+            String result = ((JSONObject) obj).getString("Result");
+            log.info("contracthash:{},bindedAccountinfo:{}", dappContractHash, result);
+            if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
+                Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
+                rsMap.put("receive_account", Address.parse((String) map.get("receive_account")).toBase58());
+                rsMap.put("ontid", new String(Helper.hexToBytes((String) map.get("ontid"))));
+            }
+            return rsMap;
+        } catch (Exception e) {
+            log.error("getDappBindedOntidAndAccount error...", e);
         }
         return rsMap;
     }

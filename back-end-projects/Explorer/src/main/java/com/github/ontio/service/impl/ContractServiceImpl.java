@@ -18,6 +18,8 @@
 
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
@@ -34,10 +36,8 @@ import com.github.ontio.util.OntologySDKService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service("ContractService")
 public class ContractServiceImpl implements IContractService {
@@ -182,18 +182,56 @@ public class ContractServiceImpl implements IContractService {
     }
 
     @Override
-    public ResponseBean queryDappBindedNodeInfo(String dappName) {
+    public ResponseBean queryDappBindedInfo(String dappNameArrayStr, long startTime, long endTime) {
 
         initSDK();
 
-        String[] dappNameArray = dappName.split(",");
-        List<Map<String, Object>> list = contractMapper.selectContractHashByDappName(Arrays.asList(dappNameArray));
-        list.forEach(item -> {
-            String dappContractHash = (String) item.get("contract_hash");
-            Map bindedNodeInfo = sdk.getDappBindedNodeInfo(paramsConfig.DAPPBIND_CONTRACTHASH, dappContractHash);
-            item.put("binded_node", bindedNodeInfo);
+        Map<String, JSONObject> dappInfoMap = new HashMap<>();
+
+        String[] dappNameArray = dappNameArrayStr.split(",");
+        if (dappNameArray.length > 5) {
+            return new ResponseBean(ErrorInfo.REQ_NUMBER_RANGE_EXCEED.code(), ErrorInfo.REQ_NUMBER_RANGE_EXCEED.desc(), false);
+        }
+        List<Map<String, String>> dappList = contractMapper.selectContractHashByDappName(Arrays.asList(dappNameArray));
+        dappList.forEach(item -> {
+            String name = item.get("dappName");
+            String contractHash = item.get("contractHash");
+            JSONArray contractHashArray = new JSONArray();
+            if (dappInfoMap.containsKey(name)) {
+                JSONObject object = dappInfoMap.get(name);
+                contractHashArray = object.getJSONArray("contract_hashs");
+                contractHashArray.add(contractHash);
+
+            } else {
+                contractHashArray.add(contractHash);
+                JSONObject object = new JSONObject();
+                object.put("contract_hashs", contractHashArray);
+                dappInfoMap.put(name, object);
+            }
         });
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), list);
+        for (String key :
+                dappInfoMap.keySet()) {
+            JSONObject valueObject = dappInfoMap.get(key);
+            JSONArray contractHashArray = valueObject.getJSONArray("contract_hashs");
+            BigDecimal fee = txEventLogMapper.queryTxFeeByParam(contractHashArray, startTime, endTime);
+            Integer txCount = txEventLogMapper.queryTxCountByParam(contractHashArray, startTime, endTime);
+            valueObject.put("tx_count", txCount);
+            valueObject.put("total_fee", fee);
+            for (Object obj :
+                    contractHashArray) {
+                String contractHash = (String) obj;
+                valueObject.put(contractHash, new HashMap<>());
+
+                Map bindedNodeInfo = sdk.getDappBindedNodeInfo(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
+                Map bindedOntidAndAccount = sdk.getDappBindedOntidAndAccount(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
+
+                Map map = (Map) valueObject.get(contractHash);
+                map.putAll(bindedNodeInfo);
+                map.putAll(bindedOntidAndAccount);
+            }
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), dappInfoMap);
     }
 }
