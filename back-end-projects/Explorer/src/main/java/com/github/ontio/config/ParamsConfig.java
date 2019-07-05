@@ -64,5 +64,11 @@ public class ParamsConfig {
     @Value("${dappbind.contracthash}")
     public String DAPPBIND_CONTRACTHASH;
 
+    @Value("${dapp.reward.percentage}")
+    public Integer DAPP_REWARD_PERCENTAGE;
+
+    @Value("${node.reward.percentage}")
+    public Integer NODE_REWARD_PERCENTAGE;
+
 
 }
