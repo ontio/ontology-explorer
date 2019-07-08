@@ -85,7 +85,7 @@
       #{item}
     </foreach>
     and tx_time >= #{startTime}
-    and <![CDATA[ tx_time <= #{endTime} ]]>
+    and <![CDATA[ tx_time < #{endTime} ]]>
   </select>
 
 
