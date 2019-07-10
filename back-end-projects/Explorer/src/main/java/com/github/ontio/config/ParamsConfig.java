@@ -71,4 +71,8 @@ public class ParamsConfig {
     public Integer NODE_REWARD_PERCENTAGE;
 
 
+    @Value("${balanceservice.host}")
+    public String BALANCESERVICE_HOST;
+
+
 }
