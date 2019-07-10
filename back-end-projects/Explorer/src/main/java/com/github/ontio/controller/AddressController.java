@@ -41,11 +41,24 @@ public class AddressController {
     @ApiOperation(value = "Get address balance")
     @GetMapping(value = "/{address}/{token_type}/balances")
     public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-                                            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE",message = "Incorrect token type")  String tokenType) {
+                                            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE", message = "Incorrect token type") String tokenType) {
 
         log.info("####{}.{} begin...address:{},token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
 
         ResponseBean rs = addressService.queryAddressBalance(address, tokenType);
+        return rs;
+    }
+
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "Get address balance by assetName")
+    @GetMapping(value = "/{address}/balances")
+    public ResponseBean queryAddressBalanceByAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+                                                       @RequestParam("asset_name") String assetName) {
+
+        log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
+
+        ResponseBean rs = addressService.queryAddressBalanceByAssetName(address, assetName);
         return rs;
     }
 
