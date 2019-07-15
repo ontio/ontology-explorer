@@ -60,7 +60,7 @@ public class TokenController {
         return rs;
     }
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get oep8 token transaction list by token name")
     @GetMapping(value = "/oep8/{contract_hash}/{token_name}/transactions")
     public ResponseBean queryOep8TxsByPage(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
