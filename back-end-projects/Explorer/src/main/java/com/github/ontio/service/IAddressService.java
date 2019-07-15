@@ -13,11 +13,15 @@ public interface IAddressService {
 
     ResponseBean queryAddressBalanceByAssetName(String address, String assetName);
 
+    ResponseBean queryAddressBalanceByAssetName4Onto(String address, String assetName);
+
     ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
     ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
 
-    ResponseBean queryTransferTxsByTimeAndPage(String address, String assetName, Long endTime, Integer pageSize);
+    ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime);
+
+    ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize);
 
 
 }

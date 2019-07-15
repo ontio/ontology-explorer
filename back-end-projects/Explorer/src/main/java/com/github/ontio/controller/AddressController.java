@@ -3,6 +3,7 @@ package com.github.ontio.controller;
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IAddressService;
+import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
@@ -37,11 +38,11 @@ public class AddressController {
     }
 
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get address balance")
     @GetMapping(value = "/{address}/{token_type}/balances")
     public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-                                            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE", message = "Incorrect token type") String tokenType) {
+                                            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all", message = "Incorrect token type") String tokenType) {
 
         log.info("####{}.{} begin...address:{},token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
 
@@ -50,20 +51,26 @@ public class AddressController {
     }
 
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get address balance by assetName")
     @GetMapping(value = "/{address}/balances")
     public ResponseBean queryAddressBalanceByAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-                                                       @RequestParam("asset_name") String assetName) {
+                                                       @RequestParam("asset_name") String assetName,
+                                                       @RequestParam(value = "channel", required = false) String channel) {
 
         log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
 
-        ResponseBean rs = addressService.queryAddressBalanceByAssetName(address, assetName);
+        ResponseBean rs = new ResponseBean();
+        if (Helper.isNotEmptyOrNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
+            rs = addressService.queryAddressBalanceByAssetName4Onto(address, assetName);
+        } else {
+            rs = addressService.queryAddressBalanceByAssetName(address, assetName);
+        }
         return rs;
     }
 
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(begin_time+end_time) or (page_number+page_size)")
     @GetMapping(value = "/{address}/transactions")
     public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
@@ -88,7 +95,7 @@ public class AddressController {
         return rs;
     }
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get address transfer transaction list by params+assetName", notes = "(begin_time+end_time) or (page_number+page_size) or (end_time+page_size)")
     @GetMapping(value = "/{address}/{asset_name}/transactions")
     public ResponseBean queryAddressTransferTxsByPageAndAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "error address format") String address,
@@ -96,23 +103,33 @@ public class AddressController {
                                                                   @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
                                                                   @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
                                                                   @RequestParam(name = "begin_time", required = false) Long beginTime,
-                                                                  @RequestParam(name = "end_time", required = false) Long endTime) {
+                                                                  @RequestParam(name = "end_time", required = false) Long endTime,
+                                                                  @RequestParam(name = "channel", required = false) String channel) {
 
         log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         ResponseBean rs = new ResponseBean();
-        if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
+        //ONTO request
+        if (Helper.isNotEmptyOrNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
 
-            rs = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
-        } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
-            //request time max range is one week
-            if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
-                return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
+            if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+
+                rs = addressService.queryTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
+            } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {
+
+                rs = addressService.queryTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
             }
-            rs = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
-        } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {
-            //use for ONTO
-            rs = addressService.queryTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
+        } else {
+            if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
+
+                rs = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
+            } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+                //request time max range is one week
+                if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
+                    return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
+                }
+                rs = addressService.queryTransferTxsByTime(address, assetName, beginTime, endTime);
+            }
         }
         return rs;
     }
