@@ -76,7 +76,7 @@ public class OntIdController {
         return rs;
     }
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get ONT ID transaction list by page")
     @GetMapping(value = "/ontids/{ontid}/transactions")
     public ResponseBean queryOntIdTxsByOntid(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{33}", message = "Incorrect ONT ID format") String ontid,
