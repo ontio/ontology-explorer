@@ -56,7 +56,7 @@ public class RequestLimitAspect {
         //刚创建
         if (count == 1) {
             //设置1分钟过期
-            redisTemplate.expire(key, paramsConfig.REQLIMIT_EXPIRE_SECOND, TimeUnit.SECONDS);
+            redisTemplate.expire(key, paramsConfig.REQLIMIT_EXPIRE_MILLISECOND, TimeUnit.MILLISECONDS);
         }
         if (count > limit.count()) {
             log.warn("用户IP[" + ip + "]访问地址[" + url + "?" + queryStr + "]超过了限定的次数[" + limit.count() + "]");

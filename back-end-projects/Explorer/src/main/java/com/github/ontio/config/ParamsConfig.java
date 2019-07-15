@@ -46,8 +46,8 @@ public class ParamsConfig {
     @Value("${ong.second.generate}")
     public BigDecimal ONG_SECOND_GENERATE;
 
-    @Value("${reqlimit.expire.second}")
-    public Integer REQLIMIT_EXPIRE_SECOND;
+    @Value("${reqlimit.expire.millisecond}")
+    public Integer REQLIMIT_EXPIRE_MILLISECOND;
 
     @Value("${redis.expire.long.minute}")
     public Integer REDIS_LONG_EXPIRE_MINUTE;
@@ -73,6 +73,10 @@ public class ParamsConfig {
 
     @Value("${balanceservice.host}")
     public String BALANCESERVICE_HOST;
+
+
+    @Value("${querybalance.mode}")
+    public Integer QUERYBALANCE_MODE;
 
 
 }
