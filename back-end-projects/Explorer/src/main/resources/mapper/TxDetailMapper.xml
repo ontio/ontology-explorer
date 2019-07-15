@@ -145,7 +145,34 @@
 
 
     <!--use for ONTO-->
-    <select id="selectTransferTxsByTimeAndPage" resultType="com.github.ontio.model.dto.TransferTxDto">
+    <select id="selectTransferTxsByTime4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT *
+        FROM
+        (
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
+        UNION ALL
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
+        ) a
+        where a.txTime &gt;= #{startTime}
+        and <![CDATA[ a.txTime <= #{endTime} ]]>
+        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+    </select>
+
+
+    <!--use for ONTO-->
+    <select id="selectTransferTxsByTimeAndPage4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT *
         FROM
         (
@@ -171,7 +198,7 @@
     </select>
 
     <!--use for ONTO-->
-    <select id="selectDragonTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
+    <select id="selectDragonTransferTxsByTime4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT *
         FROM
         (
@@ -193,7 +220,7 @@
     </select>
 
     <!--use for ONTO-->
-    <select id="selectDragonTransferTxsByTimeAndPage" resultType="com.github.ontio.model.dto.TransferTxDto">
+    <select id="selectDragonTransferTxsByTimeAndPage4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT *
         FROM
         (

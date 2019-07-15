@@ -14,7 +14,7 @@ public interface Oep8Mapper extends Mapper<Oep8> {
 
     // self-defined SQL
 
-    List<Map<String,String>> selectAuditPassedOep8();
+    List<Map<String, String>> selectAuditPassedOep8(@Param("symbol") String symbol);
 
     List<Oep8DetailDto> selectOep8Tokens();
 

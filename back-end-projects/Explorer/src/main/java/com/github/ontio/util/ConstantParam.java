@@ -38,7 +38,9 @@ public class ConstantParam {
      */
     public static final String CLAIM = "claim";
 
-    public static final String HYPERDRAGONS = "HyperDragons";
+    public static final String HYPERDRAGONS = "dragon";
+
+    public static final String PUMPKIN_PREFIX = "pumpkin";
 
 
     /**
@@ -149,6 +151,8 @@ public class ConstantParam {
 
 
     public static final String BALANCESERVICE_QUERYBALANCE_URL = "/api/v1/multibalance";
+
+    public static final String CHANNEL_ONTO = "onto";
 
 
 }
