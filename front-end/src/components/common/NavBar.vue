@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="e-container">
     <div class="row">
       <!--  Logo区域  -->
       <div v-if="isHome" class="col index-logo-warpper">
@@ -30,8 +30,8 @@
                 <a class="dropdown-item" @click="toBlockListPage"><i class="fas fa-th"></i>&nbsp;&nbsp;{{ $t('navbar.top.blocks') }}</a>
                 <hr style="margin: 4px 1rem">
                 <a class="dropdown-item" @click="toTransactionListPage"><i class="fas fa-exchange-alt"></i>&nbsp;&nbsp;{{ $t('navbar.top.txns') }}</a>
-                <!--<hr style="margin: 4px 1rem">-->
-                <!--<a class="dropdown-item" @click="toAddressList"><i class="fas fa-university"></i>&nbsp;&nbsp;{{ $t('navbar.top.accounts') }}</a>-->
+                <hr style="margin: 4px 1rem">
+                <a class="dropdown-item" @click="toAddressList"><i class="fas fa-university"></i>&nbsp;&nbsp;{{ $t('navbar.top.accounts') }}</a>
               </div>
             </li>
 
@@ -101,7 +101,7 @@
             </li>
 
             <li class="nav-item dropdown">
-              <a v-if="language === 'zh'" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+              <a v-if="$t('navbar.flag') === 'zh'" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fas fa-globe"></i>&nbsp;&nbsp;{{ $t('language.zh') }}
               </a>
               <a v-else class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
@@ -109,11 +109,11 @@
               </a>
               <div class="dropdown-menu">
                 <a class="dropdown-item"
-                   :class="language === 'zh' ? '' : 'pointer-events'" href="#"
+                   :class="$t('navbar.flag') === 'zh' ? '' : 'pointer-events'" href="#"
                    @click="chooseLanguage('en')">{{ $t('language.enName') }}</a>
                 <hr style="margin: 4px 1rem">
                 <a class="dropdown-item"
-                   :class="language === 'zh' ? 'pointer-events' : ''" href="#"
+                   :class="$t('navbar.flag') === 'zh' ? 'pointer-events' : ''" href="#"
                    @click="chooseLanguage('zh')">{{ $t('language.zhName') }}</a>
               </div>
             </li>
@@ -194,9 +194,9 @@
       },
       toAddressList() {
         if (this.$route.params.net === 'testnet') {
-          this.$router.push({name: 'addressListTest', params: {pageSize: 20, pageNumber: 1, net: 'testnet'}})
+          this.$router.push({name: 'addressListTest', params: {token: 'ont',pageSize: 20, pageNumber: 1, net: 'testnet'}})
         } else {
-          this.$router.push({name: 'addressList', params: {pageSize: 20, pageNumber: 1}})
+          this.$router.push({name: 'addressList', params: {token: 'ont', pageSize: 20, pageNumber: 1}})
         }
       },
       toTokenList($type) {

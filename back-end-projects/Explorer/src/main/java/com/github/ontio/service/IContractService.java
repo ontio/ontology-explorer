@@ -32,4 +32,8 @@ public interface IContractService {
 
     ResponseBean queryDappBindedInfo(String dappNameArrayStr, long startTime, long endTime);
 
+    ResponseBean queryBindedWalletDappInfo(long startTime, long endTime);
+
+    ResponseBean queryBindedNodeDappInfo(long startTime, long endTime);
+
 }

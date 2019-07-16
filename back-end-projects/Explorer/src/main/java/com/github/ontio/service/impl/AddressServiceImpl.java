@@ -1,6 +1,7 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
@@ -9,23 +10,22 @@ import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
+import com.github.ontio.model.dao.Oep8;
 import com.github.ontio.model.dto.BalanceDto;
+import com.github.ontio.model.dto.QueryBatchBalanceDto;
 import com.github.ontio.model.dto.TransferTxDetailDto;
 import com.github.ontio.model.dto.TransferTxDto;
 import com.github.ontio.service.IAddressService;
-import com.github.ontio.util.ConstantParam;
-import com.github.ontio.util.ErrorInfo;
-import com.github.ontio.util.Helper;
-import com.github.ontio.util.OntologySDKService;
+import com.github.ontio.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * @author zhouq
@@ -41,18 +41,17 @@ public class AddressServiceImpl implements IAddressService {
     private final Oep5Mapper oep5Mapper;
     private final TxDetailMapper txDetailMapper;
     private final ParamsConfig paramsConfig;
+    private final CommonService commonService;
 
     @Autowired
-    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper, ParamsConfig paramsConfig) {
+    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CommonService commonService) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
+        this.commonService = commonService;
     }
-
-    @Autowired
-    private BalanceTask balanceTask;
 
     private OntologySDKService sdk;
 
@@ -62,25 +61,200 @@ public class AddressServiceImpl implements IAddressService {
         }
     }
 
+    private static final String BALANCESERVICE_ACTION_GETMULTIBALANCE = "getmultibalance";
+
+    private static final String BALANCESERVICE_VERSION = "1.0.0";
+
 
     @Override
     public ResponseBean queryAddressBalance(String address, String tokenType) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
 
-        switch (tokenType.toLowerCase()) {
-            case ConstantParam.ASSET_TYPE_OEP4:
-                balanceList = getOep4Balance(address);
-                break;
-            case ConstantParam.ASSET_TYPE_OEP5:
-                balanceList = getOep5Balance(address);
-                break;
-            case ConstantParam.ASSET_TYPE_OEP8:
-                balanceList = getOep8Balance(address);
-                break;
-            case ConstantParam.ASSET_TYPE_NATIVE:
-                balanceList = getNativeBalance(address);
-                break;
+        if (paramsConfig.QUERYBALANCE_MODE == 1) {
+            switch (tokenType.toLowerCase()) {
+                case ConstantParam.ASSET_TYPE_OEP4:
+                    balanceList = getOep4Balance(address, "");
+                    break;
+                case ConstantParam.ASSET_TYPE_OEP5:
+                    balanceList = getOep5Balance(address, "", "");
+                    break;
+                case ConstantParam.ASSET_TYPE_OEP8:
+                    balanceList = getOep8Balance(address, "");
+                    break;
+                case ConstantParam.ASSET_TYPE_NATIVE:
+                    balanceList = getNativeBalance(address);
+                    break;
+                case ConstantParam.ASSET_TYPE_ALL:
+                    balanceList = getAllAssetBalance(address);
+                    break;
+                default:
+                    break;
+            }
+        } else if (paramsConfig.QUERYBALANCE_MODE == 0) {
+            switch (tokenType.toLowerCase()) {
+                case ConstantParam.ASSET_TYPE_OEP4:
+                    balanceList = getOep4BalanceOld(address, "");
+                    break;
+                case ConstantParam.ASSET_TYPE_OEP5:
+                    balanceList = getOep5BalanceOld(address, "", "");
+                    break;
+                case ConstantParam.ASSET_TYPE_OEP8:
+                    balanceList = getOep8BalanceOld(address, "");
+                    break;
+                case ConstantParam.ASSET_TYPE_NATIVE:
+                    balanceList = getNativeBalance(address);
+                    break;
+                case ConstantParam.ASSET_TYPE_ALL:
+                    balanceList = getAllAssetBalanceOld(address);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
+    }
+
+    @Override
+    public ResponseBean queryAddressBalanceByAssetName(String address, String assetName) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+
+        if (ConstantParam.ONT.equals(assetName)) {
+
+            initSDK();
+            Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+            //ONT
+            BalanceDto balanceDto4 = BalanceDto.builder()
+                    .assetName(ConstantParam.ONT)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .build();
+            balanceList.add(balanceDto4);
+
+        } else if (ConstantParam.ONG.equals(assetName)) {
+
+            initSDK();
+            Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+            //ONG
+            BalanceDto balanceDto1 = BalanceDto.builder()
+                    .assetName(ConstantParam.ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .build();
+            balanceList.add(balanceDto1);
+
+            //waiting bound ONG
+            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            BalanceDto balanceDto2 = BalanceDto.builder()
+                    .assetName(ConstantParam.WAITBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(waitBoundOng)))
+                    .build();
+            balanceList.add(balanceDto2);
+
+            //Claimable ONG
+            String unBoundOng = sdk.getUnBoundOng(address);
+            if (Helper.isEmptyOrNull(unBoundOng)) {
+                unBoundOng = "0";
+            }
+            BalanceDto balanceDto3 = BalanceDto.builder()
+                    .assetName(ConstantParam.UNBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(unBoundOng)))
+                    .build();
+            balanceList.add(balanceDto3);
+        } else {
+            Oep4 oep4 = new Oep4();
+            oep4.setSymbol(assetName);
+            oep4 = oep4Mapper.selectOne(oep4);
+            if (Helper.isNotEmptyOrNull(oep4)) {
+                balanceList = getOep4Balance(address, assetName);
+            } else {
+                Oep5 oep5 = new Oep5();
+                oep5.setSymbol(assetName);
+                oep5 = oep5Mapper.selectOne(oep5);
+                if (Helper.isNotEmptyOrNull(oep5)) {
+                    balanceList = getOep5Balance(address, assetName, "");
+                } else {
+                    Oep8 oep8 = new Oep8();
+                    oep8.setSymbol(assetName);
+                    List<Oep8> oep8s = oep8Mapper.select(oep8);
+                    if (oep8s.size() > 0) {
+                        balanceList = getOep8Balance(address, assetName);
+                    }
+                }
+            }
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
+    }
+
+
+    @Override
+    public ResponseBean queryAddressBalanceByAssetName4Onto(String address, String assetName) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+
+        if (ConstantParam.ONT.equals(assetName)) {
+
+            initSDK();
+            Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+            //ONT
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName(ConstantParam.ONT)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .build();
+            balanceList.add(balanceDto);
+
+        } else if (ConstantParam.ONG.equals(assetName)) {
+
+            initSDK();
+            Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+            //ONG
+            BalanceDto balanceDto1 = BalanceDto.builder()
+                    .assetName(ConstantParam.ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .build();
+            balanceList.add(balanceDto1);
+
+            //waiting bound ONG
+            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            BalanceDto balanceDto2 = BalanceDto.builder()
+                    .assetName(ConstantParam.WAITBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(waitBoundOng)))
+                    .build();
+            balanceList.add(balanceDto2);
+
+            //Claimable ONG
+            String unBoundOng = sdk.getUnBoundOng(address);
+            if (Helper.isEmptyOrNull(unBoundOng)) {
+                unBoundOng = "0";
+            }
+            BalanceDto balanceDto3 = BalanceDto.builder()
+                    .assetName(ConstantParam.UNBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(unBoundOng)))
+                    .build();
+            balanceList.add(balanceDto3);
+        }
+        if (paramsConfig.QUERYBALANCE_MODE == 1) {
+            //return oep4+oep5 token balance
+            balanceList.addAll(getOep4Balance(address, ""));
+            balanceList.addAll(getOep5Balance(address, "", ConstantParam.CHANNEL_ONTO));
+            if (assetName.startsWith(ConstantParam.PUMPKIN_PREFIX)) {
+                balanceList.addAll(getOep8Balance4Onto(address, ""));
+            }
+        } else if (paramsConfig.QUERYBALANCE_MODE == 0) {
+            //return oep4+oep5 token balance
+            balanceList.addAll(getOep4BalanceOld(address, ""));
+            balanceList.addAll(getOep5BalanceOld(address, "", ConstantParam.CHANNEL_ONTO));
+            if (assetName.startsWith(ConstantParam.PUMPKIN_PREFIX)) {
+                balanceList.addAll(getOep8Balance4OntoOld(address, ""));
+            }
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
@@ -106,7 +280,7 @@ public class AddressServiceImpl implements IAddressService {
                 .build();
         balanceList.add(balanceDto1);
 
-        //等待提取的ONG
+        //waiting bound ONG
         String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
         BalanceDto balanceDto2 = BalanceDto.builder()
                 .assetName(ConstantParam.WAITBOUND_ONG)
@@ -115,7 +289,7 @@ public class AddressServiceImpl implements IAddressService {
                 .build();
         balanceList.add(balanceDto2);
 
-        //可提取的ONG
+        //Claimable ONG
         String unBoundOng = sdk.getUnBoundOng(address);
         if (Helper.isEmptyOrNull(unBoundOng)) {
             unBoundOng = "0";
@@ -139,18 +313,55 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     /**
+     * get all type asset balance
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getAllAssetBalance(String address) {
+
+        List<BalanceDto> balanceDtos = new ArrayList<>();
+        balanceDtos.addAll(getNativeBalance(address));
+        balanceDtos.addAll(getOep4Balance(address, ""));
+        balanceDtos.addAll(getOep5Balance(address, "", ""));
+        balanceDtos.addAll(getOep8Balance(address, ""));
+        return balanceDtos;
+    }
+
+
+    /**
+     * get all type asset balance
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getAllAssetBalanceOld(String address) {
+
+        List<BalanceDto> balanceDtos = new ArrayList<>();
+        balanceDtos.addAll(getNativeBalance(address));
+        balanceDtos.addAll(getOep4BalanceOld(address, ""));
+        balanceDtos.addAll(getOep5BalanceOld(address, "", ""));
+        balanceDtos.addAll(getOep8BalanceOld(address, ""));
+        return balanceDtos;
+    }
+
+
+    /**
      * 获取OEP4余额
      *
      * @param address
      * @return
      */
-    private List<BalanceDto> getOep4Balance(String address) {
+    private List<BalanceDto> getOep4BalanceOld(String address, String assetName) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
         //审核过的OEP4余额
         Oep4 oep4Temp = new Oep4();
         oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            oep4Temp.setSymbol(assetName);
+        }
         List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
         for (Oep4 oep4 :
                 oep4s) {
@@ -169,19 +380,23 @@ public class AddressServiceImpl implements IAddressService {
         return balanceList;
     }
 
+
     /**
      * 获取OEP5余额
      *
      * @param address
      * @return
      */
-    private List<BalanceDto> getOep5Balance(String address) {
+    private List<BalanceDto> getOep5BalanceOld(String address, String assetName, String channel) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
         //审核过的OEP5余额
         Oep5 oep5Temp = new Oep5();
         oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            oep5Temp.setSymbol(assetName);
+        }
         List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
         for (Oep5 oep5 :
                 oep5s) {
@@ -190,15 +405,27 @@ public class AddressServiceImpl implements IAddressService {
             if (balance.compareTo(ConstantParam.ZERO) == 0) {
                 continue;
             }
-            BalanceDto balanceDto = BalanceDto.builder()
-                    .assetName(oep5.getSymbol())
-                    .assetType(ConstantParam.ASSET_TYPE_OEP5)
-                    .balance(balance)
-                    .build();
-            balanceList.add(balanceDto);
+            if (ConstantParam.CHANNEL_ONTO.equals(channel)) {
+                //ONTO return name
+                BalanceDto balanceDto = BalanceDto.builder()
+                        .assetName(oep5.getName())
+                        .assetType(ConstantParam.ASSET_TYPE_OEP5)
+                        .balance(balance)
+                        .build();
+                balanceList.add(balanceDto);
+            } else {
+                //other return symbol
+                BalanceDto balanceDto = BalanceDto.builder()
+                        .assetName(oep5.getSymbol())
+                        .assetType(ConstantParam.ASSET_TYPE_OEP5)
+                        .balance(balance)
+                        .build();
+                balanceList.add(balanceDto);
+            }
         }
         return balanceList;
     }
+
 
     /**
      * 获取OEP8余额
@@ -206,12 +433,15 @@ public class AddressServiceImpl implements IAddressService {
      * @param address
      * @return
      */
-    private List<BalanceDto> getOep8Balance(String address) {
+    private List<BalanceDto> getOep8BalanceOld(String address, String assetName) {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
         //审核过的OEP8余额
-        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8();
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            assetName = assetName + "%";
+        }
+        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
         for (Map<String, String> map :
                 oep8s) {
             String contractHash = map.get("contractHash");
@@ -234,6 +464,321 @@ public class AddressServiceImpl implements IAddressService {
         return balanceList;
     }
 
+
+    /**
+     * get oep4 balance
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep4Balance(String address, String assetName) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        //query audit passed oep4 token
+        Oep4 oep4Temp = new Oep4();
+        oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            oep4Temp.setSymbol(assetName);
+        }
+        List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
+        oep4s.forEach(item -> stringBuilder.append(item.getContractHash()).append(","));
+        String contractAddrsStr = stringBuilder.toString();
+        if (Helper.isEmptyOrNull(contractAddrsStr)) {
+            return balanceList;
+        }
+
+        QueryBatchBalanceDto queryBatchBalanceDto = QueryBatchBalanceDto.builder()
+                .action(BALANCESERVICE_ACTION_GETMULTIBALANCE)
+                .version(BALANCESERVICE_VERSION)
+                .base58Addrs(address)
+                .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
+                .build();
+
+        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        if (Helper.isNotEmptyOrNull(responseStr)) {
+            JSONObject jsonObject = JSONObject.parseObject(responseStr);
+            JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
+
+            Map<String, String> map = new HashMap<>();
+            oepBalanceArray.forEach(item -> {
+                JSONObject obj = (JSONObject) item;
+                map.put(obj.getString("contract_address"), obj.getString("balance"));
+            });
+
+            oep4s.forEach(item -> {
+                        String contractHash = item.getContractHash();
+                        BigDecimal balance = new BigDecimal(map.get(contractHash));
+                        //only return balance != 0 token
+                        if (balance.compareTo(ConstantParam.ZERO) != 0) {
+                            BalanceDto balanceDto = BalanceDto.builder()
+                                    .assetName(item.getSymbol())
+                                    .assetType(ConstantParam.ASSET_TYPE_OEP4)
+                                    .balance(balance)
+                                    .build();
+                            balanceList.add(balanceDto);
+                        }
+                    }
+            );
+        }
+        return balanceList;
+    }
+
+
+    /**
+     * get oep5 balance
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep5Balance(String address, String assetName, String channel) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        //query audit passed oep5 token
+        Oep5 oep5Temp = new Oep5();
+        oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            oep5Temp.setSymbol(assetName);
+        }
+        List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
+        oep5s.forEach(item -> stringBuilder.append(item.getContractHash()).append(","));
+        String contractAddrsStr = stringBuilder.toString();
+        if (Helper.isEmptyOrNull(contractAddrsStr)) {
+            return balanceList;
+        }
+
+        QueryBatchBalanceDto queryBatchBalanceDto = QueryBatchBalanceDto.builder()
+                .action(BALANCESERVICE_ACTION_GETMULTIBALANCE)
+                .version(BALANCESERVICE_VERSION)
+                .base58Addrs(address)
+                .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
+                .build();
+
+        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        if (Helper.isNotEmptyOrNull(responseStr)) {
+            JSONObject jsonObject = JSONObject.parseObject(responseStr);
+            JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
+
+            Map<String, String> map = new HashMap<>();
+            oepBalanceArray.forEach(item -> {
+                JSONObject obj = (JSONObject) item;
+                map.put(obj.getString("contract_address"), obj.getString("balance"));
+            });
+
+            oep5s.forEach(item -> {
+                        String contractHash = item.getContractHash();
+                        BigDecimal balance = new BigDecimal(map.get(contractHash));
+                        if (balance.compareTo(ConstantParam.ZERO) != 0) {
+                            //ONTO返回name
+                            if (ConstantParam.CHANNEL_ONTO.equals(channel)) {
+                                BalanceDto balanceDto = BalanceDto.builder()
+                                        .assetName(item.getName())
+                                        .assetType(ConstantParam.ASSET_TYPE_OEP5)
+                                        .balance(balance)
+                                        .build();
+                                balanceList.add(balanceDto);
+                            } else {
+                                //其他渠道返回symbol
+                                //TODO 后续统一
+                                BalanceDto balanceDto = BalanceDto.builder()
+                                        .assetName(item.getSymbol())
+                                        .assetType(ConstantParam.ASSET_TYPE_OEP5)
+                                        .balance(balance)
+                                        .build();
+                                balanceList.add(balanceDto);
+                            }
+                        }
+                    }
+            );
+        }
+        return balanceList;
+    }
+
+    /**
+     * get oep8 token
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep8Balance(String address, String assetName) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        //query audit passed oep8 token
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            assetName = assetName + "%";
+        }
+        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
+        oep8s.forEach(item -> {
+            String tokenIdStr = item.get("tokenId");
+            String str = tokenIdStr.replace(",", "&");
+            stringBuilder.append(item.get("contractHash")).append(":").append(str).append(",");
+        });
+        String contractAddrsStr = stringBuilder.toString();
+        if (Helper.isEmptyOrNull(contractAddrsStr)) {
+            return balanceList;
+        }
+
+        QueryBatchBalanceDto queryBatchBalanceDto = QueryBatchBalanceDto.builder()
+                .action(BALANCESERVICE_ACTION_GETMULTIBALANCE)
+                .version(BALANCESERVICE_VERSION)
+                .base58Addrs(address)
+                .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
+                .build();
+
+        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        if (Helper.isNotEmptyOrNull(responseStr)) {
+            JSONObject jsonObject = JSONObject.parseObject(responseStr);
+            JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
+
+            Map<String, String> map = new HashMap<>();
+            oepBalanceArray.forEach(item -> {
+                JSONObject obj = (JSONObject) item;
+                map.put(obj.getString("contract_address"), obj.getString("balance"));
+            });
+
+            oep8s.forEach(item -> {
+                        String contractHash = item.get("contractHash");
+                        String symbolStr = item.get("symbol");
+                        String[] symbolArray = symbolStr.split(",");
+                        String balanceStr = map.get(contractHash);
+                        String[] balanceArray = balanceStr.split(",");
+                        for (int i = 0; i < symbolArray.length; i++) {
+                            BalanceDto balanceDto = BalanceDto.builder()
+                                    .assetName(symbolArray[i])
+                                    .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                                    .balance(new BigDecimal((String) balanceArray[i]))
+                                    .build();
+                            balanceList.add(balanceDto);
+                        }
+                    }
+            );
+        }
+
+        return balanceList;
+    }
+
+
+    /**
+     * get oep8 token
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep8Balance4Onto(String address, String assetName) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            assetName = assetName + "%";
+        }
+        //query audit passed oep8 token
+        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
+        oep8s.forEach(item -> {
+            String tokenIdStr = item.get("tokenId");
+            String str = tokenIdStr.replace(",", "&");
+            stringBuilder.append(item.get("contractHash")).append(":").append(str).append(",");
+        });
+        String contractAddrsStr = stringBuilder.toString();
+        if (Helper.isEmptyOrNull(contractAddrsStr)) {
+            return balanceList;
+        }
+
+        QueryBatchBalanceDto queryBatchBalanceDto = QueryBatchBalanceDto.builder()
+                .action(BALANCESERVICE_ACTION_GETMULTIBALANCE)
+                .version(BALANCESERVICE_VERSION)
+                .base58Addrs(address)
+                .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
+                .build();
+
+        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        if (Helper.isNotEmptyOrNull(responseStr)) {
+            JSONObject jsonObject = JSONObject.parseObject(responseStr);
+            JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
+
+            Map<String, String> map = new HashMap<>();
+            oepBalanceArray.forEach(item -> {
+                JSONObject obj = (JSONObject) item;
+                map.put(obj.getString("contract_address"), obj.getString("balance"));
+            });
+
+            oep8s.forEach(item -> {
+                        String contractHash = item.get("contractHash");
+                        String symbolStr = item.get("symbol");
+                        String[] symbolArray = symbolStr.split(",");
+                        String balanceStr = map.get(contractHash);
+                        String[] balanceArray = balanceStr.split(",");
+                        int total = 0;
+                        for (int i = 0; i < symbolArray.length; i++) {
+                            BalanceDto balanceDto = BalanceDto.builder()
+                                    .assetName(symbolArray[i])
+                                    .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                                    .balance(new BigDecimal((String) balanceArray[i]))
+                                    .build();
+                            balanceList.add(balanceDto);
+                            total += Integer.parseInt(balanceArray[i]);
+                        }
+                        BalanceDto balanceDto = BalanceDto.builder()
+                                .assetName("totalpumpkin")
+                                .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                                .balance(new BigDecimal(total))
+                                .build();
+                        balanceList.add(balanceDto);
+                    }
+            );
+        }
+
+        return balanceList;
+    }
+
+
+    /**
+     * get oep8 token
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep8Balance4OntoOld(String address, String assetName) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        //审核过的OEP8余额
+        if (Helper.isNotEmptyOrNull(assetName)) {
+            assetName = assetName + "%";
+        }
+        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
+        for (Map<String, String> map :
+                oep8s) {
+            String contractHash = map.get("contractHash");
+            String symbol = map.get("symbol");
+            String[] symbolArray = symbol.split(",");
+            int total = 0;
+
+            JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
+            for (int i = 0; i < symbolArray.length; i++) {
+                BalanceDto balanceDto = BalanceDto.builder()
+                        .assetName(symbolArray[i])
+                        .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                        .balance(new BigDecimal((String) balanceArray.get(i)))
+                        .build();
+                balanceList.add(balanceDto);
+                total = total + Integer.valueOf((String) balanceArray.get(i));
+            }
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName("totalpumpkin")
+                    .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                    .balance(new BigDecimal(total))
+                    .build();
+            balanceList.add(balanceDto);
+        }
+        return balanceList;
+}
+
     /**
      * 计算待提取的ong
      *
@@ -243,7 +788,13 @@ public class AddressServiceImpl implements IAddressService {
      */
     private String calculateWaitingBoundOng(String address, String ont) {
 
-        Integer txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
+        Integer txtime = null;
+        //mysql 4.0.14+ bug
+        try {
+            txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
+        } catch (Exception e) {
+            log.error("{} error...", Helper.currentMethod(), e);
+        }
 
         if (Helper.isEmptyOrNull(txtime)) {
             return "0";
@@ -255,120 +806,6 @@ public class AddressServiceImpl implements IAddressService {
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
 
         return ong.toPlainString();
-    }
-
-    /**
-     * 获取账户余额，可提取的ong，待提取的ong
-     *
-     * @param address
-     * @return
-     */
-    private List<BalanceDto> getAddressBalance(String address, String assetName) {
-
-        List<BalanceDto> balanceList = new ArrayList<>();
-
-        initSDK();
-        Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
-
-        if (Helper.isEmptyOrNull(assetName) || ConstantParam.ONG.equals(assetName)) {
-
-            BalanceDto balanceDto1 = BalanceDto.builder()
-                    .assetName(ConstantParam.ONG)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
-                    .build();
-            balanceList.add(balanceDto1);
-
-            //计算等待提取的ong
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
-            BalanceDto balanceDto2 = BalanceDto.builder()
-                    .assetName(ConstantParam.WAITBOUND_ONG)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal(waitBoundOng)))
-                    .build();
-            balanceList.add(balanceDto2);
-
-
-            //获取可提取的ong
-            String unBoundOng = sdk.getUnBoundOng(address);
-            if (Helper.isEmptyOrNull(unBoundOng)) {
-                unBoundOng = "0";
-            }
-            //计算等待提取的ong
-            BalanceDto balanceDto3 = BalanceDto.builder()
-                    .assetName(ConstantParam.UNBOUND_ONG)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal(unBoundOng)))
-                    .build();
-            balanceList.add(balanceDto3);
-
-            //加上ont资产
-            if (Helper.isEmptyOrNull(assetName)) {
-                BalanceDto balanceDto4 = BalanceDto.builder()
-                        .assetName(ConstantParam.ONT)
-                        .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                        .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
-                        .build();
-                balanceList.add(balanceDto4);
-            }
-
-        } else if (ConstantParam.ONT.equals(assetName)) {
-
-            BalanceDto balanceDto = BalanceDto.builder()
-                    .assetName(ConstantParam.ONT)
-                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
-                    .build();
-            balanceList.add(balanceDto);
-        }
-
-        List<Future<List<BalanceDto>>> futureList = new ArrayList<>();
-        //审核过的OEP4余额
-        Oep4 oep4Temp = new Oep4();
-        oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
-        List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
-        log.info("query oep4 balance begin.....");
-        for (Oep4 oep4 :
-                oep4s) {
-            Future<List<BalanceDto>> task = balanceTask.getBalance(address, ConstantParam.ASSET_TYPE_OEP4, oep4.getContractHash(), oep4.getSymbol(), oep4.getDecimals());
-            futureList.add(task);
-        }
-
-        //审核过的OEP5余额
-        Oep5 oep5Temp = new Oep5();
-        oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
-        List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
-        log.info("query oep5 balance begin.....");
-        for (Oep5 oep5 :
-                oep5s) {
-            Future<List<BalanceDto>> task = balanceTask.getBalance(address, ConstantParam.ASSET_TYPE_OEP5, oep5.getContractHash(), oep5.getSymbol(), null);
-            futureList.add(task);
-        }
-
-        //审核过的OEP8余额
-        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8();
-        log.info("query oep8 balance begin.....");
-        for (Map<String, String> map :
-                oep8s) {
-            String contractHash = map.get("contractHash");
-            String symbol = map.get("symbol");
-
-            Future<List<BalanceDto>> task = balanceTask.getBalance(address, ConstantParam.ASSET_TYPE_OEP8, contractHash, symbol, null);
-            futureList.add(task);
-        }
-        log.info("wait syn thread.....");
-        try {
-            //等待异步线程运行完成
-            for (Future<List<BalanceDto>> future : futureList) {
-                List<BalanceDto> a = future.get();
-                balanceList.addAll(a);
-            }
-        } catch (Exception e) {
-            log.error("error...", e);
-        }
-        log.info("wait syn thread end.....");
-
-        return balanceList;
     }
 
 
@@ -423,14 +860,6 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
-        //云斗龙资产使用like查询, for ONTO
-/*        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
-            assetName = assetName + "%";
-            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTime(address, assetName, beginTime, endTime);
-        } else {
-            transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
-        }*/
-
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
 
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
@@ -438,17 +867,32 @@ public class AddressServiceImpl implements IAddressService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
 
+    @Override
+    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime) {
+
+        List<TransferTxDto> transferTxDtos = new ArrayList<>();
+        //云斗龙资产使用like查询, for ONTO
+        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+            assetName = assetName + "%";
+            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
+        } else {
+            transferTxDtos = txDetailMapper.selectTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
+        }
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+    }
 
     @Override
-    public ResponseBean queryTransferTxsByTimeAndPage(String address, String assetName, Long endTime, Integer pageSize) {
+    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
         //云斗龙资产使用like查询，for ONTO，只查询转账不包括ong手续费记录
         if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
             assetName = assetName + "%";
-            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
+            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
         } else {
-            transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPage(address, assetName, endTime, pageSize);
+            transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
         }
 
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);

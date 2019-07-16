@@ -24,21 +24,20 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dto.ContractDto;
-import com.github.ontio.model.dto.Oep5TxDetailDto;
-import com.github.ontio.model.dto.TxDetailDto;
-import com.github.ontio.model.dto.TxEventLogDto;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import com.github.ontio.util.OntologySDKService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+@Slf4j
 @Service("ContractService")
 public class ContractServiceImpl implements IContractService {
 
@@ -49,9 +48,10 @@ public class ContractServiceImpl implements IContractService {
     private final TxDetailMapper txDetailMapper;
     private final TxEventLogMapper txEventLogMapper;
     private final ParamsConfig paramsConfig;
+    private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
     @Autowired
-    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailMapper txDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig) {
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailMapper txDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
@@ -59,6 +59,7 @@ public class ContractServiceImpl implements IContractService {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
+        this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
     }
 
     private OntologySDKService sdk;
@@ -233,5 +234,179 @@ public class ContractServiceImpl implements IContractService {
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), dappInfoMap);
+    }
+
+
+    @Override
+    public ResponseBean queryBindedWalletDappInfo(long startTime, long endTime) {
+
+        initSDK();
+
+        Map<String, JSONObject> dappInfoMap = new HashMap<>();
+        //查询所有dapp_store的合约
+        List<Map<String, String>> dappList = contractMapper.selectContractHashByDappName(new ArrayList<>());
+        dappList.forEach(item -> {
+            String name = item.get("dappName");
+            String contractHash = item.get("contractHash");
+            JSONArray contractHashArray = new JSONArray();
+            if (dappInfoMap.containsKey(name)) {
+                JSONObject object = dappInfoMap.get(name);
+                contractHashArray = object.getJSONArray("contract_hashs");
+                contractHashArray.add(contractHash);
+
+            } else {
+                contractHashArray.add(contractHash);
+                JSONObject object = new JSONObject();
+                object.put("contract_hashs", contractHashArray);
+                dappInfoMap.put(name, object);
+            }
+        });
+
+        for (String dappName :
+                dappInfoMap.keySet()) {
+            JSONObject valueObject = dappInfoMap.get(dappName);
+            JSONArray contractHashArray = valueObject.getJSONArray("contract_hashs");
+            BigDecimal totalFee = txEventLogMapper.queryTxFeeByParam(contractHashArray, startTime, endTime);
+            //Integer txCount = txEventLogMapper.queryTxCountByParam(contractHashArray, startTime, endTime);
+            //总手续费
+            String totalFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
+                    totalFee.multiply(ConstantParam.ONG_TOTAL).stripTrailingZeros().toPlainString());
+            //激励手续费
+            String rewardFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
+                    totalFee.multiply(ConstantParam.ONG_TOTAL).multiply(new BigDecimal(paramsConfig.DAPP_REWARD_PERCENTAGE).divide(new BigDecimal("100"))).stripTrailingZeros().toPlainString());
+
+            //valueObject.put("tx_count", txCount);
+            valueObject.put("total_fee", totalFeeStr);
+            valueObject.put("reward_fee", rewardFeeStr);
+            JSONArray walletArray = new JSONArray();
+            //根据每个合约hash查询绑定信息
+            contractHashArray.forEach(item -> {
+                String contractHash = (String) item;
+                // 从合约查询绑定钱包信息
+                Map bindedOntidAndAccount = sdk.getDappBindedOntidAndAccount(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
+                if (Helper.isNotEmptyOrNull(bindedOntidAndAccount.get("receive_account"))) {
+                    walletArray.add(bindedOntidAndAccount.get("receive_account"));
+                }
+            });
+            valueObject.put("wallets", walletArray);
+        }
+
+        List<Map> rslist = new ArrayList<>();
+        for (String dappName :
+                dappInfoMap.keySet()) {
+            //只返回绑定了钱包的dapp信息
+            JSONObject valueObject = dappInfoMap.get(dappName);
+            JSONArray walletArray = valueObject.getJSONArray("wallets");
+            if (walletArray.size() > 0) {
+                Map map = new HashMap();
+                map.put("dapp_name", dappName);
+                map.put("total_fee", valueObject.getString("total_fee"));
+                map.put("reward_fee", valueObject.getString("reward_fee"));
+                map.put("wallets", walletArray);
+                //map.put("tx_count", valueObject.getInteger("tx_count"));
+                map.put("contract_hashs", valueObject.getJSONArray("contract_hashs"));
+                rslist.add(map);
+            }
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rslist);
+    }
+
+
+    @Override
+    public ResponseBean queryBindedNodeDappInfo(long startTime, long endTime) {
+
+        initSDK();
+
+        Map<String, JSONArray> dappContractHashMap = new HashMap<>();
+        //查询所有dapp_store的合约
+        List<Map<String, String>> dappList = contractMapper.selectContractHashByDappName(new ArrayList<>());
+        dappList.forEach(item -> {
+            String name = item.get("dappName");
+            String contractHash = item.get("contractHash");
+            if (dappContractHashMap.containsKey(name)) {
+                JSONArray contractHashArray = dappContractHashMap.get(name);
+                contractHashArray.add(contractHash);
+            } else {
+                JSONArray contractHashArray = new JSONArray();
+                contractHashArray.add(contractHash);
+                dappContractHashMap.put(name, contractHashArray);
+            }
+        });
+
+        List<Map> list = new ArrayList<>();
+        for (String dappName :
+                dappContractHashMap.keySet()) {
+            JSONArray contractHashArray = dappContractHashMap.get(dappName);
+            BigDecimal totalFee = txEventLogMapper.queryTxFeeByParam(contractHashArray, startTime, endTime);
+
+            //总手续费
+            String totalFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
+                    totalFee.multiply(ConstantParam.ONG_TOTAL).stripTrailingZeros().toPlainString());
+            //激励手续费
+            String rewardFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
+                    totalFee.multiply(ConstantParam.ONG_TOTAL).multiply(new BigDecimal(paramsConfig.NODE_REWARD_PERCENTAGE).divide(new BigDecimal("100"))).stripTrailingZeros().toPlainString());
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("dapp_name", dappName);
+            map.put("total_fee", totalFeeStr);
+            map.put("reward_fee", rewardFeeStr);
+
+            contractHashArray.forEach(item -> {
+                String contractHash = (String) item;
+                // 从合约查询绑定节点信息
+                Map bindedNodeInfo = sdk.getDappBindedNodeInfo(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
+                if (Helper.isNotEmptyOrNull(bindedNodeInfo.get("node_pubkey")) && Helper.isNotEmptyOrNull(bindedNodeInfo.get("node_name"))) {
+                    map.put("node_pubkey", bindedNodeInfo.get("node_pubkey"));
+                    map.put("node_name", bindedNodeInfo.get("node_name"));
+                }
+            });
+            //只返回绑定了节点的dapp信息
+            if (map.containsKey("node_pubkey") && map.containsKey("node_name")) {
+                list.add(map);
+            }
+        }
+
+        Map<String, Object> rsMap = new HashMap<>();
+        for (Map map :
+                list) {
+            String nodeName = (String) map.get("node_name");
+            if (rsMap.containsKey(nodeName)) {
+
+                JSONObject obj = (JSONObject) rsMap.get(nodeName);
+                JSONArray dappNameArray = obj.getJSONArray("binded_dapp_names");
+                dappNameArray.add(map.get("dapp_name"));
+
+                //总手续费和激励手续费累加
+                BigDecimal totalFee = new BigDecimal(obj.getString("total_fee"));
+                totalFee = totalFee.add(new BigDecimal((String) map.get("total_fee")));
+                obj.put("total_fee", totalFee.stripTrailingZeros().toPlainString());
+
+                BigDecimal rewardFee = new BigDecimal(obj.getString("reward_fee"));
+                rewardFee = rewardFee.add(new BigDecimal((String) map.get("reward_fee")));
+                obj.put("reward_fee", rewardFee.stripTrailingZeros().toPlainString());
+
+            } else {
+                JSONObject obj = new JSONObject();
+                obj.put("total_fee", map.get("total_fee"));
+                obj.put("reward_fee", map.get("reward_fee"));
+                obj.put("node_pubkey", map.get("node_pubkey"));
+                //根据公钥查节点钱包地址
+                NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey((String) map.get("node_pubkey"));
+                if(Helper.isNotEmptyOrNull(nodeInfoOffChainDto)){
+                    obj.put("node_wallet", nodeInfoOffChainDto.getAddress());
+                }else {
+                    obj.put("node_wallet", "");
+                }
+
+                JSONArray dappNameArray = new JSONArray();
+                dappNameArray.add(map.get("dapp_name"));
+                obj.put("binded_dapp_names", dappNameArray);
+
+                rsMap.put(nodeName, obj);
+            }
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
     }
 }

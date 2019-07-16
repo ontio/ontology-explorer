@@ -1,5 +1,5 @@
 <template>
-  <div class="container margin-top-15">
+  <div class="e-container margin-top-15">
     <list-title :name="$t('txDetail.name')"></list-title>
     <detail-title :name="$t('txDetail.txHash')" :val="txData.TxnHash"></detail-title>
 
