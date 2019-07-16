@@ -69,7 +69,7 @@ public class ContractController {
         return contractService.queryContractDetail(contractHash);
     }
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get contract transaction list by contracthash")
     @GetMapping(value = "/{contract_type}/{contract_hash}/transactions")
     public ResponseBean queryContractTxsByPage(@PathVariable("contract_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|other|OTHER", message = "Incorrect contract type") String contractType,
@@ -82,7 +82,7 @@ public class ContractController {
         return contractService.queryTxsByContractHash(contractType, contractHash, pageNumber, pageSize);
     }
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get contract transaction list by contracthash(no contract_type param)")
     @GetMapping(value = "/{contract_hash}/transactions")
     public ResponseBean queryContractTxsByPage(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
@@ -98,12 +98,34 @@ public class ContractController {
     @ApiOperation(value = "Get dapp binded information")
     @GetMapping(value = "/bindedinfo")
     public ResponseBean queryDappBindedInfo(@RequestParam("dapp_name") String dappNameArrayStr,
-                                                @RequestParam("start_time") long startTime,
-                                                @RequestParam("end_time") long endTime) {
+                                            @RequestParam("start_time") long startTime,
+                                            @RequestParam("end_time") long endTime) {
 
         log.info("####{}.{} begin...dappNameArrayStr:{}", CLASS_NAME, Helper.currentMethod(), dappNameArrayStr);
 
-        return contractService.queryDappBindedInfo(dappNameArrayStr,startTime,endTime);
+        return contractService.queryDappBindedInfo(dappNameArrayStr, startTime, endTime);
+    }
+
+
+    @ApiOperation(value = "Get binded wallet dapp information")
+    @GetMapping(value = "/binded-wallet-dapps")
+    public ResponseBean queryBindedWalletDappInfo(@RequestParam("start_time") long startTime,
+                                                  @RequestParam("end_time") long endTime) {
+
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        return contractService.queryBindedWalletDappInfo(startTime, endTime);
+    }
+
+
+    @ApiOperation(value = "Get binded node dapp information")
+    @GetMapping(value = "/binded-node-dapps")
+    public ResponseBean queryBindedNodeDappInfo(@RequestParam("start_time") long startTime,
+                                                @RequestParam("end_time") long endTime) {
+
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        return contractService.queryBindedNodeDappInfo(startTime, endTime);
     }
 
 

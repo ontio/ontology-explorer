@@ -105,11 +105,13 @@
   <select id="selectContractHashByDappName" parameterType="java.util.List" resultType="java.util.Map">
     select contract_hash as contractHash, dapp_name as dappName
     from tbl_contract
-    where dapp_name in
-    <foreach collection="dappNameList" item="item" index="index" separator="," open="(" close=")">
-      #{item}
-    </foreach>
-    and audit_flag = 1
+    where dappstore_flag = 1
+    <if test="dappNameList.size() > 0">
+      and dapp_name in
+      <foreach collection="dappNameList" item="item" index="index" separator="," open="(" close=")">
+        #{item}
+      </foreach>
+    </if>
     order by dapp_name
   </select>
 

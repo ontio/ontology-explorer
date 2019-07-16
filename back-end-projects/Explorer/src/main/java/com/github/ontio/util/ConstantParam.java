@@ -38,7 +38,9 @@ public class ConstantParam {
      */
     public static final String CLAIM = "claim";
 
-    public static final String HYPERDRAGONS = "HyperDragons";
+    public static final String HYPERDRAGONS = "dragon";
+
+    public static final String PUMPKIN_PREFIX = "pumpkin";
 
 
     /**
@@ -86,6 +88,8 @@ public class ConstantParam {
     public static final String ASSET_TYPE_OEP5 = "oep5";
 
     public static final String ASSET_TYPE_OEP8 = "oep8";
+
+    public static final String ASSET_TYPE_ALL = "all";
 
     //合约审核标识
     public static final Boolean AUDIT_PASSED = true;
@@ -144,6 +148,11 @@ public class ConstantParam {
     public static final Integer REQTIME_MAX_RANGE = 40 * 24 * 60 * 60;
 
     public static final Integer REQTIME_MAX_RANGE_WEEK = 7 * 24 * 60 * 60;
+
+
+    public static final String BALANCESERVICE_QUERYBALANCE_URL = "/api/v1/multibalance";
+
+    public static final String CHANNEL_ONTO = "onto";
 
 
 }

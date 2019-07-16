@@ -64,7 +64,7 @@ public class TransactionController {
         return rs;
     }
 
-    @RequestLimit(count = 60)
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get transaction list by page")
     @GetMapping(value = "/transactions")
     public ResponseBean queryTxsByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,

@@ -1,5 +1,5 @@
 <template>
-  <div class="container container-margin-top">
+  <div class="e-container container-margin-top">
     <list-title :name="$t('addressDetail.name')"></list-title>
     <detail-title :name="$t('addressDetail.address')" :val="$route.params.address"></detail-title>
 
