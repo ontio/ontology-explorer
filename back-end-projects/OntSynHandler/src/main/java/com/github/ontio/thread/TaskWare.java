@@ -20,29 +20,46 @@
 package com.github.ontio.thread;
 
 import com.github.ontio.ApplicationContextProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author zhouq
  * @version 1.0
  * @date 2018/3/13
  */
+@Slf4j
 @Component
 public class TaskWare {
 
     @Autowired
     private ApplicationContextProvider applicationContextProvider;
 
+    @Autowired
+    private BlockHandlerThread blockHandlerThread;
+
+    private Future cancellable;
+
     @PostConstruct
     public void init() {
-
-        BlockHandlerThread blockHandlerThread = applicationContextProvider.getBean("BlockHandlerThread", BlockHandlerThread.class);
-        blockHandlerThread.start();
-
+        log.info("Starting BlockHandlerThread");
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        cancellable = executorService.submit(blockHandlerThread);
     }
 
+    @PreDestroy
+    public void shutdown() {
+        if (cancellable != null) {
+            log.info("Stopping BlockHandlerThread");
+            cancellable.cancel(true);
+        }
+    }
 
 }
