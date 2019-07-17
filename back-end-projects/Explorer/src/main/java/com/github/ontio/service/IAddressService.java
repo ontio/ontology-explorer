@@ -2,11 +2,6 @@ package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2019/4/28
- */
 public interface IAddressService {
 
     ResponseBean queryAddressBalance(String address, String tokenType);
@@ -16,6 +11,5 @@ public interface IAddressService {
     ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime);
 
     ResponseBean queryTransferTxsByTimeAndPage(String address, String assetName, Long endTime, Integer pageSize);
-
 
 }
