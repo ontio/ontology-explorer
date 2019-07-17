@@ -16,20 +16,15 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package com.github.ontio;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2018/3/13
- */
 @Component("applicationContextProviderExplorer")
 public class ApplicationContextProvider implements ApplicationContextAware {
 
@@ -47,29 +42,22 @@ public class ApplicationContextProvider implements ApplicationContextAware {
         return context.getBean(name, aClass);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getBean(String name) {
         return (T) context.getBean(name);
     }
 
-    /**
-     * Get bean by class
-     *
-     * @param clazz
-     * @param <T>
-     * @return
-     */
     public static <T> T getBean(Class<T> clazz) {
         return context.getBean(clazz);
     }
 
-    /**
-     * Get application context from everywhere
-     *
-     * @return
-     */
+    public static <T> T getProperty(String name, Class<T> clazz) {
+        final Environment environment = context.getEnvironment();
+        return environment.getProperty(name, clazz);
+    }
+
     public static ApplicationContext getApplicationContext() {
         return context;
     }
-
 
 }
