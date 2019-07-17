@@ -129,7 +129,6 @@ public class ConstantParam {
      */
     public static final List<String> REDIS_MEDIUMEXPIRETIME_KEYLIST = new ArrayList<String>(
             Arrays.asList(
-                    "TxDetailMapper.selectTxByHash",
                     "ContractMapper.selectApprovedContract",
                     "ContractMapper.selectApprovedContractCount",
                     "Oep4Mapper.selectOep4Tokens",
