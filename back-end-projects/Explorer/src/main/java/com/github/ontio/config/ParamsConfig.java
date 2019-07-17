@@ -46,8 +46,17 @@ public class ParamsConfig {
     @Value("${ong.second.generate}")
     public BigDecimal ONG_SECOND_GENERATE;
 
-    @Value("${reqlimit.expire.millisecond}")
-    public Integer REQLIMIT_EXPIRE_MILLISECOND;
+    @Value("${reqlimit.expire.second}")
+    public Integer REQLIMIT_EXPIRE_SECOND;
+
+    @Value("${redis.expire.long.minute}")
+    public Integer REDIS_LONG_EXPIRE_MINUTE;
+
+    @Value("${redis.expire.medium.second}")
+    public Integer REDIS_MEDIUM_EXPIRE_SECOND;
+
+    @Value("${redis.expire.short.second}")
+    public Integer REDIS_SHROT_EXPIRE_SECOND;
 
     @Value("${oep5.dragon.contractHash}")
     public String OEP5_DRAGON_CONTRACTHASH;
