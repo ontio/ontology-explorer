@@ -33,7 +33,6 @@ import java.math.BigDecimal;
 @Service("ParamsConfig")
 public class ParamsConfig {
 
-
     @Value("${masternode.restful.url}")
     public String MASTERNODE_RESTFUL_URL;
 
@@ -61,13 +60,10 @@ public class ParamsConfig {
     @Value("${node.reward.percentage}")
     public Integer NODE_REWARD_PERCENTAGE;
 
-
     @Value("${balanceservice.host}")
     public String BALANCESERVICE_HOST;
 
-
     @Value("${querybalance.mode}")
     public Integer QUERYBALANCE_MODE;
-
 
 }
