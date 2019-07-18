@@ -60,10 +60,8 @@ public class ParamsConfig {
     @Value("${node.reward.percentage}")
     public Integer NODE_REWARD_PERCENTAGE;
 
-
     @Value("${balanceservice.host}")
     public String BALANCESERVICE_HOST;
-
 
     @Value("${querybalance.mode}")
     public Integer QUERYBALANCE_MODE;
