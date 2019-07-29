@@ -1,4 +1,3 @@
-
 package com.github.ontio.config;
 
 import com.github.ontio.ApplicationContextProvider;

@@ -16,6 +16,7 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package com.github.ontio.thread;
 
 import com.github.ontio.ApplicationContextProvider;
@@ -29,6 +30,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+/**
+ * @author zhouq
+ * @version 1.0
+ * @date 2018/3/13
+ */
 @Slf4j
 @Component
 public class TaskWare {
