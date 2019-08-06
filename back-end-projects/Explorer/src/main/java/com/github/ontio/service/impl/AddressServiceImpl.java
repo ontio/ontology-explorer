@@ -65,6 +65,8 @@ public class AddressServiceImpl implements IAddressService {
 
     private static final String BALANCESERVICE_VERSION = "1.0.0";
 
+    private static final Integer TIMESTAMP_20190630000000_UTC = 1561852800;
+
 
     @Override
     public ResponseBean queryAddressBalance(String address, String tokenType) {
@@ -777,7 +779,7 @@ public class AddressServiceImpl implements IAddressService {
             balanceList.add(balanceDto);
         }
         return balanceList;
-}
+    }
 
     /**
      * 计算待提取的ong
@@ -788,21 +790,28 @@ public class AddressServiceImpl implements IAddressService {
      */
     private String calculateWaitingBoundOng(String address, String ont) {
 
-        Integer txtime = null;
+        Integer latestOntTransferTxTime = null;
         //mysql 4.0.14+ bug
         try {
-            txtime = txDetailMapper.selectLatestOntTransferTxTime(address);
+            latestOntTransferTxTime = txDetailMapper.selectLatestOntTransferTxTime(address);
         } catch (Exception e) {
             log.error("{} error...", Helper.currentMethod(), e);
         }
 
-        if (Helper.isEmptyOrNull(txtime)) {
+        if (Helper.isEmptyOrNull(latestOntTransferTxTime)) {
             return "0";
         }
         long now = System.currentTimeMillis() / 1000L;
-        log.info("calculateWaitingBoundOng latestOntTransferTxTime:{},now:{}", txtime, now);
-
-        BigDecimal totalOng = new BigDecimal(now).subtract(new BigDecimal(txtime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+        log.info("calculateWaitingBoundOng latestOntTransferTxTime:{},now:{}", latestOntTransferTxTime, now);
+        BigDecimal totalOng = new BigDecimal("0");
+        //before 20190630000000 UTC
+        if (latestOntTransferTxTime < TIMESTAMP_20190630000000_UTC) {
+            BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(new BigDecimal(5));
+            BigDecimal ong02 = new BigDecimal(now).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+            totalOng = ong01.add(ong02);
+        } else {
+            totalOng = new BigDecimal(now).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+        }
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
 
         return ong.toPlainString();
