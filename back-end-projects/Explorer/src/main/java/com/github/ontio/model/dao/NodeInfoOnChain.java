@@ -1,14 +1,14 @@
 package com.github.ontio.model.dao;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 @Table(name = "tbl_node_info_on_chain")
 public class NodeInfoOnChain {
     @Id
@@ -44,5 +44,41 @@ public class NodeInfoOnChain {
 
     @Column(name = "node_proportion")
     private String nodeProportion;
+
+    public NodeInfoOnChain() {
+
+    }
+
+    public NodeInfoOnChain(Integer nodeRank, String name, Long currentStake, String progress, String detailUrl,
+                    String publicKey, String address, Integer status, Long initPos, Long totalPos,
+                    Long maxAuthorize, String nodeProportion) {
+        this.nodeRank = nodeRank;
+        this.name = name;
+        this.currentStake = currentStake;
+        this.progress = progress;
+        this.detailUrl = detailUrl;
+        this.publicKey = publicKey;
+        this.address = address;
+        this.status = status;
+        this.initPos = initPos;
+        this.totalPos = totalPos;
+        this.maxAuthorize = maxAuthorize;
+        this.nodeProportion = nodeProportion;
+    }
+
+    NodeInfoOnChain(NodeInfoOnChain nodeInfoOnChain) {
+        this.nodeRank = nodeInfoOnChain.getNodeRank();
+        this.name = nodeInfoOnChain.getName();
+        this.currentStake = nodeInfoOnChain.getCurrentStake();
+        this.progress = nodeInfoOnChain.getProgress();
+        this.detailUrl = nodeInfoOnChain.getDetailUrl();
+        this.publicKey = nodeInfoOnChain.getPublicKey();
+        this.address = nodeInfoOnChain.getAddress();
+        this.status = nodeInfoOnChain.getStatus();
+        this.initPos = nodeInfoOnChain.getInitPos();
+        this.totalPos = nodeInfoOnChain.getTotalPos();
+        this.maxAuthorize = nodeInfoOnChain.getMaxAuthorize();
+        this.nodeProportion = nodeInfoOnChain.getNodeProportion();
+    }
 
 }

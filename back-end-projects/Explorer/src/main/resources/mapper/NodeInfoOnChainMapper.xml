@@ -18,10 +18,15 @@
         <result column="max_authorize" jdbcType="BIGINT" property="maxAuthorize"/>
         <result column="node_proportion" jdbcType="VARCHAR" property="nodeProportion"/>
     </resultMap>
+    <cache type="com.github.ontio.config.RedisCache">
+        <property name="eviction" value="LRU"/>
+        <property name="size" value="1024"/>
+        <property name="readOnly" value="false"/>
+    </cache>
     <!--
     self-defined SQL
     -->
-    <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="false">
+    <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
         SELECT node_rank,
                name,
                current_stake,
@@ -36,6 +41,24 @@
                node_proportion
         FROM tbl_node_info_on_chain
         WHERE public_key = #{publicKey}
+        LIMIT 1;
+    </select>
+
+    <select id="searchByName" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
+        SELECT node_rank,
+               name,
+               current_stake,
+               progress,
+               detail_url,
+               public_key,
+               address,
+               status,
+               init_pos,
+               total_pos,
+               max_authorize,
+               node_proportion
+        FROM tbl_node_info_on_chain
+        WHERE name LIKE concat('%', #{name}, '%')
         LIMIT 1;
     </select>
 </mapper>

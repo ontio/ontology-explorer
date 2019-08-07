@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeInfoOnChainDto extends NodeInfoOnChain {
 
-    @Builder
     public NodeInfoOnChainDto(Integer nodeRank, String name, Long currentStake, String progress, String detailUrl,
                               String publicKey, String address, Integer status, Long initPos, Long totalPos,
                               Long maxAuthorize, String nodeProportion) {
