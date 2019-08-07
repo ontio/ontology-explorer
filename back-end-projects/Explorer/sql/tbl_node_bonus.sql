@@ -78,3 +78,91 @@ VALUES ('0253719ac66d7cafa1fe49a64f73bd864a346da92d908c19577a003a8a4160b7fa', 'A
 INSERT INTO `tbl_node_bonus`
 VALUES ('0253719ac66d7cafa1fe49a64f73bd864a346da92d908c19577a003a8a4160b7fa', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
         'Megrez', 134.0, 1546272000);
+
+INSERT INTO `tbl_node_bonus`
+VALUES ('022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 91.20, 1561910400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 103.4, 1559318400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 52.6, 1556640000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 84.8, 1554048000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 76.4, 1551369600);
+INSERT INTO `tbl_node_bonus`
+VALUES ('022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 125.4, 1548950400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('022bf80145bd448d993abffa237f4cd06d9df13eaad37afce5cb71d80c47b03feb', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 140.2, 1546272000);
+
+INSERT INTO `tbl_node_bonus`
+VALUES ('02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Mixar', 61.2, 1561910400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Mixar', 51.6, 1559318400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alioth', 49.2, 1556640000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Mixar', 81.4, 1554048000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Mixar', 121.8, 1551369600);
+INSERT INTO `tbl_node_bonus`
+VALUES ('02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Mixar', 143.6, 1548950400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('02765d98bb092962734e365bd436bdc80c5b5991dcf22b28dbb02d3b3cf74d6444', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Mixar', 171.2, 1546272000);
+
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alkaid', 84.2, 1561910400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alkaid', 93, 1559318400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alkaid', 76.6, 1556640000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alkaid', 92, 1554048000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alkaid', 101.2, 1551369600);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alkaid', 130.2, 1548950400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Alkaid', 154.8, 1546272000);
+
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Phecda', 68.2, 1561910400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Phecda', 76.8, 1559318400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Phecda', 92, 1556640000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Phecda', 94.8, 1554048000);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Phecda', 75.2, 1551369600);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Phecda', 147.4, 1548950400);
+INSERT INTO `tbl_node_bonus`
+VALUES ('03c8f63775536eb420c96228cdccc9de7d80e87f1b562a6eb93c0838064350aa53', 'AUy6TaM9wxTqo9T7FiaYMnDeVExhjsR1Pq',
+        'Phecda', 168.8, 1546272000);
