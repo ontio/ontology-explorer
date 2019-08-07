@@ -4,17 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.Block;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Table;
 import java.util.List;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2019/5/7
- */
 @Data
 @Table(name = "tbl_block")
+@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BlockDto extends Block {
 

@@ -5,17 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.TxDetail;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2019/4/26
- */
 @Data
 @Table(name = "tbl_tx_detail")
+@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TxDetailDto extends TxDetail {
 

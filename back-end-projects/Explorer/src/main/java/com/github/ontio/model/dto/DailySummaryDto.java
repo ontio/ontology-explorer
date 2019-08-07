@@ -2,15 +2,12 @@ package com.github.ontio.model.dto;
 
 import com.github.ontio.model.dao.DailySummary;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Table;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2019/5/9
- */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_daily_summary")
 public class DailySummaryDto extends DailySummary {
 
