@@ -18,7 +18,7 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://127.0.0.1:3306/explorer?serverTimezone=UTC&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"
                         userId="root"
-                        password="${MYSQL_ROOT_PASSWORD}">
+                        password="lp3EtAL78K0RcFEv">
         </jdbcConnection>
 
         <javaModelGenerator targetPackage="com.github.ontio.model.dao" targetProject="src/main/java">

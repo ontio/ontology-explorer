@@ -18,8 +18,10 @@
 
 package com.github.ontio.service;
 
+import com.github.ontio.model.dao.NodeBonus;
 import com.github.ontio.model.dao.NodeInfoOffChain;
 import com.github.ontio.model.dao.NodeInfoOnChain;
+import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
 
 import java.util.List;
 
@@ -32,5 +34,13 @@ public interface INodesService {
     List<NodeInfoOffChain> getCurrentOffChainInfo();
 
     NodeInfoOnChain getCurrentOnChainInfo(String publicKey);
+
+    List<NodeBonus> getNodeBonusHistories();
+
+    NodeBonus getLatestBonusByPublicKey(String publicKey);
+
+    NodeBonus getLatestBonusByAddress(String address);
+
+    List<NodeInfoOnChainWithBonus> getLatestBonusesWithInfos();
 
 }

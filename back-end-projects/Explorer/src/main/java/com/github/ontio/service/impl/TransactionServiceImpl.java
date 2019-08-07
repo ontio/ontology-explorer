@@ -42,14 +42,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2018/2/27
- */
-@Service("TransactionService")
-@MapperScan("com.github.ontio.dao")
 @Slf4j
+@Service("TransactionService")
 public class TransactionServiceImpl implements ITransactionService {
 
     private final TxDetailMapper txDetailMapper;
