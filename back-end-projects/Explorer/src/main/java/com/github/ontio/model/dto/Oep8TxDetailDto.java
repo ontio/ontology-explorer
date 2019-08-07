@@ -4,16 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.Oep8TxDetail;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2019/5/7
- */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_oep8_tx_detail")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Oep8TxDetailDto extends Oep8TxDetail {

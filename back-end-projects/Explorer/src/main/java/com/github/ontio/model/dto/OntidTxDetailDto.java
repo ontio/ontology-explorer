@@ -3,6 +3,7 @@ package com.github.ontio.model.dto;
 import com.github.ontio.model.dao.OntidTxDetail;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
  * @date 2019/4/28
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_ontid_tx_detail")
 public class OntidTxDetailDto extends OntidTxDetail {
 
