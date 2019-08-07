@@ -19,8 +19,8 @@
         <result column="node_proportion" jdbcType="VARCHAR" property="nodeProportion"/>
     </resultMap>
     <!--
-  self-defined SQL
-  -->
+    self-defined SQL
+    -->
     <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="false">
         SELECT node_rank,
                name,
