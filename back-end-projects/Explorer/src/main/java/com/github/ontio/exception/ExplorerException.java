@@ -1,13 +1,10 @@
 package com.github.ontio.exception;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * @author zhouq
- * @version 1.0
- * @date 2019/4/26
- */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ExplorerException extends RuntimeException {
 
     private Integer code;
