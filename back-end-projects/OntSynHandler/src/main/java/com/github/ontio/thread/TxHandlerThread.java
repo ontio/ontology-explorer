@@ -38,12 +38,14 @@ import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.ehcache.transaction.xa.EhcacheXAException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -811,71 +813,75 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
     }
 
-
-    /**
-     * 处理oep4交易
-     *
-     * @param stateArray
-     * @param txType
-     * @param txHash
-     * @param blockHeight
-     * @param blockTime
-     * @param indexInBlock
-     * @param gasConsumed
-     * @param indexInTx
-     * @param confirmFlag
-     * @param oep4Obj
-     * @param contractHash
-     * @throws Exception
-     */
     private void handleOep4TransferTxn(JSONArray stateArray, int txType, String txHash, int blockHeight,
                                        int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag,
                                        JSONObject oep4Obj, String contractHash, String payer, String calledContractHash) throws Exception {
-        if (stateArray.size() < 3) {
-            TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
-                    blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
+        String fromAddress = "";
+        String toAddress = "";
+        BigDecimal eventAmount = new BigDecimal("0");
 
+        if (stateArray.size() != 4) {
+            log.warn("Invalid OEP-4 event in transaction {}", txHash);
+            TxDetail txDetail = generateTransaction(fromAddress, toAddress, "", eventAmount, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
             ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
             ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
             ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
             return;
         }
 
-        String fromAddress = "";
-        String toAddress = "";
-        BigDecimal eventAmount = new BigDecimal("0");
-        //初始化交易列表长度为3
-        if (stateArray.size() == 3) {
-            fromAddress = (String) stateArray.get(0);
-            if (40 == fromAddress.length()) {
-                fromAddress = Address.parse(fromAddress).toBase58();
+        String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        if (action.equalsIgnoreCase("init")) {
+            try {
+                fromAddress = Address.parse((String) stateArray.get(0)).toBase58();
+            } catch (Exception e) {
+                fromAddress = (String) stateArray.get(0);
             }
-            toAddress = (String) stateArray.get(1);
-            if (40 == toAddress.length()) {
-                toAddress = Address.parse(toAddress).toBase58();
+            try {
+                toAddress = Address.parse((String) stateArray.get(1)).toBase58();
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(2));
+            } catch (Exception e) {
+                log.warn("Parsing OEP-4 init event failed in transaction {}", txHash);
             }
-            eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).longValue());
-
-        } else {
-            String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
-            if (!action.equalsIgnoreCase("transfer")) {
-                return;
-            }
-            fromAddress = (String) stateArray.get(1);
-            if (40 == fromAddress.length()) {
-                fromAddress = Address.parse(fromAddress).toBase58();
-            }
-            toAddress = (String) stateArray.get(2);
-            if (40 == toAddress.length()) {
-                toAddress = Address.parse(toAddress).toBase58();
-            }
-            eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).longValue());
+            log.info("Parsing OEP4 init event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
         }
-        log.info("OEP4TransferTx:fromaddress:{}, toaddress:{}, amount:{}", fromAddress, toAddress, eventAmount);
+
+        if (action.equalsIgnoreCase("transfer")) {
+            try {
+                fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+                toAddress = Address.parse((String) stateArray.get(2)).toBase58();
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+            } catch (Exception e) {
+                log.warn("Parsing OEP-4 transfer event failed in transaction {}", txHash);
+            }
+            log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
+        }
+
+        if (action.equalsIgnoreCase("IncreasePAX")) {
+            try {
+                fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(2));
+                toAddress = new String(Helper.hexToBytes((String) stateArray.get(3)));
+            } catch (Exception e) {
+                log.info("Parsing increase PAX event failed in transaction {}", txHash);
+            }
+            log.info("Parsing increase PAX event: address {}, eth tx hash {}, amount {}", fromAddress, toAddress, eventAmount);
+        }
+
+        if (action.equalsIgnoreCase("DecreasePAX")) {
+            try {
+                fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+                toAddress = new String(Helper.hexToBytes((String) stateArray.get(2)));
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+            } catch (Exception e) {
+                log.info("Parsing increase PAX event failed in transaction {}", txHash);
+            }
+            log.info("Parsing decrease PAX event: from {}, eth address {}, amount {}", fromAddress, toAddress, eventAmount);
+        }
 
         String assetName = oep4Obj.getString("symbol");
-        BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, oep4Obj.getInteger("decimals"))));
-
+        Integer decimals = oep4Obj.getInteger("decimals");
+        BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, decimals)), decimals, RoundingMode.HALF_DOWN);
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);
 
@@ -884,6 +890,9 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
     }
 
+    private BigDecimal BigDecimalFromNeoVmData(String value) {
+        return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(value)).longValue());
+    }
 
     /**
      * 构造基本交易信息dao
@@ -910,7 +919,7 @@ public class TxHandlerThread {
                                          String txHash, int blockHeight, int blockTime, int indexInBlock, int confirmFlag,
                                          String action, BigDecimal gasConsumed, int indexInTx, int eventType, String contractAddress,
                                          String payer, String calledContractHash) {
-        TxDetail txDetail = TxDetail.builder()
+        return TxDetail.builder()
                 .txHash(txHash)
                 .txType(txType)
                 .txTime(blockTime)
@@ -929,7 +938,6 @@ public class TxHandlerThread {
                 .fromAddress(fromAddress)
                 .toAddress(toAddress)
                 .build();
-        return txDetail;
     }
 
     /**
