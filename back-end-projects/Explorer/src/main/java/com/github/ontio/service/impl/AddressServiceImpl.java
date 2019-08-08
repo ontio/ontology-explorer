@@ -170,21 +170,27 @@ public class AddressServiceImpl implements IAddressService {
         } else {
             Oep4 oep4 = new Oep4();
             oep4.setSymbol(assetName);
+            oep4.setAuditFlag(ConstantParam.AUDIT_PASSED);
             oep4 = oep4Mapper.selectOne(oep4);
             if (Helper.isNotEmptyOrNull(oep4)) {
-                balanceList = getOep4Balance(address, assetName);
+                balanceList = getOep4Balance2(address, oep4);
             } else {
                 Oep5 oep5 = new Oep5();
                 oep5.setSymbol(assetName);
                 oep5 = oep5Mapper.selectOne(oep5);
                 if (Helper.isNotEmptyOrNull(oep5)) {
-                    balanceList = getOep5Balance(address, assetName, "");
+                    balanceList = getOep5Balance2(address, oep5);
                 } else {
-                    Oep8 oep8 = new Oep8();
-                    oep8.setSymbol(assetName);
-                    List<Oep8> oep8s = oep8Mapper.select(oep8);
-                    if (oep8s.size() > 0) {
-                        balanceList = getOep8Balance(address, assetName);
+                    //return all pumpkins and total pumpkin number
+                    if (assetName.equals(ConstantParam.OEP8_PUMPKIN_PREFIX)) {
+                        balanceList = getOep8Balance4OntoOld(address, ConstantParam.OEP8_PUMPKIN_PREFIX);
+                    } else {
+                        Oep8 oep8 = new Oep8();
+                        oep8.setSymbol(assetName);
+                        List<Oep8> oep8s = oep8Mapper.select(oep8);
+                        if (oep8s.size() > 0) {
+                            balanceList = getOep8Balance2(address, assetName);
+                        }
                     }
                 }
             }
@@ -384,6 +390,28 @@ public class AddressServiceImpl implements IAddressService {
 
 
     /**
+     * 获取OEP4余额
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep4Balance2(String address, Oep4 oep4) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        String contractHash = oep4.getContractHash();
+        BigDecimal balance = new BigDecimal(sdk.getOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+        BalanceDto balanceDto = BalanceDto.builder()
+                .assetName(oep4.getSymbol())
+                .assetType(ConstantParam.ASSET_TYPE_OEP4)
+                .balance(balance)
+                .build();
+        balanceList.add(balanceDto);
+        return balanceList;
+    }
+
+
+    /**
      * 获取OEP5余额
      *
      * @param address
@@ -425,6 +453,29 @@ public class AddressServiceImpl implements IAddressService {
                 balanceList.add(balanceDto);
             }
         }
+        return balanceList;
+    }
+
+
+    /**
+     * 获取OEP5余额
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep5Balance2(String address, Oep5 oep5) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+
+        String contractHash = oep5.getContractHash();
+        BigDecimal balance = new BigDecimal(sdk.getOep5AssetBalance(address, contractHash));
+        BalanceDto balanceDto = BalanceDto.builder()
+                .assetName(oep5.getSymbol())
+                .assetType(ConstantParam.ASSET_TYPE_OEP5)
+                .balance(balance)
+                .build();
+        balanceList.add(balanceDto);
         return balanceList;
     }
 
@@ -778,6 +829,34 @@ public class AddressServiceImpl implements IAddressService {
                     .build();
             balanceList.add(balanceDto);
         }
+        return balanceList;
+    }
+
+
+    /**
+     * get oep8 token
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOep8Balance2(String address, String inputSymbol) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        int i = Integer.valueOf(inputSymbol.substring(inputSymbol.length() - 1, inputSymbol.length()));
+        List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(inputSymbol);
+
+        String contractHash = oep8s.get(0).get("contractHash");
+        String symbol = oep8s.get(0).get("symbol");
+
+        JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
+
+        BalanceDto balanceDto = BalanceDto.builder()
+                .assetName(symbol)
+                .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                .balance(new BigDecimal((String) balanceArray.get(i-1)))
+                .build();
+        balanceList.add(balanceDto);
         return balanceList;
     }
 
