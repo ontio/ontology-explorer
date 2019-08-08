@@ -51,7 +51,7 @@ public class BlockHandlerThread extends Thread {
 
     @Autowired
     public BlockHandlerThread(ParamsConfig paramsConfig, BlockHandleService blockManagementService, CurrentMapper currentMapper,
-                               Environment env, CommonService commonService) {
+                              Environment env, CommonService commonService) {
         this.paramsConfig = paramsConfig;
         this.blockManagementService = blockManagementService;
         this.currentMapper = currentMapper;
@@ -59,12 +59,10 @@ public class BlockHandlerThread extends Thread {
         this.commonService = commonService;
     }
 
-    /**
-     * main thread
-     */
     @Override
+    @SuppressWarnings("InfiniteLoopStatement")
     public void run() {
-        log.info("========{}.run=======", CLASS_NAME);
+        log.info("Staring block sync");
         try {
             ConstantParam.MASTERNODE_RESTFULURL = paramsConfig.MASTERNODE_RESTFUL_URL;
             //初始化node列表
@@ -83,7 +81,7 @@ public class BlockHandlerThread extends Thread {
 
                 //wait for generating block
                 if (dbBlockHeight >= remoteBlockHieght) {
-                    log.info("+++++++++wait for block+++++++++");
+                    log.info("Waiting for block");
                     try {
                         Thread.sleep(paramsConfig.BLOCK_INTERVAL);
                     } catch (InterruptedException e) {
@@ -133,8 +131,6 @@ public class BlockHandlerThread extends Thread {
 
     /**
      * initialize ontology ONT_SDKSERVICE object for synchronizing data
-     *
-     * @return
      */
     private void initSdkService() {
         OntSdk sdkService = OntSdk.getInstance();
@@ -145,10 +141,6 @@ public class BlockHandlerThread extends Thread {
 
     /**
      * 批量处理区块和插入DB
-     *
-     * @param beginHeight
-     * @param endHeight
-     * @throws Exception
      */
     private void batchHandleBlockAndInsertDb(int beginHeight, int endHeight) throws Exception {
         long beginTime = System.currentTimeMillis();
