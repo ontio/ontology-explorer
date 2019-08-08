@@ -831,24 +831,15 @@ public class TxHandlerThread {
         }
 
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
-        if (action.equalsIgnoreCase("init")) {
-            try {
-                fromAddress = Address.parse((String) stateArray.get(0)).toBase58();
-            } catch (Exception e) {
-                fromAddress = (String) stateArray.get(0);
-            }
-            try {
-                toAddress = Address.parse((String) stateArray.get(1)).toBase58();
-                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(2));
-            } catch (Exception e) {
-                log.warn("Parsing OEP-4 init event failed in transaction {}", txHash);
-            }
-            log.info("Parsing OEP4 init event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
-        }
 
         if (action.equalsIgnoreCase("transfer")) {
             try {
                 fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+            } catch (Exception e) {
+                fromAddress = (String) stateArray.get(1);
+            }
+            
+            try {
                 toAddress = Address.parse((String) stateArray.get(2)).toBase58();
                 eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             } catch (Exception e) {
