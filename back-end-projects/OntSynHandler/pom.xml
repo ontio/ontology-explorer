@@ -5,7 +5,7 @@
 
 	<groupId>com.github.ontio</groupId>
 	<artifactId>ontsynhandler</artifactId>
-	<version>1.1.0-RELEASE</version>
+	<version>1.1.1-RELEASE</version>
 	<name>ontsynhandler</name>
 	<description>explorer information sync handler for Ontology</description>
 	<packaging>jar</packaging>

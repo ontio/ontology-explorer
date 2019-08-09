@@ -86,7 +86,8 @@ public class ParamsConfig {
     @Value("${auth.contractHash}")
     public String AUTH_CONTRACTHASH;
 
-
+    @Value("${pax.contractHash}")
+    public String PAX_CONTRACTHASH;
 
     @Value("${threadPoolSize.max}")
     public int THREADPOOLSIZE_MAX;
