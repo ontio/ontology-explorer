@@ -838,7 +838,7 @@ public class TxHandlerThread {
             } catch (Exception e) {
                 fromAddress = (String) stateArray.get(1);
             }
-            
+
             try {
                 toAddress = Address.parse((String) stateArray.get(2)).toBase58();
                 eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
@@ -848,26 +848,28 @@ public class TxHandlerThread {
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
         }
 
-        if (action.equalsIgnoreCase("IncreasePAX")) {
-            try {
-                fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
-                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(2));
-                toAddress = new String(Helper.hexToBytes((String) stateArray.get(3)));
-            } catch (Exception e) {
-                log.info("Parsing increase PAX event failed in transaction {}", txHash);
+        if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
+            if (action.equalsIgnoreCase("IncreasePAX")) {
+                try {
+                    fromAddress = paramsConfig.PAX_CONTRACTHASH;
+                    toAddress = Address.parse((String) stateArray.get(1)).toBase58();
+                    eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(2));
+                } catch (Exception e) {
+                    log.info("Parsing increase PAX event failed in transaction {}", txHash);
+                }
+                log.info("Parsing increase PAX event: from {} to {} amount {}", fromAddress, toAddress, eventAmount);
             }
-            log.info("Parsing increase PAX event: address {}, eth tx hash {}, amount {}", fromAddress, toAddress, eventAmount);
-        }
 
-        if (action.equalsIgnoreCase("DecreasePAX")) {
-            try {
-                fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
-                toAddress = new String(Helper.hexToBytes((String) stateArray.get(2)));
-                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
-            } catch (Exception e) {
-                log.info("Parsing increase PAX event failed in transaction {}", txHash);
+            if (action.equalsIgnoreCase("DecreasePAX")) {
+                try {
+                    fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+                    toAddress = paramsConfig.PAX_CONTRACTHASH;
+                    eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+                } catch (Exception e) {
+                    log.info("Parsing increase PAX event failed in transaction {}", txHash);
+                }
+                log.info("Parsing decrease PAX event: from {} to {} amount {}", fromAddress, toAddress, eventAmount);
             }
-            log.info("Parsing decrease PAX event: from {}, eth address {}, amount {}", fromAddress, toAddress, eventAmount);
         }
 
         String assetName = oep4Obj.getString("symbol");
