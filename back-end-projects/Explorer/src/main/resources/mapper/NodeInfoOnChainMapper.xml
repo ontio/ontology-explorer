@@ -21,6 +21,22 @@
     <!--
     self-defined SQL
     -->
+    <select id="selectAllInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto">
+        SELECT node_rank,
+               name,
+               current_stake,
+               progress,
+               detail_url,
+               public_key,
+               address,
+               status,
+               init_pos,
+               total_pos,
+               max_authorize,
+               node_proportion
+        FROM tbl_node_info_on_chain
+    </select>
+
     <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto">
         SELECT node_rank,
                name,
@@ -53,7 +69,6 @@
                max_authorize,
                node_proportion
         FROM tbl_node_info_on_chain
-        WHERE name LIKE concat('%', #{name}, '%')
-        LIMIT 1;
+        WHERE name LIKE concat('%', #{name}, '%');
     </select>
 </mapper>

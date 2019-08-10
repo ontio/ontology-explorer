@@ -17,6 +17,6 @@ public interface NodeBonusMapper extends Mapper<NodeBonus> {
 
     NodeBonus selectLatestNodeBonusByAddress(@Param("address") String address);
 
-    NodeBonus searchByName(@Param("name") String name);
+    List<NodeBonus> searchByName(@Param("name") String name);
 
 }

@@ -128,26 +128,49 @@ public class NodesServiceImpl implements INodesService {
 
     @Override
     public List<NodeInfoOnChainWithBonus> getLatestBonusesWithInfos() {
-        List<NodeInfoOnChain> nodesInfoOnChain;
-        List<NodeBonus> nodeBonuses;
+        List<NodeInfoOnChainDto> nodeInfoOnChainLst;
+        List<NodeBonus> nodeBonusLst;
         try {
-            nodesInfoOnChain = nodeInfoOnChainMapper.selectAll();
+            nodeInfoOnChainLst = nodeInfoOnChainMapper.selectAllInfo();
             int nodeCount = nodeBonusMapper.selectNodeCount();
-            nodeBonuses = nodeBonusMapper.selectLatestNodeBonusList(nodeCount);
+            nodeBonusLst = nodeBonusMapper.selectLatestNodeBonusList(nodeCount);
         } catch (Exception e) {
             log.error("Get latest bonuses with infos: {}", e.getMessage());
             return new ArrayList<>();
         }
+        return generateNodeInfoOnChainWithBonusList(nodeInfoOnChainLst, nodeBonusLst);
+    }
+
+    public List<NodeInfoOnChainWithBonus> searchNodeOnChainWithBonusByName(String name) {
+        List<NodeInfoOnChainDto> nodeInfoOnChainLst;
+        try {
+            nodeInfoOnChainLst = nodeInfoOnChainMapper.searchByName(name);
+        } catch (Exception e) {
+            log.warn("Search node info on chain with name {} failed: {}", name, e.getMessage());
+            return new ArrayList<>();
+        }
+        List<NodeBonus> nodeBonusLst;
+        try {
+            nodeBonusLst = nodeBonusMapper.searchByName(name);
+        } catch (Exception e) {
+            log.warn("Search node bonus with name {} failed: {}", name, e.getMessage());
+            return new ArrayList<>();
+        }
+        return generateNodeInfoOnChainWithBonusList(nodeInfoOnChainLst, nodeBonusLst);
+    }
+
+    private List<NodeInfoOnChainWithBonus> generateNodeInfoOnChainWithBonusList(List<NodeInfoOnChainDto> nodeInfoOnChainLst,
+                                                                                List<NodeBonus> nodeBonusLst) {
         List<NodeInfoOnChainWithBonus> nodeInfoOnChainWithBonuses = new ArrayList<>();
-        for (NodeInfoOnChain nodeInfoOnChain : nodesInfoOnChain) {
+        for (NodeInfoOnChainDto nodeInfoOnChain : nodeInfoOnChainLst) {
             String publicKey = nodeInfoOnChain.getPublicKey();
             boolean isMatch = false;
-            for (int i = 0; i < nodeBonuses.size(); i++) {
-                NodeBonus nodeBonus = nodeBonuses.get(i);
+            for (int i = 0; i < nodeBonusLst.size(); i++) {
+                NodeBonus nodeBonus = nodeBonusLst.get(i);
                 if (nodeBonus.getPublicKey().equals(publicKey)) {
                     isMatch = true;
                     nodeInfoOnChainWithBonuses.add(new NodeInfoOnChainWithBonus(nodeInfoOnChain, nodeBonus));
-                    nodeBonuses.remove(i);
+                    nodeBonusLst.remove(i);
                     break;
                 }
             }
@@ -158,21 +181,4 @@ public class NodesServiceImpl implements INodesService {
         return nodeInfoOnChainWithBonuses;
     }
 
-    public NodeInfoOnChainWithBonus searchNodeOnChainWithBonusByName(String name) {
-        NodeInfoOnChainDto nodeInfoOnChain;
-        try {
-            nodeInfoOnChain = nodeInfoOnChainMapper.searchByName(name);
-        } catch (Exception e) {
-            log.warn("Search node info on chain with name {} failed: {}", name, e.getMessage());
-            return new NodeInfoOnChainWithBonus();
-        }
-        NodeBonus nodeBonus;
-        try {
-            nodeBonus = nodeBonusMapper.searchByName(name);
-        } catch (Exception e) {
-            log.warn("Search node bonus with name {} failed: {}", name, e.getMessage());
-            return new NodeInfoOnChainWithBonus();
-        }
-        return new NodeInfoOnChainWithBonus(nodeInfoOnChain, nodeBonus);
-    }
 }

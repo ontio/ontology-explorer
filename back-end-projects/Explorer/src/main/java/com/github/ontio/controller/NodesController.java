@@ -35,7 +35,7 @@ public class NodesController {
     public ResponseBean getCurrentStake() {
         List<NodeInfoOnChain> nodeInfoList = nodesService.getCurrentOnChainInfo();
         if (nodeInfoList.size() == 0) {
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), nodeInfoList);
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeInfoList);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
@@ -45,7 +45,7 @@ public class NodesController {
     public ResponseBean getCurrentStake(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
         NodeInfoOnChain nodeInfoList = nodesService.getCurrentOnChainInfo(publicKey);
         if (nodeInfoList == null) {
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
@@ -55,7 +55,7 @@ public class NodesController {
     public ResponseBean getOffChainInfo() {
         List<NodeInfoOffChain> nodeInfoList = nodesService.getCurrentOffChainInfo();
         if (nodeInfoList.size() == 0) {
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), nodeInfoList);
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeInfoList);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
@@ -65,7 +65,7 @@ public class NodesController {
     public ResponseBean getOffChainInfoByPublicKey(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
         NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfo(publicKey);
         if (nodeInfoList == null) {
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
@@ -77,7 +77,7 @@ public class NodesController {
         if (nodeBonusList.size() != 0) {
             return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeBonusList);
         }
-        return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), nodeBonusList);
+        return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeBonusList);
     }
 
     @ApiOperation(value = "Get latest reward per 10000 ONT stake unit by public key")
@@ -85,7 +85,7 @@ public class NodesController {
     public ResponseBean getLatestBonusByPublicKey(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
         NodeBonus nodeBonus = nodesService.getLatestBonusByPublicKey(publicKey);
         if (nodeBonus == null) {
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeBonus);
     }
@@ -95,7 +95,7 @@ public class NodesController {
     public ResponseBean getLatestBonusByAddress(@PathVariable("address") @Length(min = 34, max = 34, message = "invalid address") String address) {
         NodeBonus nodeBonus = nodesService.getLatestBonusByAddress(address);
         if (nodeBonus == null) {
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeBonus);
     }
@@ -107,15 +107,15 @@ public class NodesController {
         if (nodeBonusList.size() != 0) {
             return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeBonusList);
         }
-        return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), nodeBonusList);
+        return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeBonusList);
     }
 
     @ApiOperation(value = "Get candidate nodes information by name")
     @GetMapping(value = "/latest-bonuses-with-infos/search/{name}")
     public ResponseBean searchNodeOnChainWithBonus(@PathVariable("name") @Length(min = 1, max = 100, message = "invalid name") String name) {
-        NodeInfoOnChainWithBonus nodeInfoOnChainWithBonus = nodesService.searchNodeOnChainWithBonusByName(name);
-        if (nodeInfoOnChainWithBonus == null){
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+        List<NodeInfoOnChainWithBonus> nodeInfoOnChainWithBonus = nodesService.searchNodeOnChainWithBonusByName(name);
+        if (nodeInfoOnChainWithBonus.size() == 0) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoOnChainWithBonus);
     }

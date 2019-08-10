@@ -1,5 +1,6 @@
 package com.github.ontio.model.dao;
 
+import com.github.ontio.model.dto.NodeInfoOnChainDto;
 import lombok.*;
 
 @Data
@@ -20,7 +21,7 @@ public class NodeInfoOnChainWithBonus extends NodeInfoOnChain {
         this.bonus = 0D;
     }
 
-    public NodeInfoOnChainWithBonus(NodeInfoOnChain nodeInfoOnChain, NodeBonus nodeBonus) {
+    public NodeInfoOnChainWithBonus(NodeInfoOnChainDto nodeInfoOnChain, NodeBonus nodeBonus) {
         super(nodeInfoOnChain);
         if (!nodeInfoOnChain.getPublicKey().equals(nodeBonus.getPublicKey())) {
             return;
