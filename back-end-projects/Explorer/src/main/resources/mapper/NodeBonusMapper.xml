@@ -48,8 +48,7 @@
     <select id="searchByName" parameterType="java.lang.String" resultType="com.github.ontio.model.dao.NodeBonus">
         SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
         FROM tbl_node_bonus
-        WHERE name LIKE concat('%', #{name}, '%')
-        LIMIT 1
+        WHERE name LIKE concat('%', #{name}, '%');
     </select>
 
 </mapper>
