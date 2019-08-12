@@ -8,7 +8,7 @@
     <id column="ip" jdbcType="VARCHAR" property="ip" />
     <result column="version" jdbcType="VARCHAR" property="version" />
     <result column="is_consensus" jdbcType="BIT" property="isConsensus" />
-    <result column="active" jdbcType="BIT" property="active" />
+    <result column="is_active" jdbcType="BIT" property="isActive" />
     <result column="last_active_time" jdbcType="BIGINT" property="lastActiveTime" />
     <result column="country" jdbcType="VARCHAR" property="country" />
     <result column="longitude" jdbcType="VARCHAR" property="longitude" />
