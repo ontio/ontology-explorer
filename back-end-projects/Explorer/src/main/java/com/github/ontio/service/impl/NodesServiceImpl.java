@@ -141,6 +141,7 @@ public class NodesServiceImpl implements INodesService {
         return generateNodeInfoOnChainWithBonusList(nodeInfoOnChainLst, nodeBonusLst);
     }
 
+    @Override
     public List<NodeInfoOnChainWithBonus> searchNodeOnChainWithBonusByName(String name) {
         List<NodeInfoOnChainDto> nodeInfoOnChainLst;
         try {
@@ -181,6 +182,7 @@ public class NodesServiceImpl implements INodesService {
         return nodeInfoOnChainWithBonuses;
     }
 
+    @Override
     public List<NetNodeInfo> getActiveNetNodes() {
         try {
             return netNodeInfoMapper.selectAllActiveNodes();
@@ -190,12 +192,22 @@ public class NodesServiceImpl implements INodesService {
         }
     }
 
+    @Override
     public List<NetNodeInfo> getAllNodes() {
         try {
             return netNodeInfoMapper.selectAllNodes();
         } catch (Exception e) {
             log.warn("Selecting all nodes failed: {}", e.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+    public long getSyncNodeCount() {
+        try {
+            return netNodeInfoMapper.selectSyncNodeCount();
+        } catch (Exception e) {
+            log.warn("Selecting sync node count failed: {}", e.getMessage());
+            return -1;
         }
     }
 

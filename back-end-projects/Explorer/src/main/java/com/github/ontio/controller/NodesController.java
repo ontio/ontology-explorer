@@ -136,4 +136,14 @@ public class NodesController {
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), netNodeInfoLst);
     }
+
+    @ApiOperation(value = "Get the count of sync node")
+    @GetMapping(value = "/sync-node-count")
+    public ResponseBean getSyncNodeCount() {
+        long count = nodesService.getSyncNodeCount();
+        if (count <= 0) {
+            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), count);
+    }
 }

@@ -12,4 +12,6 @@ public interface NetNodeInfoMapper extends Mapper<NetNodeInfo> {
     List<NetNodeInfo> selectAllNodes();
 
     List<NetNodeInfo> selectAllActiveNodes();
+
+    Long selectSyncNodeCount();
 }
