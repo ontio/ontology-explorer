@@ -1,17 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.NetNodeInfoMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NetNodeInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="ip" jdbcType="VARCHAR" property="ip" />
-    <result column="version" jdbcType="VARCHAR" property="version" />
-    <result column="is_consensus" jdbcType="BIT" property="isConsensus" />
-    <result column="is_active" jdbcType="BIT" property="isActive" />
-    <result column="last_active_time" jdbcType="BIGINT" property="lastActiveTime" />
-    <result column="country" jdbcType="VARCHAR" property="country" />
-    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
-    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NetNodeInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="ip" jdbcType="VARCHAR" property="ip"/>
+        <result column="version" jdbcType="VARCHAR" property="version"/>
+        <result column="is_consensus" jdbcType="BIT" property="isConsensus"/>
+        <result column="is_active" jdbcType="BIT" property="isActive"/>
+        <result column="last_active_time" jdbcType="BIGINT" property="lastActiveTime"/>
+        <result column="country" jdbcType="VARCHAR" property="country"/>
+        <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
+        <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+    </resultMap>
+
+    <cache type="com.github.ontio.config.RedisCache">
+        <property name="eviction" value="LRU"/>
+        <property name="size" value="1024"/>
+        <property name="readOnly" value="false"/>
+    </cache>
+
+    <select id="selectAllNodes" resultType="com.github.ontio.model.dao.NetNodeInfo" useCache="true">
+        SELECT ip,
+               version,
+               is_consensus     AS isConsensus,
+               is_active        AS isActive,
+               last_active_time AS lastActiveTime,
+               country,
+               longitude,
+               latitude
+        FROM tbl_net_node_info;
+    </select>
+
+    <select id="selectAllActiveNodes" resultType="com.github.ontio.model.dao.NetNodeInfo" useCache="true">
+        SELECT ip,
+               version,
+               is_consensus     AS isConsensus,
+               is_active        AS isActive,
+               last_active_time AS lastActiveTime,
+               country,
+               longitude,
+               latitude
+        FROM tbl_net_node_info
+        where is_active = TRUE;
+    </select>
+
 </mapper>

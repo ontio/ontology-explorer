@@ -1,10 +1,7 @@
 package com.github.ontio.controller;
 
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dao.NodeBonus;
-import com.github.ontio.model.dao.NodeInfoOffChain;
-import com.github.ontio.model.dao.NodeInfoOnChain;
-import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
+import com.github.ontio.model.dao.*;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.util.ErrorInfo;
 import io.swagger.annotations.ApiOperation;
@@ -120,4 +117,23 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoOnChainWithBonus);
     }
 
+    @ApiOperation(value = "Get all node in network")
+    @GetMapping(value = "/all-in-network")
+    public ResponseBean getAllNodes() {
+        List<NetNodeInfo> netNodeInfoLst = nodesService.getAllNodes();
+        if (netNodeInfoLst.size() == 0) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), netNodeInfoLst);
+    }
+
+    @ApiOperation(value = "Get active node in network")
+    @GetMapping(value = "/active-in-network")
+    public ResponseBean getActiveNodes() {
+        List<NetNodeInfo> netNodeInfoLst = nodesService.getActiveNetNodes();
+        if (netNodeInfoLst.size() == 0) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), netNodeInfoLst);
+    }
 }

@@ -18,10 +18,14 @@
         <result column="max_authorize" jdbcType="BIGINT" property="maxAuthorize"/>
         <result column="node_proportion" jdbcType="VARCHAR" property="nodeProportion"/>
     </resultMap>
-    <!--
-    self-defined SQL
-    -->
-    <select id="selectAllInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto">
+
+    <cache type="com.github.ontio.config.RedisCache">
+        <property name="eviction" value="LRU"/>
+        <property name="size" value="1024"/>
+        <property name="readOnly" value="false"/>
+    </cache>
+
+    <select id="selectAllInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
         SELECT node_rank,
                name,
                current_stake,
@@ -37,7 +41,7 @@
         FROM tbl_node_info_on_chain
     </select>
 
-    <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto">
+    <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
         SELECT node_rank,
                name,
                current_stake,
@@ -55,7 +59,7 @@
         LIMIT 1;
     </select>
 
-    <select id="searchByName" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto">
+    <select id="searchByName" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
         SELECT node_rank,
                name,
                current_stake,

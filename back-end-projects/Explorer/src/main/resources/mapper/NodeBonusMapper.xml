@@ -11,16 +11,20 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="bonus" jdbcType="DOUBLE" property="bonus"/>
     </resultMap>
-    <!--
-    self-defined SQL
-    -->
-    <select id="selectNodeCount" resultType="java.lang.Integer">
+
+    <cache type="com.github.ontio.config.RedisCache">
+        <property name="eviction" value="LRU"/>
+        <property name="size" value="1024"/>
+        <property name="readOnly" value="false"/>
+    </cache>
+
+    <select id="selectNodeCount" resultType="java.lang.Integer" useCache="true">
         SELECT COUNT(DISTINCT public_key)
         FROM tbl_node_bonus;
     </select>
 
     <select id="selectLatestNodeBonusList" parameterType="java.lang.Integer"
-            resultType="com.github.ontio.model.dao.NodeBonus">
+            resultType="com.github.ontio.model.dao.NodeBonus" useCache="true">
         SELECT public_key as publicKey, unix_time as unixTime, address, name, bonus
         FROM tbl_node_bonus
         ORDER BY unix_time DESC
@@ -28,7 +32,7 @@
     </select>
 
     <select id="selectLatestNodeBonusByPublicKey" parameterType="java.lang.String"
-            resultType="com.github.ontio.model.dao.NodeBonus">
+            resultType="com.github.ontio.model.dao.NodeBonus" useCache="true">
         SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
         FROM tbl_node_bonus
         WHERE public_key = #{publicKey}
@@ -37,7 +41,7 @@
     </select>
 
     <select id="selectLatestNodeBonusByAddress" parameterType="java.lang.String"
-            resultType="com.github.ontio.model.dao.NodeBonus">
+            resultType="com.github.ontio.model.dao.NodeBonus" useCache="true">
         SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
         FROM tbl_node_bonus
         WHERE address = #{address}
@@ -45,7 +49,8 @@
         LIMIT 1;
     </select>
 
-    <select id="searchByName" parameterType="java.lang.String" resultType="com.github.ontio.model.dao.NodeBonus">
+    <select id="searchByName" parameterType="java.lang.String" resultType="com.github.ontio.model.dao.NodeBonus"
+            useCache="true">
         SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
         FROM tbl_node_bonus
         WHERE name LIKE concat('%', #{name}, '%');
