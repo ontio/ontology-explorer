@@ -18,7 +18,7 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://127.0.0.1:3306/explorer?serverTimezone=UTC&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"
                         userId="root"
-                        password="lp3EtAL78K0RcFEv">
+                        password="${MYSQL_ROOT_PASSWORD}">
         </jdbcConnection>
 
         <javaModelGenerator targetPackage="com.github.ontio.model.dao" targetProject="src/main/java">
@@ -127,18 +127,22 @@
 
         <table tableName="tbl_address_daily_summary" domainObjectName="AddressDailySummary">
             <generatedKey column="id" sqlStatement="JDBC"/>
-    </table>
+        </table>
 
-    <table tableName="tbl_node_info_off_chain" domainObjectName="NodeInfoOffChain">
-        <generatedKey column="public_key" sqlStatement="JDBC"/>
-    </table>
+        <table tableName="tbl_node_info_off_chain" domainObjectName="NodeInfoOffChain">
+            <generatedKey column="public_key" sqlStatement="JDBC"/>
+        </table>
 
-    <table tableName="tbl_node_info_on_chain" domainObjectName="NodeInfoOnChain">
-        <generatedKey column="node_rank" sqlStatement="JDBC"/>
-    </table>
+        <table tableName="tbl_node_info_on_chain" domainObjectName="NodeInfoOnChain">
+            <generatedKey column="node_rank" sqlStatement="JDBC"/>
+        </table>
 
         <table tableName="tbl_node_bonus" domainObjectName="NodeBonus">
             <generatedKey column="public_key" sqlStatement="JDBC"/>
+        </table>
+
+        <table tableName="tbl_net_node_info" domainObjectName="NetNodeInfo">
+            <generatedKey column="ip" sqlStatement="JDBC"/>
         </table>
 
     </context>
