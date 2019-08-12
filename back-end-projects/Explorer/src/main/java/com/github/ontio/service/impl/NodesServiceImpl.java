@@ -18,10 +18,7 @@
 
 package com.github.ontio.service.impl;
 
-import com.github.ontio.mapper.NetNodeInfoMapper;
-import com.github.ontio.mapper.NodeBonusMapper;
-import com.github.ontio.mapper.NodeInfoOffChainMapper;
-import com.github.ontio.mapper.NodeInfoOnChainMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
 import com.github.ontio.service.INodesService;
@@ -40,6 +37,8 @@ public class NodesServiceImpl implements INodesService {
 
     private final NetNodeInfoMapper netNodeInfoMapper;
 
+    private final NodeOverviewMapper nodeOverviewMapper;
+
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
@@ -47,21 +46,41 @@ public class NodesServiceImpl implements INodesService {
     @Autowired
     public NodesServiceImpl(NodeBonusMapper nodeBonusMapper,
                             NetNodeInfoMapper netNodeInfoMapper,
+                            NodeOverviewMapper nodeOverviewMapper,
                             NodeInfoOnChainMapper nodeInfoOnChainMapper,
                             NodeInfoOffChainMapper nodeInfoOffChainMapper) {
         this.nodeBonusMapper = nodeBonusMapper;
         this.netNodeInfoMapper = netNodeInfoMapper;
+        this.nodeOverviewMapper = nodeOverviewMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
     }
 
-    @Override
-    public List<NodeInfoOnChain> getCurrentOnChainInfo() {
+    public long getBlkCountToNxtRnd() {
         try {
-            return nodeInfoOnChainMapper.selectAll();
+            return nodeOverviewMapper.selectBlkCountToNxtRnd();
         } catch (Exception e) {
-            log.error("Select node infos in chain failed: {}", e.getMessage());
+            log.warn("Getting block count to next round failed: {}", e.getMessage());
+            return -1;
+        }
+    }
+
+    @Override
+    public List<NodeInfoOnChainDto> getCurrentOnChainInfo() {
+        try {
+            return nodeInfoOnChainMapper.selectAllInfo();
+        } catch (Exception e) {
+            log.warn("Select node infos in chain failed: {}", e.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+    public long getCurrentTotalStake() {
+        try {
+            return nodeInfoOnChainMapper.selectTotalStake();
+        } catch (Exception e) {
+            log.warn("Selecting current total stake failed: {}", e.getMessage());
+            return -1;
         }
     }
 

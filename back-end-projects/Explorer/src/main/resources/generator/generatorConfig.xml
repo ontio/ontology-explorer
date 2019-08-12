@@ -145,5 +145,9 @@
             <generatedKey column="ip" sqlStatement="JDBC"/>
         </table>
 
+        <table tableName="tbl_node_overview" domainObjectName="NodeOverview">
+            <generatedKey column="id" sqlStatement="JDBC"/>
+        </table>
+
     </context>
 </generatorConfiguration>

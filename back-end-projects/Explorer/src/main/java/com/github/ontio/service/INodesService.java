@@ -19,12 +19,13 @@
 package com.github.ontio.service;
 
 import com.github.ontio.model.dao.*;
+import com.github.ontio.model.dto.NodeInfoOnChainDto;
 
 import java.util.List;
 
 public interface INodesService {
 
-    List<NodeInfoOnChain> getCurrentOnChainInfo();
+    List<NodeInfoOnChainDto> getCurrentOnChainInfo();
 
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey);
 
