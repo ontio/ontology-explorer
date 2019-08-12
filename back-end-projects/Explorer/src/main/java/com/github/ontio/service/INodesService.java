@@ -46,4 +46,10 @@ public interface INodesService {
 
     List<NetNodeInfo> getAllNodes();
 
+    long getSyncNodeCount();
+
+    long getCandidateNodeCount();
+
+    long getConsensusNodeCount();
+
 }

@@ -202,11 +202,32 @@ public class NodesServiceImpl implements INodesService {
         }
     }
 
+    @Override
     public long getSyncNodeCount() {
         try {
             return netNodeInfoMapper.selectSyncNodeCount();
         } catch (Exception e) {
             log.warn("Selecting sync node count failed: {}", e.getMessage());
+            return -1;
+        }
+    }
+
+    @Override
+    public long getCandidateNodeCount() {
+        try {
+            return nodeInfoOnChainMapper.selectCandidateNodeCount();
+        } catch (Exception e) {
+            log.warn("Selecting candidate node count failed: {}", e.getMessage());
+            return -1;
+        }
+    }
+
+    @Override
+    public long getConsensusNodeCount() {
+        try {
+            return nodeInfoOnChainMapper.selectConsensusNodeCount();
+        } catch (Exception e) {
+            log.warn("Selecting consensus node count failed: {}", e.getMessage());
             return -1;
         }
     }
