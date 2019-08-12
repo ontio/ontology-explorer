@@ -18,20 +18,16 @@
 
 package com.github.ontio.service.impl;
 
+import com.github.ontio.mapper.NetNodeInfoMapper;
 import com.github.ontio.mapper.NodeBonusMapper;
 import com.github.ontio.mapper.NodeInfoOffChainMapper;
 import com.github.ontio.mapper.NodeInfoOnChainMapper;
-import com.github.ontio.model.dao.NodeBonus;
-import com.github.ontio.model.dao.NodeInfoOffChain;
-import com.github.ontio.model.dao.NodeInfoOnChain;
-import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
+import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
 import com.github.ontio.service.INodesService;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.ehcache.transaction.xa.EhcacheXAException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tk.mybatis.spring.annotation.MapperScan;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,15 +38,19 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeBonusMapper nodeBonusMapper;
 
+    private final NetNodeInfoMapper netNodeInfoMapper;
+
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
     @Autowired
     public NodesServiceImpl(NodeBonusMapper nodeBonusMapper,
+                            NetNodeInfoMapper netNodeInfoMapper,
                             NodeInfoOnChainMapper nodeInfoOnChainMapper,
                             NodeInfoOffChainMapper nodeInfoOffChainMapper) {
         this.nodeBonusMapper = nodeBonusMapper;
+        this.netNodeInfoMapper = netNodeInfoMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
     }
@@ -179,6 +179,24 @@ public class NodesServiceImpl implements INodesService {
             }
         }
         return nodeInfoOnChainWithBonuses;
+    }
+
+    public List<NetNodeInfo> getActiveNetNodes() {
+        try {
+            return netNodeInfoMapper.selectAllActiveNodes();
+        } catch (Exception e) {
+            log.warn("Selecting all active nodes failed {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public List<NetNodeInfo> getAllNodes() {
+        try {
+            return netNodeInfoMapper.selectAllNodes();
+        } catch (Exception e) {
+            log.warn("Selecting all nodes failed: {}", e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
 }

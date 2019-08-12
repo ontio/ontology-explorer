@@ -18,10 +18,14 @@
         <result column="ip" jdbcType="VARCHAR" property="ip"/>
         <result column="website" jdbcType="VARCHAR" property="website"/>
     </resultMap>
-    <!--
-    self-defined SQL
-    -->
-    <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOffChainDto">
+
+    <cache type="com.github.ontio.config.RedisCache">
+        <property name="eviction" value="LRU"/>
+        <property name="size" value="1024"/>
+        <property name="readOnly" value="false"/>
+    </cache>
+
+    <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOffChainDto" useCache="true">
         SELECT public_key,
                name,
                address,
