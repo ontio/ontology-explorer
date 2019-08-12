@@ -75,4 +75,17 @@
         FROM tbl_node_info_on_chain
         WHERE name LIKE concat('%', #{name}, '%');
     </select>
+
+    <select id="selectCandidateNodeCount" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM tbl_node_info_on_chain
+        WHERE status = 1;
+    </select>
+
+    <select id="selectConsensusNodeCount" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM tbl_node_info_on_chain
+        WHERE status = 2;
+    </select>
+
 </mapper>

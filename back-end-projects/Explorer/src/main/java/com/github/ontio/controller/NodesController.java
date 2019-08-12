@@ -137,7 +137,7 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), netNodeInfoLst);
     }
 
-    @ApiOperation(value = "Get the count of sync node")
+    @ApiOperation(value = "Get the count of sync nodes")
     @GetMapping(value = "/sync-node-count")
     public ResponseBean getSyncNodeCount() {
         long count = nodesService.getSyncNodeCount();
@@ -146,4 +146,38 @@ public class NodesController {
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), count);
     }
+
+    @ApiOperation(value = "Get the count of candidate nodes")
+    @GetMapping(value = "/candidate-node-count")
+    public ResponseBean getCandidateNodeCount() {
+        long count = nodesService.getCandidateNodeCount();
+        if (count <= 0) {
+            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), count);
+    }
+
+    @ApiOperation(value = "Get the count of consensus nodes")
+    @GetMapping(value = "/consensus-node-count")
+    public ResponseBean getConsensusNodeCount() {
+        long count = nodesService.getConsensusNodeCount();
+        if (count <= 0) {
+            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), count);
+    }
+
+    @ApiOperation(value = "Get the count of nodes")
+    @GetMapping(value = "/node-count")
+    public ResponseBean getNodeCount() {
+        long syncNodeCount = nodesService.getSyncNodeCount();
+        long consensusNodeCount = nodesService.getConsensusNodeCount();
+        long candidateNodeCount = nodesService.getCandidateNodeCount();
+        if (syncNodeCount <= 0 || consensusNodeCount <= 0 || candidateNodeCount <= 0) {
+            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+        }
+        long count = syncNodeCount + consensusNodeCount + candidateNodeCount;
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), count);
+    }
+
 }

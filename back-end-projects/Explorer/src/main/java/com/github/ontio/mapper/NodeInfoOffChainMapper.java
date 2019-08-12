@@ -8,5 +8,7 @@ import tk.mybatis.mapper.common.Mapper;
 
 @Repository
 public interface NodeInfoOffChainMapper extends Mapper<NodeInfoOffChain> {
+
     NodeInfoOffChainDto selectByPublicKey(String publicKey);
+
 }
