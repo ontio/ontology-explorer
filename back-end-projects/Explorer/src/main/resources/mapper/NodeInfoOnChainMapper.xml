@@ -41,6 +41,11 @@
         FROM tbl_node_info_on_chain
     </select>
 
+    <select id="selectTotalStake" resultType="java.lang.Long" useCache="true">
+        SELECT SUM(current_stake)
+        FROM tbl_node_info_on_chain
+    </select>
+
     <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
         SELECT node_rank,
                name,
