@@ -31,7 +31,7 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get block count to next round")
-    @GetMapping(value = "/blk-cnt-to-nxt-rnd")
+    @GetMapping(value = "/block-count-to-next-round")
     public ResponseBean getBlkCountToNxtRnd() {
         long blkCountToNxtRnd = nodesService.getBlkCountToNxtRnd();
         if (blkCountToNxtRnd < 0) {
@@ -40,19 +40,8 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blkCountToNxtRnd);
     }
 
-
-    @ApiOperation(value = "Get candidate nodes information")
-    @GetMapping(value = "/current-stakes")
-    public ResponseBean getCurrentStake() {
-        List<NodeInfoOnChainDto> nodeInfoList = nodesService.getCurrentOnChainInfo();
-        if (nodeInfoList.size() == 0) {
-            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeInfoList);
-        }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
-    }
-
     @ApiOperation(value = "Get total ONT stakes")
-    @GetMapping(value = "/current-total-stake")
+    @GetMapping(value = "/current-stakes")
     public ResponseBean getCurrentTotalStake() {
         long curtTotalStake = nodesService.getCurrentTotalStake();
         if (curtTotalStake < 0) {
@@ -62,7 +51,7 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get the current percentage total ONT stakes of total supply")
-    @GetMapping(value = "/current-total-stake-percent")
+    @GetMapping(value = "/current-stakes-percent")
     public ResponseBean getCurrentTotalStakePercentage() {
         long curtTotalStake = nodesService.getCurrentTotalStake();
         if (curtTotalStake < 0) {
@@ -72,12 +61,12 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), percent.toPlainString().concat("%"));
     }
 
-    @ApiOperation(value = "Get candidate and consensus node information by public key")
-    @GetMapping(value = "/current-stake/{public_key}")
-    public ResponseBean getCurrentStakeByPublicKey(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
-        NodeInfoOnChain nodeInfoList = nodesService.getCurrentOnChainInfo(publicKey);
-        if (nodeInfoList == null) {
-            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
+    @ApiOperation(value = "Get candidate nodes information")
+    @GetMapping(value = "/on-chain-infos")
+    public ResponseBean getCurrentStake() {
+        List<NodeInfoOnChainDto> nodeInfoList = nodesService.getCurrentOnChainInfo();
+        if (nodeInfoList.size() == 0) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeInfoList);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
@@ -88,6 +77,16 @@ public class NodesController {
         List<NodeInfoOffChain> nodeInfoList = nodesService.getCurrentOffChainInfo();
         if (nodeInfoList.size() == 0) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeInfoList);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
+    }
+
+    @ApiOperation(value = "Get candidate and consensus node information by public key")
+    @GetMapping(value = "/on-chain-info/{public_key}")
+    public ResponseBean getCurrentStakeByPublicKey(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        NodeInfoOnChain nodeInfoList = nodesService.getCurrentOnChainInfo(publicKey);
+        if (nodeInfoList == null) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
