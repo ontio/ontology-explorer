@@ -40,6 +40,9 @@ public class NodeInfoOffChain {
 
     private String website;
 
+    @Column(name = "social_media")
+    private String socialMedia;
+
     /**
      * @return public_key
      */
@@ -206,5 +209,19 @@ public class NodeInfoOffChain {
      */
     public void setWebsite(String website) {
         this.website = website == null ? null : website.trim();
+    }
+
+    /**
+     * @return social_media
+     */
+    public String getSocialMedia() {
+        return socialMedia;
+    }
+
+    /**
+     * @param socialMedia
+     */
+    public void setSocialMedia(String socialMedia) {
+        this.socialMedia = socialMedia == null ? null : socialMedia.trim();
     }
 }
