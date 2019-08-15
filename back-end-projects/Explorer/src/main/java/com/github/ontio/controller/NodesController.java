@@ -1,5 +1,7 @@
 package com.github.ontio.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
@@ -9,10 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -142,8 +141,8 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get candidate nodes information by name")
-    @GetMapping(value = "/latest-bonuses-with-infos/search/{name}")
-    public ResponseBean searchNodeOnChainWithBonus(@PathVariable("name") @Length(min = 1, max = 100, message = "invalid name") String name) {
+    @GetMapping(value = "/latest-bonuses-with-infos/search")
+    public ResponseBean searchNodeOnChainWithBonus(@RequestParam("name") @Length(min = 1, max = 100, message = "invalid name") String name) {
         List<NodeInfoOnChainWithBonus> nodeInfoOnChainWithBonus = nodesService.searchNodeOnChainWithBonusByName(name);
         if (nodeInfoOnChainWithBonus.size() == 0) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
@@ -211,7 +210,12 @@ public class NodesController {
             return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
         }
         long count = syncNodeCount + consensusNodeCount + candidateNodeCount;
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), count);
+        JSONObject result = new JSONObject();
+        result.put("sync", syncNodeCount);
+        result.put("consensus", consensusNodeCount);
+        result.put("candidate", candidateNodeCount);
+        result.put("sum", count);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
 }
