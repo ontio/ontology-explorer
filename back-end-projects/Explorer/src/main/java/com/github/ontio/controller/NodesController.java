@@ -49,7 +49,7 @@ public class NodesController {
         BigDecimal percent = new BigDecimal(curtTotalStake).multiply(new BigDecimal(100)).divide(new BigDecimal(1000000000), 4, RoundingMode.HALF_UP);
         JSONObject result = new JSONObject();
         result.put("current_total_stakes", curtTotalStake);
-        result.put("current_stakes_percent", percent);
+        result.put("current_stakes_percent", percent.toPlainString().concat("%"));
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
