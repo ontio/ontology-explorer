@@ -194,7 +194,7 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get the count of nodes")
-    @GetMapping(value = "/node-count")
+    @GetMapping(value = "/count")
     public ResponseBean getNodeCount() {
         long syncNodeCount = nodesService.getSyncNodeCount();
         long consensusNodeCount = nodesService.getConsensusNodeCount();
@@ -204,10 +204,10 @@ public class NodesController {
         }
         long count = syncNodeCount + consensusNodeCount + candidateNodeCount;
         JSONObject result = new JSONObject();
-        result.put("sync", syncNodeCount);
-        result.put("consensus", consensusNodeCount);
-        result.put("candidate", candidateNodeCount);
-        result.put("total", count);
+        result.put("sync_node_count", syncNodeCount);
+        result.put("consensus_node_count", consensusNodeCount);
+        result.put("candidate_node_count", candidateNodeCount);
+        result.put("total_node_count", count);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 

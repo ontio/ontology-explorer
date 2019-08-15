@@ -19,6 +19,8 @@ public interface NodeInfoOnChainMapper extends Mapper<NodeInfoOnChain> {
 
     List<NodeInfoOnChainDto> searchByName(@Param("name") String name);
 
+    Long selectSyncNodesCount();
+
     Long selectCandidateNodeCount();
 
     Long selectConsensusNodeCount();

@@ -53,4 +53,6 @@ public interface INodesService {
 
     long getConsensusNodeCount();
 
+    long getSyncNodesCount();
+
 }
