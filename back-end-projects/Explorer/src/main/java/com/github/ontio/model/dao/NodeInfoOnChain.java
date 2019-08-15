@@ -45,13 +45,16 @@ public class NodeInfoOnChain {
     @Column(name = "node_proportion")
     private String nodeProportion;
 
+    @Column(name = "current_stake_percentage")
+    private String currentStakePercentage;
+
     public NodeInfoOnChain() {
 
     }
 
     public NodeInfoOnChain(Integer nodeRank, String name, Long currentStake, String progress, String detailUrl,
-                    String publicKey, String address, Integer status, Long initPos, Long totalPos,
-                    Long maxAuthorize, String nodeProportion) {
+                           String publicKey, String address, Integer status, Long initPos, Long totalPos,
+                           Long maxAuthorize, String nodeProportion, String currentStakePercentage) {
         this.nodeRank = nodeRank;
         this.name = name;
         this.currentStake = currentStake;
@@ -64,9 +67,10 @@ public class NodeInfoOnChain {
         this.totalPos = totalPos;
         this.maxAuthorize = maxAuthorize;
         this.nodeProportion = nodeProportion;
+        this.currentStakePercentage = currentStakePercentage;
     }
 
-    NodeInfoOnChain(NodeInfoOnChain nodeInfoOnChain) {
+    public NodeInfoOnChain(NodeInfoOnChain nodeInfoOnChain) {
         this.nodeRank = nodeInfoOnChain.getNodeRank();
         this.name = nodeInfoOnChain.getName();
         this.currentStake = nodeInfoOnChain.getCurrentStake();
@@ -79,6 +83,7 @@ public class NodeInfoOnChain {
         this.totalPos = nodeInfoOnChain.getTotalPos();
         this.maxAuthorize = nodeInfoOnChain.getMaxAuthorize();
         this.nodeProportion = nodeInfoOnChain.getNodeProportion();
+        this.currentStakePercentage = nodeInfoOnChain.getCurrentStakePercentage();
     }
 
 }

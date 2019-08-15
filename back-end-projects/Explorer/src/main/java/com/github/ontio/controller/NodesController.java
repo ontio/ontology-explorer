@@ -41,7 +41,7 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get total ONT stakes")
-    @GetMapping(value = "/current-stakes")
+    @GetMapping(value = "/current-total-stakes")
     public ResponseBean getCurrentTotalStake() {
         long curtTotalStake = nodesService.getCurrentTotalStake();
         if (curtTotalStake < 0) {
@@ -62,7 +62,7 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get candidate nodes information")
-    @GetMapping(value = "/on-chain-infos")
+    @GetMapping(value = "/current-stakes")
     public ResponseBean getCurrentStake() {
         List<NodeInfoOnChainDto> nodeInfoList = nodesService.getCurrentOnChainInfo();
         if (nodeInfoList.size() == 0) {

@@ -13,9 +13,9 @@ public class NodeInfoOnChainDto extends NodeInfoOnChain {
 
     public NodeInfoOnChainDto(Integer nodeRank, String name, Long currentStake, String progress, String detailUrl,
                               String publicKey, String address, Integer status, Long initPos, Long totalPos,
-                              Long maxAuthorize, String nodeProportion) {
+                              Long maxAuthorize, String nodeProportion, String currentStakePercentage) {
         super(nodeRank, name, currentStake, progress, detailUrl, publicKey, address, status, initPos, totalPos,
-                maxAuthorize, nodeProportion);
+                maxAuthorize, nodeProportion, currentStakePercentage);
     }
 
 }

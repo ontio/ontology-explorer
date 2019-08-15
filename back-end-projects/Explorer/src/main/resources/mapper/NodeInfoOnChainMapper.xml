@@ -17,6 +17,7 @@
         <result column="total_pos" jdbcType="BIGINT" property="totalPos"/>
         <result column="max_authorize" jdbcType="BIGINT" property="maxAuthorize"/>
         <result column="node_proportion" jdbcType="VARCHAR" property="nodeProportion"/>
+        <result column="current_stake_percentage" jdbcType="VARCHAR" property="currentStakePercentage"/>
     </resultMap>
 
     <cache type="com.github.ontio.config.RedisCache">
@@ -37,7 +38,8 @@
                init_pos,
                total_pos,
                max_authorize,
-               node_proportion
+               node_proportion,
+               current_stake_percentage
         FROM tbl_node_info_on_chain
     </select>
 
