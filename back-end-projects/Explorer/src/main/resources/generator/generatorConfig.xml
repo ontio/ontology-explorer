@@ -149,5 +149,13 @@
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
+        <table tableName="tbl_node_position_history" domainObjectName="NodePositionHistory">
+            <generatedKey column="public_key" sqlStatement="JDBC"/>
+        </table>
+
+        <table tableName="tbl_node_position_change" domainObjectName="NodePositionChange">
+            <generatedKey column="public_key" sqlStatement="JDBC"/>
+        </table>
+
     </context>
 </generatorConfiguration>

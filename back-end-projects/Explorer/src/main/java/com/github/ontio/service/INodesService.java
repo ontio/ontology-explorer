@@ -55,4 +55,6 @@ public interface INodesService {
 
     long getSyncNodesCount();
 
+    List<NodePositionChange> getNodeRankChange();
+
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodePositionHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodePositionHistory">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="public_key" jdbcType="VARCHAR" property="publicKey" />
+    <id column="block_height" jdbcType="BIGINT" property="blockHeight" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="node_rank" jdbcType="INTEGER" property="nodeRank" />
+  </resultMap>
+</mapper>

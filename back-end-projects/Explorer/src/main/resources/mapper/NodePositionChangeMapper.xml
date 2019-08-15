@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodePositionChangeMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodePositionChange">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="public_key" jdbcType="VARCHAR" property="publicKey" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="rank_change" jdbcType="INTEGER" property="rankChange" />
+  </resultMap>
+</mapper>
