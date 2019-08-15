@@ -49,8 +49,6 @@
     <select id="selectSyncNodeCount" resultType="java.lang.Long" useCache="true">
         SELECT count(1)
         FROM tbl_net_node_info
-        WHERE is_active = TRUE
-          AND is_consensus = FALSE;
     </select>
 
 </mapper>
