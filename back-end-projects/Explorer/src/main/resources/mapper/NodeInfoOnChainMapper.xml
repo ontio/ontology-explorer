@@ -60,7 +60,8 @@
                init_pos,
                total_pos,
                max_authorize,
-               node_proportion
+               node_proportion,
+               current_stake_percentage
         FROM tbl_node_info_on_chain
         WHERE public_key = #{publicKey}
         LIMIT 1;
@@ -78,7 +79,8 @@
                init_pos,
                total_pos,
                max_authorize,
-               node_proportion
+               node_proportion,
+               current_stake_percentage
         FROM tbl_node_info_on_chain
         WHERE name LIKE concat('%', #{name}, '%');
     </select>
