@@ -39,25 +39,18 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blkCountToNxtRnd);
     }
 
-    @ApiOperation(value = "Get total ONT stakes")
+    @ApiOperation(value = "Get total ONT stakes and percentage total ONT stakes of total supply")
     @GetMapping(value = "/current-total-stakes")
     public ResponseBean getCurrentTotalStake() {
         long curtTotalStake = nodesService.getCurrentTotalStake();
         if (curtTotalStake < 0) {
             return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), curtTotalStake);
         }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), curtTotalStake);
-    }
-
-    @ApiOperation(value = "Get the current percentage total ONT stakes of total supply")
-    @GetMapping(value = "/current-stakes-percent")
-    public ResponseBean getCurrentTotalStakePercentage() {
-        long curtTotalStake = nodesService.getCurrentTotalStake();
-        if (curtTotalStake < 0) {
-            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), curtTotalStake);
-        }
         BigDecimal percent = new BigDecimal(curtTotalStake).multiply(new BigDecimal(100)).divide(new BigDecimal(1000000000), 4, RoundingMode.HALF_UP);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), percent.toPlainString().concat("%"));
+        JSONObject result = new JSONObject();
+        result.put("current_total_stakes", curtTotalStake);
+        result.put("current_stakes_percent", percent);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
     @ApiOperation(value = "Get candidate nodes information")
