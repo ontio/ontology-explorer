@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `tbl_node_info_off_chain`
     latitude     DECIMAL(4, 2) NOT NULL DEFAULT 0,
     ip           VARCHAR(15)   NOT NULL DEFAULT '',
     website      VARCHAR(60)   NOT NULL DEFAULT '',
+    social_media VARCHAR(60)   NOT NULL DEFAULT '',
     primary key (public_key)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
