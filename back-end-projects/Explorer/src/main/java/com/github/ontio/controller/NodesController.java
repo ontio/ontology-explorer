@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -211,6 +212,16 @@ public class NodesController {
         result.put("candidate_node_count", candidateNodeCount);
         result.put("total_node_count", count);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+    @ApiOperation(value = "Get the nodes rank change info")
+    @GetMapping(value = "/rank-change")
+    public ResponseBean getNodeRankChange() {
+        List<NodePositionChange> nodePositionChangeList = nodesService.getNodeRankChange();
+        if (nodePositionChangeList.size() == 0) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), new ArrayList<>());
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodePositionChangeList);
     }
 
 }

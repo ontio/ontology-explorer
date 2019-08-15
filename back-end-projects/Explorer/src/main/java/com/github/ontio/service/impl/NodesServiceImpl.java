@@ -43,17 +43,21 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
+    private final NodePositionChangeMapper nodePositionChangeMapper;
+
     @Autowired
     public NodesServiceImpl(NodeBonusMapper nodeBonusMapper,
                             NetNodeInfoMapper netNodeInfoMapper,
                             NodeOverviewMapper nodeOverviewMapper,
                             NodeInfoOnChainMapper nodeInfoOnChainMapper,
-                            NodeInfoOffChainMapper nodeInfoOffChainMapper) {
+                            NodeInfoOffChainMapper nodeInfoOffChainMapper,
+                            NodePositionChangeMapper nodePositionChangeMapper) {
         this.nodeBonusMapper = nodeBonusMapper;
         this.netNodeInfoMapper = netNodeInfoMapper;
         this.nodeOverviewMapper = nodeOverviewMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
+        this.nodePositionChangeMapper = nodePositionChangeMapper;
     }
 
     public long getBlkCountToNxtRnd() {
@@ -242,7 +246,7 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public long getSyncNodesCount(){
+    public long getSyncNodesCount() {
         try {
             return nodeInfoOnChainMapper.selectSyncNodesCount();
         } catch (Exception e) {
@@ -258,6 +262,16 @@ public class NodesServiceImpl implements INodesService {
         } catch (Exception e) {
             log.warn("Selecting consensus node count failed: {}", e.getMessage());
             return -1;
+        }
+    }
+
+    @Override
+    public List<NodePositionChange> getNodeRankChange() {
+        try {
+            return nodePositionChangeMapper.selectAll();
+        } catch (Exception e) {
+            log.warn("Selecting node rank change info failed: {}", e.getMessage());
+            return new ArrayList<>();
         }
     }
 
