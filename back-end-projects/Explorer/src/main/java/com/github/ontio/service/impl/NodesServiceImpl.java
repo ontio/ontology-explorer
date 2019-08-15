@@ -242,6 +242,16 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
+    public long getSyncNodesCount(){
+        try {
+            return nodeInfoOnChainMapper.selectSyncNodesCount();
+        } catch (Exception e) {
+            log.warn("Selecting consensus node count failed: {}", e.getMessage());
+            return -1;
+        }
+    }
+
+    @Override
     public long getConsensusNodeCount() {
         try {
             return nodeInfoOnChainMapper.selectConsensusNodeCount();

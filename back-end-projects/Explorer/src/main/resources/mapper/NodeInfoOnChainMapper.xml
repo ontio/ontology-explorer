@@ -85,6 +85,11 @@
         WHERE name LIKE concat('%', #{name}, '%');
     </select>
 
+    <select id="selectSyncNodesCount" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM tbl_node_info_on_chain
+    </select>
+
     <select id="selectCandidateNodeCount" resultType="java.lang.Long">
         SELECT COUNT(1)
         FROM tbl_node_info_on_chain
