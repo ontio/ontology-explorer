@@ -214,7 +214,7 @@ public class NodesController {
         result.put("sync", syncNodeCount);
         result.put("consensus", consensusNodeCount);
         result.put("candidate", candidateNodeCount);
-        result.put("sum", count);
+        result.put("total", count);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
