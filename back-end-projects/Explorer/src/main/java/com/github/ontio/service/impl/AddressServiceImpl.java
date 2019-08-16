@@ -36,6 +36,10 @@ import java.util.Map;
 @Service("AddressService")
 public class AddressServiceImpl implements IAddressService {
 
+    private static final String ADDRESS_TYPE_FROM = "fromAddress";
+
+    private static final String ADDRESS_TYPE_TO = "toAddress";
+
     private final Oep4Mapper oep4Mapper;
     private final Oep8Mapper oep8Mapper;
     private final Oep5Mapper oep5Mapper;
@@ -854,7 +858,7 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(symbol)
                 .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                .balance(new BigDecimal((String) balanceArray.get(i-1)))
+                .balance(new BigDecimal((String) balanceArray.get(i - 1)))
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
@@ -956,15 +960,36 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime) {
+    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
-        //云斗龙资产使用like查询, for ONTO
-        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
-            assetName = assetName + "%";
-            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
-        } else {
-            transferTxDtos = txDetailMapper.selectTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
+
+        if (Helper.isEmptyOrNull(addressType)) {
+            //云斗龙资产使用like查询, for ONTO
+            if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+                assetName = assetName + "%";
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
+            } else {
+                transferTxDtos = txDetailMapper.selectTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
+            }
+        } else if (ADDRESS_TYPE_FROM.equals(addressType)) {
+            //query transfer txs by fromaddress
+            //dragon asset use 'like' query, for ONTO
+            if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+                assetName = assetName + "%";
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeInFromAddr4Onto(address, assetName, beginTime, endTime);
+            } else {
+                transferTxDtos = txDetailMapper.selectTransferTxsByTimeInFromAddr4Onto(address, assetName, beginTime, endTime);
+            }
+        } else if (ADDRESS_TYPE_TO.equals(addressType)) {
+            //query transfer txs by toaddress
+            //dragon asset use 'like' query, for ONTO
+            if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+                assetName = assetName + "%";
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeInToAddr4Onto(address, assetName, beginTime, endTime);
+            } else {
+                transferTxDtos = txDetailMapper.selectTransferTxsByTimeInToAddr4Onto(address, assetName, beginTime, endTime);
+            }
         }
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
@@ -972,21 +997,40 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize) {
+    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize, String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
-        //云斗龙资产使用like查询，for ONTO，只查询转账不包括ong手续费记录
-        if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
-            assetName = assetName + "%";
-            transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
-        } else {
-            transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
-        }
 
+        if (Helper.isEmptyOrNull(addressType)) {
+            //dragon asset use 'like' query, for ONTO
+            if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+                assetName = assetName + "%";
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
+            } else {
+                transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
+            }
+        } else if (ADDRESS_TYPE_FROM.equals(addressType)) {
+            //query transfer txs by fromaddress
+            //dragon asset use 'like' query, for ONTO
+            if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+                assetName = assetName + "%";
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPageInFromAddr4Onto(address, assetName, endTime, pageSize);
+            } else {
+                transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPageInFromAddr4Onto(address, assetName, endTime, pageSize);
+            }
+        } else if (ADDRESS_TYPE_TO.equals(addressType)) {
+            //query transfer txs by toaddress
+            //dragon asset use 'like' query, for ONTO
+            if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
+                assetName = assetName + "%";
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPageInToAddr4Onto(address, assetName, endTime, pageSize);
+            } else {
+                transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPageInToAddr4Onto(address, assetName, endTime, pageSize);
+            }
+        }
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
-
     }
 
     /**

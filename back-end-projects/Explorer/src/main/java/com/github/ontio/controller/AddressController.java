@@ -104,7 +104,8 @@ public class AddressController {
                                                                   @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
                                                                   @RequestParam(name = "begin_time", required = false) Long beginTime,
                                                                   @RequestParam(name = "end_time", required = false) Long endTime,
-                                                                  @RequestParam(name = "channel", required = false) String channel) {
+                                                                  @RequestParam(name = "channel", required = false) String channel,
+                                                                  @RequestParam(name = "address_type", required = false) @Pattern(regexp = "fromAddress|toAddress") String addressType) {
 
         log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
@@ -114,10 +115,10 @@ public class AddressController {
 
             if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
 
-                rs = addressService.queryTransferTxsByTime4Onto(address, assetName, beginTime, endTime);
+                rs = addressService.queryTransferTxsByTime4Onto(address, assetName, beginTime, endTime, addressType);
             } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {
 
-                rs = addressService.queryTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize);
+                rs = addressService.queryTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize, addressType);
             }
         } else {
             if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
