@@ -59,6 +59,6 @@ public interface INodesService {
 
     List<NodeInfoOffChain> getCurrentConsensusOffChainInfo();
 
-    List<NodePositionChange> getNodeRankChange(boolean isDesc);
+    List<NodeRankChange> getNodeRankChange(boolean isDesc);
 
 }

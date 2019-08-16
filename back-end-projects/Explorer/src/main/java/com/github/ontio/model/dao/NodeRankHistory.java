@@ -2,8 +2,8 @@ package com.github.ontio.model.dao;
 
 import javax.persistence.*;
 
-@Table(name = "tbl_node_position_history")
-public class NodePositionHistory {
+@Table(name = "tbl_node_rank_history")
+public class NodeRankHistory {
     @Id
     @Column(name = "public_key")
     @GeneratedValue(generator = "JDBC")

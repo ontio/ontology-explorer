@@ -149,11 +149,11 @@
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
-        <table tableName="tbl_node_position_history" domainObjectName="NodePositionHistory">
+        <table tableName="tbl_node_rank_history" domainObjectName="NodeRankHistory">
             <generatedKey column="public_key" sqlStatement="JDBC"/>
         </table>
 
-        <table tableName="tbl_node_position_change" domainObjectName="NodePositionChange">
+        <table tableName="tbl_node_rank_change" domainObjectName="NodeRankChange">
             <generatedKey column="public_key" sqlStatement="JDBC"/>
         </table>
 
