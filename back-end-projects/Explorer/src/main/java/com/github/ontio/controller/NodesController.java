@@ -216,8 +216,8 @@ public class NodesController {
 
     @ApiOperation(value = "Get the nodes rank change info")
     @GetMapping(value = "/rank-change")
-    public ResponseBean getNodeRankChange() {
-        List<NodePositionChange> nodePositionChangeList = nodesService.getNodeRankChange();
+    public ResponseBean getNodeRankChange(@RequestParam(value = "is-desc", defaultValue = "true") Boolean isDesc) {
+        List<NodePositionChange> nodePositionChangeList = nodesService.getNodeRankChange(isDesc);
         if (nodePositionChangeList.size() == 0) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), new ArrayList<>());
         }
