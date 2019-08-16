@@ -44,4 +44,40 @@
         WHERE public_key = #{publicKey}
         LIMIT 1;
     </select>
+
+    <select id="selectAllCandidateNodeInfo" resultType="com.github.ontio.model.dao.NodeInfoOffChain" useCache="true">
+        SELECT public_key,
+               name,
+               address,
+               ont_id,
+               node_type,
+               introduction,
+               logo_url,
+               region,
+               longitude,
+               latitude,
+               ip,
+               website,
+               social_media
+        FROM tbl_node_info_off_chain
+        WHERE node_type = 1;
+    </select>
+
+    <select id="selectAllConsensusNodeInfo" resultType="com.github.ontio.model.dao.NodeInfoOffChain" useCache="true">
+        SELECT public_key,
+               name,
+               address,
+               ont_id,
+               node_type,
+               introduction,
+               logo_url,
+               region,
+               longitude,
+               latitude,
+               ip,
+               website,
+               social_media
+        FROM tbl_node_info_off_chain
+        WHERE node_type = 2;
+    </select>
 </mapper>

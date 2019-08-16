@@ -68,8 +68,17 @@ public class NodesController {
 
     @ApiOperation(value = "Get nodes register information")
     @GetMapping(value = "/off-chain-infos")
-    public ResponseBean getOffChainInfo() {
-        List<NodeInfoOffChain> nodeInfoList = nodesService.getCurrentOffChainInfo();
+    public ResponseBean getOffChainInfo(@RequestParam(value = "node_type", defaultValue = "-1") Integer nodeType) {
+        List<NodeInfoOffChain> nodeInfoList = new ArrayList<>();
+        if (nodeType.equals(-1)) {
+            nodeInfoList = nodesService.getCurrentOffChainInfo();
+        } else if (nodeType.equals(1)) {
+            nodeInfoList = nodesService.getCurrentCandidateOffChainInfo();
+        } else if (nodeType.equals(2)) {
+            nodeInfoList = nodesService.getCurrentConsensusOffChainInfo();
+        } else {
+            return new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), nodeInfoList);
+        }
         if (nodeInfoList.size() == 0) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeInfoList);
         }
