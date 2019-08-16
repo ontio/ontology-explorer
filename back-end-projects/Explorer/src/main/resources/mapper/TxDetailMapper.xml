@@ -172,6 +172,36 @@
 
 
     <!--use for ONTO-->
+    <select id="selectTransferTxsByTimeInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
+        AND tx_time &gt;= #{startTime}
+        and <![CDATA[ tx_time <= #{endTime} ]]>
+        ORDER BY block_height DESC, tx_hash, tx_index
+    </select>
+
+
+    <!--use for ONTO-->
+    <select id="selectTransferTxsByTimeInToAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
+        AND tx_time &gt;= #{startTime}
+        and <![CDATA[ tx_time <= #{endTime} ]]>
+        ORDER BY block_height DESC, tx_hash, tx_index
+    </select>
+
+
+    <!--use for ONTO-->
     <select id="selectTransferTxsByTimeAndPage4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT *
         FROM
@@ -198,6 +228,35 @@
     </select>
 
     <!--use for ONTO-->
+    <select id="selectTransferTxsByTimeAndPageInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
+        AND <![CDATA[ tx_time < #{endTime} ]]>
+        ORDER BY tx_time DESC
+        limit #{pageSize}
+    </select>
+
+    <!--use for ONTO-->
+    <select id="selectTransferTxsByTimeAndPageInToAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
+        AND <![CDATA[ tx_time < #{endTime} ]]>
+        ORDER BY tx_time DESC
+        limit #{pageSize}
+    </select>
+
+
+    <!--use for ONTO-->
     <select id="selectDragonTransferTxsByTime4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT *
         FROM
@@ -220,6 +279,32 @@
     </select>
 
     <!--use for ONTO-->
+    <select id="selectDragonTransferTxsByTimeInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
+        AND tx_time &gt;= #{startTime}
+        and <![CDATA[ tx_time <= #{endTime} ]]>
+        ORDER BY block_height DESC, tx_hash, tx_index
+    </select>
+
+
+    <!--use for ONTO-->
+    <select id="selectDragonTransferTxsByTimeInToAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
+        AND tx_time &gt;= #{startTime}
+        and <![CDATA[ tx_time <= #{endTime} ]]>
+        ORDER BY block_height DESC, tx_hash, tx_index
+    </select>
+
+
+    <!--use for ONTO-->
     <select id="selectDragonTransferTxsByTimeAndPage4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT *
         FROM
@@ -238,6 +323,30 @@
         ) a
         where <![CDATA[ a.txTime < #{endTime} ]]>
         ORDER BY a.txTime DESC
+        limit #{pageSize}
+    </select>
+
+    <!--use for ONTO-->
+    <select id="selectDragonTransferTxsByTimeAndPageInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
+        where <![CDATA[ tx_time < #{endTime} ]]>
+        ORDER BY tx_time DESC
+        limit #{pageSize}
+    </select>
+
+    <!--use for ONTO-->
+    <select id="selectDragonTransferTxsByTimeAndPageInToAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT <include refid="transferTxDetailColumns" />
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
+        where <![CDATA[ tx_time < #{endTime} ]]>
+        ORDER BY tx_time DESC
         limit #{pageSize}
     </select>
 
