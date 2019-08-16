@@ -22,6 +22,8 @@ import java.util.List;
 @RequestMapping(value = "/v2/nodes")
 public class NodesController {
 
+    private final BigDecimal totalUnStakes = new BigDecimal(655000000);
+
     private final NodesServiceImpl nodesService;
 
     @Autowired
@@ -46,7 +48,6 @@ public class NodesController {
         if (curtTotalStake < 0) {
             return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), curtTotalStake);
         }
-        BigDecimal totalUnStakes = new BigDecimal(1000000000);
         BigDecimal percent = new BigDecimal(curtTotalStake).multiply(new BigDecimal(100)).divide(totalUnStakes, 4, RoundingMode.HALF_UP);
         JSONObject result = new JSONObject();
         result.put("current_total_stakes", curtTotalStake);
