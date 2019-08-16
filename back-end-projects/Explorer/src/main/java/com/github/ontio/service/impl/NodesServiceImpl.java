@@ -266,9 +266,12 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public List<NodePositionChange> getNodeRankChange() {
+    public List<NodePositionChange> getNodeRankChange(boolean isDesc) {
         try {
-            return nodePositionChangeMapper.selectAll();
+            if (isDesc){
+                return nodePositionChangeMapper.selectAllChangeInfoInDesc();
+            }
+            return nodePositionChangeMapper.selectAllChangeInfoInAsc();
         } catch (Exception e) {
             log.warn("Selecting node rank change info failed: {}", e.getMessage());
             return new ArrayList<>();

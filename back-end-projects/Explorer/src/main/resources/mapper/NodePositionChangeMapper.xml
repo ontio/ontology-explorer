@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.NodePositionChangeMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodePositionChange">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="public_key" jdbcType="VARCHAR" property="publicKey" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="rank_change" jdbcType="INTEGER" property="rankChange" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodePositionChange">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="public_key" jdbcType="VARCHAR" property="publicKey"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="rank_change" jdbcType="INTEGER" property="rankChange"/>
+    </resultMap>
+    <select id="selectAllChangeInfoInDesc" parameterType="java.lang.Boolean"
+            resultType="com.github.ontio.model.dao.NodePositionChange">
+        SELECT public_key AS publicKey, address, name, rank_change
+        FROM tbl_node_position_change
+        ORDER BY rank_change DESC;
+    </select>
+    <select id="selectAllChangeInfoInAsc" parameterType="java.lang.Boolean"
+            resultType="com.github.ontio.model.dao.NodePositionChange">
+        SELECT public_key AS publicKey, address, name, rank_change
+        FROM tbl_node_position_change
+        ORDER BY rank_change;
+    </select>
 </mapper>
