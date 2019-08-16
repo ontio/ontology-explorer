@@ -86,8 +86,8 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get candidate and consensus node information by public key")
-    @GetMapping(value = "/on-chain-info/{public_key}")
-    public ResponseBean getCurrentStakeByPublicKey(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+    @GetMapping(value = "/on-chain-info")
+    public ResponseBean getCurrentStakeByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
         NodeInfoOnChain nodeInfoList = nodesService.getCurrentOnChainInfo(publicKey);
         if (nodeInfoList == null) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
@@ -96,8 +96,8 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get node register information by public key")
-    @GetMapping(value = "/off-chain-info/{public_key}")
-    public ResponseBean getOffChainInfoByPublicKey(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+    @GetMapping(value = "/off-chain-info")
+    public ResponseBean getOffChainInfoByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
         NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfo(publicKey);
         if (nodeInfoList == null) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
@@ -116,19 +116,18 @@ public class NodesController {
     }
 
     @ApiOperation(value = "Get latest reward per 10000 ONT stake unit by public key")
-    @GetMapping(value = "/latest-bonus/{public_key}")
-    public ResponseBean getLatestBonusByPublicKey(@PathVariable("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
-        NodeBonus nodeBonus = nodesService.getLatestBonusByPublicKey(publicKey);
-        if (nodeBonus == null) {
-            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
+    @GetMapping(value = "/latest-bonus")
+    public ResponseBean getLatestBonusByAddress(
+            @RequestParam(value = "address", defaultValue = "") @Length(min = 34, max = 34, message = "invalid address") String address,
+            @RequestParam(value = "public_key", defaultValue = "") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        NodeBonus nodeBonus;
+        if (address.length() == 34) {
+            nodeBonus = nodesService.getLatestBonusByAddress(address);
+        } else if (publicKey.length() != 0) {
+            nodeBonus = nodesService.getLatestBonusByPublicKey(publicKey);
+        } else {
+            return new ResponseBean(ErrorInfo.PARAM_ERROR.code(), ErrorInfo.PARAM_ERROR.desc(), "");
         }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeBonus);
-    }
-
-    @ApiOperation(value = "Get latest reward per 10000 ONT stake unit by public key")
-    @GetMapping(value = "/latest-bonus/address/{address}")
-    public ResponseBean getLatestBonusByAddress(@PathVariable("address") @Length(min = 34, max = 34, message = "invalid address") String address) {
-        NodeBonus nodeBonus = nodesService.getLatestBonusByAddress(address);
         if (nodeBonus == null) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
