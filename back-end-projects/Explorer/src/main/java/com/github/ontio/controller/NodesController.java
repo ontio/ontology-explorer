@@ -1,6 +1,5 @@
 package com.github.ontio.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
@@ -226,7 +225,7 @@ public class NodesController {
     @ApiOperation(value = "Get the nodes rank change info")
     @GetMapping(value = "/rank-change")
     public ResponseBean getNodeRankChange(@RequestParam(value = "is-desc", defaultValue = "true") Boolean isDesc) {
-        List<NodePositionChange> nodePositionChangeList = nodesService.getNodeRankChange(isDesc);
+        List<NodeRankChange> nodePositionChangeList = nodesService.getNodeRankChange(isDesc);
         if (nodePositionChangeList.size() == 0) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), new ArrayList<>());
         }

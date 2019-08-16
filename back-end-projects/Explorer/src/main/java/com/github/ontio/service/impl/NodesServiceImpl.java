@@ -40,25 +40,25 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeOverviewMapper nodeOverviewMapper;
 
+    private final NodeRankChangeMapper nodeRankChangeMapper;
+
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
-
-    private final NodePositionChangeMapper nodePositionChangeMapper;
 
     @Autowired
     public NodesServiceImpl(NodeBonusMapper nodeBonusMapper,
                             NetNodeInfoMapper netNodeInfoMapper,
                             NodeOverviewMapper nodeOverviewMapper,
+                            NodeRankChangeMapper nodeRankChangeMapper,
                             NodeInfoOnChainMapper nodeInfoOnChainMapper,
-                            NodeInfoOffChainMapper nodeInfoOffChainMapper,
-                            NodePositionChangeMapper nodePositionChangeMapper) {
+                            NodeInfoOffChainMapper nodeInfoOffChainMapper) {
         this.nodeBonusMapper = nodeBonusMapper;
         this.netNodeInfoMapper = netNodeInfoMapper;
         this.nodeOverviewMapper = nodeOverviewMapper;
+        this.nodeRankChangeMapper = nodeRankChangeMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
-        this.nodePositionChangeMapper = nodePositionChangeMapper;
     }
 
     public long getBlkCountToNxtRnd() {
@@ -287,12 +287,12 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public List<NodePositionChange> getNodeRankChange(boolean isDesc) {
+    public List<NodeRankChange> getNodeRankChange(boolean isDesc) {
         try {
-            if (isDesc){
-                return nodePositionChangeMapper.selectAllChangeInfoInDesc();
+            if (isDesc) {
+                return nodeRankChangeMapper.selectAllChangeInfoInDesc();
             }
-            return nodePositionChangeMapper.selectAllChangeInfoInAsc();
+            return nodeRankChangeMapper.selectAllChangeInfoInAsc();
         } catch (Exception e) {
             log.warn("Selecting node rank change info failed: {}", e.getMessage());
             return new ArrayList<>();
