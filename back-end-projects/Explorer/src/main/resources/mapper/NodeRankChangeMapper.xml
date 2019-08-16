@@ -13,13 +13,13 @@
   <select id="selectAllChangeInfoInDesc" parameterType="java.lang.Boolean"
           resultType="com.github.ontio.model.dao.NodeRankChange">
     SELECT public_key AS publicKey, address, name, rank_change AS rankChange
-    FROM tbl_node_position_change
+    FROM tbl_node_rank_change
     ORDER BY rank_change DESC;
   </select>
   <select id="selectAllChangeInfoInAsc" parameterType="java.lang.Boolean"
           resultType="com.github.ontio.model.dao.NodeRankChange">
     SELECT public_key AS publicKey, address, name, rank_change AS rankChange
-    FROM tbl_node_position_change
+    FROM tbl_node_rank_change
     ORDER BY rank_change;
   </select>
 </mapper>
