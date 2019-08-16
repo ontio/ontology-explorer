@@ -55,6 +55,10 @@ public interface INodesService {
 
     long getSyncNodesCount();
 
+    List<NodeInfoOffChain> getCurrentCandidateOffChainInfo();
+
+    List<NodeInfoOffChain> getCurrentConsensusOffChainInfo();
+
     List<NodePositionChange> getNodeRankChange(boolean isDesc);
 
 }

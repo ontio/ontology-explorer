@@ -20,6 +20,7 @@ package com.github.ontio.service.impl;
 
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.dao.*;
+import com.github.ontio.model.dto.NodeInfoOffChainDto;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
 import com.github.ontio.service.INodesService;
 import lombok.extern.slf4j.Slf4j;
@@ -104,6 +105,26 @@ public class NodesServiceImpl implements INodesService {
             return nodeInfoOffChainMapper.selectAll();
         } catch (Exception e) {
             log.error("Select node infos off chain failed: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<NodeInfoOffChain> getCurrentCandidateOffChainInfo() {
+        try {
+            return nodeInfoOffChainMapper.selectAllCandidateNodeInfo();
+        } catch (Exception e) {
+            log.error("Select candidate node infos off chain failed: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<NodeInfoOffChain> getCurrentConsensusOffChainInfo() {
+        try {
+            return nodeInfoOffChainMapper.selectAllConsensusNodeInfo();
+        } catch (Exception e) {
+            log.error("Select consensus node infos off chain failed: {}", e.getMessage());
             return new ArrayList<>();
         }
     }
