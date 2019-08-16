@@ -18,7 +18,7 @@
     </select>
     <select id="selectAllChangeInfoInAsc" parameterType="java.lang.Boolean"
             resultType="com.github.ontio.model.dao.NodePositionChange">
-        SELECT public_key AS publicKey, address, name, rank_change
+        SELECT public_key AS publicKey, address, name, rank_change AS rankChange
         FROM tbl_node_position_change
         ORDER BY rank_change;
     </select>
