@@ -10,7 +10,7 @@ public class NodeInfoOnChainWithBonus extends NodeInfoOnChain {
 
     private Long unixTime;
 
-    private Double bonus;
+    private String bonus;
 
     public NodeInfoOnChainWithBonus() {
     }
@@ -18,7 +18,7 @@ public class NodeInfoOnChainWithBonus extends NodeInfoOnChain {
     public NodeInfoOnChainWithBonus(NodeInfoOnChain nodeInfoOnChain) {
         super(nodeInfoOnChain);
         this.unixTime = 0L;
-        this.bonus = 0D;
+        this.bonus = "";
     }
 
     public NodeInfoOnChainWithBonus(NodeInfoOnChainDto nodeInfoOnChain, NodeBonus nodeBonus) {
@@ -27,7 +27,7 @@ public class NodeInfoOnChainWithBonus extends NodeInfoOnChain {
             return;
         }
         this.unixTime = nodeBonus.getUnixTime();
-        this.bonus = nodeBonus.getBonus();
+        this.bonus = String.valueOf(nodeBonus.getBonus());
     }
 
 }
