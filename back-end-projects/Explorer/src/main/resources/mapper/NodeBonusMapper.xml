@@ -49,11 +49,12 @@
         LIMIT 1;
     </select>
 
-    <select id="searchByName" parameterType="java.lang.String" resultType="com.github.ontio.model.dao.NodeBonus"
+    <select id="searchLatestNodeBonusListByName" parameterType="java.lang.String" resultType="com.github.ontio.model.dao.NodeBonus"
             useCache="true">
         SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
         FROM tbl_node_bonus
-        WHERE name LIKE concat('%', #{name}, '%');
+        WHERE name LIKE concat('%', #{name}, '%')
+        ORDER BY unix_time DESC;
     </select>
 
 </mapper>
