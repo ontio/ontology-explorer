@@ -20,7 +20,6 @@ package com.github.ontio.service.impl;
 
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.model.dto.NodeInfoOffChainDto;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
 import com.github.ontio.service.INodesService;
 import lombok.extern.slf4j.Slf4j;
@@ -196,7 +195,7 @@ public class NodesServiceImpl implements INodesService {
         }
         List<NodeBonus> nodeBonusLst;
         try {
-            nodeBonusLst = nodeBonusMapper.searchByName(name);
+            nodeBonusLst = nodeBonusMapper.searchLatestNodeBonusListByName(name);
         } catch (Exception e) {
             log.warn("Search node bonus with name {} failed: {}", name, e.getMessage());
             return new ArrayList<>();
