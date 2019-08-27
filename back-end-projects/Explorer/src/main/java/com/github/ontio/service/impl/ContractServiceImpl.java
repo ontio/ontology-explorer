@@ -41,25 +41,25 @@ import java.util.*;
 @Service("ContractService")
 public class ContractServiceImpl implements IContractService {
 
+    private final ContractDailySummaryMapper contractDailySummaryMapper;
     private final ContractMapper contractMapper;
     private final Oep4TxDetailMapper oep4TxDetailMapper;
     private final Oep5TxDetailMapper oep5TxDetailMapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
-    private final TxDetailMapper txDetailMapper;
     private final TxEventLogMapper txEventLogMapper;
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
     @Autowired
-    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailMapper txDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper) {
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
-        this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
+        this.contractDailySummaryMapper = contractDailySummaryMapper;
     }
 
     private OntologySDKService sdk;
@@ -393,9 +393,9 @@ public class ContractServiceImpl implements IContractService {
                 obj.put("node_pubkey", map.get("node_pubkey"));
                 //根据公钥查节点钱包地址
                 NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey((String) map.get("node_pubkey"));
-                if(Helper.isNotEmptyOrNull(nodeInfoOffChainDto)){
+                if (Helper.isNotEmptyOrNull(nodeInfoOffChainDto)) {
                     obj.put("node_wallet", nodeInfoOffChainDto.getAddress());
-                }else {
+                } else {
                     obj.put("node_wallet", "");
                 }
 
@@ -409,4 +409,129 @@ public class ContractServiceImpl implements IContractService {
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
     }
+
+
+    @Override
+    public ResponseBean queryDappstoreDappsInfo(Integer pageSize, Integer pageNumber) {
+
+        Map<String, Object> rsMap = new HashMap<>();
+
+        List<Map> allDappstoreDapp = contractMapper.selectDappstoreDapp();
+        if (allDappstoreDapp.isEmpty()) {
+            rsMap.put("contracts", new ArrayList<>());
+            rsMap.put("total", 0);
+        } else {
+            List<String> allContractHashList = new ArrayList<>();
+            //one dapp may has many contracts
+            Set<Object> allDappNameSet = new HashSet<>();
+            allDappstoreDapp.forEach(item -> {
+                allDappNameSet.add(item.get("dapp_name"));
+                allContractHashList.add((String) item.get("contract_hash"));
+            });
+
+            long yesterday0HourTimestamp = getDaysAgo0HourTimestamp(1);
+            long last7Day0HourTimestamp = getDaysAgo0HourTimestamp(7);
+
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("beginTime", last7Day0HourTimestamp);
+            paramMap.put("endTime", yesterday0HourTimestamp);
+            paramMap.put("contractHashList", allContractHashList);
+            paramMap.put("start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
+            paramMap.put("pageSize", pageSize);
+            //根据dappName分组查询周统计数据，并以week_activeaddress_count和week_tx_count倒序
+            List<Map> dappOneWeekInfoList = contractDailySummaryMapper.selectDappstoreDappOneWeekInfo(paramMap);
+            if (dappOneWeekInfoList.size() > 0) {
+                //获取分页后的dapp_name列表
+                List<String> dappNameList = new ArrayList<>();
+                dappOneWeekInfoList.forEach(item -> dappNameList.add((String) item.get("dapp_name")));
+
+                Map<String, Object> paramMap2 = new HashMap<>();
+                paramMap2.put("dappNameList", dappNameList);
+                List<String> contractHashList = contractMapper.selectHashByDappName(paramMap2);
+
+                paramMap.put("contractHashList", contractHashList);
+                paramMap.put("time", yesterday0HourTimestamp);
+                //查询dapp日统计数据
+                List<Map> dappDayInfoList = contractDailySummaryMapper.selectDappstoreContractYesterdayInfo(paramMap);
+
+                for (Map map :
+                        dappOneWeekInfoList) {
+                    String dappName = (String) map.get("dapp_name");
+                    for (Map contractMap :
+                            allDappstoreDapp) {
+                        if (dappName.equals(contractMap.get("dapp_name"))) {
+                            map.putAll(contractMap);
+                        }
+                    }
+                    for (Map map2 :
+                            dappDayInfoList) {
+                        if (dappName.equals(map2.get("dapp_name"))) {
+                            map.putAll(map2);
+                        }
+                    }
+                }
+            }
+
+            rsMap.put("contracts", dappOneWeekInfoList);
+            rsMap.put("total", allDappstoreDapp.size());
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+
+    @Override
+    public ResponseBean queryDappstoreDappsSummary() {
+
+        Map rsMap = new HashMap();
+        //查询Dappstore的合约基本信息
+        List<Map> allDappstoreDapp = contractMapper.selectDappstoreDapp();
+        if (allDappstoreDapp.isEmpty()) {
+            rsMap.put("day_ont_sum", 0);
+            rsMap.put("day_ong_sum", 0);
+            rsMap.put("day_activeaddress_count", 0);
+            rsMap.put("day_tx_count", 0);
+            rsMap.put("total", 0);
+        } else {
+            List<String> allContractHashList = new ArrayList<>();
+            //一个dapp可能会有多个合约
+            Set<Object> allDappNameSet = new HashSet<>();
+            allDappstoreDapp.forEach(item -> {
+                allDappNameSet.add(item.get("dapp_name"));
+                allContractHashList.add((String) item.get("contract_hash"));
+            });
+
+            rsMap.put("total", allDappNameSet.size());
+
+            long yesterday0HourTime = getDaysAgo0HourTimestamp(1);
+
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("contractHashList", allContractHashList);
+            paramMap.put("time", yesterday0HourTime);
+            Map contractInfo = contractDailySummaryMapper.selectAllDappstoreDappYesterdayInfo(paramMap);
+            if (Helper.isEmptyOrNull(contractInfo)) {
+                rsMap.put("day_ont_sum", 0);
+                rsMap.put("day_ong_sum", 0);
+                rsMap.put("day_activeaddress_count", 0);
+                rsMap.put("day_tx_count", 0);
+            } else {
+                rsMap.putAll(contractInfo);
+            }
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+
+    private long getDaysAgo0HourTimestamp(int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.DAY_OF_MONTH, -days);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        long zeroHourTimestamp = calendar.getTimeInMillis() / 1000L;
+        return zeroHourTimestamp;
+    }
+
+
 }

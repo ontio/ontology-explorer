@@ -36,4 +36,8 @@ public interface IContractService {
 
     ResponseBean queryBindedNodeDappInfo(long startTime, long endTime);
 
+    ResponseBean queryDappstoreDappsInfo(Integer pageSize, Integer pageNumber);
+
+    ResponseBean queryDappstoreDappsSummary();
+
 }

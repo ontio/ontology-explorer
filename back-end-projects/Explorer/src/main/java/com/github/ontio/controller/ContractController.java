@@ -129,4 +129,25 @@ public class ContractController {
     }
 
 
+    @ApiOperation(value = "Get Dapp store dapp information")
+    @GetMapping(value = "/dappstore-dapps")
+    public ResponseBean queryDappstoreDappsInfo(@RequestParam("page_size") @Max(20) @Min(1) Integer pageSize,
+                                                @RequestParam("page_number") @Min(1) Integer pageNumber) {
+
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        return contractService.queryDappstoreDappsInfo(pageSize, pageNumber);
+    }
+
+
+    @ApiOperation(value = "Get all Dapp store dapp summary information")
+    @GetMapping(value = "/dappstore-dapps/summary")
+    public ResponseBean queryDappstoreDappsSummary() {
+
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        return contractService.queryDappstoreDappsSummary();
+    }
+
+
 }
