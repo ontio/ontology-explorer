@@ -422,7 +422,7 @@ public class ContractServiceImpl implements IContractService {
             rsMap.put("total", 0);
         } else {
             List<String> allContractHashList = new ArrayList<>();
-            //one dapp may has many contracts
+            //one dapp may contains many contracts
             Set<Object> allDappNameSet = new HashSet<>();
             allDappstoreDapp.forEach(item -> {
                 allDappNameSet.add(item.get("dapp_name"));
@@ -438,10 +438,10 @@ public class ContractServiceImpl implements IContractService {
             paramMap.put("contractHashList", allContractHashList);
             paramMap.put("start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
             paramMap.put("pageSize", pageSize);
-            //根据dappName分组查询周统计数据，并以week_activeaddress_count和week_tx_count倒序
+            //query week summary info by dapp_name，order by week_activeaddress_count,week_tx_count desc
             List<Map> dappOneWeekInfoList = contractDailySummaryMapper.selectDappstoreDappOneWeekInfo(paramMap);
             if (dappOneWeekInfoList.size() > 0) {
-                //获取分页后的dapp_name列表
+                //get dapp_name list by page
                 List<String> dappNameList = new ArrayList<>();
                 dappOneWeekInfoList.forEach(item -> dappNameList.add((String) item.get("dapp_name")));
 
@@ -451,21 +451,27 @@ public class ContractServiceImpl implements IContractService {
 
                 paramMap.put("contractHashList", contractHashList);
                 paramMap.put("time", yesterday0HourTimestamp);
-                //查询dapp日统计数据
+                //query daily summary info by dapp_name
                 List<Map> dappDayInfoList = contractDailySummaryMapper.selectDappstoreContractYesterdayInfo(paramMap);
 
                 for (Map map :
                         dappOneWeekInfoList) {
+                    map.put("week_ont_sum",((BigDecimal)map.get("week_ont_sum")).stripTrailingZeros().toPlainString());
+                    map.put("week_ong_sum",((BigDecimal)map.get("week_ong_sum")).stripTrailingZeros().toPlainString());
                     String dappName = (String) map.get("dapp_name");
                     for (Map contractMap :
                             allDappstoreDapp) {
                         if (dappName.equals(contractMap.get("dapp_name"))) {
+                            contractMap.put("total_reward",((BigDecimal)contractMap.get("total_reward")).stripTrailingZeros().toPlainString());
+                            contractMap.put("lastweek_reward",((BigDecimal)contractMap.get("lastweek_reward")).stripTrailingZeros().toPlainString());
                             map.putAll(contractMap);
                         }
                     }
                     for (Map map2 :
                             dappDayInfoList) {
                         if (dappName.equals(map2.get("dapp_name"))) {
+                            map2.put("day_ont_sum",((BigDecimal)map2.get("day_ont_sum")).stripTrailingZeros().toPlainString());
+                            map2.put("day_ong_sum",((BigDecimal)map2.get("day_ong_sum")).stripTrailingZeros().toPlainString());
                             map.putAll(map2);
                         }
                     }
@@ -487,8 +493,8 @@ public class ContractServiceImpl implements IContractService {
         //查询Dappstore的合约基本信息
         List<Map> allDappstoreDapp = contractMapper.selectDappstoreDapp();
         if (allDappstoreDapp.isEmpty()) {
-            rsMap.put("day_ont_sum", 0);
-            rsMap.put("day_ong_sum", 0);
+            rsMap.put("day_ont_sum", "0");
+            rsMap.put("day_ong_sum", "0");
             rsMap.put("day_activeaddress_count", 0);
             rsMap.put("day_tx_count", 0);
             rsMap.put("total", 0);
@@ -510,11 +516,13 @@ public class ContractServiceImpl implements IContractService {
             paramMap.put("time", yesterday0HourTime);
             Map contractInfo = contractDailySummaryMapper.selectAllDappstoreDappYesterdayInfo(paramMap);
             if (Helper.isEmptyOrNull(contractInfo)) {
-                rsMap.put("day_ont_sum", 0);
-                rsMap.put("day_ong_sum", 0);
+                rsMap.put("day_ont_sum", "0");
+                rsMap.put("day_ong_sum", "0");
                 rsMap.put("day_activeaddress_count", 0);
                 rsMap.put("day_tx_count", 0);
             } else {
+                contractInfo.put("day_ont_sum",((BigDecimal)contractInfo.get("day_ont_sum")).stripTrailingZeros().toPlainString());
+                contractInfo.put("day_ong_sum",((BigDecimal)contractInfo.get("day_ong_sum")).stripTrailingZeros().toPlainString());
                 rsMap.putAll(contractInfo);
             }
         }
