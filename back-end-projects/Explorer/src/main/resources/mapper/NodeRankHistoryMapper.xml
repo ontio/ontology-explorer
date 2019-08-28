@@ -17,7 +17,8 @@
         FROM tbl_node_rank_history
         WHERE block_height > #{firstRoundBlockHeight};
     </select>
-    <select id="selectNodeRankHistoryListByBlockHeight" parameterType="java.lang.Long" resultType="com.github.ontio.explorer.statistics.model.NodeRankHistory"
+    <select id="selectNodeRankHistoryListByBlockHeight" parameterType="java.lang.Long"
+            resultType="com.github.ontio.model.dao.NodeRankHistory"
             useCache="false">
         SELECT public_key AS publicKey, address, name, node_rank AS nodeRank, block_height AS blockHeight
         FROM tbl_node_rank_history
