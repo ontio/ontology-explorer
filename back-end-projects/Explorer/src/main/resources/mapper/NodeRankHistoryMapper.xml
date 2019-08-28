@@ -18,8 +18,8 @@
         LIMIT 1;
     </select>
     <select id="selectRecentNodeRankHistory" parameterType="java.lang.Long"
-            resultType="com.github.ontio.model.dao.NodeRankHistory">
-        SELECT public_key AS publicKey, address, name, node_rank AS nodeRank
+            resultType="com.github.ontio.model.dao.NodeRankHistory" useCache="true">
+        SELECT public_key AS publicKey, address, name, node_rank AS nodeRank, block_height AS blockHeight
         FROM tbl_node_rank_history
         WHERE block_height > #{firstRoundBlockHeight};
     </select>
