@@ -61,4 +61,5 @@ public interface INodesService {
 
     List<NodeRankChange> getNodeRankChange(boolean isDesc);
 
+    List<NodeRankHistory> getRecentNodeRankHistory();
 }

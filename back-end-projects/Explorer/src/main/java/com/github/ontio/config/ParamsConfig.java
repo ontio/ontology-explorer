@@ -66,4 +66,7 @@ public class ParamsConfig {
     @Value("${querybalance.mode}")
     public Integer QUERYBALANCE_MODE;
 
+    @Value("${config.newStakingRoundBlockCount}")
+    public Long newStakingRoundBlockCount;
+
 }
