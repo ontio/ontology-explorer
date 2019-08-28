@@ -11,6 +11,12 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="node_rank" jdbcType="INTEGER" property="nodeRank"/>
     </resultMap>
+    <select id="selectCurrentRoundBlockHeight" resultType="java.lang.Long" useCache="false">
+        SELECT block_height
+        FROM tbl_node_rank_history
+        ORDER BY block_height DESC
+        LIMIT 1;
+    </select>
     <select id="selectRecentNodeRankHistory" parameterType="java.lang.Long"
             resultType="com.github.ontio.model.dao.NodeRankHistory">
         SELECT public_key AS publicKey, address, name, node_rank AS nodeRank
