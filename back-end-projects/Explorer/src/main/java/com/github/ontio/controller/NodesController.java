@@ -232,4 +232,14 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodePositionChangeList);
     }
 
+    @ApiOperation(value = "Get node rank in history")
+    @GetMapping(value = "/ranks/history")
+    public ResponseBean getNodeRankHistory() {
+        List<NodeRankHistory> nodePositionChangeList = nodesService.getRecentNodeRankHistory();
+        if (nodePositionChangeList.size() == 0) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), new ArrayList<>());
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodePositionChangeList);
+    }
+
 }

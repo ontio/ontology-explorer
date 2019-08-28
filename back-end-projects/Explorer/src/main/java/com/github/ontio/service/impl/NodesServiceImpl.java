@@ -18,6 +18,7 @@
 
 package com.github.ontio.service.impl;
 
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
@@ -33,6 +34,8 @@ import java.util.List;
 @Service("NodesService")
 public class NodesServiceImpl implements INodesService {
 
+    private final ParamsConfig paramsConfig;
+
     private final NodeBonusMapper nodeBonusMapper;
 
     private final NetNodeInfoMapper netNodeInfoMapper;
@@ -41,22 +44,28 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeRankChangeMapper nodeRankChangeMapper;
 
+    private final NodeRankHistoryMapper nodeRankHistoryMapper;
+
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
     @Autowired
-    public NodesServiceImpl(NodeBonusMapper nodeBonusMapper,
+    public NodesServiceImpl(ParamsConfig paramsConfig,
+                            NodeBonusMapper nodeBonusMapper,
                             NetNodeInfoMapper netNodeInfoMapper,
                             NodeOverviewMapper nodeOverviewMapper,
                             NodeRankChangeMapper nodeRankChangeMapper,
                             NodeInfoOnChainMapper nodeInfoOnChainMapper,
+                            NodeRankHistoryMapper nodeRankHistoryMapper,
                             NodeInfoOffChainMapper nodeInfoOffChainMapper) {
+        this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
         this.netNodeInfoMapper = netNodeInfoMapper;
         this.nodeOverviewMapper = nodeOverviewMapper;
         this.nodeRankChangeMapper = nodeRankChangeMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
+        this.nodeRankHistoryMapper = nodeRankHistoryMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
     }
 
@@ -292,6 +301,18 @@ public class NodesServiceImpl implements INodesService {
                 return nodeRankChangeMapper.selectAllChangeInfoInDesc();
             }
             return nodeRankChangeMapper.selectAllChangeInfoInAsc();
+        } catch (Exception e) {
+            log.warn("Selecting node rank change info failed: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<NodeRankHistory> getRecentNodeRankHistory() {
+        try {
+            long currentRoundBlockHeight = nodeRankHistoryMapper.selectCurrentRoundBlockHeight();
+            long firstRoundBlockHeight = currentRoundBlockHeight - 3 * paramsConfig.newStakingRoundBlockCount;
+            return nodeRankHistoryMapper.selectRecentNodeRankHistory(firstRoundBlockHeight);
         } catch (Exception e) {
             log.warn("Selecting node rank change info failed: {}", e.getMessage());
             return new ArrayList<>();
