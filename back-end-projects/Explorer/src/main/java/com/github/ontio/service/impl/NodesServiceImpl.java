@@ -28,7 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service("NodesService")
@@ -78,10 +80,30 @@ public class NodesServiceImpl implements INodesService {
         }
     }
 
+    private Map<String, NodeRankChange> getNodeRankChange() {
+        List<NodeRankChange> nodeRankChangeList = nodeRankChangeMapper.selectAll();
+        Map<String, NodeRankChange> nodeRankChangeMap = new HashMap<>();
+        for (NodeRankChange node : nodeRankChangeList) {
+            nodeRankChangeMap.put(node.getPublicKey(), node);
+        }
+        return nodeRankChangeMap;
+    }
+
     @Override
-    public List<NodeInfoOnChainDto> getCurrentOnChainInfo() {
+    public List<NodeInfoOnChainWithRankChange> getCurrentOnChainInfo() {
         try {
-            return nodeInfoOnChainMapper.selectAllInfo();
+            List<NodeInfoOnChainDto> nodeInfoOnChainList = nodeInfoOnChainMapper.selectAllInfo();
+            Map<String, NodeRankChange> nodeRankChangeMap = getNodeRankChange();
+            List<NodeInfoOnChainWithRankChange> nodeInfoOnChainWithRankChanges = new ArrayList<>();
+            for (NodeInfoOnChainDto nodeInfo : nodeInfoOnChainList) {
+                NodeRankChange nodeRankChange = nodeRankChangeMap.getOrDefault(nodeInfo.getPublicKey(), null);
+                if (nodeRankChange == null) {
+                    nodeInfoOnChainWithRankChanges.add(new NodeInfoOnChainWithRankChange(nodeInfo, 0));
+                }else {
+                    nodeInfoOnChainWithRankChanges.add(new NodeInfoOnChainWithRankChange(nodeInfo, nodeRankChange));
+                }
+            }
+            return nodeInfoOnChainWithRankChanges;
         } catch (Exception e) {
             log.warn("Select node infos in chain failed: {}", e.getMessage());
             return new ArrayList<>();
