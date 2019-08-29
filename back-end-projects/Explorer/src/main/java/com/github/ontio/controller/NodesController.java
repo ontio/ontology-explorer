@@ -59,7 +59,7 @@ public class NodesController {
     @ApiOperation(value = "Get candidate nodes information")
     @GetMapping(value = "/current-stakes")
     public ResponseBean getCurrentStake() {
-        List<NodeInfoOnChainDto> nodeInfoList = nodesService.getCurrentOnChainInfo();
+        List<NodeInfoOnChainWithRankChange> nodeInfoList = nodesService.getCurrentOnChainInfo();
         if (nodeInfoList.size() == 0) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), nodeInfoList);
         }
