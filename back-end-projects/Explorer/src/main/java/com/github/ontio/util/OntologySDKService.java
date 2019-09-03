@@ -199,7 +199,7 @@ public class OntologySDKService {
             }
             return rsMap;
         } catch (Exception e) {
-            log.error("getDappBindedNodeInfo error...", e);
+            log.error("dappContractHash:{} getDappBindedNodeInfo error...", dappContractHash,e);
         }
         return rsMap;
     }

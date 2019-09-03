@@ -112,7 +112,7 @@
         #{item}
       </foreach>
     </if>
-    order by dapp_name
+    order by dapp_name,create_time asc
   </select>
 
   <select id="selectHashByDappName" parameterType="java.util.Map" resultType="java.lang.String" >

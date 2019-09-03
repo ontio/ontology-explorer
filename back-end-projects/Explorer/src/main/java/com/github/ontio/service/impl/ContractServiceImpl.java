@@ -24,6 +24,8 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.NodeInfoOffChain;
+import com.github.ontio.model.dao.NodeInfoOnChain;
 import com.github.ontio.model.dto.*;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ConstantParam;
@@ -33,6 +35,7 @@ import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -49,9 +52,10 @@ public class ContractServiceImpl implements IContractService {
     private final TxEventLogMapper txEventLogMapper;
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
+    private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
 
     @Autowired
-    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper) {
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper,NodeInfoOnChainMapper nodeInfoOnChainMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
@@ -60,6 +64,7 @@ public class ContractServiceImpl implements IContractService {
         this.txEventLogMapper = txEventLogMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
+        this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
     }
 
     private OntologySDKService sdk;
@@ -391,23 +396,67 @@ public class ContractServiceImpl implements IContractService {
                 obj.put("total_fee", map.get("total_fee"));
                 obj.put("reward_fee", map.get("reward_fee"));
                 obj.put("node_pubkey", map.get("node_pubkey"));
-                //根据公钥查节点钱包地址
-                NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey((String) map.get("node_pubkey"));
-                if (Helper.isNotEmptyOrNull(nodeInfoOffChainDto)) {
-                    obj.put("node_wallet", nodeInfoOffChainDto.getAddress());
-                } else {
-                    obj.put("node_wallet", "");
+                //query node wallet address
+                String nodeWallet = getNodeWallet((String) map.get("node_name"),(String) map.get("node_pubkey"));
+                if(Helper.isNotEmptyOrNull(nodeWallet)){
+                    obj.put("node_wallet", nodeWallet);
+
+                    JSONArray dappNameArray = new JSONArray();
+                    dappNameArray.add(map.get("dapp_name"));
+                    obj.put("binded_dapp_names", dappNameArray);
+
+                    rsMap.put(nodeName, obj);
                 }
-
-                JSONArray dappNameArray = new JSONArray();
-                dappNameArray.add(map.get("dapp_name"));
-                obj.put("binded_dapp_names", dappNameArray);
-
-                rsMap.put(nodeName, obj);
             }
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+
+    /**
+     * query node wallet address
+     * @param nodeName
+     * @param nodePubkey
+     * @return
+     */
+    private String getNodeWallet(String nodeName, String nodePubkey){
+
+        NodeInfoOnChain nodeInfoOnChain = new NodeInfoOnChain();
+        NodeInfoOffChain nodeInfoOffChain = new NodeInfoOffChain();
+
+        Example example1 = new Example(NodeInfoOnChain.class);
+        Example.Criteria criteria1 = example1.createCriteria();
+        criteria1.andEqualTo("publicKey",nodePubkey);
+        nodeInfoOnChain = nodeInfoOnChainMapper.selectOneByExample(example1);
+        if(Helper.isNotEmptyOrNull(nodeInfoOnChain)){
+            return nodeInfoOnChain.getAddress();
+        }
+
+        Example example2 = new Example(NodeInfoOnChain.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo("name",nodeName);
+        nodeInfoOnChain = nodeInfoOnChainMapper.selectOneByExample(example2);
+        if(Helper.isNotEmptyOrNull(nodeInfoOnChain)){
+            return nodeInfoOnChain.getAddress();
+        }
+
+        NodeInfoOffChainDto nodeInfoOffChainDto1 = NodeInfoOffChainDto.builder()
+                .publicKey(nodePubkey)
+                .build();
+        nodeInfoOffChain = nodeInfoOffChainMapper.selectOne(nodeInfoOffChainDto1);
+        if(Helper.isNotEmptyOrNull(nodeInfoOffChain)){
+            return  nodeInfoOffChain.getAddress();
+        }
+
+        NodeInfoOffChainDto nodeInfoOffChainDto2 = NodeInfoOffChainDto.builder()
+                .name(nodeName)
+                .build();
+        nodeInfoOffChain = nodeInfoOffChainMapper.selectOne(nodeInfoOffChainDto2);
+        if(Helper.isNotEmptyOrNull(nodeInfoOffChain)){
+            return  nodeInfoOffChain.getAddress();
+        }
+        return "";
     }
 
 
