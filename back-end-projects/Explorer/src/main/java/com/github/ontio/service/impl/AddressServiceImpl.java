@@ -943,7 +943,7 @@ public class AddressServiceImpl implements IAddressService {
      */
     private List<TransferTxDto> getTransferTxDtosByPage(int pageNumber, int pageSize, List<TransferTxDto> formattedTransferTxDtos) {
 
-        int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+        int start = (pageNumber - 1) * pageSize > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageNumber - 1) * pageSize;
         int end = (pageSize + start) > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageSize + start);
 
         return formattedTransferTxDtos.subList(start, end);
