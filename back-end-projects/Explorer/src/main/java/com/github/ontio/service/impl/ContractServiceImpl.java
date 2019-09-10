@@ -528,7 +528,7 @@ public class ContractServiceImpl implements IContractService {
             }
 
             rsMap.put("contracts", dappOneWeekInfoList);
-            rsMap.put("total", allDappstoreDapp.size());
+            rsMap.put("total", allDappNameSet.size());
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
