@@ -21,7 +21,7 @@ CREATE TABLE `tbl_address_daily_summary`
     `id`            int(11)     NOT NULL AUTO_INCREMENT,
     `time`          int(11)     NOT NULL COMMENT '当天UTC0点时间戳',
     `contract_hash` varchar(64) NOT NULL COMMENT '合约hash值',
-    `address`       varchar(64) NOT NULL DEFAULT '',
+    `address`       varchar(255) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`) USING BTREE,
     KEY `idx_time` (`time`) USING BTREE
 ) ENGINE = InnoDB
