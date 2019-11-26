@@ -75,4 +75,13 @@ public class ParamsConfig {
     @Value("${logo.temp.filePath}")
     public String LOGO_TEMP_FILEPATH;
 
+    @Value("#{'${config.hosts}'.split(',')}")
+    private List<String> hosts = new ArrayList<>();
+
+    public interface Field {
+
+        String maxStakingChangeCount = "maxStakingChangeCount";
+
+    }
+
 }
