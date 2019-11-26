@@ -82,7 +82,7 @@ public class BlockServiceImpl implements IBlockService {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
         List<TxBasicDto> txBasicDtos = txEventLogMapper.selectTxsByBlockHeight(blockHeight);
-        if (Helper.isNotEmptyOrNull(txBasicDtos)) {
+        if (Helper.isNotEmptyAndNull(txBasicDtos)) {
             blockDto.setTxs(txBasicDtos);
         }
 
@@ -99,7 +99,7 @@ public class BlockServiceImpl implements IBlockService {
         int blockHeight = blockDto.getBlockHeight();
 
         List<TxBasicDto> txBasicDtos = txEventLogMapper.selectTxsByBlockHeight(blockHeight);
-        if (Helper.isNotEmptyOrNull(txBasicDtos)) {
+        if (Helper.isNotEmptyAndNull(txBasicDtos)) {
             blockDto.setTxs(txBasicDtos);
         }
 

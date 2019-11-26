@@ -74,7 +74,7 @@ public class BasicTest {
         Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
 
         String result = ((JSONObject) obj).getString("Result");
-        if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
+        if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
 
             Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
            System.out.println("node_name:"+new String(Helper.hexToBytes(((String) map.get("node_name")))));
@@ -106,7 +106,7 @@ public class BasicTest {
 
         String result = ((JSONObject) obj).getString("Result");
         System.out.println("result:"+result);
-/*        if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
+/*        if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
 
             Map<String,Object> map = (Map<String,Object>) BuildParams.deserializeItem(Helper.hexToBytes(result));
             for(String key:map.keySet()){
@@ -114,7 +114,7 @@ public class BasicTest {
             }
 
         }*/
-        if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
+        if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
 
             Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
             System.out.println("receive_account:"+ Address.parse((String) map.get("receive_account")).toBase58());

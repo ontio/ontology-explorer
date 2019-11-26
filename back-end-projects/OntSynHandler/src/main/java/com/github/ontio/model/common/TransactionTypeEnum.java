@@ -32,9 +32,14 @@ public enum TransactionTypeEnum {
     DEPLOYCODE(208),
 
     /**
-     * InvokeCodeTransaction
+     * neovm InvokeCodeTransaction
      */
-    INVOKECODE(209);
+    NEOVM_INVOKECODE(209),
+
+    /**
+     * wasmvm InvokeCodeTransaction
+     */
+    WASMVM_INVOKECODE(210);
 
 
     private int type;

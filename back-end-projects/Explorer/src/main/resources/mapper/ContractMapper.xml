@@ -25,6 +25,7 @@
     <result column="dappstore_flag" jdbcType="INTEGER" property="dappstoreFlag" />
     <result column="total_reward" jdbcType="DECIMAL" property="totalReward" />
     <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
     <result column="abi" jdbcType="LONGVARCHAR" property="abi" />
     <result column="code" jdbcType="LONGVARCHAR" property="code" />
     <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
@@ -112,7 +113,23 @@
         #{item}
       </foreach>
     </if>
-    order by dapp_name
+    order by dapp_name,create_time asc
+  </select>
+
+  <select id="selectHashByDappName" parameterType="java.util.Map" resultType="java.lang.String" >
+    select contract_hash
+    from tbl_contract
+    where dapp_name in
+    <foreach close=")" collection="dappNameList" index="index" item="item" open="(" separator=",">
+      #{item}
+    </foreach>
+  </select>
+
+
+  <select id="selectDappstoreDapp" resultType="java.util.Map" >
+    select contract_hash, logo, description, category, create_time, dapp_name, total_reward, lastweek_reward
+    from tbl_contract
+    where dappstore_flag = 1
   </select>
 
 </mapper>

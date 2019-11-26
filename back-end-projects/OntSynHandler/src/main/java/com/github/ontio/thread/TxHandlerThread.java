@@ -38,7 +38,6 @@ import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.ehcache.transaction.xa.EhcacheXAException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -120,7 +119,8 @@ public class TxHandlerThread {
         int txType = txJson.getInteger("TxType");
         String txHash = txJson.getString("Hash");
         String payer = txJson.getString("Payer");
-        String calledContractHash = parseCalledContractHash(txJson);
+        String code = txJson.getJSONObject("Payload").getString("Code");
+        String calledContractHash = parseCalledContractHash(code, txType);
         log.info("####txType:{}, txHash:{}, calledContractHash:{}", txType, txHash, calledContractHash);
 
         try {
@@ -222,26 +222,31 @@ public class TxHandlerThread {
     /**
      * 解析这笔交易真正调用的合约hash
      *
-     * @param txJson
+     * @param code
+     * @param txType
      * @return
      */
-    private String parseCalledContractHash(JSONObject txJson) {
+    private String parseCalledContractHash(String code, Integer txType) {
 
-        String code = txJson.getJSONObject("Payload").getString("Code");
         String calledContractHash = "";
+        if (TransactionTypeEnum.NEOVM_INVOKECODE.type() == txType) {
 
-        while (code.contains(ConstantParam.TXPAYLOAD_CODE_FLAG)) {
-            int index = code.indexOf(ConstantParam.TXPAYLOAD_CODE_FLAG);
-            code = code.substring(index + 2);
-            if (code.length() < 40) {
-                //native合约都是792e4e61746976652e496e766f6b65
-                calledContractHash = code;
-                break;
-            } else if (code.length() == 40) {
-                calledContractHash = Helper.reverse(code);
-                break;
+            while (code.contains(ConstantParam.TXPAYLOAD_CODE_FLAG)) {
+                int index = code.indexOf(ConstantParam.TXPAYLOAD_CODE_FLAG);
+                code = code.substring(index + 2);
+                if (code.length() < 40) {
+                    //native合约都是792e4e61746976652e496e766f6b65
+                    calledContractHash = code;
+                    break;
+                } else if (code.length() == 40) {
+                    calledContractHash = Helper.reverse(code);
+                    break;
+                }
             }
+        } else if (TransactionTypeEnum.WASMVM_INVOKECODE.type() == txType) {
+            calledContractHash = Helper.reverse(code.substring(0, 40));
         }
+
         //判断属于什么OEP类型交易
         if (ConstantParam.OEP5CONTRACTS.contains(calledContractHash)) {
             IS_OEPTX_FLAG.get().put(ConstantParam.IS_OEP5TX, true);

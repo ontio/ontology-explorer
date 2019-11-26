@@ -21,9 +21,12 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.NodeInfoOffChain;
+import com.github.ontio.model.dao.NodeInfoOnChain;
 import com.github.ontio.model.dto.*;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ConstantParam;
@@ -33,6 +36,7 @@ import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -41,25 +45,29 @@ import java.util.*;
 @Service("ContractService")
 public class ContractServiceImpl implements IContractService {
 
+    private final ContractDailySummaryMapper contractDailySummaryMapper;
     private final ContractMapper contractMapper;
     private final Oep4TxDetailMapper oep4TxDetailMapper;
     private final Oep5TxDetailMapper oep5TxDetailMapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
-    private final TxDetailMapper txDetailMapper;
     private final TxEventLogMapper txEventLogMapper;
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
+    private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
+    private final AmazonS3Service amazonS3Service;
 
     @Autowired
-    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxDetailMapper txDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper) {
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper, AmazonS3Service amazonS3Service) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
-        this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
+        this.contractDailySummaryMapper = contractDailySummaryMapper;
+        this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
+        this.amazonS3Service = amazonS3Service;
     }
 
     private OntologySDKService sdk;
@@ -284,7 +292,7 @@ public class ContractServiceImpl implements IContractService {
                 String contractHash = (String) item;
                 // 从合约查询绑定钱包信息
                 Map bindedOntidAndAccount = sdk.getDappBindedOntidAndAccount(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
-                if (Helper.isNotEmptyOrNull(bindedOntidAndAccount.get("receive_account"))) {
+                if (Helper.isNotEmptyAndNull(bindedOntidAndAccount.get("receive_account"))) {
                     walletArray.add(bindedOntidAndAccount.get("receive_account"));
                 }
             });
@@ -356,7 +364,7 @@ public class ContractServiceImpl implements IContractService {
                 String contractHash = (String) item;
                 // 从合约查询绑定节点信息
                 Map bindedNodeInfo = sdk.getDappBindedNodeInfo(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
-                if (Helper.isNotEmptyOrNull(bindedNodeInfo.get("node_pubkey")) && Helper.isNotEmptyOrNull(bindedNodeInfo.get("node_name"))) {
+                if (Helper.isNotEmptyAndNull(bindedNodeInfo.get("node_pubkey")) && Helper.isNotEmptyAndNull(bindedNodeInfo.get("node_name"))) {
                     map.put("node_pubkey", bindedNodeInfo.get("node_pubkey"));
                     map.put("node_name", bindedNodeInfo.get("node_name"));
                 }
@@ -391,22 +399,232 @@ public class ContractServiceImpl implements IContractService {
                 obj.put("total_fee", map.get("total_fee"));
                 obj.put("reward_fee", map.get("reward_fee"));
                 obj.put("node_pubkey", map.get("node_pubkey"));
-                //根据公钥查节点钱包地址
-                NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey((String) map.get("node_pubkey"));
-                if(Helper.isNotEmptyOrNull(nodeInfoOffChainDto)){
-                    obj.put("node_wallet", nodeInfoOffChainDto.getAddress());
-                }else {
-                    obj.put("node_wallet", "");
+                //query node wallet address
+                String nodeWallet = getNodeWallet((String) map.get("node_name"), (String) map.get("node_pubkey"));
+                if (Helper.isNotEmptyAndNull(nodeWallet)) {
+                    obj.put("node_wallet", nodeWallet);
+
+                    JSONArray dappNameArray = new JSONArray();
+                    dappNameArray.add(map.get("dapp_name"));
+                    obj.put("binded_dapp_names", dappNameArray);
+
+                    rsMap.put(nodeName, obj);
                 }
-
-                JSONArray dappNameArray = new JSONArray();
-                dappNameArray.add(map.get("dapp_name"));
-                obj.put("binded_dapp_names", dappNameArray);
-
-                rsMap.put(nodeName, obj);
             }
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+
+    /**
+     * query node wallet address
+     *
+     * @param nodeName
+     * @param nodePubkey
+     * @return
+     */
+    private String getNodeWallet(String nodeName, String nodePubkey) {
+
+        NodeInfoOnChain nodeInfoOnChain = new NodeInfoOnChain();
+        NodeInfoOffChain nodeInfoOffChain = new NodeInfoOffChain();
+
+        Example example1 = new Example(NodeInfoOnChain.class);
+        Example.Criteria criteria1 = example1.createCriteria();
+        criteria1.andEqualTo("publicKey", nodePubkey);
+        nodeInfoOnChain = nodeInfoOnChainMapper.selectOneByExample(example1);
+        if (Helper.isNotEmptyAndNull(nodeInfoOnChain)) {
+            return nodeInfoOnChain.getAddress();
+        }
+
+        Example example2 = new Example(NodeInfoOnChain.class);
+        Example.Criteria criteria2 = example2.createCriteria();
+        criteria2.andEqualTo("name", nodeName);
+        nodeInfoOnChain = nodeInfoOnChainMapper.selectOneByExample(example2);
+        if (Helper.isNotEmptyAndNull(nodeInfoOnChain)) {
+            return nodeInfoOnChain.getAddress();
+        }
+
+        NodeInfoOffChainDto nodeInfoOffChainDto1 = NodeInfoOffChainDto.builder()
+                .publicKey(nodePubkey)
+                .build();
+        nodeInfoOffChain = nodeInfoOffChainMapper.selectOne(nodeInfoOffChainDto1);
+        if (Helper.isNotEmptyAndNull(nodeInfoOffChain)) {
+            return nodeInfoOffChain.getAddress();
+        }
+
+        NodeInfoOffChainDto nodeInfoOffChainDto2 = NodeInfoOffChainDto.builder()
+                .name(nodeName)
+                .build();
+        nodeInfoOffChain = nodeInfoOffChainMapper.selectOne(nodeInfoOffChainDto2);
+        if (Helper.isNotEmptyAndNull(nodeInfoOffChain)) {
+            return nodeInfoOffChain.getAddress();
+        }
+        return "";
+    }
+
+
+    @Override
+    public ResponseBean queryDappstoreDappsInfo(Integer pageSize, Integer pageNumber) {
+
+        Map<String, Object> rsMap = new HashMap<>();
+
+        List<Map> allDappstoreDapp = contractMapper.selectDappstoreDapp();
+        if (allDappstoreDapp.isEmpty()) {
+            rsMap.put("contracts", new ArrayList<>());
+            rsMap.put("total", 0);
+        } else {
+            List<String> allContractHashList = new ArrayList<>();
+            //one dapp may contains many contracts
+            Set<Object> allDappNameSet = new HashSet<>();
+            allDappstoreDapp.forEach(item -> {
+                allDappNameSet.add(item.get("dapp_name"));
+                allContractHashList.add((String) item.get("contract_hash"));
+            });
+
+            long yesterday0HourTimestamp = getDaysAgo0HourTimestamp(1);
+            long last7Day0HourTimestamp = getDaysAgo0HourTimestamp(7);
+
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("beginTime", last7Day0HourTimestamp);
+            paramMap.put("endTime", yesterday0HourTimestamp);
+            paramMap.put("contractHashList", allContractHashList);
+            paramMap.put("start", pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1));
+            paramMap.put("pageSize", pageSize);
+            //query week summary info by dapp_name，order by week_activeaddress_count,week_tx_count desc
+            List<Map> dappOneWeekInfoList = contractDailySummaryMapper.selectDappstoreDappOneWeekInfo(paramMap);
+            if (dappOneWeekInfoList.size() > 0) {
+                //get dapp_name list by page
+                List<String> dappNameList = new ArrayList<>();
+                dappOneWeekInfoList.forEach(item -> dappNameList.add((String) item.get("dapp_name")));
+
+                Map<String, Object> paramMap2 = new HashMap<>();
+                paramMap2.put("dappNameList", dappNameList);
+                List<String> contractHashList = contractMapper.selectHashByDappName(paramMap2);
+
+                paramMap.put("contractHashList", contractHashList);
+                paramMap.put("time", yesterday0HourTimestamp);
+                //query daily summary info by dapp_name
+                List<Map> dappDayInfoList = contractDailySummaryMapper.selectDappstoreContractYesterdayInfo(paramMap);
+
+                for (Map map :
+                        dappOneWeekInfoList) {
+                    map.put("week_ont_sum", ((BigDecimal) map.get("week_ont_sum")).stripTrailingZeros().toPlainString());
+                    map.put("week_ong_sum", ((BigDecimal) map.get("week_ong_sum")).stripTrailingZeros().toPlainString());
+                    String dappName = (String) map.get("dapp_name");
+                    for (Map contractMap :
+                            allDappstoreDapp) {
+                        if (dappName.equals(contractMap.get("dapp_name"))) {
+                            contractMap.put("total_reward", ((BigDecimal) contractMap.get("total_reward")).stripTrailingZeros().toPlainString());
+                            contractMap.put("lastweek_reward", ((BigDecimal) contractMap.get("lastweek_reward")).stripTrailingZeros().toPlainString());
+                            map.putAll(contractMap);
+                        }
+                    }
+                    for (Map map2 :
+                            dappDayInfoList) {
+                        if (dappName.equals(map2.get("dapp_name"))) {
+                            map2.put("day_ont_sum", ((BigDecimal) map2.get("day_ont_sum")).stripTrailingZeros().toPlainString());
+                            map2.put("day_ong_sum", ((BigDecimal) map2.get("day_ong_sum")).stripTrailingZeros().toPlainString());
+                            map.putAll(map2);
+                        }
+                    }
+                }
+            }
+
+            rsMap.put("contracts", dappOneWeekInfoList);
+            rsMap.put("total", allDappNameSet.size());
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+
+    @Override
+    public ResponseBean queryDappstoreDappsSummary() {
+
+        Map rsMap = new HashMap();
+        //查询Dappstore的合约基本信息
+        List<Map> allDappstoreDapp = contractMapper.selectDappstoreDapp();
+        if (allDappstoreDapp.isEmpty()) {
+            rsMap.put("day_ont_sum", "0");
+            rsMap.put("day_ong_sum", "0");
+            rsMap.put("day_activeaddress_count", 0);
+            rsMap.put("day_tx_count", 0);
+            rsMap.put("total", 0);
+        } else {
+            List<String> allContractHashList = new ArrayList<>();
+            //一个dapp可能会有多个合约
+            Set<Object> allDappNameSet = new HashSet<>();
+            allDappstoreDapp.forEach(item -> {
+                allDappNameSet.add(item.get("dapp_name"));
+                allContractHashList.add((String) item.get("contract_hash"));
+            });
+
+            rsMap.put("total", allDappNameSet.size());
+
+            long yesterday0HourTime = getDaysAgo0HourTimestamp(1);
+
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("contractHashList", allContractHashList);
+            paramMap.put("time", yesterday0HourTime);
+            Map contractInfo = contractDailySummaryMapper.selectAllDappstoreDappYesterdayInfo(paramMap);
+            if (Helper.isEmptyOrNull(contractInfo)) {
+                rsMap.put("day_ont_sum", "0");
+                rsMap.put("day_ong_sum", "0");
+                rsMap.put("day_activeaddress_count", 0);
+                rsMap.put("day_tx_count", 0);
+            } else {
+                contractInfo.put("day_ont_sum", ((BigDecimal) contractInfo.get("day_ont_sum")).stripTrailingZeros().toPlainString());
+                contractInfo.put("day_ong_sum", ((BigDecimal) contractInfo.get("day_ong_sum")).stripTrailingZeros().toPlainString());
+                rsMap.putAll(contractInfo);
+            }
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+
+    private long getDaysAgo0HourTimestamp(int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.DAY_OF_MONTH, -days);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        long zeroHourTimestamp = calendar.getTimeInMillis() / 1000L;
+        return zeroHourTimestamp;
+    }
+
+
+    @Override
+    public ResponseBean submitContract(SubmitContractDto submitContractDto) {
+
+        String contractHash = submitContractDto.getContractHash();
+        ContractDto contractDtoTemp = contractMapper.selectByPrimaryKey(contractHash);
+        if (Helper.isEmptyOrNull(contractDtoTemp)) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        } else if (contractDtoTemp.getAuditFlag() == 1) {
+            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
+        }
+
+        String fileName = contractHash + ConstantParam.LOGO_PNG_SUFFIX;
+        amazonS3Service.uploadFile2S3(submitContractDto.getLogo(), fileName);
+
+        ContractDto contractDto = ContractDto.builder()
+                .contractHash(contractHash)
+                .name(submitContractDto.getName())
+                .description(submitContractDto.getDescription())
+                .abi(submitContractDto.getAbi())
+                .code(submitContractDto.getCode())
+                .contactInfo(submitContractDto.getContactInfo().toJSONString())
+                .auditFlag(0)
+                .type(ConstantParam.CONTRACT_TYPE_OTHER)
+                .channel(ConstantParam.CONTRACT_CHANNEL_USER)
+                .logo(paramsConfig.LOGO_URL_PREFIX + fileName)
+                .dappName(submitContractDto.getDappName())
+                .category(submitContractDto.getCategory())
+                .build();
+        int i = contractMapper.updateByPrimaryKeySelective(contractDto);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
     }
 }

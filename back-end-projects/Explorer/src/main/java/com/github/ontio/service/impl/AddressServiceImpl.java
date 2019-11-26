@@ -176,13 +176,13 @@ public class AddressServiceImpl implements IAddressService {
             oep4.setSymbol(assetName);
             oep4.setAuditFlag(ConstantParam.AUDIT_PASSED);
             oep4 = oep4Mapper.selectOne(oep4);
-            if (Helper.isNotEmptyOrNull(oep4)) {
+            if (Helper.isNotEmptyAndNull(oep4)) {
                 balanceList = getOep4Balance2(address, oep4);
             } else {
                 Oep5 oep5 = new Oep5();
                 oep5.setSymbol(assetName);
                 oep5 = oep5Mapper.selectOne(oep5);
-                if (Helper.isNotEmptyOrNull(oep5)) {
+                if (Helper.isNotEmptyAndNull(oep5)) {
                     balanceList = getOep5Balance2(address, oep5);
                 } else {
                     //return all pumpkins and total pumpkin number
@@ -371,7 +371,7 @@ public class AddressServiceImpl implements IAddressService {
         //审核过的OEP4余额
         Oep4 oep4Temp = new Oep4();
         oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             oep4Temp.setSymbol(assetName);
         }
         List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
@@ -428,7 +428,7 @@ public class AddressServiceImpl implements IAddressService {
         //审核过的OEP5余额
         Oep5 oep5Temp = new Oep5();
         oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             oep5Temp.setSymbol(assetName);
         }
         List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
@@ -495,7 +495,7 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
         //审核过的OEP8余额
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             assetName = assetName + "%";
         }
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
@@ -535,7 +535,7 @@ public class AddressServiceImpl implements IAddressService {
         //query audit passed oep4 token
         Oep4 oep4Temp = new Oep4();
         oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             oep4Temp.setSymbol(assetName);
         }
         List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
@@ -554,7 +554,7 @@ public class AddressServiceImpl implements IAddressService {
 
         String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
                 JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
-        if (Helper.isNotEmptyOrNull(responseStr)) {
+        if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
 
@@ -596,7 +596,7 @@ public class AddressServiceImpl implements IAddressService {
         //query audit passed oep5 token
         Oep5 oep5Temp = new Oep5();
         oep5Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             oep5Temp.setSymbol(assetName);
         }
         List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
@@ -615,7 +615,7 @@ public class AddressServiceImpl implements IAddressService {
 
         String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
                 JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
-        if (Helper.isNotEmptyOrNull(responseStr)) {
+        if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
 
@@ -665,7 +665,7 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
         //query audit passed oep8 token
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             assetName = assetName + "%";
         }
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
@@ -688,7 +688,7 @@ public class AddressServiceImpl implements IAddressService {
 
         String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
                 JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
-        if (Helper.isNotEmptyOrNull(responseStr)) {
+        if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
 
@@ -730,7 +730,7 @@ public class AddressServiceImpl implements IAddressService {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             assetName = assetName + "%";
         }
         //query audit passed oep8 token
@@ -754,7 +754,7 @@ public class AddressServiceImpl implements IAddressService {
 
         String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
                 JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
-        if (Helper.isNotEmptyOrNull(responseStr)) {
+        if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
 
@@ -805,7 +805,7 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
         //审核过的OEP8余额
-        if (Helper.isNotEmptyOrNull(assetName)) {
+        if (Helper.isNotEmptyAndNull(assetName)) {
             assetName = assetName + "%";
         }
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
@@ -943,7 +943,7 @@ public class AddressServiceImpl implements IAddressService {
      */
     private List<TransferTxDto> getTransferTxDtosByPage(int pageNumber, int pageSize, List<TransferTxDto> formattedTransferTxDtos) {
 
-        int start = (pageNumber - 1) * pageSize <= 0 ? 0 : (pageNumber - 1) * pageSize;
+        int start = (pageNumber - 1) * pageSize > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageNumber - 1) * pageSize;
         int end = (pageSize + start) > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageSize + start);
 
         return formattedTransferTxDtos.subList(start, end);

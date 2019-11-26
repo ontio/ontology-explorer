@@ -157,9 +157,5 @@
             <generatedKey column="public_key" sqlStatement="JDBC"/>
         </table>
 
-        <table tableName="tbl_config" domainObjectName="Config">
-            <generatedKey column="field" sqlStatement="JDBC"/>
-        </table>
-
     </context>
 </generatorConfiguration>

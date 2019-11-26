@@ -61,7 +61,7 @@ public class AddressController {
         log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
 
         ResponseBean rs = new ResponseBean();
-        if (Helper.isNotEmptyOrNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
+        if (Helper.isNotEmptyAndNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
             rs = addressService.queryAddressBalanceByAssetName4Onto(address, assetName);
         } else {
             rs = addressService.queryAddressBalanceByAssetName(address, assetName);
@@ -82,10 +82,10 @@ public class AddressController {
         log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         ResponseBean rs = new ResponseBean();
-        if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
+        if (Helper.isNotEmptyAndNull(pageNumber, pageSize)) {
 
             rs = addressService.queryTransferTxsByPage(address, "", pageNumber, pageSize);
-        } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+        } else if (Helper.isNotEmptyAndNull(beginTime, endTime)) {
             //request time max range is one week
             if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
                 return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);
@@ -111,20 +111,20 @@ public class AddressController {
 
         ResponseBean rs = new ResponseBean();
         //ONTO request
-        if (Helper.isNotEmptyOrNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
+        if (Helper.isNotEmptyAndNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
 
-            if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+            if (Helper.isNotEmptyAndNull(beginTime, endTime)) {
 
                 rs = addressService.queryTransferTxsByTime4Onto(address, assetName, beginTime, endTime, addressType);
-            } else if (Helper.isNotEmptyOrNull(endTime, pageSize)) {
+            } else if (Helper.isNotEmptyAndNull(endTime, pageSize)) {
 
                 rs = addressService.queryTransferTxsByTimeAndPage4Onto(address, assetName, endTime, pageSize, addressType);
             }
         } else {
-            if (Helper.isNotEmptyOrNull(pageNumber, pageSize)) {
+            if (Helper.isNotEmptyAndNull(pageNumber, pageSize)) {
 
                 rs = addressService.queryTransferTxsByPage(address, assetName, pageNumber, pageSize);
-            } else if (Helper.isNotEmptyOrNull(beginTime, endTime)) {
+            } else if (Helper.isNotEmptyAndNull(beginTime, endTime)) {
                 //request time max range is one week
                 if (Helper.isTimeRangeExceedWeek(beginTime, endTime)) {
                     return new ResponseBean(ErrorInfo.TIME_RANGE_EXCEED.code(), ErrorInfo.TIME_RANGE_EXCEED.desc(), false);

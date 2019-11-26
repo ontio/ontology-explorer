@@ -192,14 +192,14 @@ public class OntologySDKService {
 
             String result = ((JSONObject) obj).getString("Result");
             log.info("contracthash:{},bindedNodeinfo:{}", dappContractHash, result);
-            if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
+            if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
                 Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
                 rsMap.put("node_name", new String(Helper.hexToBytes(((String) map.get("node_name")))));
                 rsMap.put("node_pubkey", map.get("node_pubkey"));
             }
             return rsMap;
         } catch (Exception e) {
-            log.error("getDappBindedNodeInfo error...", e);
+            log.error("dappContractHash:{} getDappBindedNodeInfo error...", dappContractHash,e);
         }
         return rsMap;
     }
@@ -231,7 +231,7 @@ public class OntologySDKService {
 
             String result = ((JSONObject) obj).getString("Result");
             log.info("contracthash:{},bindedAccountinfo:{}", dappContractHash, result);
-            if (com.github.ontio.util.Helper.isNotEmptyOrNull(result)) {
+            if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
                 Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
                 rsMap.put("receive_account", Address.parse((String) map.get("receive_account")).toBase58());
                 rsMap.put("ontid", new String(Helper.hexToBytes((String) map.get("ontid"))));

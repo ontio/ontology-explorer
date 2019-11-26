@@ -69,7 +69,7 @@ public class CommonService {
         //send request
         HttpPost httpPost = new HttpPost(url);
         httpPost.setEntity(strEntity);
-        if (Helper.isNotEmptyOrNull(headerMap)) {
+        if (Helper.isNotEmptyAndNull(headerMap)) {
             for (Map.Entry<String, String> entry :
                     headerMap.entrySet()) {
                 httpPost.setHeader(entry.getKey(), entry.getValue());
@@ -102,7 +102,7 @@ public class CommonService {
         String responseStr = "";
 
         HttpGet httpGet = new HttpGet(url);
-        if (Helper.isNotEmptyOrNull(headerMap)) {
+        if (Helper.isNotEmptyAndNull(headerMap)) {
             for (Map.Entry<String, String> entry :
                     headerMap.entrySet()) {
                 httpGet.setHeader(entry.getKey(), entry.getValue());

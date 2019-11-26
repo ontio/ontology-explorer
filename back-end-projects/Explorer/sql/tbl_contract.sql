@@ -44,3 +44,6 @@ CREATE TABLE `tbl_contract`
     PRIMARY KEY (`contract_hash`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
+
+
+alter table tbl_contract add COLUMN channel varchar(255) not null DEFAULT 'syn-service' comment '提交渠道';
