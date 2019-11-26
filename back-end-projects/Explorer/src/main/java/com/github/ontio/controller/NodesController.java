@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
+import com.github.ontio.service.impl.ConfigServiceImpl;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.util.ErrorInfo;
 import io.swagger.annotations.ApiOperation;
@@ -26,19 +27,26 @@ public class NodesController {
 
     private final NodesServiceImpl nodesService;
 
+    private final ConfigServiceImpl configService;
+
     @Autowired
-    public NodesController(NodesServiceImpl nodesService) {
+    public NodesController(NodesServiceImpl nodesService, ConfigServiceImpl configService) {
         this.nodesService = nodesService;
+        this.configService = configService;
     }
 
     @ApiOperation(value = "Get block count to next round")
     @GetMapping(value = "/block-count-to-next-round")
     public ResponseBean getBlkCountToNxtRnd() {
         long blkCountToNxtRnd = nodesService.getBlkCountToNxtRnd();
-        if (blkCountToNxtRnd < 0) {
+        long maxStakingChangeCount = configService.getMaxStakingChangeCount();
+        if (blkCountToNxtRnd < 0 || maxStakingChangeCount <= 0) {
             return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
         }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), blkCountToNxtRnd);
+        JSONObject result = new JSONObject();
+        result.put("count_to_next_round", blkCountToNxtRnd);
+        result.put("max_staking_change_count", maxStakingChangeCount);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
     @ApiOperation(value = "Get total ONT stakes and percentage total ONT stakes of total supply")
