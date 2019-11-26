@@ -6,6 +6,7 @@ import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
 import com.github.ontio.service.impl.ConfigServiceImpl;
 import com.github.ontio.service.impl.NodesServiceImpl;
+import com.github.ontio.service.impl.OntSdkServiceImpl;
 import com.github.ontio.util.ErrorInfo;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,15 @@ public class NodesController {
 
     private final ConfigServiceImpl configService;
 
+    private final OntSdkServiceImpl ontSdkService;
+
     @Autowired
-    public NodesController(NodesServiceImpl nodesService, ConfigServiceImpl configService) {
+    public NodesController(NodesServiceImpl nodesService,
+                           ConfigServiceImpl configService,
+                           OntSdkServiceImpl ontSdkService) {
         this.nodesService = nodesService;
         this.configService = configService;
+        this.ontSdkService = ontSdkService;
     }
 
     @ApiOperation(value = "Get block count to next round")
@@ -47,6 +53,16 @@ public class NodesController {
         result.put("count_to_next_round", blkCountToNxtRnd);
         result.put("max_staking_change_count", maxStakingChangeCount);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+    @ApiOperation(value = "Get the number of current staking round")
+    @GetMapping(value = "/current-staking-cycle")
+    public ResponseBean getCurrentStakingCycle() {
+        int currentStakingView = ontSdkService.getGovernanceView();
+        if (currentStakingView < 0) {
+            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentStakingView);
     }
 
     @ApiOperation(value = "Get total ONT stakes and percentage total ONT stakes of total supply")

@@ -1,5 +1,6 @@
 package com.github.ontio.service.impl;
 
+import com.github.ontio.common.ParamsConfig;
 import com.github.ontio.mapper.ConfigMapper;
 import com.github.ontio.model.dao.Config;
 import com.github.ontio.service.IConfigService;
@@ -22,7 +23,7 @@ public class ConfigServiceImpl implements IConfigService {
 
     @Override
     public Long getMaxStakingChangeCount() {
-        Config config = configMapper.selectByPrimaryKey("stakingRoundBlockCount");
+        Config config = configMapper.selectByPrimaryKey(ParamsConfig.Field.maxStakingChangeCount);
         return config == null ? 0L : Long.parseLong(config.getValue());
     }
 
