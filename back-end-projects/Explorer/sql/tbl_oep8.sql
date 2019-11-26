@@ -29,3 +29,5 @@ CREATE TABLE `tbl_oep8`
     PRIMARY KEY (`contract_hash`, `token_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
+
+alter table tbl_oep8 add COLUMN vm_category VARCHAR(255) NOT NULL DEFAULT 'neovm' comment '合约vm类型，分为neovm，wasmvm';

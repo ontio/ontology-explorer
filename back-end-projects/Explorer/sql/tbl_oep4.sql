@@ -30,3 +30,4 @@ CREATE TABLE `tbl_oep4`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
+alter table tbl_oep4 add COLUMN vm_category VARCHAR(255) NOT NULL DEFAULT 'neovm' comment '合约vm类型，分为neovm，wasmvm';
