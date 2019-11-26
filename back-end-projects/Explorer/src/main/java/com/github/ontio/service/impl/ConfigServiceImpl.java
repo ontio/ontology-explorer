@@ -1,6 +1,6 @@
 package com.github.ontio.service.impl;
 
-import com.github.ontio.common.ParamsConfig;
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.ConfigMapper;
 import com.github.ontio.model.dao.Config;
 import com.github.ontio.service.IConfigService;

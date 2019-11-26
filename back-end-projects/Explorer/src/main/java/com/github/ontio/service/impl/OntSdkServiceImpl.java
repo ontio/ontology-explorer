@@ -1,7 +1,7 @@
 package com.github.ontio.service.impl;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.ParamsConfig;
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.service.IOntSdkService;
