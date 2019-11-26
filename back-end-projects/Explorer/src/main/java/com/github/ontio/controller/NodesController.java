@@ -55,6 +55,16 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
+    @ApiOperation(value = "Get the number of current staking round")
+    @GetMapping(value = "/current-staking-cycle")
+    public ResponseBean getCurrentStakingCycle() {
+        int currentStakingView = ontSdkService.getGovernanceView();
+        if (currentStakingView < 0) {
+            return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), currentStakingView);
+    }
+
     @ApiOperation(value = "Get total ONT stakes and percentage total ONT stakes of total supply")
     @GetMapping(value = "/current-total-stakes")
     public ResponseBean getCurrentTotalStake() {
