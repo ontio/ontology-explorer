@@ -21,8 +21,12 @@ package com.github.ontio.util;
 
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
+import sun.misc.BASE64Decoder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 /**
  * @author zhouq
@@ -52,7 +56,7 @@ public class Helper {
     }
 
 
-    public static Boolean isNotEmptyOrNull(Object... params) {
+    public static Boolean isNotEmptyAndNull(Object... params) {
         return !isEmptyOrNull(params);
     }
 
@@ -216,5 +220,31 @@ public class Helper {
         return new Exception("").getStackTrace()[1].getMethodName();
     }
 
+
+
+    /**
+     * 根据base64后的图片数据生成本地文件
+     *
+     * @param imgStr
+     * @param path
+     * @return
+     */
+    public static File generateImage(String imgStr, String path) throws Exception {
+        BASE64Decoder decoder = new BASE64Decoder();
+        // 解密
+        byte[] b = decoder.decodeBuffer(imgStr);
+        //处理数据
+        for (int i = 0; i < b.length; ++i) {
+            if (b[i] < 0) {
+                b[i] += 256;
+            }
+        }
+        OutputStream out = new FileOutputStream(path);
+        out.write(b);
+        out.flush();
+        out.close();
+        File file = new File(path);
+        return file;
+    }
 
 }

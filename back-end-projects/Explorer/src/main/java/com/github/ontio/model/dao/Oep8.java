@@ -56,6 +56,12 @@ public class Oep8 {
     private Date updateTime;
 
     /**
+     * 合约vm类型，分为neovm，wasmvm
+     */
+    @Column(name = "vm_category")
+    private String vmCategory;
+
+    /**
      * 获取合约hash值
      *
      * @return contract_hash - 合约hash值
@@ -197,5 +203,23 @@ public class Oep8 {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    /**
+     * 获取合约vm类型，分为neovm，wasmvm
+     *
+     * @return vm_category - 合约vm类型，分为neovm，wasmvm
+     */
+    public String getVmCategory() {
+        return vmCategory;
+    }
+
+    /**
+     * 设置合约vm类型，分为neovm，wasmvm
+     *
+     * @param vmCategory 合约vm类型，分为neovm，wasmvm
+     */
+    public void setVmCategory(String vmCategory) {
+        this.vmCategory = vmCategory == null ? null : vmCategory.trim();
     }
 }

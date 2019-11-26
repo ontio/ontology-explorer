@@ -77,6 +77,17 @@ public enum ErrorInfo {
      */
     SERIALIZE_ERROR(61009,"FAIL, serialized error."),
 
+    /**
+     * serialized error
+     */
+    ALREADY_EXSIT(61010,"FAIL, already exsit."),
+
+
+    /**
+     * serialized error
+     */
+    ALREADY_AUDITPASS(61011,"FAIL, already on shelves."),
+
 
 
 

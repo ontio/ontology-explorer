@@ -1,15 +1,14 @@
 package com.github.ontio.service.impl;
 
-import com.github.ontio.mapper.Oep4Mapper;
-import com.github.ontio.mapper.Oep5Mapper;
-import com.github.ontio.mapper.Oep8Mapper;
-import com.github.ontio.mapper.Oep8TxDetailMapper;
+import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.exception.ExplorerException;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dto.Oep4DetailDto;
-import com.github.ontio.model.dto.Oep5DetailDto;
-import com.github.ontio.model.dto.Oep8DetailDto;
-import com.github.ontio.model.dto.TxDetailDto;
+import com.github.ontio.model.dao.Oep4;
+import com.github.ontio.model.dao.Oep5;
+import com.github.ontio.model.dao.Oep8;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -19,11 +18,10 @@ import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author zhouq
@@ -34,17 +32,23 @@ import java.util.Map;
 @Slf4j
 public class TokenServiceImpl implements ITokenService {
 
+    private final ContractMapper contractMapper;
     private final Oep4Mapper oep4Mapper;
     private final Oep5Mapper oep5Mapper;
     private final Oep8Mapper oep8Mapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
+    private final AmazonS3Service amazonS3Service;
+    private final ParamsConfig paramsConfig;
 
     @Autowired
-    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Oep8TxDetailMapper oep8TxDetailMapper) {
+    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Oep8TxDetailMapper oep8TxDetailMapper, ContractMapper contractMapper, AmazonS3Service amazonS3Service, ParamsConfig paramsConfig) {
+        this.contractMapper = contractMapper;
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.amazonS3Service = amazonS3Service;
+        this.paramsConfig = paramsConfig;
     }
 
     @Override
@@ -87,6 +91,7 @@ public class TokenServiceImpl implements ITokenService {
 
     /**
      * 根据tokenid格式化oep8 token信息
+     *
      * @param oep8DetailDto
      * @return
      */
@@ -133,7 +138,7 @@ public class TokenServiceImpl implements ITokenService {
                 break;
             case ConstantParam.ASSET_TYPE_OEP8:
                 Oep8DetailDto oep8DetailDto = oep8Mapper.selectOep8TokenDetail(contractHash);
-                if (Helper.isNotEmptyOrNull(oep8DetailDto)) {
+                if (Helper.isNotEmptyAndNull(oep8DetailDto)) {
                     oep8DetailDto = formatOep8DetailDto(oep8DetailDto);
                 }
                 obj = oep8DetailDto;
@@ -157,4 +162,168 @@ public class TokenServiceImpl implements ITokenService {
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResponseBean submitOep4(SubmitContractDto submitContractDto) {
+
+        String contractHash = submitContractDto.getContractHash();
+        ContractDto contractDtoTemp = contractMapper.selectByPrimaryKey(contractHash);
+        if (Helper.isEmptyOrNull(contractDtoTemp)) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        } else if (contractDtoTemp.getAuditFlag() == 1) {
+            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
+        }
+
+        String fileName = contractHash + ConstantParam.LOGO_PNG_SUFFIX;
+        amazonS3Service.uploadFile2S3(submitContractDto.getLogo(), fileName);
+
+        ContractDto contractDto = ContractDto.builder()
+                .contractHash(contractHash)
+                .name(submitContractDto.getName())
+                .description(submitContractDto.getDescription())
+                .abi(submitContractDto.getAbi())
+                .code(submitContractDto.getCode())
+                .contactInfo(submitContractDto.getContactInfo().toJSONString())
+                .auditFlag(0)
+                .channel(ConstantParam.CONTRACT_CHANNEL_USER)
+                .logo(paramsConfig.LOGO_URL_PREFIX + fileName)
+                .dappName(submitContractDto.getDappName())
+                .category(submitContractDto.getCategory())
+                .type(ConstantParam.CONTRACT_TYPE_OEP4)
+                .build();
+        int i = contractMapper.updateByPrimaryKeySelective(contractDto);
+
+        Oep4 oep4 = new Oep4();
+        oep4.setContractHash(contractHash);
+        oep4.setName(submitContractDto.getName());
+        oep4.setTotalSupply(new BigDecimal(submitContractDto.getTotalSupply()).longValue());
+        oep4.setSymbol(submitContractDto.getSymbol());
+        oep4.setDecimals(submitContractDto.getDecimals());
+        oep4.setAuditFlag(false);
+        oep4.setCreateTime(new Date());
+        oep4.setUpdateTime(new Date());
+        oep4.setVmCategory(submitContractDto.getVmCategory());
+
+        Oep4 oep4Temp = oep4Mapper.selectByPrimaryKey(contractHash);
+        if (Helper.isEmptyOrNull(oep4Temp)) {
+            oep4Mapper.insertSelective(oep4);
+        } else if (oep4Temp.getAuditFlag() == true) {
+            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
+        }else {
+            oep4Mapper.updateByPrimaryKeySelective(oep4);
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResponseBean submitOep5(SubmitContractDto submitContractDto) {
+
+        String contractHash = submitContractDto.getContractHash();
+        ContractDto contractDtoTemp = contractMapper.selectByPrimaryKey(contractHash);
+        if (Helper.isEmptyOrNull(contractDtoTemp)) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        } else if (contractDtoTemp.getAuditFlag() == 1) {
+            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
+        }
+
+        String fileName = contractHash + ConstantParam.LOGO_PNG_SUFFIX;
+        amazonS3Service.uploadFile2S3(submitContractDto.getLogo(), fileName);
+
+        ContractDto contractDto = ContractDto.builder()
+                .contractHash(contractHash)
+                .name(submitContractDto.getName())
+                .description(submitContractDto.getDescription())
+                .abi(submitContractDto.getAbi())
+                .code(submitContractDto.getCode())
+                .contactInfo(submitContractDto.getContactInfo().toJSONString())
+                .auditFlag(0)
+                .channel(ConstantParam.CONTRACT_CHANNEL_USER)
+                .logo(paramsConfig.LOGO_URL_PREFIX + fileName)
+                .dappName(submitContractDto.getDappName())
+                .category(submitContractDto.getCategory())
+                .type(ConstantParam.CONTRACT_TYPE_OEP5)
+                .build();
+        int i = contractMapper.updateByPrimaryKeySelective(contractDto);
+
+        Oep5 oep5 = new Oep5();
+        oep5.setContractHash(contractHash);
+        oep5.setName(submitContractDto.getName());
+        oep5.setTotalSupply(new BigDecimal(submitContractDto.getTotalSupply()).longValue());
+        oep5.setSymbol(submitContractDto.getSymbol());
+        oep5.setAuditFlag(false);
+        oep5.setCreateTime(new Date());
+        oep5.setUpdateTime(new Date());
+        oep5.setVmCategory(submitContractDto.getVmCategory());
+
+        Oep5 oep5Temp = oep5Mapper.selectByPrimaryKey(contractHash);
+        if (Helper.isEmptyOrNull(oep5Temp)) {
+            oep5Mapper.insertSelective(oep5);
+        } else if (oep5Temp.getAuditFlag() == true) {
+            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
+        }else {
+            oep5Mapper.updateByPrimaryKeySelective(oep5);
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResponseBean submitOep8(SubmitContractDto submitContractDto) {
+
+        String contractHash = submitContractDto.getContractHash();
+        ContractDto contractDtoTemp = contractMapper.selectByPrimaryKey(contractHash);
+        if (Helper.isEmptyOrNull(contractDtoTemp)) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        } else if (contractDtoTemp.getAuditFlag() == 1) {
+            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
+        }
+
+        String fileName = contractHash + ConstantParam.LOGO_PNG_SUFFIX;
+        amazonS3Service.uploadFile2S3(submitContractDto.getLogo(), fileName);
+
+        ContractDto contractDto = ContractDto.builder()
+                .contractHash(contractHash)
+                .name(submitContractDto.getName())
+                .description(submitContractDto.getDescription())
+                .abi(submitContractDto.getAbi())
+                .code(submitContractDto.getCode())
+                .contactInfo(submitContractDto.getContactInfo().toJSONString())
+                .auditFlag(0)
+                .channel(ConstantParam.CONTRACT_CHANNEL_USER)
+                .logo(paramsConfig.LOGO_URL_PREFIX + fileName)
+                .dappName(submitContractDto.getDappName())
+                .category(submitContractDto.getCategory())
+                .type(ConstantParam.CONTRACT_TYPE_OEP8)
+                .build();
+        int i = contractMapper.updateByPrimaryKeySelective(contractDto);
+
+        Oep8 oep8Temp = new Oep8();
+        oep8Temp.setContractHash(contractHash);
+        int count = oep8Mapper.selectCount(oep8Temp);
+        if (count > 0) {
+            throw new ExplorerException(ErrorInfo.ALREADY_EXSIT.code(), ErrorInfo.ALREADY_EXSIT.desc(), false);
+        }
+
+        submitContractDto.getTokens().forEach(item -> {
+            Oep8 oep8 = new Oep8();
+            oep8.setContractHash(contractHash);
+            oep8.setTokenId(item.getTokenId());
+            oep8.setName(item.getTokenName());
+            oep8.setTotalSupply(new BigDecimal(item.getTotalSupply()).longValue());
+            oep8.setSymbol(item.getSymbol());
+            oep8.setAuditFlag(false);
+            oep8.setCreateTime(new Date());
+            oep8.setUpdateTime(new Date());
+            oep8.setVmCategory(submitContractDto.getVmCategory());
+            oep8Mapper.insertSelective(oep8);
+        });
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
+    }
+
 }

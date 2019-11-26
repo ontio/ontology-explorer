@@ -150,6 +150,11 @@ public class Contract {
     private String sourceCode;
 
     /**
+     * 提交渠道
+     */
+    private String channel;
+
+    /**
      * 获取合约hash值
      *
      * @return contract_hash - 合约hash值
@@ -562,4 +567,24 @@ public class Contract {
     public void setSourceCode(String sourceCode) {
         this.sourceCode = sourceCode == null ? null : sourceCode.trim();
     }
+
+
+    /**
+     * 获取提交渠道
+     *
+     * @return channel - 提交渠道
+     */
+    public String getChannel() {
+        return channel;
+    }
+
+    /**
+     * 设置提交渠道
+     *
+     * @param channel 提交渠道
+     */
+    public void setChannel(String channel) {
+        this.channel = channel == null ? null : channel.trim();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.SubmitContractDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
@@ -73,5 +74,39 @@ public class TokenController {
         ResponseBean rs = tokenService.queryOep8TxsByPage(contractHash, tokenName, pageNumber, pageSize);
         return rs;
     }
+
+
+    @ApiOperation(value = "submit oep4")
+    @PostMapping(value = "/oep4s")
+    public ResponseBean submitOep4(@RequestBody @Validated SubmitContractDto submitContractDto) {
+
+        log.info("###{}.{} begin...param:{}", CLASS_NAME, Helper.currentMethod(), submitContractDto.toString());
+
+        ResponseBean rs = tokenService.submitOep4(submitContractDto);
+        return rs;
+    }
+
+
+    @ApiOperation(value = "submit oep5")
+    @PostMapping(value = "/oep5s")
+    public ResponseBean submitOep5(@RequestBody @Validated SubmitContractDto submitContractDto) {
+
+        log.info("###{}.{} begin...param:{}", CLASS_NAME, Helper.currentMethod(), submitContractDto.toString());
+
+        ResponseBean rs = tokenService.submitOep5(submitContractDto);
+        return rs;
+    }
+
+
+    @ApiOperation(value = "submit oep8")
+    @PostMapping(value = "/oep8s")
+    public ResponseBean submitOep8(@RequestBody @Validated SubmitContractDto submitContractDto) {
+
+        log.info("###{}.{} begin...param:{}", CLASS_NAME, Helper.currentMethod(), submitContractDto.toString());
+
+        ResponseBean rs = tokenService.submitOep8(submitContractDto);
+        return rs;
+    }
+
 
 }

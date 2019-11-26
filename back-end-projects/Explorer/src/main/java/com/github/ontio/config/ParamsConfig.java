@@ -69,4 +69,10 @@ public class ParamsConfig {
     @Value("${config.newStakingRoundBlockCount}")
     public Long newStakingRoundBlockCount;
 
+    @Value("${logo.url.prefix}")
+    public String LOGO_URL_PREFIX;
+
+    @Value("${logo.temp.filePath}")
+    public String LOGO_TEMP_FILEPATH;
+
 }

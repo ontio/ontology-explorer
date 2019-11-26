@@ -20,6 +20,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.SubmitContractDto;
 import com.github.ontio.service.impl.ContractServiceImpl;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
@@ -147,6 +148,16 @@ public class ContractController {
         log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         return contractService.queryDappstoreDappsSummary();
+    }
+
+
+    @ApiOperation(value = "submit contract")
+    @PostMapping
+    public ResponseBean submitContract(@RequestBody @Validated SubmitContractDto submitContractDto){
+
+        log.info("####{}.{} begin...param:{}", CLASS_NAME, Helper.currentMethod(),submitContractDto.toString());
+
+        return contractService.submitContract(submitContractDto);
     }
 
 

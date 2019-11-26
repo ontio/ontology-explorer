@@ -1,6 +1,7 @@
 package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.SubmitContractDto;
 
 /**
  * @author zhouq
@@ -14,5 +15,11 @@ public interface ITokenService {
     ResponseBean queryTokenDetail(String tokenType, String contractHash);
 
     ResponseBean queryOep8TxsByPage(String contractHash, String tokenName, Integer pageNumber, Integer pageSize);
+
+    ResponseBean submitOep4(SubmitContractDto submitContractDto);
+
+    ResponseBean submitOep5(SubmitContractDto submitContractDto);
+
+    ResponseBean submitOep8(SubmitContractDto submitContractDto);
 
 }

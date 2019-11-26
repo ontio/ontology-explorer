@@ -25,6 +25,7 @@
     <result column="dappstore_flag" jdbcType="INTEGER" property="dappstoreFlag" />
     <result column="total_reward" jdbcType="DECIMAL" property="totalReward" />
     <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
     <result column="abi" jdbcType="LONGVARCHAR" property="abi" />
     <result column="code" jdbcType="LONGVARCHAR" property="code" />
     <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />

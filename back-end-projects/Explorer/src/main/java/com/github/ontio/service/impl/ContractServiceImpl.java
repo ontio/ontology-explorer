@@ -21,6 +21,7 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
@@ -53,9 +54,10 @@ public class ContractServiceImpl implements IContractService {
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
+    private final AmazonS3Service amazonS3Service;
 
     @Autowired
-    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper,NodeInfoOnChainMapper nodeInfoOnChainMapper) {
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper, AmazonS3Service amazonS3Service) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
@@ -65,6 +67,7 @@ public class ContractServiceImpl implements IContractService {
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
+        this.amazonS3Service = amazonS3Service;
     }
 
     private OntologySDKService sdk;
@@ -289,7 +292,7 @@ public class ContractServiceImpl implements IContractService {
                 String contractHash = (String) item;
                 // 从合约查询绑定钱包信息
                 Map bindedOntidAndAccount = sdk.getDappBindedOntidAndAccount(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
-                if (Helper.isNotEmptyOrNull(bindedOntidAndAccount.get("receive_account"))) {
+                if (Helper.isNotEmptyAndNull(bindedOntidAndAccount.get("receive_account"))) {
                     walletArray.add(bindedOntidAndAccount.get("receive_account"));
                 }
             });
@@ -361,7 +364,7 @@ public class ContractServiceImpl implements IContractService {
                 String contractHash = (String) item;
                 // 从合约查询绑定节点信息
                 Map bindedNodeInfo = sdk.getDappBindedNodeInfo(paramsConfig.DAPPBIND_CONTRACTHASH, contractHash);
-                if (Helper.isNotEmptyOrNull(bindedNodeInfo.get("node_pubkey")) && Helper.isNotEmptyOrNull(bindedNodeInfo.get("node_name"))) {
+                if (Helper.isNotEmptyAndNull(bindedNodeInfo.get("node_pubkey")) && Helper.isNotEmptyAndNull(bindedNodeInfo.get("node_name"))) {
                     map.put("node_pubkey", bindedNodeInfo.get("node_pubkey"));
                     map.put("node_name", bindedNodeInfo.get("node_name"));
                 }
@@ -397,8 +400,8 @@ public class ContractServiceImpl implements IContractService {
                 obj.put("reward_fee", map.get("reward_fee"));
                 obj.put("node_pubkey", map.get("node_pubkey"));
                 //query node wallet address
-                String nodeWallet = getNodeWallet((String) map.get("node_name"),(String) map.get("node_pubkey"));
-                if(Helper.isNotEmptyOrNull(nodeWallet)){
+                String nodeWallet = getNodeWallet((String) map.get("node_name"), (String) map.get("node_pubkey"));
+                if (Helper.isNotEmptyAndNull(nodeWallet)) {
                     obj.put("node_wallet", nodeWallet);
 
                     JSONArray dappNameArray = new JSONArray();
@@ -416,28 +419,29 @@ public class ContractServiceImpl implements IContractService {
 
     /**
      * query node wallet address
+     *
      * @param nodeName
      * @param nodePubkey
      * @return
      */
-    private String getNodeWallet(String nodeName, String nodePubkey){
+    private String getNodeWallet(String nodeName, String nodePubkey) {
 
         NodeInfoOnChain nodeInfoOnChain = new NodeInfoOnChain();
         NodeInfoOffChain nodeInfoOffChain = new NodeInfoOffChain();
 
         Example example1 = new Example(NodeInfoOnChain.class);
         Example.Criteria criteria1 = example1.createCriteria();
-        criteria1.andEqualTo("publicKey",nodePubkey);
+        criteria1.andEqualTo("publicKey", nodePubkey);
         nodeInfoOnChain = nodeInfoOnChainMapper.selectOneByExample(example1);
-        if(Helper.isNotEmptyOrNull(nodeInfoOnChain)){
+        if (Helper.isNotEmptyAndNull(nodeInfoOnChain)) {
             return nodeInfoOnChain.getAddress();
         }
 
         Example example2 = new Example(NodeInfoOnChain.class);
         Example.Criteria criteria2 = example2.createCriteria();
-        criteria2.andEqualTo("name",nodeName);
+        criteria2.andEqualTo("name", nodeName);
         nodeInfoOnChain = nodeInfoOnChainMapper.selectOneByExample(example2);
-        if(Helper.isNotEmptyOrNull(nodeInfoOnChain)){
+        if (Helper.isNotEmptyAndNull(nodeInfoOnChain)) {
             return nodeInfoOnChain.getAddress();
         }
 
@@ -445,16 +449,16 @@ public class ContractServiceImpl implements IContractService {
                 .publicKey(nodePubkey)
                 .build();
         nodeInfoOffChain = nodeInfoOffChainMapper.selectOne(nodeInfoOffChainDto1);
-        if(Helper.isNotEmptyOrNull(nodeInfoOffChain)){
-            return  nodeInfoOffChain.getAddress();
+        if (Helper.isNotEmptyAndNull(nodeInfoOffChain)) {
+            return nodeInfoOffChain.getAddress();
         }
 
         NodeInfoOffChainDto nodeInfoOffChainDto2 = NodeInfoOffChainDto.builder()
                 .name(nodeName)
                 .build();
         nodeInfoOffChain = nodeInfoOffChainMapper.selectOne(nodeInfoOffChainDto2);
-        if(Helper.isNotEmptyOrNull(nodeInfoOffChain)){
-            return  nodeInfoOffChain.getAddress();
+        if (Helper.isNotEmptyAndNull(nodeInfoOffChain)) {
+            return nodeInfoOffChain.getAddress();
         }
         return "";
     }
@@ -505,22 +509,22 @@ public class ContractServiceImpl implements IContractService {
 
                 for (Map map :
                         dappOneWeekInfoList) {
-                    map.put("week_ont_sum",((BigDecimal)map.get("week_ont_sum")).stripTrailingZeros().toPlainString());
-                    map.put("week_ong_sum",((BigDecimal)map.get("week_ong_sum")).stripTrailingZeros().toPlainString());
+                    map.put("week_ont_sum", ((BigDecimal) map.get("week_ont_sum")).stripTrailingZeros().toPlainString());
+                    map.put("week_ong_sum", ((BigDecimal) map.get("week_ong_sum")).stripTrailingZeros().toPlainString());
                     String dappName = (String) map.get("dapp_name");
                     for (Map contractMap :
                             allDappstoreDapp) {
                         if (dappName.equals(contractMap.get("dapp_name"))) {
-                            contractMap.put("total_reward",((BigDecimal)contractMap.get("total_reward")).stripTrailingZeros().toPlainString());
-                            contractMap.put("lastweek_reward",((BigDecimal)contractMap.get("lastweek_reward")).stripTrailingZeros().toPlainString());
+                            contractMap.put("total_reward", ((BigDecimal) contractMap.get("total_reward")).stripTrailingZeros().toPlainString());
+                            contractMap.put("lastweek_reward", ((BigDecimal) contractMap.get("lastweek_reward")).stripTrailingZeros().toPlainString());
                             map.putAll(contractMap);
                         }
                     }
                     for (Map map2 :
                             dappDayInfoList) {
                         if (dappName.equals(map2.get("dapp_name"))) {
-                            map2.put("day_ont_sum",((BigDecimal)map2.get("day_ont_sum")).stripTrailingZeros().toPlainString());
-                            map2.put("day_ong_sum",((BigDecimal)map2.get("day_ong_sum")).stripTrailingZeros().toPlainString());
+                            map2.put("day_ont_sum", ((BigDecimal) map2.get("day_ont_sum")).stripTrailingZeros().toPlainString());
+                            map2.put("day_ong_sum", ((BigDecimal) map2.get("day_ong_sum")).stripTrailingZeros().toPlainString());
                             map.putAll(map2);
                         }
                     }
@@ -570,8 +574,8 @@ public class ContractServiceImpl implements IContractService {
                 rsMap.put("day_activeaddress_count", 0);
                 rsMap.put("day_tx_count", 0);
             } else {
-                contractInfo.put("day_ont_sum",((BigDecimal)contractInfo.get("day_ont_sum")).stripTrailingZeros().toPlainString());
-                contractInfo.put("day_ong_sum",((BigDecimal)contractInfo.get("day_ong_sum")).stripTrailingZeros().toPlainString());
+                contractInfo.put("day_ont_sum", ((BigDecimal) contractInfo.get("day_ont_sum")).stripTrailingZeros().toPlainString());
+                contractInfo.put("day_ong_sum", ((BigDecimal) contractInfo.get("day_ong_sum")).stripTrailingZeros().toPlainString());
                 rsMap.putAll(contractInfo);
             }
         }
@@ -591,4 +595,36 @@ public class ContractServiceImpl implements IContractService {
     }
 
 
+    @Override
+    public ResponseBean submitContract(SubmitContractDto submitContractDto) {
+
+        String contractHash = submitContractDto.getContractHash();
+        ContractDto contractDtoTemp = contractMapper.selectByPrimaryKey(contractHash);
+        if (Helper.isEmptyOrNull(contractDtoTemp)) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+        } else if (contractDtoTemp.getAuditFlag() == 1) {
+            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
+        }
+
+        String fileName = contractHash + ConstantParam.LOGO_PNG_SUFFIX;
+        amazonS3Service.uploadFile2S3(submitContractDto.getLogo(), fileName);
+
+        ContractDto contractDto = ContractDto.builder()
+                .contractHash(contractHash)
+                .name(submitContractDto.getName())
+                .description(submitContractDto.getDescription())
+                .abi(submitContractDto.getAbi())
+                .code(submitContractDto.getCode())
+                .contactInfo(submitContractDto.getContactInfo().toJSONString())
+                .auditFlag(0)
+                .type(ConstantParam.CONTRACT_TYPE_OTHER)
+                .channel(ConstantParam.CONTRACT_CHANNEL_USER)
+                .logo(paramsConfig.LOGO_URL_PREFIX + fileName)
+                .dappName(submitContractDto.getDappName())
+                .category(submitContractDto.getCategory())
+                .build();
+        int i = contractMapper.updateByPrimaryKeySelective(contractDto);
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
+    }
 }
