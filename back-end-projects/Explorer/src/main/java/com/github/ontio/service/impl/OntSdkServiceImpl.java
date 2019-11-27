@@ -1,7 +1,7 @@
 package com.github.ontio.service.impl;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.ParamsConfig;
+import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.service.IOntSdkService;
@@ -41,14 +41,15 @@ public class OntSdkServiceImpl implements IOntSdkService {
 
     @Override
     public int getGovernanceView() {
-        try {
-            return sdk.nativevm().governance().getGovernanceView().view;
-        } catch (ConnectorException | IOException | SDKException e) {
-            log.warn("Getting governance view failed: {}", e.getMessage());
-            switchSyncNode();
-            log.info("Getting governance view again");
-            return getGovernanceView();
+        for (int i = 0; i < 4; i++) {
+            try {
+                return sdk.nativevm().governance().getGovernanceView().view;
+            } catch (ConnectorException | IOException | SDKException e) {
+                log.warn("Getting governance view failed: {}", e.getMessage());
+                switchSyncNode();
+            }
         }
+        return 0;
     }
 
     private void switchSyncNode() {
