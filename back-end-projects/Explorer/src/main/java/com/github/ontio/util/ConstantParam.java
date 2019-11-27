@@ -155,8 +155,5 @@ public class ConstantParam {
 
     public static final String CHANNEL_ONTO = "onto";
 
-    public static final String LOGO_PNG_SUFFIX = ".png";
-
-    public static final String CONTRACT_CHANNEL_USER = "user";
 
 }

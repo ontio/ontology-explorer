@@ -54,10 +54,9 @@ public class ContractServiceImpl implements IContractService {
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
-    private final AmazonS3Service amazonS3Service;
 
     @Autowired
-    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper, AmazonS3Service amazonS3Service) {
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
@@ -67,7 +66,6 @@ public class ContractServiceImpl implements IContractService {
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
-        this.amazonS3Service = amazonS3Service;
     }
 
     private OntologySDKService sdk;
@@ -594,37 +592,4 @@ public class ContractServiceImpl implements IContractService {
         return zeroHourTimestamp;
     }
 
-
-    @Override
-    public ResponseBean submitContract(SubmitContractDto submitContractDto) {
-
-        String contractHash = submitContractDto.getContractHash();
-        ContractDto contractDtoTemp = contractMapper.selectByPrimaryKey(contractHash);
-        if (Helper.isEmptyOrNull(contractDtoTemp)) {
-            throw new ExplorerException(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
-        } else if (contractDtoTemp.getAuditFlag() == 1) {
-            throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
-        }
-
-        String fileName = contractHash + ConstantParam.LOGO_PNG_SUFFIX;
-        amazonS3Service.uploadFile2S3(submitContractDto.getLogo(), fileName);
-
-        ContractDto contractDto = ContractDto.builder()
-                .contractHash(contractHash)
-                .name(submitContractDto.getName())
-                .description(submitContractDto.getDescription())
-                .abi(submitContractDto.getAbi())
-                .code(submitContractDto.getCode())
-                .contactInfo(submitContractDto.getContactInfo().toJSONString())
-                .auditFlag(0)
-                .type(ConstantParam.CONTRACT_TYPE_OTHER)
-                .channel(ConstantParam.CONTRACT_CHANNEL_USER)
-                .logo(paramsConfig.LOGO_URL_PREFIX + fileName)
-                .dappName(submitContractDto.getDappName())
-                .category(submitContractDto.getCategory())
-                .build();
-        int i = contractMapper.updateByPrimaryKeySelective(contractDto);
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
-    }
 }

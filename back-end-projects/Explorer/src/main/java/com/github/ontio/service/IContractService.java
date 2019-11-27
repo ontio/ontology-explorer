@@ -19,7 +19,6 @@
 package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dto.SubmitContractDto;
 
 public interface IContractService {
 
@@ -40,7 +39,5 @@ public interface IContractService {
     ResponseBean queryDappstoreDappsInfo(Integer pageSize, Integer pageNumber);
 
     ResponseBean queryDappstoreDappsSummary();
-
-    ResponseBean submitContract(SubmitContractDto submitContractDto);
 
 }
