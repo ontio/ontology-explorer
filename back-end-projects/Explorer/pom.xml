@@ -5,7 +5,7 @@
 
 	<groupId>com.github.ontio</groupId>
 	<artifactId>explorer</artifactId>
-	<version>1.2.2.R5C</version>
+	<version>1.3.0.R5C</version>
 	<packaging>jar</packaging>
 
 	<name>explorer</name>
