@@ -19,6 +19,7 @@
 
 package com.github.ontio.config;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +27,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * @author zhouq
- * @date 2018/2/27
- */
-
+@Data
 @Service("ParamsConfig")
 public class ParamsConfig {
 
