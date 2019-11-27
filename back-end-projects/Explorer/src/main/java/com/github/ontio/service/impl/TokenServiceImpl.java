@@ -211,7 +211,7 @@ public class TokenServiceImpl implements ITokenService {
             oep4Mapper.insertSelective(oep4);
         } else if (oep4Temp.getAuditFlag() == true) {
             throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
-        }else {
+        } else {
             oep4Mapper.updateByPrimaryKeySelective(oep4);
         }
 
@@ -264,7 +264,7 @@ public class TokenServiceImpl implements ITokenService {
             oep5Mapper.insertSelective(oep5);
         } else if (oep5Temp.getAuditFlag() == true) {
             throw new ExplorerException(ErrorInfo.ALREADY_AUDITPASS.code(), ErrorInfo.ALREADY_AUDITPASS.desc(), false);
-        }else {
+        } else {
             oep5Mapper.updateByPrimaryKeySelective(oep5);
         }
 
@@ -304,12 +304,10 @@ public class TokenServiceImpl implements ITokenService {
 
         Oep8 oep8Temp = new Oep8();
         oep8Temp.setContractHash(contractHash);
-        int count = oep8Mapper.selectCount(oep8Temp);
-        if (count > 0) {
-            throw new ExplorerException(ErrorInfo.ALREADY_EXSIT.code(), ErrorInfo.ALREADY_EXSIT.desc(), false);
-        }
+        oep8Mapper.delete(oep8Temp);
 
         submitContractDto.getTokens().forEach(item -> {
+
             Oep8 oep8 = new Oep8();
             oep8.setContractHash(contractHash);
             oep8.setTokenId(item.getTokenId());

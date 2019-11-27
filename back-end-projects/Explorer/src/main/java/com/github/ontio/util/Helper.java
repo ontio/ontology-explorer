@@ -21,12 +21,12 @@ package com.github.ontio.util;
 
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
-import sun.misc.BASE64Decoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Base64;
 
 /**
  * @author zhouq
@@ -230,9 +230,8 @@ public class Helper {
      * @return
      */
     public static File generateImage(String imgStr, String path) throws Exception {
-        BASE64Decoder decoder = new BASE64Decoder();
         // 解密
-        byte[] b = decoder.decodeBuffer(imgStr);
+        byte[] b = Base64.getDecoder().decode(imgStr);
         //处理数据
         for (int i = 0; i < b.length; ++i) {
             if (b[i] < 0) {
