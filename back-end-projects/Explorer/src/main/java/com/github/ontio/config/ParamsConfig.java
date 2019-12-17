@@ -76,4 +76,11 @@ public class ParamsConfig {
 
     }
 
+
+    @Value("${tomcat.maxThread}")
+    public Integer TOMCAT_MAXTHREAD;
+
+    @Value("${oep8.pumpkin.contractHash}")
+    public String OEP8_PUMPKIN_CONTRACTHASH;
+
 }
