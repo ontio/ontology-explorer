@@ -36,7 +36,6 @@ import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
 import lombok.extern.slf4j.Slf4j;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -114,7 +113,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
         JSONObject detailObj = new JSONObject();
         int eventType = txDetailDto.getEventType();
-        //转账or权限交易，获取转账详情
+        //transfer or authentication tx，get transfer detail
         if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType) {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);

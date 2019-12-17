@@ -155,5 +155,14 @@ public class ConstantParam {
 
     public static final String CHANNEL_ONTO = "onto";
 
+    public static final String VM_CATEGORY_NEOVM = "neovm";
+
+    public static final String VM_CATEGORY_WASMVM= "wasmvm";
+
+
+    public static final String CONTRACTHASH_ONG = "0200000000000000000000000000000000000000";
+
+    public static final String CONTRACTHASH_ONT = "0100000000000000000000000000000000000000";
+
 
 }

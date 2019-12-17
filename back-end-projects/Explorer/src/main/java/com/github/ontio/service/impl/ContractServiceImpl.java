@@ -21,7 +21,6 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
@@ -146,7 +145,7 @@ public class ContractServiceImpl implements IContractService {
 
         ContractDto contractDto = contractMapper.selectContractDetail(contractHash);
         String contractType = contractDto.getType();
-        if (Helper.isEmptyOrNull(contractType)) {
+        if (Helper.isEmptyOrNull(contractType) || ConstantParam.CONTRACT_TYPE_OTHER.equals(contractType)) {
             contractType = ConstantParam.CONTRACT_TYPE_OTHER;
         }
         List<TxDetailDto> txDetailDtos = new ArrayList<>();

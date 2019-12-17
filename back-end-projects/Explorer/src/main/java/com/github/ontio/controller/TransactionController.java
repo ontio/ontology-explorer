@@ -86,6 +86,7 @@ public class TransactionController {
         return rs;
     }
 
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get nonontid transaction list by page")
     @GetMapping(value = "/nonontid-transactions")
     public ResponseBean queryNonontidTxsByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
@@ -98,6 +99,7 @@ public class TransactionController {
     }
 
 
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get transaction detail by txhash")
     @GetMapping(value = "/transactions/{tx_hash}")
     public ResponseBean queryTxnByHash(@PathVariable("tx_hash") @Length(min = 64, max = 64, message = "Incorrect transaction hash") String txHash) {

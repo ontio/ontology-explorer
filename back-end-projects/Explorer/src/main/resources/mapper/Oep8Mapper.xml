@@ -36,11 +36,12 @@
   <select id="selectOep8Tokens" resultType="com.github.ontio.model.dto.Oep8DetailDto">
 	SELECT
 		a.contract_hash as contractHash,
-		b.`name` as name,
+		a.vm_category as vmCategory,
 		GROUP_CONCAT(a.token_id) as tokenId,
 		GROUP_CONCAT(a.total_supply) as totalSupply,
 		GROUP_CONCAT(a.symbol) AS symbol,
 		GROUP_CONCAT(a.`name`) AS tokenName,
+		b.`name` as name,
 		b.description as description,
 		b.contact_info as contactInfo,
 		b.create_time as createTime,
@@ -79,6 +80,7 @@
 			a.token_sum as tokenSum,
 			a.address_count as addressCount,
 			a.tx_count as txCount,
+			b.vm_category as vmCategory,
 			GROUP_CONCAT(b.token_id) as tokenId,
 			GROUP_CONCAT(b.total_supply) as totalSupply,
 			GROUP_CONCAT(b.symbol) AS symbol,

@@ -94,7 +94,7 @@ public class ContractController {
         return contractService.queryTxsByContractHash(contractHash, pageNumber, pageSize);
     }
 
-
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get dapp binded information")
     @GetMapping(value = "/bindedinfo")
     public ResponseBean queryDappBindedInfo(@RequestParam("dapp_name") String dappNameArrayStr,
@@ -107,6 +107,7 @@ public class ContractController {
     }
 
 
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get binded wallet dapp information")
     @GetMapping(value = "/binded-wallet-dapps")
     public ResponseBean queryBindedWalletDappInfo(@RequestParam("start_time") long startTime,
@@ -118,6 +119,7 @@ public class ContractController {
     }
 
 
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get binded node dapp information")
     @GetMapping(value = "/binded-node-dapps")
     public ResponseBean queryBindedNodeDappInfo(@RequestParam("start_time") long startTime,
@@ -129,6 +131,7 @@ public class ContractController {
     }
 
 
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get Dapp store dapp information")
     @GetMapping(value = "/dappstore-dapps")
     public ResponseBean queryDappstoreDappsInfo(@RequestParam("page_size") @Max(20) @Min(1) Integer pageSize,
@@ -140,6 +143,7 @@ public class ContractController {
     }
 
 
+    @RequestLimit(count = 60)
     @ApiOperation(value = "Get all Dapp store dapp summary information")
     @GetMapping(value = "/dappstore-dapps/summary")
     public ResponseBean queryDappstoreDappsSummary() {

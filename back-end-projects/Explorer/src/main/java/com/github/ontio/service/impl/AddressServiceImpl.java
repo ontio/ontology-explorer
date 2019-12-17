@@ -136,6 +136,7 @@ public class AddressServiceImpl implements IAddressService {
                     .assetName(ConstantParam.ONT)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                     .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONT)
                     .build();
             balanceList.add(balanceDto4);
 
@@ -148,6 +149,7 @@ public class AddressServiceImpl implements IAddressService {
                     .assetName(ConstantParam.ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                     .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONG)
                     .build();
             balanceList.add(balanceDto1);
 
@@ -157,6 +159,7 @@ public class AddressServiceImpl implements IAddressService {
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                     .balance((new BigDecimal(waitBoundOng)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONG)
                     .build();
             balanceList.add(balanceDto2);
 
@@ -169,6 +172,7 @@ public class AddressServiceImpl implements IAddressService {
                     .assetName(ConstantParam.UNBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                     .balance((new BigDecimal(unBoundOng)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONG)
                     .build();
             balanceList.add(balanceDto3);
         } else {
@@ -201,7 +205,6 @@ public class AddressServiceImpl implements IAddressService {
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
     }
-
 
     @Override
     public ResponseBean queryAddressBalanceByAssetName4Onto(String address, String assetName) {
@@ -272,8 +275,92 @@ public class AddressServiceImpl implements IAddressService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
     }
 
+
+    @Override
+    public ResponseBean queryAddressBalanceByContractHash(String address, String contractHash) {
+        List<BalanceDto> balanceList = new ArrayList<>();
+
+        if (ConstantParam.CONTRACTHASH_ONT.equals(contractHash)) {
+
+            initSDK();
+            Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+            //ONT
+            BalanceDto balanceDto4 = BalanceDto.builder()
+                    .assetName(ConstantParam.ONT)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONT)
+                    .build();
+            balanceList.add(balanceDto4);
+
+        } else if (ConstantParam.CONTRACTHASH_ONG.equals(contractHash)) {
+
+            initSDK();
+            Map<String, Object> balanceMap = sdk.getNativeAssetBalance(address);
+            //ONG
+            BalanceDto balanceDto1 = BalanceDto.builder()
+                    .assetName(ConstantParam.ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONG)
+                    .build();
+            balanceList.add(balanceDto1);
+
+            //waiting bound ONG
+            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            BalanceDto balanceDto2 = BalanceDto.builder()
+                    .assetName(ConstantParam.WAITBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(waitBoundOng)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONG)
+                    .build();
+            balanceList.add(balanceDto2);
+
+            //Claimable ONG
+            String unBoundOng = sdk.getUnBoundOng(address);
+            if (Helper.isEmptyOrNull(unBoundOng)) {
+                unBoundOng = "0";
+            }
+            BalanceDto balanceDto3 = BalanceDto.builder()
+                    .assetName(ConstantParam.UNBOUND_ONG)
+                    .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                    .balance((new BigDecimal(unBoundOng)))
+                    .contractHash(ConstantParam.CONTRACTHASH_ONG)
+                    .build();
+            balanceList.add(balanceDto3);
+        } else {
+            Oep4 oep4 = new Oep4();
+            oep4.setContractHash(contractHash);
+            oep4.setAuditFlag(ConstantParam.AUDIT_PASSED);
+            oep4 = oep4Mapper.selectOne(oep4);
+            if (Helper.isNotEmptyAndNull(oep4)) {
+                balanceList = getOep4Balance2(address, oep4);
+            } else {
+                Oep5 oep5 = new Oep5();
+                oep5.setContractHash(contractHash);
+                oep5 = oep5Mapper.selectOne(oep5);
+                if (Helper.isNotEmptyAndNull(oep5)) {
+                    balanceList = getOep5Balance2(address, oep5);
+                } else {
+                    //return all pumpkins and total pumpkin number
+                    if (paramsConfig.OEP8_PUMPKIN_CONTRACTHASH.equals(contractHash)) {
+                        balanceList = getOep8Balance4OntoOld(address, ConstantParam.OEP8_PUMPKIN_PREFIX);
+                    } else {
+                        Oep8 oep8 = new Oep8();
+                        oep8.setContractHash(contractHash);
+                        List<Oep8> oep8s = oep8Mapper.select(oep8);
+                        if (oep8s.size() > 0) {
+                            balanceList = getOep8Balance2(address, oep8s.get(0).getSymbol());
+                        }
+                    }
+                }
+            }
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
+    }
+
     /**
-     * 获取原生资产余额
+     * query native balance
      *
      * @param address
      * @return
@@ -289,6 +376,7 @@ public class AddressServiceImpl implements IAddressService {
                 .assetName(ConstantParam.ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                 .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto1);
 
@@ -298,6 +386,7 @@ public class AddressServiceImpl implements IAddressService {
                 .assetName(ConstantParam.WAITBOUND_ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                 .balance((new BigDecimal(waitBoundOng)))
+                .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto2);
 
@@ -310,6 +399,7 @@ public class AddressServiceImpl implements IAddressService {
                 .assetName(ConstantParam.UNBOUND_ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                 .balance((new BigDecimal(unBoundOng)))
+                .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto3);
 
@@ -318,6 +408,7 @@ public class AddressServiceImpl implements IAddressService {
                 .assetName(ConstantParam.ONT)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
                 .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                .contractHash(ConstantParam.CONTRACTHASH_ONT)
                 .build();
         balanceList.add(balanceDto4);
 
@@ -359,7 +450,7 @@ public class AddressServiceImpl implements IAddressService {
 
 
     /**
-     * 获取OEP4余额
+     * query OEP4 balance
      *
      * @param address
      * @return
@@ -368,7 +459,7 @@ public class AddressServiceImpl implements IAddressService {
 
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
-        //审核过的OEP4余额
+
         Oep4 oep4Temp = new Oep4();
         oep4Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
         if (Helper.isNotEmptyAndNull(assetName)) {
@@ -377,8 +468,14 @@ public class AddressServiceImpl implements IAddressService {
         List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
         for (Oep4 oep4 :
                 oep4s) {
+            BigDecimal balance = new BigDecimal("0");
             String contractHash = oep4.getContractHash();
-            BigDecimal balance = new BigDecimal(sdk.getOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+            String vmCategory = oep4.getVmCategory();
+            if (ConstantParam.VM_CATEGORY_NEOVM.equals(vmCategory)) {
+                balance = new BigDecimal(sdk.getNeovmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+            } else if (ConstantParam.VM_CATEGORY_WASMVM.equals(vmCategory)) {
+                balance = new BigDecimal(sdk.getWasmvmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+            }
             if (balance.compareTo(ConstantParam.ZERO) == 0) {
                 continue;
             }
@@ -386,6 +483,7 @@ public class AddressServiceImpl implements IAddressService {
                     .assetName(oep4.getSymbol())
                     .assetType(ConstantParam.ASSET_TYPE_OEP4)
                     .balance(balance)
+                    .contractHash(oep4.getContractHash())
                     .build();
             balanceList.add(balanceDto);
         }
@@ -394,7 +492,7 @@ public class AddressServiceImpl implements IAddressService {
 
 
     /**
-     * 获取OEP4余额
+     * query OEP4 balance
      *
      * @param address
      * @return
@@ -404,11 +502,18 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
         String contractHash = oep4.getContractHash();
-        BigDecimal balance = new BigDecimal(sdk.getOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+        String vmCategory = oep4.getVmCategory();
+        BigDecimal balance = new BigDecimal("0");
+        if (ConstantParam.VM_CATEGORY_NEOVM.equals(vmCategory)) {
+            balance = new BigDecimal(sdk.getNeovmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+        } else if (ConstantParam.VM_CATEGORY_WASMVM.equals(vmCategory)) {
+            balance = new BigDecimal(sdk.getWasmvmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+        }
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(oep4.getSymbol())
                 .assetType(ConstantParam.ASSET_TYPE_OEP4)
                 .balance(balance)
+                .contractHash(oep4.getContractHash())
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
@@ -445,6 +550,7 @@ public class AddressServiceImpl implements IAddressService {
                         .assetName(oep5.getName())
                         .assetType(ConstantParam.ASSET_TYPE_OEP5)
                         .balance(balance)
+                        .contractHash(oep5.getContractHash())
                         .build();
                 balanceList.add(balanceDto);
             } else {
@@ -453,6 +559,7 @@ public class AddressServiceImpl implements IAddressService {
                         .assetName(oep5.getSymbol())
                         .assetType(ConstantParam.ASSET_TYPE_OEP5)
                         .balance(balance)
+                        .contractHash(oep5.getContractHash())
                         .build();
                 balanceList.add(balanceDto);
             }
@@ -478,6 +585,7 @@ public class AddressServiceImpl implements IAddressService {
                 .assetName(oep5.getSymbol())
                 .assetType(ConstantParam.ASSET_TYPE_OEP5)
                 .balance(balance)
+                .contractHash(oep5.getContractHash())
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
@@ -514,6 +622,7 @@ public class AddressServiceImpl implements IAddressService {
                         .assetName(symbolArray[i])
                         .assetType(ConstantParam.ASSET_TYPE_OEP8)
                         .balance(new BigDecimal((String) balanceArray.get(i)))
+                        .contractHash(contractHash)
                         .build();
                 balanceList.add(balanceDto);
             }
@@ -573,6 +682,7 @@ public class AddressServiceImpl implements IAddressService {
                                     .assetName(item.getSymbol())
                                     .assetType(ConstantParam.ASSET_TYPE_OEP4)
                                     .balance(balance)
+                                    .contractHash(item.getContractHash())
                                     .build();
                             balanceList.add(balanceDto);
                         }
@@ -635,6 +745,7 @@ public class AddressServiceImpl implements IAddressService {
                                         .assetName(item.getName())
                                         .assetType(ConstantParam.ASSET_TYPE_OEP5)
                                         .balance(balance)
+                                        .contractHash(item.getContractHash())
                                         .build();
                                 balanceList.add(balanceDto);
                             } else {
@@ -644,6 +755,7 @@ public class AddressServiceImpl implements IAddressService {
                                         .assetName(item.getSymbol())
                                         .assetType(ConstantParam.ASSET_TYPE_OEP5)
                                         .balance(balance)
+                                        .contractHash(item.getContractHash())
                                         .build();
                                 balanceList.add(balanceDto);
                             }
@@ -709,6 +821,7 @@ public class AddressServiceImpl implements IAddressService {
                                     .assetName(symbolArray[i])
                                     .assetType(ConstantParam.ASSET_TYPE_OEP8)
                                     .balance(new BigDecimal((String) balanceArray[i]))
+                                    .contractHash(item.get("contractHash"))
                                     .build();
                             balanceList.add(balanceDto);
                         }
@@ -822,6 +935,7 @@ public class AddressServiceImpl implements IAddressService {
                         .assetName(symbolArray[i])
                         .assetType(ConstantParam.ASSET_TYPE_OEP8)
                         .balance(new BigDecimal((String) balanceArray.get(i)))
+                        .contractHash(contractHash)
                         .build();
                 balanceList.add(balanceDto);
                 total = total + Integer.valueOf((String) balanceArray.get(i));
@@ -830,6 +944,7 @@ public class AddressServiceImpl implements IAddressService {
                     .assetName("totalpumpkin")
                     .assetType(ConstantParam.ASSET_TYPE_OEP8)
                     .balance(new BigDecimal(total))
+                    .contractHash(contractHash)
                     .build();
             balanceList.add(balanceDto);
         }
@@ -859,6 +974,7 @@ public class AddressServiceImpl implements IAddressService {
                 .assetName(symbol)
                 .assetType(ConstantParam.ASSET_TYPE_OEP8)
                 .balance(new BigDecimal((String) balanceArray.get(i - 1)))
+                .contractHash(contractHash)
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
@@ -1046,7 +1162,6 @@ public class AddressServiceImpl implements IAddressService {
         int previousTxIndex = 0;
         for (int i = 0; i < transferTxDtos.size(); i++) {
             TransferTxDto transferTxDto = transferTxDtos.get(i);
-            //ONG精度格式化
             String assetName = transferTxDto.getAssetName();
             BigDecimal amount = transferTxDto.getAmount();
             if (ConstantParam.ONG.equals(assetName)) {
@@ -1055,7 +1170,6 @@ public class AddressServiceImpl implements IAddressService {
 
             String txHash = transferTxDto.getTxHash();
             log.info("txHash:{}", txHash);
-
             if (txHash.equals(previousTxHash)) {
                 //自己给自己转账，sql会查询出两条记录.需要判断tx_index是否一样
                 if (previousTxIndex != transferTxDto.getTxIndex()) {
@@ -1065,6 +1179,7 @@ public class AddressServiceImpl implements IAddressService {
                             .fromAddress(transferTxDto.getFromAddress())
                             .toAddress(transferTxDto.getToAddress())
                             .assetName(transferTxDto.getAssetName())
+                            .contractHash(transferTxDto.getContractHash())
                             .build();
 
                     List<TransferTxDetailDto> transferTxnList = (List<TransferTxDetailDto>) (formattedTransferTxs.get(formattedTransferTxs.size() - 1)).getTransfers();
@@ -1080,6 +1195,7 @@ public class AddressServiceImpl implements IAddressService {
                         .fromAddress(transferTxDto.getFromAddress())
                         .toAddress(transferTxDto.getToAddress())
                         .assetName(transferTxDto.getAssetName())
+                        .contractHash(transferTxDto.getContractHash())
                         .build();
                 List<TransferTxDetailDto> transferTxnList = new ArrayList<>();
                 transferTxnList.add(transferTxDetailDto);
@@ -1090,6 +1206,7 @@ public class AddressServiceImpl implements IAddressService {
                 transferTxDto.setAmount(null);
                 transferTxDto.setAssetName(null);
                 transferTxDto.setTxIndex(null);
+                transferTxDto.setContractHash(null);
 
                 formattedTransferTxs.add(transferTxDto);
             }

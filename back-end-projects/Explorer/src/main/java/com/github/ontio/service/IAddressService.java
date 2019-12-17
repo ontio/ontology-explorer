@@ -8,6 +8,8 @@ public interface IAddressService {
 
     ResponseBean queryAddressBalanceByAssetName(String address, String assetName);
 
+    ResponseBean queryAddressBalanceByContractHash(String address, String contractHash);
+
     ResponseBean queryAddressBalanceByAssetName4Onto(String address, String assetName);
 
     ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize);

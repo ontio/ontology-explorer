@@ -22,10 +22,13 @@ public class BalanceDto {
 
     private String assetType;
 
+    private String contractHash;
+
     @Builder
-    public BalanceDto(BigDecimal balance, String assetName, String assetType) {
+    public BalanceDto(BigDecimal balance, String assetName, String assetType, String contractHash) {
         this.balance = balance;
         this.assetName = assetName;
         this.assetType = assetType;
+        this.contractHash = contractHash;
     }
 }

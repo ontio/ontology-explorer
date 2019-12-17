@@ -24,12 +24,15 @@ public class TransferTxDetailDto {
 
     private String assetName;
 
+    private String contractHash;
+
 
     @Builder
-    public TransferTxDetailDto(BigDecimal amount, String fromAddress, String toAddress, String assetName) {
+    public TransferTxDetailDto(BigDecimal amount, String fromAddress, String toAddress, String assetName, String contractHash) {
         this.amount = amount;
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.assetName = assetName;
+        this.contractHash = contractHash;
     }
 }

@@ -55,16 +55,20 @@ public class AddressController {
     @ApiOperation(value = "Get address balance by assetName")
     @GetMapping(value = "/{address}/balances")
     public ResponseBean queryAddressBalanceByAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-                                                       @RequestParam("asset_name") String assetName,
+                                                       @RequestParam(value = "asset_name", required = false) String assetName,
+                                                       @RequestParam(value = "contract_hash", required = false) @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
                                                        @RequestParam(value = "channel", required = false) String channel) {
 
         log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
 
         ResponseBean rs = new ResponseBean();
         if (Helper.isNotEmptyAndNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
+            //TODO abandon....
             rs = addressService.queryAddressBalanceByAssetName4Onto(address, assetName);
-        } else {
+        } else if (Helper.isNotEmptyAndNull(assetName)) {
             rs = addressService.queryAddressBalanceByAssetName(address, assetName);
+        } else if (Helper.isNotEmptyAndNull(contractHash)) {
+            rs = addressService.queryAddressBalanceByContractHash(address, contractHash);
         }
         return rs;
     }

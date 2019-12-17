@@ -1,5 +1,6 @@
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.impl.SummaryServiceImpl;
 import com.github.ontio.util.ErrorInfo;
@@ -42,6 +43,7 @@ public class SummaryController {
         return summaryService.getBlockChainTps();
     }
 
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get blockchain daily summary information")
     @GetMapping(value = "/blockchain/daily")
     public ResponseBean getBlockChainSummary(@RequestParam("start_time") Long startTime,
@@ -56,6 +58,7 @@ public class SummaryController {
     }
 
 
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get contract daily summary information")
     @GetMapping(value = "/contracts/{contract_hash}/daily")
     public ResponseBean getContractSummary(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,

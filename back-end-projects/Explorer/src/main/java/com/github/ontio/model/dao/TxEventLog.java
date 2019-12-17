@@ -1,5 +1,8 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -41,6 +44,7 @@ public class TxEventLog {
     /**
      * 交易手续费
      */
+    @JsonSerialize(using = TxAmountSerializer.class)
     private BigDecimal fee;
 
     /**

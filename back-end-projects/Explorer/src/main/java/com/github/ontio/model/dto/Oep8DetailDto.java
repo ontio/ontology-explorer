@@ -18,4 +18,6 @@ public class Oep8DetailDto extends Contract {
 
     private Object tokenId;
 
+    private String vmCategory;
+
 }

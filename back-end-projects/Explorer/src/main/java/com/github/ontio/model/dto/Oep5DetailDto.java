@@ -18,5 +18,6 @@ public class Oep5DetailDto extends Contract {
 
     private String name;
 
+    private String vmCategory;
 
 }

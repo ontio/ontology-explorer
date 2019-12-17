@@ -65,6 +65,7 @@ public class OntIdController {
     }
 
 
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get ONT ID transaction list by page")
     @GetMapping(value = "/ontids")
     public ResponseBean queryOntIdTxsByPage(@RequestParam("page_size") @Max(20) @Min(1) int pageSize,
@@ -89,6 +90,7 @@ public class OntIdController {
         return rs;
     }
 
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get ONT ID Ddo by page")
     @GetMapping(value = "/ontids/{ontid}/ddo")
     public ResponseBean queryOntIdDdo(@PathVariable("ontid") @Pattern(regexp = "did:ont:A[A-Za-z0-9]{33}", message = "Incorrect ONT ID format") String ontid) {

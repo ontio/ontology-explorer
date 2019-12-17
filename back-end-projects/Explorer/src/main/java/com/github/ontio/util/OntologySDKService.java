@@ -27,6 +27,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.core.payload.InvokeWasmCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouq
@@ -97,21 +95,45 @@ public class OntologySDKService {
     }
 
     /**
-     * 获取OEP4账户余额
+     * get neovm OEP4 balance
      *
      * @param address
      * @return
      */
-    public String getOep4AssetBalance(String address, String contractHash) {
+    public String getNeovmOep4AssetBalance(String address, String contractHash) {
         OntSdk ontSdk = getOep4OntSdk(contractHash);
         try {
             String balance = ontSdk.neovm().oep4().queryBalanceOf(address);
             return balance;
         } catch (Exception e) {
-            log.error("getOep4AssetBalance error...", e);
+            log.error("getNeovmOep4AssetBalance error...", e);
             return "0";
         }
     }
+
+
+    /**
+     * get neovm OEP4 balance
+     *
+     * @param address
+     * @return
+     */
+    public String getWasmvmOep4AssetBalance(String address, String contractHash) {
+        try {
+            OntSdk ontSdk = getOntSdk();
+
+            List<Object> params = new ArrayList<>(Collections.singletonList(Address.decodeBase58(address)));
+            InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractHash, "balanceOf", params, Address.decodeBase58(address), 500, 25000000);
+            JSONObject result = (JSONObject) ontSdk.getRestful().sendRawTransactionPreExec(tx.toHexString());
+            log.info("getWasmvmOep4AssetBalance result:{}", result);
+            BigDecimal decimal = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(result.getString("Result"))).longValue());
+            return decimal.stripTrailingZeros().toPlainString();
+        } catch (Exception e) {
+            log.error("getNeovmOep4AssetBalance error...", e);
+            return "0";
+        }
+    }
+
 
     /**
      * 获取OEP5账户余额
@@ -168,6 +190,7 @@ public class OntologySDKService {
 
     /**
      * 根据dapp合约hash获取绑定的节点信息
+     *
      * @param contractHash
      * @param dappContractHash
      * @return
@@ -199,7 +222,7 @@ public class OntologySDKService {
             }
             return rsMap;
         } catch (Exception e) {
-            log.error("dappContractHash:{} getDappBindedNodeInfo error...", dappContractHash,e);
+            log.error("dappContractHash:{} getDappBindedNodeInfo error...", dappContractHash, e);
         }
         return rsMap;
     }
@@ -207,6 +230,7 @@ public class OntologySDKService {
 
     /**
      * 根据dapp合约hash获取绑定的onid和钱包账户
+     *
      * @param contractHash
      * @param dappContractHash
      * @return

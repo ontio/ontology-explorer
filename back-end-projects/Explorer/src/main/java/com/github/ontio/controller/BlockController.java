@@ -18,6 +18,7 @@
 
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.service.IBlockService;
 import com.github.ontio.util.ErrorInfo;
@@ -56,6 +57,7 @@ public class BlockController {
         return blockService.queryLatestBlocks(count);
     }
 
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get block list by page")
     @GetMapping(value = "/blocks")
     public ResponseBean getBlocksByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,

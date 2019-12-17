@@ -32,10 +32,11 @@
       a.create_time as createTime,
       a.update_time as updateTime,
       a.contact_info as contactInfo,
+      a.address_count as addressCount,
+      a.tx_count as txCount,
       b.total_supply as totalSupply,
       b.symbol as symbol,
-      a.address_count as addressCount,
-      a.tx_count as txCount
+      b.vm_category as vmCategory
     FROM tbl_contract a, tbl_oep5 b
     where a.contract_hash = b.contract_hash
     and a.audit_flag = 1
@@ -64,7 +65,8 @@
       a.address_count as addressCount,
       a.tx_count as txCount,
       b.total_supply as totalSupply,
-      b.symbol as symbol
+      b.symbol as symbol,
+      b.vm_category as vmCategory
     FROM tbl_contract a, tbl_oep5 b
     where a.contract_hash = b.contract_hash
     and a.audit_flag = 1
