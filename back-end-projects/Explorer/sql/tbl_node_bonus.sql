@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `tbl_node_bonus`
     public_key VARCHAR(70) NOT NULL COMMENT '节点的公钥',
     address    VARCHAR(34) NOT NULL COMMENT '节点的钱包地址',
     name       VARCHAR(64) NOT NULL COMMENT '节点的名称',
-    bonus      DOUBLE      NOT NULL COMMENT '节点的每月 500 ONT 质押收益',
+    bonus      DOUBLE      NOT NULL COMMENT '节点的每月 10000 ONT 质押收益',
     unix_time  BIGINT      NOT NULL COMMENT '节点收益的更新时间',
     INDEX address (address),
     PRIMARY KEY (public_key, unix_time)
