@@ -23,7 +23,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.*;
+import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.model.common.BatchBlockDto;
 import com.github.ontio.service.BlockHandleService;
 import com.github.ontio.service.CommonService;
@@ -152,7 +152,7 @@ public class BlockHandlerThread extends Thread {
         }
         long endTime1 = System.currentTimeMillis();
         log.info("batch handle {} block from {} use time:{},txCount:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight, (endTime1 - beginTime), ConstantParam.BATCHBLOCK_TX_COUNT);
-        commonService.batchInsertDb(endHeight, ConstantParam.BATCHBLOCKDTO);
+        commonService.batchInsertDb(beginHeight, endHeight, ConstantParam.BATCHBLOCKDTO);
         long endTime2 = System.currentTimeMillis();
         log.info("batch handle {} block from {} insert to db use time:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight, (endTime2 - endTime1));
         initConstantParam();
