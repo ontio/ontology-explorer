@@ -33,14 +33,19 @@
 
 
   <select id="selectOntidTxsByPage" resultType="com.github.ontio.model.dto.OntidTxDetailDto">
-    select <include refid="detailColumns"/>
-    from tbl_ontid_tx_detail
-    where 1= 1
-    <if test="ontid != '' and ontid != null">
-      and ontid = #{ontid}
-    </if>
-    order by block_height desc
-    limit #{startIndex}, #{pageSize}
+      select
+      <include refid="detailColumns"/>
+      from tbl_ontid_tx_detail tx
+      inner join (
+      select id
+      from tbl_ontid_tx_detail
+      where 1= 1
+      <if test="ontid != '' and ontid != null">
+          and ontid = #{ontid}
+      </if>
+      order by id desc
+      limit #{startIndex}, #{pageSize}
+      ) tmp on tx.id = tmp.id
   </select>
 
   <select id="selectTxCountByOntid" resultType="java.lang.Integer">

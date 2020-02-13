@@ -96,52 +96,41 @@
 
 
     <select id="selectTransferTxsByPage" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT *
-        FROM
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail d
+        INNER JOIN
         (
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-              UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-        ) a
-        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+        SELECT tx_hash AS `hash`, tx_index AS `index`
+        FROM tbl_tx_detail_index
+        WHERE address = #{address}
+        <if test="assetName != '' and assetName != null">
+            AND asset_name = #{assetName}
+        </if>
+        AND event_type IN (2, 3)
+        ORDER BY desc_block_height, tx_hash, tx_index
         LIMIT #{startIndex}, #{pageSize}
+        ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT *
-        FROM
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail d
+        INNER JOIN
         (
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-              UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-        ) a
-        where a.txTime &gt;= #{startTime}
-        and <![CDATA[ a.txTime <= #{endTime} ]]>
-        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+        SELECT tx_hash AS `hash`, tx_index AS `index`
+        FROM tbl_tx_detail_index
+        WHERE address = #{address}
+        AND tx_time &gt;= #{startTime}
+        AND tx_time &lt;= #{endTime}
+        <if test="assetName != '' and assetName != null">
+            AND asset_name = #{assetName}
+        </if>
+        AND event_type IN (2, 3)
+        ORDER BY desc_block_height, tx_hash, tx_index
+        LIMIT #{startIndex}, #{pageSize}
+        ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
     </select>
 
 
