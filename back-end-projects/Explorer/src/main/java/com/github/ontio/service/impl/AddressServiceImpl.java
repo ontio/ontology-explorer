@@ -1026,6 +1026,7 @@ public class AddressServiceImpl implements IAddressService {
 
 	    int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 	    List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
+	    transferTxDtos = formatTransferTxDtos(transferTxDtos);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
@@ -1050,6 +1051,7 @@ public class AddressServiceImpl implements IAddressService {
     public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
