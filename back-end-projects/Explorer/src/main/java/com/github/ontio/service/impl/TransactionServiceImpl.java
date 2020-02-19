@@ -128,11 +128,19 @@ public class TransactionServiceImpl implements ITransactionService {
             detailObj.put("transfers", txDetailDtos);
         } else if (EventTypeEnum.Ontid.getType() == eventType) {
             //ONTID交易获取ONTID动作详情
-            OntidTxDetailDto ontidTxDetailDto = ontidTxDetailMapper.selectOneByTxHash(txHash);
+            OntidTxDetailDto ontidTxDetail = OntidTxDetailDto.builder()
+                    .txHash(txHash)
+                    .build();
+            List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.select(ontidTxDetail);
+            //一笔交易注册多个ONTID
+            StringBuilder stringBuilder = new StringBuilder();
+            for (OntidTxDetailDto ontidTxDetailDto : ontidTxDetailDtos) {
+                stringBuilder.append(ontidTxDetailDto.getOntid());
+                stringBuilder.append("||");
+            }
+            String ontIdDes = Helper.templateOntIdOperation(ontidTxDetailDtos.get(0).getDescription());
 
-            String ontIdDes = Helper.templateOntIdOperation(ontidTxDetailDto.getDescription());
-
-            detailObj.put("ontid", ontidTxDetailDto.getOntid());
+            detailObj.put("ontid", stringBuilder.substring(0, stringBuilder.length() - 2).toString());
             detailObj.put("description", ontIdDes);
         }
         txDetailDto.setDetail(detailObj);
