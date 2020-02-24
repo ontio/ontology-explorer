@@ -101,7 +101,7 @@
         FROM tbl_tx_detail d
         INNER JOIN
         (
-        SELECT tx_hash AS `hash`, tx_index AS `index`
+        SELECT DISTINCT tx_hash AS `hash`
         FROM tbl_tx_detail_index
         WHERE address = #{address}
         <if test="assetName != '' and assetName != null">
@@ -110,7 +110,14 @@
         AND event_type IN (2, 3)
         ORDER BY desc_block_height, tx_hash, tx_index
         LIMIT #{startIndex}, #{pageSize}
-        ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
+        ) idx ON idx.hash = d.tx_hash
+        WHERE d.from_address = #{address}
+        OR d.to_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            AND d.asset_name = #{assetName}
+        </if>
+        AND d.event_type IN (2, 3)
+        ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
