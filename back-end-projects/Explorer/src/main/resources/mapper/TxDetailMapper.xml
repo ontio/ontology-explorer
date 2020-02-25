@@ -136,7 +136,6 @@
         </if>
         AND event_type IN (2, 3)
         ORDER BY desc_block_height, tx_hash, tx_index
-        LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
     </select>
 
