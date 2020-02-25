@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.TxDetailIndexMapper">
+
+    <insert id="buildTxDetailIndexForFromAddress">
+        INSERT INTO tbl_tx_detail_index
+        (address, desc_block_height, tx_hash, tx_index, called_contract_hash, tx_time, event_type, asset_name, tx_direction)
+        SELECT from_address, (~0 >> 33) - block_height, tx_hash, tx_index, called_contract_hash, tx_time, event_type, asset_name, 0
+        FROM tbl_tx_detail
+        WHERE block_height BETWEEN #{beginHeight} AND #{endHeight}
+        ORDER BY block_height, tx_time;
+    </insert>
+
+    <insert id="buildTxDetailIndexForToAddress">
+        INSERT INTO tbl_tx_detail_index
+        (address, desc_block_height, tx_hash, tx_index, called_contract_hash, tx_time, event_type, asset_name, tx_direction)
+        SELECT to_address, (~0 >> 33) - block_height, tx_hash, tx_index, called_contract_hash, tx_time, event_type, asset_name, 1
+        FROM tbl_tx_detail
+        WHERE block_height BETWEEN #{beginHeight} AND #{endHeight}
+        ORDER BY block_height, tx_time
+        ON DUPLICATE KEY UPDATE tx_direction = 2;
+    </insert>
+
+</mapper>

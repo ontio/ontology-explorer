@@ -16,7 +16,11 @@ import com.github.ontio.model.dto.QueryBatchBalanceDto;
 import com.github.ontio.model.dto.TransferTxDetailDto;
 import com.github.ontio.model.dto.TransferTxDto;
 import com.github.ontio.service.IAddressService;
-import com.github.ontio.util.*;
+import com.github.ontio.util.ConstantParam;
+import com.github.ontio.util.ErrorInfo;
+import com.github.ontio.util.Helper;
+import com.github.ontio.util.JacksonUtil;
+import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -1020,32 +1024,10 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
 
-        List<TransferTxDto> returnList = new ArrayList<>();
-        //查询前（pageNumber * pageSize * 3）条记录
-        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, 0, pageNumber * pageSize * 3);
-        //合并和格式化转账交易记录
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
-
-        if (formattedTransferTxDtos.size() > 0 && formattedTransferTxDtos.size() < pageSize * pageNumber) {
-            //合并和格式化转账交易记录数 < （pageNumber * pageSize），根据总记录数再重新查询所有的记录
-            int transferTxTotal = txDetailMapper.selectTransferTxCountByAddr(address);
-            if (transferTxTotal > pageNumber * pageSize * 3) {
-                //针对一个地址有T笔1对N转账or一笔1对M转账的特殊处理(T*N>pageNumber*pageSize*3 or M>pageNumber*pageSize*3)
-                List<TransferTxDto> transferTxDtos2 = txDetailMapper.selectTransferTxsByPage(address, assetName, 0, transferTxTotal);
-                List<TransferTxDto> formattedTransferTxDtos2 = formatTransferTxDtos(transferTxDtos2);
-
-                returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos2);
-            } else {
-                //总的交易数 < （pageNumber * pageSize * 3），直接根据请求条数进行分页
-                returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
-            }
-        } else {
-            //格式化后的txlist条数满足分页条件，直接根据请求条数参数进行分页
-            //根据分页确认start，end=start+pageSize
-            returnList = getTransferTxDtosByPage(pageNumber, pageSize, formattedTransferTxDtos);
-        }
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), returnList);
+	    int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+	    List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
+	    transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
 
@@ -1069,10 +1051,8 @@ public class AddressServiceImpl implements IAddressService {
     public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
-
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
-
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
     @Override
