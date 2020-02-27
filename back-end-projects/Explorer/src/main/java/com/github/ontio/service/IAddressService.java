@@ -2,6 +2,8 @@ package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
 
+import java.util.Date;
+
 public interface IAddressService {
 
     ResponseBean queryAddressBalance(String address, String tokenType);
@@ -18,6 +20,11 @@ public interface IAddressService {
 
     ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType);
 
-    ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize, String addressType);
+    ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize,
+            String addressType);
+
+    ResponseBean queryDailyAggregation(String address, String token, Date from, Date to);
+
+    ResponseBean queryDailyAggregationOfTokenType(String address, String tokenType, Date from, Date to);
 
 }

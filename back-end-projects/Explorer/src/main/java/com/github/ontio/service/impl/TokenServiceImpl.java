@@ -1,14 +1,16 @@
 package com.github.ontio.service.impl;
 
-import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.exception.ExplorerException;
-import com.github.ontio.mapper.*;
+import com.github.ontio.mapper.Oep4Mapper;
+import com.github.ontio.mapper.Oep5Mapper;
+import com.github.ontio.mapper.Oep8Mapper;
+import com.github.ontio.mapper.Oep8TxDetailMapper;
+import com.github.ontio.mapper.TokenDailyAggregationMapper;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dao.Oep4;
-import com.github.ontio.model.dao.Oep5;
-import com.github.ontio.model.dao.Oep8;
-import com.github.ontio.model.dto.*;
+import com.github.ontio.model.dto.Oep4DetailDto;
+import com.github.ontio.model.dto.Oep5DetailDto;
+import com.github.ontio.model.dto.Oep8DetailDto;
+import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -18,10 +20,12 @@ import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhouq
@@ -36,13 +40,16 @@ public class TokenServiceImpl implements ITokenService {
     private final Oep5Mapper oep5Mapper;
     private final Oep8Mapper oep8Mapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
+    private final TokenDailyAggregationMapper tokenDailyAggregationMapper;
 
     @Autowired
-    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Oep8TxDetailMapper oep8TxDetailMapper) {
+    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
+            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.tokenDailyAggregationMapper = tokenDailyAggregationMapper;
     }
 
     @Override
@@ -149,7 +156,8 @@ public class TokenServiceImpl implements ITokenService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<TxDetailDto> txDetailDtos = oep8TxDetailMapper.selectTxsByCalledContractHashAndTokenName(contractHash, tokenName, start, pageSize);
+        List<TxDetailDto> txDetailDtos = oep8TxDetailMapper.selectTxsByCalledContractHashAndTokenName(contractHash, tokenName,
+                start, pageSize);
         Integer count = oep8TxDetailMapper.selectCountByCalledContracthashAndTokenName(contractHash, tokenName);
 
         PageResponseBean pageResponseBean = new PageResponseBean(txDetailDtos, count);
@@ -157,7 +165,14 @@ public class TokenServiceImpl implements ITokenService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
-
+    @Override
+    public ResponseBean queryDailyAggregations(String tokenType, String contractHash, Date from, Date to) {
+        Object result = null;
+        if (ConstantParam.ASSET_TYPE_OEP4.equalsIgnoreCase(tokenType)) {
+            result = tokenDailyAggregationMapper.findAggregations(contractHash, from, to);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
 
 
 }

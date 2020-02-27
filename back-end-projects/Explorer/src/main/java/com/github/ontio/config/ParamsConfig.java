@@ -31,6 +31,10 @@ import java.util.List;
 @Service("ParamsConfig")
 public class ParamsConfig {
 
+    public static final String ONT_CONTRACT_HASH = "0100000000000000000000000000000000000000";
+
+    public static final String ONG_CONTRACT_HASH = "0200000000000000000000000000000000000000";
+
     @Value("${masternode.restful.url}")
     public String MASTERNODE_RESTFUL_URL;
 

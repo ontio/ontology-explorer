@@ -10,12 +10,18 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
+import java.util.Date;
 
 /**
  * @author zhouq
@@ -139,5 +145,30 @@ public class AddressController {
         return rs;
     }
 
+    @RequestLimit(count = 120)
+    @GetMapping(value = "/{address}/daily")
+    public ResponseBean queryDailyAggregation(
+            @PathVariable("address") @Length(min = 34, max = 40, message = "Incorrect address format") String address,
+            @RequestParam(value = "token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
+            @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
+            @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
+    ) {
+        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+
+        return addressService.queryDailyAggregation(address, token, from, to);
+    }
+
+    @RequestLimit(count = 120)
+    @GetMapping(value = "/{address}/{token_type}/daily")
+    public ResponseBean queryDailyAggregationOfTokenType(
+            @PathVariable("address") @Length(min = 34, max = 40, message = "Incorrect address format") String address,
+            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4", message = "Incorrect token type") String tokenType,
+            @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
+            @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
+    ) {
+        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+
+        return addressService.queryDailyAggregationOfTokenType(address, tokenType, from, to);
+    }
 
 }

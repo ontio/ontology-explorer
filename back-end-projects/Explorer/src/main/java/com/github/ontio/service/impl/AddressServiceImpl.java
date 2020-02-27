@@ -2,7 +2,11 @@ package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Expiry;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.mapper.AddressDailyAggregationMapper;
 import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
@@ -15,6 +19,10 @@ import com.github.ontio.model.dto.BalanceDto;
 import com.github.ontio.model.dto.QueryBatchBalanceDto;
 import com.github.ontio.model.dto.TransferTxDetailDto;
 import com.github.ontio.model.dto.TransferTxDto;
+import com.github.ontio.model.dto.aggregation.AddressAggregationDto;
+import com.github.ontio.model.dto.aggregation.AddressBalanceAggregationsDto;
+import com.github.ontio.model.dto.aggregation.BaseAggregationDto;
+import com.github.ontio.model.dto.aggregation.ExtremeBalanceDto;
 import com.github.ontio.service.IAddressService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -22,14 +30,20 @@ import com.github.ontio.util.Helper;
 import com.github.ontio.util.JacksonUtil;
 import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.github.ontio.config.ParamsConfig.ONG_CONTRACT_HASH;
+import static com.github.ontio.config.ParamsConfig.ONT_CONTRACT_HASH;
 
 /**
  * @author zhouq
@@ -50,15 +64,18 @@ public class AddressServiceImpl implements IAddressService {
     private final TxDetailMapper txDetailMapper;
     private final ParamsConfig paramsConfig;
     private final CommonService commonService;
+    private final AddressDailyAggregationMapper addressDailyAggregationMapper;
 
     @Autowired
-    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CommonService commonService) {
+    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper,
+            ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.commonService = commonService;
+        this.addressDailyAggregationMapper = addressDailyAggregationMapper;
     }
 
     private OntologySDKService sdk;
@@ -1119,7 +1136,8 @@ public class AddressServiceImpl implements IAddressService {
             //dragon asset use 'like' query, for ONTO
             if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
                 assetName = assetName + "%";
-                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPageInToAddr4Onto(address, assetName, endTime, pageSize);
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPageInToAddr4Onto(address, assetName, endTime,
+                        pageSize);
             } else {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPageInToAddr4Onto(address, assetName, endTime, pageSize);
             }
@@ -1127,6 +1145,49 @@ public class AddressServiceImpl implements IAddressService {
         List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
+    }
+
+    private Cache<String, ExtremeBalanceDto> extremeBalances = Caffeine.newBuilder()
+            .expireAfter(new Expiry<String, ExtremeBalanceDto>() {
+                             @Override
+                             public long expireAfterCreate(String key, ExtremeBalanceDto value, long currentTime) {
+                                 DateTime now = DateTime.now(DateTimeZone.UTC);
+                                 return (now.plusDays(1).withTime(0, 5, 0, 0).getMillis() - System.currentTimeMillis()) * 1000000;
+                             }
+
+                             @Override
+                             public long expireAfterUpdate(String key, ExtremeBalanceDto value, long currentTime,
+                                     long currentDuration) {
+                                 return currentDuration;
+                             }
+
+                             @Override
+                             public long expireAfterRead(String key, ExtremeBalanceDto value, long currentTime,
+                                     long currentDuration) {
+                                 return currentDuration;
+                             }
+                         }
+            ).maximumSize(0).build(); // TODO disable cache temporarily
+
+    @Override
+    public ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) {
+        String tokenContractHash = "ont".equalsIgnoreCase(token) ? ONT_CONTRACT_HASH : ONG_CONTRACT_HASH;
+        List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregations(address, tokenContractHash,
+                from, to);
+        ExtremeBalanceDto max = extremeBalances.get(address + tokenContractHash + "max",
+                key -> addressDailyAggregationMapper.findMaxBalance(address, tokenContractHash));
+        ExtremeBalanceDto min = extremeBalances.get(address + token + "min",
+                key -> addressDailyAggregationMapper.findMinBalance(address, tokenContractHash));
+        AddressBalanceAggregationsDto result = new AddressBalanceAggregationsDto(max, min, aggregations);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+    @Override
+    public ResponseBean queryDailyAggregationOfTokenType(String address, String tokenType, Date from, Date to) {
+        String tokenContractHash = "oep4".equalsIgnoreCase(tokenType) ? BaseAggregationDto.VIRTUAL_CONTRACT_OEP4 : "";
+        List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregationsForToken(address,
+                tokenContractHash, from, to);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
     }
 
     /**

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.TokenDailyAggregationMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TokenDailyAggregation">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="token_contract_hash" jdbcType="CHAR" property="tokenContractHash"/>
+        <result column="date_id" jdbcType="INTEGER" property="dateId"/>
+        <result column="usd_price" jdbcType="DECIMAL" property="usdPrice"/>
+        <result column="tx_count" jdbcType="INTEGER" property="txCount"/>
+        <result column="tx_amount" jdbcType="DECIMAL" property="txAmount"/>
+        <result column="deposit_address_count" jdbcType="INTEGER" property="depositAddressCount"/>
+        <result column="withdraw_address_count" jdbcType="INTEGER" property="withdrawAddressCount"/>
+        <result column="tx_address_count" jdbcType="INTEGER" property="txAddressCount"/>
+        <result column="fee_amount" jdbcType="DECIMAL" property="feeAmount"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="findAggregations" resultType="com.github.ontio.model.dto.aggregation.TokenAggregationDto">
+        SELECT d.date,
+        a.tx_count,
+        a.tx_amount,
+        a.deposit_address_count AS deposit_addr,
+        a.withdraw_address_count AS withdraw_addr,
+        a.tx_address_count AS tx_addr
+        FROM tbl_token_daily_aggregation a
+        INNER JOIN tbl_date d ON d.id = a.date_id
+        INNER JOIN tbl_oep4 b ON b.contract_hash = a.token_contract_hash
+        WHERE a.token_contract_hash = #{contractHash}
+        AND a.date_id &gt; 0
+        <if test="from != null">
+            AND d.date &gt;= #{from}
+        </if>
+        <if test="to != null">
+            AND d.date &lt;= #{to}
+        </if>
+        AND b.audit_flag = 1
+    </select>
+
+</mapper>

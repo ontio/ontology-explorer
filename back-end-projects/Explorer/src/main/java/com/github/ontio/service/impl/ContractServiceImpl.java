@@ -21,12 +21,26 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.*;
+import com.github.ontio.mapper.ContractDailyAggregationMapper;
+import com.github.ontio.mapper.ContractDailySummaryMapper;
+import com.github.ontio.mapper.ContractMapper;
+import com.github.ontio.mapper.NodeInfoOffChainMapper;
+import com.github.ontio.mapper.NodeInfoOnChainMapper;
+import com.github.ontio.mapper.Oep4TxDetailMapper;
+import com.github.ontio.mapper.Oep5TxDetailMapper;
+import com.github.ontio.mapper.Oep8TxDetailMapper;
+import com.github.ontio.mapper.TxEventLogMapper;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.NodeInfoOffChain;
 import com.github.ontio.model.dao.NodeInfoOnChain;
-import com.github.ontio.model.dto.*;
+import com.github.ontio.model.dto.ContractDto;
+import com.github.ontio.model.dto.NodeInfoOffChainDto;
+import com.github.ontio.model.dto.Oep5TxDetailDto;
+import com.github.ontio.model.dto.TxDetailDto;
+import com.github.ontio.model.dto.TxEventLogDto;
+import com.github.ontio.model.dto.aggregation.BaseAggregationDto;
+import com.github.ontio.model.dto.aggregation.ContractAggregationDto;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -38,7 +52,18 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.github.ontio.config.ParamsConfig.ONG_CONTRACT_HASH;
+import static com.github.ontio.config.ParamsConfig.ONT_CONTRACT_HASH;
 
 @Slf4j
 @Service("ContractService")
@@ -53,9 +78,14 @@ public class ContractServiceImpl implements IContractService {
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
+    private final ContractDailyAggregationMapper contractDailyAggregationMapper;
 
     @Autowired
-    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper) {
+    public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper,
+            Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
+            ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper,
+            ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper,
+            ContractDailyAggregationMapper contractDailyAggregationMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
@@ -65,6 +95,7 @@ public class ContractServiceImpl implements IContractService {
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
+        this.contractDailyAggregationMapper = contractDailyAggregationMapper;
     }
 
     private OntologySDKService sdk;
@@ -571,12 +602,30 @@ public class ContractServiceImpl implements IContractService {
                 rsMap.put("day_activeaddress_count", 0);
                 rsMap.put("day_tx_count", 0);
             } else {
-                contractInfo.put("day_ont_sum", ((BigDecimal) contractInfo.get("day_ont_sum")).stripTrailingZeros().toPlainString());
-                contractInfo.put("day_ong_sum", ((BigDecimal) contractInfo.get("day_ong_sum")).stripTrailingZeros().toPlainString());
+                contractInfo.put("day_ont_sum",
+                        ((BigDecimal) contractInfo.get("day_ont_sum")).stripTrailingZeros().toPlainString());
+                contractInfo.put("day_ong_sum",
+                        ((BigDecimal) contractInfo.get("day_ong_sum")).stripTrailingZeros().toPlainString());
                 rsMap.putAll(contractInfo);
             }
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+    @Override
+    public ResponseBean queryDailyAggregation(String contractHash, String token, Date from, Date to) {
+        String tokenContractHash = "ont".equalsIgnoreCase(token) ? ONT_CONTRACT_HASH : ONG_CONTRACT_HASH;
+        List<ContractAggregationDto> aggregations = contractDailyAggregationMapper.findAggregations(contractHash, tokenContractHash,
+                from, to);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
+    }
+
+    @Override
+    public ResponseBean queryDailyAggregationOfTokenType(String contractHash, String tokenType, Date from, Date to) {
+        String tokenContractHash = "oep4".equalsIgnoreCase(tokenType) ? BaseAggregationDto.VIRTUAL_CONTRACT_OEP4 : "";
+        List<ContractAggregationDto> aggregations = contractDailyAggregationMapper.findAggregationsForToken(contractHash,
+                tokenContractHash, from, to);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
     }
 
 
