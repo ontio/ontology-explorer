@@ -10,6 +10,7 @@ import com.github.ontio.mapper.AddressDailyAggregationMapper;
 import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
+import com.github.ontio.mapper.RankingMapper;
 import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.Oep4;
@@ -23,6 +24,7 @@ import com.github.ontio.model.dto.aggregation.AddressAggregationDto;
 import com.github.ontio.model.dto.aggregation.AddressBalanceAggregationsDto;
 import com.github.ontio.model.dto.aggregation.BaseAggregationDto;
 import com.github.ontio.model.dto.aggregation.ExtremeBalanceDto;
+import com.github.ontio.model.dto.ranking.AddressRankingDto;
 import com.github.ontio.service.IAddressService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -41,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.github.ontio.config.ParamsConfig.ONG_CONTRACT_HASH;
 import static com.github.ontio.config.ParamsConfig.ONT_CONTRACT_HASH;
@@ -65,10 +68,12 @@ public class AddressServiceImpl implements IAddressService {
     private final ParamsConfig paramsConfig;
     private final CommonService commonService;
     private final AddressDailyAggregationMapper addressDailyAggregationMapper;
+    private final RankingMapper rankingMapper;
 
     @Autowired
     public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper,
-            ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper) {
+            ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
+            RankingMapper rankingMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
@@ -76,6 +81,7 @@ public class AddressServiceImpl implements IAddressService {
         this.paramsConfig = paramsConfig;
         this.commonService = commonService;
         this.addressDailyAggregationMapper = addressDailyAggregationMapper;
+        this.rankingMapper = rankingMapper;
     }
 
     private OntologySDKService sdk;
@@ -493,9 +499,11 @@ public class AddressServiceImpl implements IAddressService {
             String contractHash = oep4.getContractHash();
             String vmCategory = oep4.getVmCategory();
             if (ConstantParam.VM_CATEGORY_NEOVM.equals(vmCategory)) {
-                balance = new BigDecimal(sdk.getNeovmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+                balance = new BigDecimal(sdk.getNeovmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10,
+                        oep4.getDecimals())));
             } else if (ConstantParam.VM_CATEGORY_WASMVM.equals(vmCategory)) {
-                balance = new BigDecimal(sdk.getWasmvmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+                balance = new BigDecimal(sdk.getWasmvmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10,
+                        oep4.getDecimals())));
             }
             if (balance.compareTo(ConstantParam.ZERO) == 0) {
                 continue;
@@ -526,9 +534,11 @@ public class AddressServiceImpl implements IAddressService {
         String vmCategory = oep4.getVmCategory();
         BigDecimal balance = new BigDecimal("0");
         if (ConstantParam.VM_CATEGORY_NEOVM.equals(vmCategory)) {
-            balance = new BigDecimal(sdk.getNeovmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+            balance = new BigDecimal(sdk.getNeovmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10,
+                    oep4.getDecimals())));
         } else if (ConstantParam.VM_CATEGORY_WASMVM.equals(vmCategory)) {
-            balance = new BigDecimal(sdk.getWasmvmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10, oep4.getDecimals())));
+            balance = new BigDecimal(sdk.getWasmvmOep4AssetBalance(address, contractHash)).divide(new BigDecimal(Math.pow(10,
+                    oep4.getDecimals())));
         }
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(oep4.getSymbol())
@@ -682,8 +692,9 @@ public class AddressServiceImpl implements IAddressService {
                 .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
                 .build();
 
-        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
-                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        String responseStr =
+                commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                        JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
         if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
@@ -744,8 +755,9 @@ public class AddressServiceImpl implements IAddressService {
                 .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
                 .build();
 
-        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
-                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        String responseStr =
+                commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                        JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
         if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
@@ -819,8 +831,9 @@ public class AddressServiceImpl implements IAddressService {
                 .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
                 .build();
 
-        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
-                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        String responseStr =
+                commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                        JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
         if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
@@ -886,8 +899,9 @@ public class AddressServiceImpl implements IAddressService {
                 .contractAddrs(contractAddrsStr.substring(0, contractAddrsStr.length() - 1))
                 .build();
 
-        String responseStr = commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
-                JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
+        String responseStr =
+                commonService.httpPostRequest(paramsConfig.BALANCESERVICE_HOST + ConstantParam.BALANCESERVICE_QUERYBALANCE_URL,
+                        JacksonUtil.beanToJSonStr(queryBatchBalanceDto), null);
         if (Helper.isNotEmptyAndNull(responseStr)) {
             JSONObject jsonObject = JSONObject.parseObject(responseStr);
             JSONArray oepBalanceArray = ((JSONObject) jsonObject.getJSONArray("Result").get(0)).getJSONArray("OepBalance");
@@ -1026,11 +1040,14 @@ public class AddressServiceImpl implements IAddressService {
         BigDecimal totalOng = new BigDecimal("0");
         //before 20190630000000 UTC
         if (latestOntTransferTxTime < TIMESTAMP_20190630000000_UTC) {
-            BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(new BigDecimal(5));
-            BigDecimal ong02 = new BigDecimal(now).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+            BigDecimal ong01 =
+                    new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(new BigDecimal(5));
+            BigDecimal ong02 =
+                    new BigDecimal(now).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
             totalOng = ong01.add(ong02);
         } else {
-            totalOng = new BigDecimal(now).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+            totalOng =
+                    new BigDecimal(now).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
         }
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
 
@@ -1041,9 +1058,9 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
 
-	    int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
-	    List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
-	    transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
@@ -1056,9 +1073,11 @@ public class AddressServiceImpl implements IAddressService {
      * @param formattedTransferTxDtos
      * @return
      */
-    private List<TransferTxDto> getTransferTxDtosByPage(int pageNumber, int pageSize, List<TransferTxDto> formattedTransferTxDtos) {
+    private List<TransferTxDto> getTransferTxDtosByPage(int pageNumber, int pageSize,
+            List<TransferTxDto> formattedTransferTxDtos) {
 
-        int start = (pageNumber - 1) * pageSize > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageNumber - 1) * pageSize;
+        int start = (pageNumber - 1) * pageSize > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() :
+                (pageNumber - 1) * pageSize;
         int end = (pageSize + start) > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() : (pageSize + start);
 
         return formattedTransferTxDtos.subList(start, end);
@@ -1073,7 +1092,8 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType) {
+    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime,
+            String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
 
@@ -1090,7 +1110,8 @@ public class AddressServiceImpl implements IAddressService {
             //dragon asset use 'like' query, for ONTO
             if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
                 assetName = assetName + "%";
-                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeInFromAddr4Onto(address, assetName, beginTime, endTime);
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeInFromAddr4Onto(address, assetName, beginTime,
+                        endTime);
             } else {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeInFromAddr4Onto(address, assetName, beginTime, endTime);
             }
@@ -1110,7 +1131,8 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize, String addressType) {
+    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize,
+            String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
 
@@ -1127,9 +1149,11 @@ public class AddressServiceImpl implements IAddressService {
             //dragon asset use 'like' query, for ONTO
             if (ConstantParam.HYPERDRAGONS.equals(assetName)) {
                 assetName = assetName + "%";
-                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPageInFromAddr4Onto(address, assetName, endTime, pageSize);
+                transferTxDtos = txDetailMapper.selectDragonTransferTxsByTimeAndPageInFromAddr4Onto(address, assetName, endTime,
+                        pageSize);
             } else {
-                transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPageInFromAddr4Onto(address, assetName, endTime, pageSize);
+                transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPageInFromAddr4Onto(address, assetName, endTime,
+                        pageSize);
             }
         } else if (ADDRESS_TYPE_TO.equals(addressType)) {
             //query transfer txs by toaddress
@@ -1190,6 +1214,14 @@ public class AddressServiceImpl implements IAddressService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
     }
 
+    @Override
+    public ResponseBean queryRankings(List<Short> rankingIds, short duration) {
+        List<AddressRankingDto> rankings = rankingMapper.findAddressRankings(rankingIds, duration);
+        Map<Short, List<AddressRankingDto>> rankingMap =
+                rankings.stream().collect(Collectors.groupingBy(AddressRankingDto::getRankingId));
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rankingMap);
+    }
+
     /**
      * 格式化转账交易列表
      *
@@ -1223,7 +1255,8 @@ public class AddressServiceImpl implements IAddressService {
                             .contractHash(transferTxDto.getContractHash())
                             .build();
 
-                    List<TransferTxDetailDto> transferTxnList = (List<TransferTxDetailDto>) (formattedTransferTxs.get(formattedTransferTxs.size() - 1)).getTransfers();
+                    List<TransferTxDetailDto> transferTxnList =
+                            (List<TransferTxDetailDto>) (formattedTransferTxs.get(formattedTransferTxs.size() - 1)).getTransfers();
                     transferTxnList.add(transferTxDetailDto);
                 }
                 previousTxIndex = transferTxDto.getTxIndex();

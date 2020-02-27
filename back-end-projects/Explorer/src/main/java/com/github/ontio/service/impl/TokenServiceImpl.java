@@ -4,6 +4,7 @@ import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
 import com.github.ontio.mapper.Oep8TxDetailMapper;
+import com.github.ontio.mapper.RankingMapper;
 import com.github.ontio.mapper.TokenDailyAggregationMapper;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
@@ -11,6 +12,7 @@ import com.github.ontio.model.dto.Oep4DetailDto;
 import com.github.ontio.model.dto.Oep5DetailDto;
 import com.github.ontio.model.dto.Oep8DetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
+import com.github.ontio.model.dto.ranking.TokenRankingDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -26,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author zhouq
@@ -41,15 +44,18 @@ public class TokenServiceImpl implements ITokenService {
     private final Oep8Mapper oep8Mapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
     private final TokenDailyAggregationMapper tokenDailyAggregationMapper;
+    private final RankingMapper rankingMapper;
 
     @Autowired
     public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
-            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper) {
+            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
+            RankingMapper rankingMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
         this.tokenDailyAggregationMapper = tokenDailyAggregationMapper;
+        this.rankingMapper = rankingMapper;
     }
 
     @Override
@@ -172,6 +178,14 @@ public class TokenServiceImpl implements ITokenService {
             result = tokenDailyAggregationMapper.findAggregations(contractHash, from, to);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+    @Override
+    public ResponseBean queryRankings(List<Short> rankingIds, short duration) {
+        List<TokenRankingDto> rankings = rankingMapper.findTokenRankings(rankingIds, duration);
+        Map<Short, List<TokenRankingDto>> rankingMap =
+                rankings.stream().collect(Collectors.groupingBy(TokenRankingDto::getRankingId));
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rankingMap);
     }
 
 

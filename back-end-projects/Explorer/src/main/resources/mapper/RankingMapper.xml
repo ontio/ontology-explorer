@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.RankingMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Ranking">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="ranking_group" jdbcType="SMALLINT" property="rankingGroup"/>
+        <result column="ranking_id" jdbcType="SMALLINT" property="rankingId"/>
+        <result column="ranking_duration" jdbcType="SMALLINT" property="rankingDuration"/>
+        <result column="ranking" jdbcType="SMALLINT" property="ranking"/>
+        <result column="member" jdbcType="VARCHAR" property="member"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="percentage" jdbcType="DECIMAL" property="percentage"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="findAddressRankings" resultType="com.github.ontio.model.dto.ranking.AddressRankingDto">
+        SELECT ranking_id,
+        ranking,
+        member AS address,
+        amount,
+        percentage
+        FROM tbl_ranking
+        WHERE ranking_group = ${@com.github.ontio.mapper.RankingMapper@RANKING_GROUP_ADDRESS}
+        <if test="rankingIds != null and rankingIds.size > 0">
+            AND ranking_id IN
+            <foreach collection="rankingIds" item="rankingId" separator="," open="(" close=")">
+                #{rankingId}
+            </foreach>
+        </if>
+        AND ranking_duration = #{duration}
+    </select>
+
+    <select id="findTokenRankings" resultType="com.github.ontio.model.dto.ranking.TokenRankingDto">
+        SELECT r.ranking_id,
+        r.ranking,
+        r.member AS contract_hash,
+        amount,
+        percentage,
+        c.name AS token_name
+        FROM tbl_ranking r
+        LEFT OUTER JOIN tbl_contract c ON c.contract_hash = r.member
+        WHERE ranking_group = ${@com.github.ontio.mapper.RankingMapper@RANKING_GROUP_TOKEN}
+        <if test="rankingIds != null and rankingIds.size > 0">
+            AND ranking_id IN
+            <foreach collection="rankingIds" item="rankingId" separator="," open="(" close=")">
+                #{rankingId}
+            </foreach>
+        </if>
+        AND ranking_duration = #{duration}
+    </select>
+
+
+</mapper>

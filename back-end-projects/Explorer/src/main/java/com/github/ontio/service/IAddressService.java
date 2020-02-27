@@ -3,6 +3,7 @@ package com.github.ontio.service;
 import com.github.ontio.model.common.ResponseBean;
 
 import java.util.Date;
+import java.util.List;
 
 public interface IAddressService {
 
@@ -26,5 +27,7 @@ public interface IAddressService {
     ResponseBean queryDailyAggregation(String address, String token, Date from, Date to);
 
     ResponseBean queryDailyAggregationOfTokenType(String address, String tokenType, Date from, Date to);
+
+    ResponseBean queryRankings(List<Short> rankingIds, short duration);
 
 }

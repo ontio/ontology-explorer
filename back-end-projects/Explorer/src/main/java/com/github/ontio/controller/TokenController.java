@@ -20,6 +20,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author zhouq
@@ -82,6 +83,7 @@ public class TokenController {
     }
 
     @RequestLimit(count = 120)
+    @ApiOperation(value = "Get token daily aggregations for specific token type")
     @GetMapping(value = "/{token_type}/{contract_hash}/daily")
     public ResponseBean queryDailyAggregation(
             @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4", message = "Incorrect token type") String tokenType,
@@ -92,6 +94,18 @@ public class TokenController {
         log.info("###{}.{} begin...token_type:{}，contract_hash:{}", CLASS_NAME, Helper.currentMethod(), tokenType, contractHash);
 
         return tokenService.queryDailyAggregations(tokenType, contractHash, from, to);
+    }
+
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get token rankings")
+    @GetMapping(value = "/rankings")
+    public ResponseBean queryRankings(
+            @RequestParam(name = "ranking_id", required = false) List<Short> rankingIds,
+            @RequestParam("duration") short duration
+    ) {
+        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        return tokenService.queryRankings(rankingIds, duration);
     }
 
 }

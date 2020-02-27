@@ -160,6 +160,7 @@ public class ContractController {
     }
 
     @RequestLimit(count = 120)
+    @ApiOperation(value = "Get contract daily aggregations by ont/ong token")
     @GetMapping(value = "/{contract_hash}/daily")
     public ResponseBean queryDailyAggregation(
             @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
@@ -173,6 +174,7 @@ public class ContractController {
     }
 
     @RequestLimit(count = 120)
+    @ApiOperation(value = "Get address daily aggregations by specific token type")
     @GetMapping(value = "/{contract_hash}/{token_type}/daily")
     public ResponseBean queryDailyAggregationOfTokenType(
             @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
