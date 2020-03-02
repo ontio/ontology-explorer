@@ -1,5 +1,7 @@
 package com.github.ontio.model.dto.aggregation;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +15,8 @@ import java.math.BigDecimal;
 public class TokenAggregationDto extends BaseAggregationDto {
 
 	private Integer txCount;
-	
+
+	@JsonSerialize(using = TxAmountSerializer.class)
 	private BigDecimal txAmount;
 
 	private Integer depositAddr;
@@ -21,5 +24,5 @@ public class TokenAggregationDto extends BaseAggregationDto {
 	private Integer withdrawAddr;
 
 	private Integer txAddr;
-	
+
 }
