@@ -76,7 +76,9 @@
                 max_balance = (
                 SELECT max_balance AS balance
                 FROM tbl_address_daily_aggregation
-                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id = 0
+                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND date_id &lt;&gt; -1
+                ORDER BY update_time DESC
+                LIMIT 1
             )
         ORDER BY date_id
         LIMIT 1
@@ -90,7 +92,9 @@
                 min_balance = (
                 SELECT min_balance AS balance
                 FROM tbl_address_daily_aggregation
-                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id = 0
+                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND date_id &lt;&gt; -1
+                ORDER BY update_time DESC
+                LIMIT 1
             )
         ORDER BY date_id
         LIMIT 1
