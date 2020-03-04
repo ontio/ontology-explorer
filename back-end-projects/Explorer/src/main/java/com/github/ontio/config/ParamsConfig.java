@@ -25,7 +25,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Service("ParamsConfig")
@@ -34,6 +39,29 @@ public class ParamsConfig {
     public static final String ONT_CONTRACT_HASH = "0100000000000000000000000000000000000000";
 
     public static final String ONG_CONTRACT_HASH = "0200000000000000000000000000000000000000";
+
+    /**
+     * 虚拟合约，表示对所有合约加总的统计
+     */
+    public static final String VIRTUAL_CONTRACT_ALL = "$$ALL$$";
+
+    /**
+     * 虚拟合约，表示对 ONT 和 ONG 加总的统计
+     */
+    public static final String VIRTUAL_CONTRACT_NATIVE = "$$NATIVE$$";
+
+    /**
+     * 虚拟合约，表示对所有 OEP4 合约加总的统计
+     */
+    public static final String VIRTUAL_CONTRACT_OEP4 = "$$OEP4$$";
+
+    private static final Collection<String> VIRTUAL_CONTRACTS;
+
+    static {
+        Set<String> virtualContracts = new HashSet<>(Arrays.asList(VIRTUAL_CONTRACT_ALL, VIRTUAL_CONTRACT_NATIVE,
+                VIRTUAL_CONTRACT_OEP4));
+        VIRTUAL_CONTRACTS = Collections.unmodifiableSet(virtualContracts);
+    }
 
     @Value("${masternode.restful.url}")
     public String MASTERNODE_RESTFUL_URL;
@@ -86,5 +114,26 @@ public class ParamsConfig {
 
     @Value("${oep8.pumpkin.contractHash}")
     public String OEP8_PUMPKIN_CONTRACTHASH;
+
+    public String getContractHash(String token) {
+        switch (token.toLowerCase()) {
+            case "ont":
+                return ONT_CONTRACT_HASH;
+            case "ong":
+                return ONG_CONTRACT_HASH;
+            case "native":
+                return VIRTUAL_CONTRACT_NATIVE;
+            case "oep4":
+                return VIRTUAL_CONTRACT_OEP4;
+            case "all":
+                return VIRTUAL_CONTRACT_ALL;
+            default:
+                throw new IllegalArgumentException("unsupported token: " + token);
+        }
+    }
+
+    public boolean isVirtual(String contractHash) {
+        return VIRTUAL_CONTRACTS.contains(contractHash);
+    }
 
 }

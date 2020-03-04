@@ -45,9 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.github.ontio.config.ParamsConfig.ONG_CONTRACT_HASH;
-import static com.github.ontio.config.ParamsConfig.ONT_CONTRACT_HASH;
-
 /**
  * @author zhouq
  * @version 1.0
@@ -1195,12 +1192,13 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) {
-        String tokenContractHash = "ont".equalsIgnoreCase(token) ? ONT_CONTRACT_HASH : ONG_CONTRACT_HASH;
+        String tokenContractHash = paramsConfig.getContractHash(token);
         List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregations(address, tokenContractHash,
                 from, to);
-        ExtremeBalanceDto max = extremeBalances.get(address + tokenContractHash + "max",
+        boolean isVirtual = paramsConfig.isVirtual(tokenContractHash);
+        ExtremeBalanceDto max = isVirtual ? null : extremeBalances.get(address + tokenContractHash + "max",
                 key -> addressDailyAggregationMapper.findMaxBalance(address, tokenContractHash));
-        ExtremeBalanceDto min = extremeBalances.get(address + token + "min",
+        ExtremeBalanceDto min = isVirtual ? null : extremeBalances.get(address + token + "min",
                 key -> addressDailyAggregationMapper.findMinBalance(address, tokenContractHash));
         AddressBalanceAggregationsDto result = new AddressBalanceAggregationsDto(max, min, aggregations);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
