@@ -159,7 +159,7 @@ public class AddressController {
     @GetMapping(value = "/{address}/daily")
     public ResponseBean queryDailyAggregation(
             @PathVariable("address") @Length(min = 34, max = 40, message = "Incorrect address format") String address,
-            @RequestParam(value = "token") @Pattern(regexp = "ont|ONT|ong|ONG|native|NATIVE", message = "Incorrect token") String token,
+            @RequestParam(value = "token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) {
@@ -173,7 +173,7 @@ public class AddressController {
     @GetMapping(value = "/{address}/{token_type}/daily")
     public ResponseBean queryDailyAggregationOfTokenType(
             @PathVariable("address") @Length(min = 34, max = 40, message = "Incorrect address format") String address,
-            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4", message = "Incorrect token type") String tokenType,
+            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4|native|NATIVE", message = "Incorrect token type") String tokenType,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) {

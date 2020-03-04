@@ -22,7 +22,6 @@ import com.github.ontio.model.dto.TransferTxDetailDto;
 import com.github.ontio.model.dto.TransferTxDto;
 import com.github.ontio.model.dto.aggregation.AddressAggregationDto;
 import com.github.ontio.model.dto.aggregation.AddressBalanceAggregationsDto;
-import com.github.ontio.model.dto.aggregation.BaseAggregationDto;
 import com.github.ontio.model.dto.aggregation.ExtremeBalanceDto;
 import com.github.ontio.model.dto.ranking.AddressRankingDto;
 import com.github.ontio.service.IAddressService;
@@ -1195,10 +1194,9 @@ public class AddressServiceImpl implements IAddressService {
         String tokenContractHash = paramsConfig.getContractHash(token);
         List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregations(address, tokenContractHash,
                 from, to);
-        boolean isVirtual = paramsConfig.isVirtual(tokenContractHash);
-        ExtremeBalanceDto max = isVirtual ? null : extremeBalances.get(address + tokenContractHash + "max",
+        ExtremeBalanceDto max = extremeBalances.get(address + tokenContractHash + "max",
                 key -> addressDailyAggregationMapper.findMaxBalance(address, tokenContractHash));
-        ExtremeBalanceDto min = isVirtual ? null : extremeBalances.get(address + token + "min",
+        ExtremeBalanceDto min = extremeBalances.get(address + token + "min",
                 key -> addressDailyAggregationMapper.findMinBalance(address, tokenContractHash));
         AddressBalanceAggregationsDto result = new AddressBalanceAggregationsDto(max, min, aggregations);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
@@ -1206,7 +1204,7 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseBean queryDailyAggregationOfTokenType(String address, String tokenType, Date from, Date to) {
-        String tokenContractHash = "oep4".equalsIgnoreCase(tokenType) ? BaseAggregationDto.VIRTUAL_CONTRACT_OEP4 : "";
+        String tokenContractHash = paramsConfig.getContractHash(tokenType);
         List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregationsForToken(address,
                 tokenContractHash, from, to);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);

@@ -178,7 +178,7 @@ public class ContractController {
     @GetMapping(value = "/{contract_hash}/{token_type}/daily")
     public ResponseBean queryDailyAggregationOfTokenType(
             @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
-            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4", message = "Incorrect token type") String tokenType,
+            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4|native|NATIVE", message = "Incorrect token type") String tokenType,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) {

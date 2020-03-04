@@ -39,7 +39,6 @@ import com.github.ontio.model.dto.NodeInfoOffChainDto;
 import com.github.ontio.model.dto.Oep5TxDetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.model.dto.TxEventLogDto;
-import com.github.ontio.model.dto.aggregation.BaseAggregationDto;
 import com.github.ontio.model.dto.aggregation.ContractAggregationDto;
 import com.github.ontio.service.IContractService;
 import com.github.ontio.util.ConstantParam;
@@ -61,9 +60,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static com.github.ontio.config.ParamsConfig.ONG_CONTRACT_HASH;
-import static com.github.ontio.config.ParamsConfig.ONT_CONTRACT_HASH;
 
 @Slf4j
 @Service("ContractService")
@@ -614,7 +610,7 @@ public class ContractServiceImpl implements IContractService {
 
     @Override
     public ResponseBean queryDailyAggregation(String contractHash, String token, Date from, Date to) {
-        String tokenContractHash = "ont".equalsIgnoreCase(token) ? ONT_CONTRACT_HASH : ONG_CONTRACT_HASH;
+        String tokenContractHash = paramsConfig.getContractHash(token);
         List<ContractAggregationDto> aggregations = contractDailyAggregationMapper.findAggregations(contractHash, tokenContractHash,
                 from, to);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
@@ -622,7 +618,7 @@ public class ContractServiceImpl implements IContractService {
 
     @Override
     public ResponseBean queryDailyAggregationOfTokenType(String contractHash, String tokenType, Date from, Date to) {
-        String tokenContractHash = "oep4".equalsIgnoreCase(tokenType) ? BaseAggregationDto.VIRTUAL_CONTRACT_OEP4 : "";
+        String tokenContractHash = paramsConfig.getContractHash(tokenType);
         List<ContractAggregationDto> aggregations = contractDailyAggregationMapper.findAggregationsForToken(contractHash,
                 tokenContractHash, from, to);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
