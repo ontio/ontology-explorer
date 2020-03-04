@@ -22,4 +22,6 @@ public interface ITokenService {
 
     ResponseBean queryRankings(List<Short> rankingIds, short duration);
 
+    ResponseBean queryPrice(String token, String fiat);
+
 }

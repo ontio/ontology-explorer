@@ -1,5 +1,7 @@
 package com.github.ontio.service.impl;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
@@ -17,12 +19,20 @@ import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
+import com.github.ontio.util.external.CoinMarketCapApi;
+import com.github.ontio.util.external.CoinMarketCapPrice;
+import com.github.ontio.util.external.CoinMarketCapResponse;
+import com.github.ontio.util.external.CoinMarketCapStatus;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,17 +55,19 @@ public class TokenServiceImpl implements ITokenService {
     private final Oep8TxDetailMapper oep8TxDetailMapper;
     private final TokenDailyAggregationMapper tokenDailyAggregationMapper;
     private final RankingMapper rankingMapper;
+    private final CoinMarketCapApi coinMarketCapApi;
 
     @Autowired
     public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
             Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
-            RankingMapper rankingMapper) {
+            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
         this.tokenDailyAggregationMapper = tokenDailyAggregationMapper;
         this.rankingMapper = rankingMapper;
+        this.coinMarketCapApi = coinMarketCapApi;
     }
 
     @Override
@@ -188,5 +200,45 @@ public class TokenServiceImpl implements ITokenService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rankingMap);
     }
 
+    @Override
+    public ResponseBean queryPrice(String token, String fiat) {
+        String key = token + "-" + fiat;
+        BigDecimal price = tokenPrices.get(key);
+        Map<String, BigDecimal> prices = new HashMap<>();
+        prices.put(fiat.toUpperCase(), price);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), prices);
+    }
+
+    private BigDecimal getTokenPrice(String token, String fiat) throws IOException {
+        CoinMarketCapResponse<CoinMarketCapPrice> response = coinMarketCapApi.getPrice(token, fiat).execute().body();
+        if (response == null) {
+            throw new IOException("cannot get " + fiat + " price of " + token + " from coinMarketCap");
+        }
+        CoinMarketCapStatus status = response.getStatus();
+        if (!status.successful()) {
+            throw new IOException("coinMarketCap api error: " + status.getErrorMessage());
+        }
+        CoinMarketCapPrice price = response.getData();
+        fiat = fiat.toUpperCase();
+        if (price.getQuotes().containsKey(fiat)) {
+            return price.getQuotes().get(fiat).getPrice();
+        }
+        throw new IOException("cannot get " + fiat + " price of " + token + " from coinMarketCap");
+    }
+
+    private LoadingCache<String, BigDecimal> tokenPrices;
+
+    @PostConstruct
+    public void buildTokenPricesCache() {
+        tokenPrices = Caffeine.newBuilder()
+                .refreshAfterWrite(Duration.ofMinutes(15))
+                .build(key -> {
+                    String[] parts = key.split("-");
+                    if (parts.length < 2) {
+                        throw new IllegalArgumentException("invalid token-fiat pair: " + key);
+                    }
+                    return getTokenPrice(parts[0], parts[1]);
+                });
+    }
 
 }

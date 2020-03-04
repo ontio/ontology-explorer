@@ -115,6 +115,12 @@ public class ParamsConfig {
     @Value("${oep8.pumpkin.contractHash}")
     public String OEP8_PUMPKIN_CONTRACTHASH;
 
+    @Value("${coinmarketcap.api.key}")
+    private String coinMarketCapApiKey;
+
+    @Value("${coinmarketcap.api.host:https://pro-api.coinmarketcap.com/}")
+    private String coinMarketCapApiHost;
+
     public String getContractHash(String token) {
         switch (token.toLowerCase()) {
             case "ont":
@@ -130,10 +136,6 @@ public class ParamsConfig {
             default:
                 throw new IllegalArgumentException("unsupported token: " + token);
         }
-    }
-
-    public boolean isVirtual(String contractHash) {
-        return VIRTUAL_CONTRACTS.contains(contractHash);
     }
 
 }

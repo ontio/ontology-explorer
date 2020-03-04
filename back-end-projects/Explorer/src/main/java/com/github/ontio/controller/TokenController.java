@@ -108,4 +108,14 @@ public class TokenController {
         return tokenService.queryRankings(rankingIds, duration);
     }
 
+    @GetMapping(value = "/price")
+    public ResponseBean queryPrice(
+            @RequestParam("token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
+            @RequestParam("fiat") @Pattern(regexp = "usd|USD", message = "Incorrect fiat") String fiat
+    ) {
+        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+
+        return tokenService.queryPrice(token, fiat);
+    }
+
 }
