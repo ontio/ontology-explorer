@@ -38,7 +38,8 @@
         r.member AS contract_hash,
         amount,
         percentage,
-        c.name AS token_name
+        c.name AS token_name,
+        c.logo AS logo
         FROM tbl_ranking r
         LEFT OUTER JOIN tbl_contract c ON c.contract_hash = r.member
         WHERE ranking_group = ${@com.github.ontio.mapper.RankingMapper@RANKING_GROUP_TOKEN}
