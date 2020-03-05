@@ -121,6 +121,9 @@ public class ParamsConfig {
     @Value("${coinmarketcap.api.host:https://pro-api.coinmarketcap.com/}")
     private String coinMarketCapApiHost;
 
+    @Value("${coinmarketcap.refresh.interval:15}")
+    private int coinMarketCapRefreshInterval;
+
     public String getContractHash(String token) {
         switch (token.toLowerCase()) {
             case "ont":

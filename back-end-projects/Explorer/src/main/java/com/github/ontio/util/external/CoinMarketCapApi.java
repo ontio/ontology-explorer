@@ -4,7 +4,8 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-import java.math.BigDecimal;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author LiuQi
@@ -15,11 +16,11 @@ public interface CoinMarketCapApi {
 
 	String ONG_ID = "3217";
 
-	@GET("/v1/tools/price-conversion")
-	Call<CoinMarketCapResponse<CoinMarketCapPrice>> convertPrice(@Query("id") String id, @Query("amount") BigDecimal amount,
+	@GET("/v1/cryptocurrency/quotes/latest")
+	Call<CoinMarketCapResponse<Map<String, CoinMarketCapQuotes>>> getCoinMarketCapQuotes(@Query("id") String id,
 			@Query("convert") String convert);
 
-	default Call<CoinMarketCapResponse<CoinMarketCapPrice>> getPrice(String token, String fiat) {
+	default CoinMarketCapQuotes getQuotes(String token, String fiat) throws IOException {
 		String id;
 		switch (token.toUpperCase()) {
 			case "ONT":
@@ -31,7 +32,20 @@ public interface CoinMarketCapApi {
 			default:
 				throw new IllegalArgumentException("unsupported token: " + token);
 		}
-		return convertPrice(id, BigDecimal.ONE, fiat.toUpperCase());
+		CoinMarketCapResponse<Map<String, CoinMarketCapQuotes>> response =
+				getCoinMarketCapQuotes(id, fiat.toUpperCase()).execute().body();
+		if (response == null) {
+			throw new IOException("cannot get " + fiat + " price of " + token + " from coinMarketCap");
+		}
+		CoinMarketCapStatus status = response.getStatus();
+		if (!status.successful()) {
+			throw new IOException("coinMarketCap api error: " + status.getErrorMessage());
+		}
+		Map<String, CoinMarketCapQuotes> quotes = response.getData();
+		if (quotes.containsKey(id)) {
+			return quotes.get(id);
+		}
+		throw new IOException("cannot get " + fiat + " price of " + token + " from coinMarketCap");
 	}
 
 }
