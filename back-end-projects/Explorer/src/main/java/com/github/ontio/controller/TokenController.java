@@ -108,6 +108,8 @@ public class TokenController {
         return tokenService.queryRankings(rankingIds, duration);
     }
 
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get token price in fiat")
     @GetMapping(value = "/price")
     public ResponseBean queryPrice(
             @RequestParam("token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
