@@ -110,7 +110,7 @@ public class TokenController {
 
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get token price in fiat")
-    @GetMapping(value = "/price")
+    @GetMapping(value = "/prices")
     public ResponseBean queryPrice(
             @RequestParam("token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
             @RequestParam("fiat") @Pattern(regexp = "usd|USD", message = "Incorrect fiat") String fiat
