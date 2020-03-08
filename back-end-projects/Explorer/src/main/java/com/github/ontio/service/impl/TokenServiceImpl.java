@@ -210,7 +210,7 @@ public class TokenServiceImpl implements ITokenService {
     @Autowired
     public void setParamsConfig(ParamsConfig paramsConfig) {
         tokenQuotes = Caffeine.newBuilder()
-                .refreshAfterWrite(Duration.ofMinutes(paramsConfig.getCoinMarketCapRefreshInterval()))
+                .expireAfterWrite(Duration.ofMinutes(paramsConfig.getCoinMarketCapRefreshInterval()))
                 .build(key -> {
                     String[] parts = key.split("-");
                     if (parts.length < 2) {
