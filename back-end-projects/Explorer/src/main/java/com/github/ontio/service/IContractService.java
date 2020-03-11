@@ -20,6 +20,8 @@ package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
 
+import java.util.Date;
+
 public interface IContractService {
 
     ResponseBean queryContractsByPage(Integer pagesize, Integer pageNum);
@@ -39,5 +41,9 @@ public interface IContractService {
     ResponseBean queryDappstoreDappsInfo(Integer pageSize, Integer pageNumber);
 
     ResponseBean queryDappstoreDappsSummary();
+
+    ResponseBean queryDailyAggregation(String contractHash, String token, Date from, Date to);
+
+    ResponseBean queryDailyAggregationOfTokenType(String contractHash, String tokenType, Date from, Date to);
 
 }

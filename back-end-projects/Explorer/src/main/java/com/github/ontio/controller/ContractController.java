@@ -26,12 +26,18 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
+import java.util.Date;
 
 @Slf4j
 @Validated
@@ -153,5 +159,32 @@ public class ContractController {
         return contractService.queryDappstoreDappsSummary();
     }
 
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get contract daily aggregations by ont/ong token")
+    @GetMapping(value = "/{contract_hash}/daily")
+    public ResponseBean queryDailyAggregation(
+            @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+            @RequestParam(value = "token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
+            @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
+            @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
+    ) {
+        log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
+
+        return contractService.queryDailyAggregation(contractHash, token, from, to);
+    }
+
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get address daily aggregations by specific token type")
+    @GetMapping(value = "/{contract_hash}/{token_type}/daily")
+    public ResponseBean queryDailyAggregationOfTokenType(
+            @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4|native|NATIVE", message = "Incorrect token type") String tokenType,
+            @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
+            @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
+    ) {
+        log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
+
+        return contractService.queryDailyAggregationOfTokenType(contractHash, tokenType, from, to);
+    }
 
 }
