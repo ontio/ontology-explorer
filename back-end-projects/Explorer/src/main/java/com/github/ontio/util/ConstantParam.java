@@ -79,7 +79,15 @@ public class ConstantParam {
             //技术社区奖励锁仓地址
             "AcdUMgeF16ScW9ts3kiD3pZkjYRMdYwtVQ",
             //生态合作地址
-            "AMX6ZebrPDFELCYRMpSMbZWrhWkKbKg4y8");
+            "AMX6ZebrPDFELCYRMpSMbZWrhWkKbKg4y8",
+            //oge 地址
+            "ARHGtgY9Z8HdChFEjdPKKhpT4WDKfVntfC",
+            //社区地址
+            "ATBdqiUBKnNoJE4L53UkZZjWyFjd1AdamL",
+            //NEO counsel
+            "AR36E5jLdWDKW3Yg51qDFWPGKSLvfPhbqS",
+            //NGC
+            "Af48R4EUNYm6kg9kS7rn5xj4fneuFpbkXi");
 
 
     //资产类型

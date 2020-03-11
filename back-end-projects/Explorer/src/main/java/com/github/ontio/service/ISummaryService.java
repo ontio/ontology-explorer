@@ -11,4 +11,7 @@ public interface ISummaryService {
     ResponseBean getBlockChainDailySummary(Long startTime, Long endTime);
 
     ResponseBean getContractDailySummary(String contractHash, Long startTime, Long endTime);
+
+    ResponseBean getNativeTotalSupply();
+
 }
