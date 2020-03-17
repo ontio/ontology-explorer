@@ -42,15 +42,16 @@
   </select>
 
   <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
-      SELECT
-      <include refid="txBasicColumns"/>
-      FROM tbl_tx_eventlog tx
-      INNER JOIN (
-      SELECT id
-      FROM tbl_tx_eventlog
-      ORDER BY id DESC
-      LIMIT #{startIndex}, #{pageSize}
-      ) tmp ON tx.id = tmp.id
+    SELECT
+    <include refid="txBasicColumns"/>
+    FROM tbl_tx_eventlog tx
+    INNER JOIN (
+    SELECT id
+    FROM tbl_tx_eventlog
+    WHERE id &lt;= (select max(id) - #{startIndex} from tbl_tx_eventlog)
+    ORDER BY id DESC
+    LIMIT #{pageSize}
+    ) tmp ON tx.id = tmp.id
   </select>
 
   <select id="selectNonontidTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
