@@ -12,5 +12,5 @@ CREATE TABLE `tbl_tx_detail_index` (
     `asset_name`           VARCHAR(64)  NOT NULL DEFAULT '' COMMENT '交易资产名',
     `tx_direction`         TINYINT      NOT NULL COMMENT '交易方向 0:FROM 1:TO 2:BOTH',
     PRIMARY KEY (`address`, `desc_block_height`, `tx_hash`, `tx_index`),
-    KEY `idx_contract_block_height`(`called_contract_hash`, `desc_block_height`)
+    KEY `idx_address_contract_hash`(`address`, `called_contract_hash`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
