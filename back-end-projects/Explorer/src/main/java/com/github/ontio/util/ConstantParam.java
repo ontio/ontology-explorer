@@ -172,5 +172,9 @@ public class ConstantParam {
 
     public static final String CONTRACTHASH_ONT = "0100000000000000000000000000000000000000";
 
+    public static final String HTTPHEADER_TOKEN = "ONT_EXP_TOKEN";
+
+    public static final String JWT_LOGINID = "loginId";
+
 
 }

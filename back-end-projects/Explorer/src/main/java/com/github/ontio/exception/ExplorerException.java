@@ -1,5 +1,6 @@
 package com.github.ontio.exception;
 
+import com.github.ontio.util.ErrorInfo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -17,6 +18,18 @@ public class ExplorerException extends RuntimeException {
         this.code = code;
         this.msg = msg;
         this.result = result;
+    }
+
+    public ExplorerException(ErrorInfo errorInfo, Object result){
+        this.code = errorInfo.code();
+        this.msg = errorInfo.desc();
+        this.result = result;
+    }
+
+    public ExplorerException(ErrorInfo errorInfo){
+        this.code = errorInfo.code();
+        this.msg = errorInfo.desc();
+        this.result = false;
     }
 
     public ExplorerException(){super();}

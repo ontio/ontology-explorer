@@ -24,9 +24,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.payload.InvokeWasmCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -293,6 +295,58 @@ public class OntologySDKService {
         wm.setRestful(paramsConfig.MASTERNODE_RESTFUL_URL);
         wm.neovm().oep5().setContractAddress(codeHash);
         return wm;
+    }
+
+
+    /**
+     * verify signature
+     *
+     * @param ontId
+     * @param origDataStr
+     * @param signatureStr
+     * @return
+     */
+    public boolean verifySignature(String ontId, String origDataStr, String signatureStr) {
+        try {
+            Boolean verify = Boolean.FALSE;
+            OntSdk ontSdk = OntSdk.getInstance();
+            ontSdk.setRestful(paramsConfig.MASTERNODE_RESTFUL_URL);
+            String issuerDdo = ontSdk.nativevm().ontId().sendGetDDO(ontId);
+
+            JSONArray owners = JSONObject.parseObject(issuerDdo).getJSONArray("Owners");
+            for (int i = 0; i < owners.size(); ++i) {
+                String pubkeyStr = owners.getJSONObject(i).getString("Value");
+                Account account = new Account(false, Helper.hexToBytes(pubkeyStr));
+                verify = account.verifySignature(Helper.hexToBytes(origDataStr), Helper.hexToBytes(signatureStr));
+                if (verify) {
+                    break;
+                }
+            }
+            return verify;
+        } catch (Exception e) {
+            log.error("{} error...", com.github.ontio.util.Helper.currentMethod(), e);
+        }
+        return false;
+    }
+
+    /**
+     * sign
+     *
+     * @param origData
+     * @return
+     */
+    public String signData2HexStr(String origData) {
+        try {
+            OntSdk ontSdk = OntSdk.getInstance();
+            ontSdk.openWalletFile("account.json");
+            Account account = ontSdk.getWalletMgr().getAccount(paramsConfig.IDENTITY_ONTID, paramsConfig.IDENTITY_PASSWORD, Base64.getDecoder().decode(paramsConfig.IDENTITY_SALT));
+            DataSignature sign = new DataSignature(ontSdk.defaultSignScheme, account, origData.getBytes());
+            String sigdata = Helper.toHexString(sign.signature());
+            return sigdata;
+        } catch (Exception e) {
+            log.error("{} error...", com.github.ontio.util.Helper.currentMethod(), e);
+        }
+        return "";
     }
 
 }

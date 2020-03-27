@@ -141,4 +141,20 @@ public class ParamsConfig {
         }
     }
 
+    @Value("${login.callbackUrl:https://explorer.ont.io/v2/users/login}")
+    public String loginCallbackUrl;
+
+
+    @Value("${login.token.expired.minute:5}")
+    public int loginTokenExpiredMinute;
+
+    @Value("${identity.ontid}")
+    public String IDENTITY_ONTID;
+
+    @Value("${identity.password}")
+    public String IDENTITY_PASSWORD;
+
+    @Value("${identity.salt}")
+    public String IDENTITY_SALT;
+
 }
