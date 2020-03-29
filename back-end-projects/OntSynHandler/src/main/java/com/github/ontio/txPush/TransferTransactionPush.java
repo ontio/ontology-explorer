@@ -41,13 +41,17 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
     private final UserAddressMapper userAddressMapper;
     private final EmailService emailService;
 
-    @Getter
     private RingBuffer<DisruptorEvent> ringBuffer;
+
+    @Override
+    public RingBuffer<DisruptorEvent> getRingBuffer() {
+        return ringBuffer;
+    }
 
     @Autowired
     public TransferTransactionPush(UserAddressMapper userAddressMapper, EmailService emailService) {
-        Disruptor<DisruptorEvent> disruptor = createDisruptor(65536, ProducerType.MULTI);
-        disruptor.handleEventsWith(this).then(DisruptorEvent.CLEANER);
+        Disruptor<DisruptorEvent> disruptor = createDisruptor(65536, ProducerType.SINGLE);
+        disruptor.handleEventsWith(this);
         disruptor.start();
         this.ringBuffer = disruptor.getRingBuffer();
         this.userAddressMapper = userAddressMapper;
