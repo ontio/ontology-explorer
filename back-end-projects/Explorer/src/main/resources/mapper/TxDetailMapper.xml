@@ -107,7 +107,6 @@
         <if test="assetName != '' and assetName != null">
             AND asset_name = #{assetName}
         </if>
-        AND event_type IN (2, 3)
         ORDER BY desc_block_height, tx_hash, tx_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
@@ -134,7 +133,6 @@
         <if test="assetName != '' and assetName != null">
             AND asset_name = #{assetName}
         </if>
-        AND event_type IN (2, 3)
         ORDER BY desc_block_height, tx_hash, tx_index
         ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
     </select>
