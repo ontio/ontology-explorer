@@ -3,9 +3,7 @@ package com.github.ontio.txPush;
 import com.alibaba.fastjson.JSONObject;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.github.ontio.mapper.Oep4Mapper;
 import com.github.ontio.mapper.UserAddressMapper;
-import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.TxDetail;
 import com.github.ontio.txPush.model.PushEmailDto;
 import com.github.ontio.txPush.model.PushStrategyEnum;
@@ -15,12 +13,10 @@ import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,26 +56,30 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
 
     @Override
     public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch) {
-        TxDetail txDetail = (TxDetail) disruptorEvent.getEvent();
-        log.info("{} disruptor consumer receive tx:{}", Thread.currentThread().getName(), JSONObject.toJSONString(txDetail));
-        String fromAddress = txDetail.getFromAddress();
-        String toAddress = txDetail.getToAddress();
-        if (fromAddress.equals(toAddress)) {
-            return;
+        Object event = disruptorEvent.getEvent();
+        if(event instanceof TxDetail){
+            TxDetail txDetail = (TxDetail) event;
+            log.info("{} disruptor consumer receive tx:{}", Thread.currentThread().getName(), JSONObject.toJSONString(txDetail));
+            String fromAddress = txDetail.getFromAddress();
+            String toAddress = txDetail.getToAddress();
+            if (fromAddress.equals(toAddress)) {
+                return;
+            }
+            Map<String, List<PushUserAddressInfoDto>> cacheMap = userAddressCache.get(USERADDRCACHE_KEY);
+            List<PushUserAddressInfoDto> fromAddrPushUserAddressInfoDtos = cacheMap.get(fromAddress);
+            if (fromAddrPushUserAddressInfoDtos != null) {
+                fromAddrPushUserAddressInfoDtos.forEach(dto -> {
+                    handleWithdrawTransferTx(txDetail, dto);
+                });
+            }
+            List<PushUserAddressInfoDto> toAddrPushUserAddressInfoDtos = cacheMap.get(toAddress);
+            if (toAddrPushUserAddressInfoDtos != null) {
+                toAddrPushUserAddressInfoDtos.forEach(dto -> {
+                    handleDepositTransferTx(txDetail, dto);
+                });
+            }
         }
-        Map<String, List<PushUserAddressInfoDto>> cacheMap = userAddressCache.get(USERADDRCACHE_KEY);
-        List<PushUserAddressInfoDto> fromAddrPushUserAddressInfoDtos = cacheMap.get(fromAddress);
-        if (fromAddrPushUserAddressInfoDtos != null) {
-            fromAddrPushUserAddressInfoDtos.forEach(dto -> {
-                handleWithdrawTransferTx(txDetail, dto);
-            });
-        }
-        List<PushUserAddressInfoDto> toAddrPushUserAddressInfoDtos = cacheMap.get(toAddress);
-        if (toAddrPushUserAddressInfoDtos != null) {
-            toAddrPushUserAddressInfoDtos.forEach(dto -> {
-                handleDepositTransferTx(txDetail, dto);
-            });
-        }
+
     }
 
 
