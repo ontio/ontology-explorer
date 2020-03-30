@@ -194,4 +194,18 @@ public class AddressController {
         return addressService.queryRankings(rankingIds, duration);
     }
 
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get address transfer transaction list by params", notes = "(page_number+page_size)")
+    @GetMapping(value = "/{address}/txs")
+    public ResponseBean queryAddressTransferTxsWithTotal(
+            @PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+            @RequestParam(name = "asset_name", required = false) String assetName,
+            @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
+            @RequestParam(name = "page_number") @Min(1) Integer pageNumber
+    ) {
+        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+        
+        return addressService.queryTransferTxsWithTotalByPage(address, assetName, pageNumber, pageSize);
+    }
+
 }

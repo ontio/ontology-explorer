@@ -100,5 +100,24 @@
         LIMIT 1
     </select>
 
+    <select id="countTotalTxOfAddress" resultType="java.lang.Integer">
+        SELECT deposit_tx_count + withdraw_tx_count
+        FROM tbl_address_daily_aggregation aggr
+        <if test="asset_name != null and asset_name != ''">
+            LEFT OUTER JOIN tbl_contract c ON c.contract_hash = aggr.token_contract_hash
+        </if>
+        WHERE aggr.address = #{address}
+        <choose>
+            <when test="asset_name != null and asset_name != ''">
+                AND c.name = #{asset_name}
+            </when>
+            <otherwise>
+                AND aggr.token_contract_hash = '$$ALL$$'
+            </otherwise>
+        </choose>
+        AND aggr.date_id &lt;= 0
+        ORDER BY aggr.update_time DESC
+        LIMIT 1
+    </select>
 
 </mapper>
