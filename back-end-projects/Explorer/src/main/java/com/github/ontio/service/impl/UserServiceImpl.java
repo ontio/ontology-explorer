@@ -105,7 +105,7 @@ public class UserServiceImpl implements IUserService {
                 .build();
         String signature = sdkService.signData2HexStr(JacksonUtil.beanToJSonStr(qrCodeData));
 
-        return QrCodeDto.testNetLoginQrCode(code, paramsConfig.IDENTITY_ONTID, signature, qrCodeData, paramsConfig.loginCallbackUrl, System.currentTimeMillis() + 2 * 60 * 1000L);
+        return QrCodeDto.mainNetLoginQrCode(code, paramsConfig.IDENTITY_ONTID, signature, qrCodeData, paramsConfig.loginCallbackUrl, System.currentTimeMillis() + 2 * 60 * 1000L);
     }
 
 
