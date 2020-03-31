@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements IUserService {
 
     private static final String CACHEKEY_BLACKADDR = "blackAddress";
-    private static final String SPILT_CHAR = ",";
+    private static final String SIGNATURE_PREFIX = "01";
 
     private final UserAddressMapper userAddressMapper;
     private final UserMapper userMapper;
@@ -65,7 +65,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private void setCache() {
         blackAddressCache = Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.MINUTES)
+                .expireAfterWrite(5, TimeUnit.MINUTES)
                 .build(key -> {
                     List<AddressBlacklist> addressBlacklist = addressBlacklistMapper.selectAll();
                     return addressBlacklist.stream().map(item -> item.getAddress()).collect(Collectors.toList());
@@ -74,13 +74,13 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseBean queryQrCode() {
-        String code = Helper.generateLoginCode();
-        redisTemplate.opsForValue().set(String.format(RedisKey.USERLOGIN_CODE, code), "", 2, TimeUnit.MINUTES);
-        QrCodeDto qrCodeDto = generateQrCode(code);
+        String qrCodeId = Helper.generateQrCodeId();
+        QrCodeDto qrCodeDto = generateQrCode(qrCodeId);
+        redisTemplate.opsForValue().set(String.format(RedisKey.USERLOGIN_QRCODEID, qrCodeId), "", 2, TimeUnit.MINUTES);
         return Helper.successResult(qrCodeDto);
     }
 
-    private QrCodeDto generateQrCode(String code) {
+    private QrCodeDto generateQrCode(String qrCodeId) {
         QrCodeDto.QrCodeDataParamFunArg qrCodeDataParamFunArg = QrCodeDto.QrCodeDataParamFunArg.builder()
                 .name("message")
                 .value("")
@@ -105,13 +105,13 @@ public class UserServiceImpl implements IUserService {
                 .build();
         String signature = sdkService.signData2HexStr(JacksonUtil.beanToJSonStr(qrCodeData));
 
-        return QrCodeDto.mainNetLoginQrCode(code, paramsConfig.IDENTITY_ONTID, signature, qrCodeData, paramsConfig.loginCallbackUrl, System.currentTimeMillis() + 2 * 60 * 1000L);
+        return QrCodeDto.mainNetLoginQrCode(qrCodeId, paramsConfig.IDENTITY_ONTID, signature, qrCodeData, paramsConfig.loginCallbackUrl, System.currentTimeMillis() + 2 * 60 * 1000L);
     }
 
 
     @Override
-    public ResponseBean queryLoginUserInfo(String code) {
-        String token = redisTemplate.opsForValue().get(String.format(RedisKey.USERLOGIN_CODE, code));
+    public ResponseBean queryLoginUserInfo(String qrCodeId) {
+        String token = redisTemplate.opsForValue().get(String.format(RedisKey.USERLOGIN_QRCODEID, qrCodeId));
         if (token == null) {
             throw new ExplorerException(ErrorInfo.QRCODE_EXPIRED);
         } else if ("".equals(token)) {
@@ -119,6 +119,11 @@ public class UserServiceImpl implements IUserService {
         }
         String ontId = JwtUtil.getClaim(token, ConstantParam.JWT_LOGINID).asString();
         User user = userMapper.selectByPrimaryKey(ontId);
+        //get last login time
+        Date lastLoginTime = user.getLastLoginTime();
+        user.setLastLoginTime(new Date());
+        userMapper.updateByPrimaryKeySelective(user);
+        user.setLastLoginTime(lastLoginTime);
         //set token
         HttpServletResponse resp = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         resp.setHeader(ConstantParam.HTTPHEADER_TOKEN, token);
@@ -130,21 +135,21 @@ public class UserServiceImpl implements IUserService {
     public CallBackResponse login(CallBackDto callBackDto) {
         String ontId = callBackDto.getSigner();
         String signedTx = callBackDto.getSignedTx();
-        String code = callBackDto.getExtraData().getId();
+        String qrCodeId = callBackDto.getExtraData().getId();
         Boolean verifyFlag = verifySignature(ontId, signedTx);
         if (!verifyFlag) {
             return CallBackResponse.errorResponse(ErrorInfo.VERIFY_SIGN_FAILED.code());
         }
-        String redisValue = redisTemplate.opsForValue().get(String.format(RedisKey.USERLOGIN_CODE, code));
+        String redisValue = redisTemplate.opsForValue().get(String.format(RedisKey.USERLOGIN_QRCODEID, qrCodeId));
         if (redisValue == null) {
             return CallBackResponse.errorResponse(ErrorInfo.QRCODE_EXPIRED.code());
         }
         String token = JwtUtil.signToken(ontId);
-        redisTemplate.opsForValue().set(String.format(RedisKey.USERLOGIN_CODE, code), token, 60, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(String.format(RedisKey.USERLOGIN_QRCODEID, qrCodeId), token, 60, TimeUnit.SECONDS);
 
-        Date now = new Date();
         User user = userMapper.selectByPrimaryKey(ontId);
         if (user == null) {
+            Date now = new Date();
             user = User.builder()
                     .ontId(ontId)
                     .userName("")
@@ -153,9 +158,6 @@ public class UserServiceImpl implements IUserService {
                     .createTime(now)
                     .build();
             userMapper.insert(user);
-        } else {
-            user.setLastLoginTime(now);
-            userMapper.updateByPrimaryKeySelective(user);
         }
         return CallBackResponse.successResponse(new JSONObject());
     }
@@ -165,12 +167,13 @@ public class UserServiceImpl implements IUserService {
         try {
             transaction = Transaction.deserializeFrom(com.github.ontio.common.Helper.hexToBytes(signedTx));
         } catch (IOException e) {
-            throw new ExplorerException(ErrorInfo.TX_ERROR);
+            log.error("{} error...", Helper.currentMethod(), e);
+            return false;
         }
         byte[] sigBytes = transaction.sigs[0].sigData[0];
         String signature = com.github.ontio.common.Helper.toHexString(sigBytes);
-        if (!signature.startsWith("01")) {
-            signature = String.format("01%s", signature);
+        if (!signature.startsWith(SIGNATURE_PREFIX)) {
+            signature = SIGNATURE_PREFIX + signature;
         }
         transaction.sigs = new Sig[0];
         String hex = transaction.toHexString();

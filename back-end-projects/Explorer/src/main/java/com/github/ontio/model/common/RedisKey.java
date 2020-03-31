@@ -7,6 +7,6 @@ package com.github.ontio.model.common;
  */
 public class RedisKey {
 
-    public static final String USERLOGIN_CODE = "userLogin:code:%s";
+    public static final String USERLOGIN_QRCODEID = "userLogin:qrCodeId:%s";
 
 }

@@ -70,7 +70,7 @@ public class Helper {
         return new ResponseBean(errorInfo.code(), errorInfo.desc(), obj);
     }
 
-    public static String generateLoginCode() {
+    public static String generateQrCodeId() {
         return String.valueOf(System.currentTimeMillis()) + getRandomString(5);
     }
 
