@@ -45,14 +45,20 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
     List<TransferTxDto> selectDragonTransferTxsByTimeInToAddr4Onto(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
 
+    List<TransferTxDto> selectDragonTransferTxsByTimeAndPage4Onto(@Param("address") String address,
+            @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
 
-    List<TransferTxDto> selectDragonTransferTxsByTimeAndPage4Onto(@Param("address") String address, @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
+    List<TransferTxDto> selectDragonTransferTxsByTimeAndPageInFromAddr4Onto(@Param("address") String address,
+            @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
 
-    List<TransferTxDto> selectDragonTransferTxsByTimeAndPageInFromAddr4Onto(@Param("address") String address, @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
-
-    List<TransferTxDto> selectDragonTransferTxsByTimeAndPageInToAddr4Onto(@Param("address") String address, @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
+    List<TransferTxDto> selectDragonTransferTxsByTimeAndPageInToAddr4Onto(@Param("address") String address,
+            @Param("assetName") String assetName, @Param("endTime") Long endTime, @Param("pageSize") Integer pageSize);
 
 
     Integer selectTransferTxCountByAddr(@Param("address") String address);
+
+    List<TransferTxDto> selectTransferTxsOfTokenType(@Param("address") String address, @Param("token_type") String tokenType,
+            @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
+
 
 }

@@ -23,6 +23,8 @@ public interface AddressDailyAggregationMapper extends Mapper<AddressDailyAggreg
 
 	ExtremeBalanceDto findMinBalance(@Param("address") String address, @Param("tokenContractHash") String tokenContractHash);
 
-	Integer countTotalTxOfAddress(@Param("address") String address, @Param("asset_name") String assetName);
+	Integer countAddressTotalTx(@Param("address") String address, @Param("asset_name") String assetName);
+
+	Integer countAddressTotalTxOfTokenType(@Param("address") String address, @Param("token_type") String tokenType);
 
 }

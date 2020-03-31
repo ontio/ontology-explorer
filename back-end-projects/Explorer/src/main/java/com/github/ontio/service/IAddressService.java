@@ -32,4 +32,6 @@ public interface IAddressService {
 
     ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
 
+    ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize);
+
 }
