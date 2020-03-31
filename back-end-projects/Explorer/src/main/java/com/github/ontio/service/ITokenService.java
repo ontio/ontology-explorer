@@ -24,4 +24,6 @@ public interface ITokenService {
 
     ResponseBean queryPrice(String token, String fiat);
 
+    ResponseBean queryOepLogos(String contractHash, int pageSize, int pageNumber);
+
 }
