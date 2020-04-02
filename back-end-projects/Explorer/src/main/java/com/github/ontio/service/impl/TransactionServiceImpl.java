@@ -27,6 +27,7 @@ import com.github.ontio.mapper.TxEventLogMapper;
 import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.OntidTxDetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
@@ -62,7 +63,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public ResponseBean queryLatestTxs(int count) {
 
-        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(0, count);
+        List<TxEventLog> txEventLogDtos = txEventLogMapper.selectTxsByPage(0, count);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txEventLogDtos);
     }
@@ -72,7 +73,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(start, pageSize);
+        List<TxEventLog> txEventLogDtos = txEventLogMapper.selectTxsByPage(start, pageSize);
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
@@ -128,11 +129,19 @@ public class TransactionServiceImpl implements ITransactionService {
             detailObj.put("transfers", txDetailDtos);
         } else if (EventTypeEnum.Ontid.getType() == eventType) {
             //ONTID交易获取ONTID动作详情
-            OntidTxDetailDto ontidTxDetailDto = ontidTxDetailMapper.selectOneByTxHash(txHash);
+            OntidTxDetailDto ontidTxDetail = OntidTxDetailDto.builder()
+                    .txHash(txHash)
+                    .build();
+            List<OntidTxDetailDto> ontidTxDetailDtos = ontidTxDetailMapper.select(ontidTxDetail);
+            //一笔交易注册多个ONTID
+            StringBuilder stringBuilder = new StringBuilder();
+            for (OntidTxDetailDto ontidTxDetailDto : ontidTxDetailDtos) {
+                stringBuilder.append(ontidTxDetailDto.getOntid());
+                stringBuilder.append("||");
+            }
+            String ontIdDes = Helper.templateOntIdOperation(ontidTxDetailDtos.get(0).getDescription());
 
-            String ontIdDes = Helper.templateOntIdOperation(ontidTxDetailDto.getDescription());
-
-            detailObj.put("ontid", ontidTxDetailDto.getOntid());
+            detailObj.put("ontid", stringBuilder.substring(0, stringBuilder.length() - 2).toString());
             detailObj.put("description", ontIdDes);
         }
         txDetailDto.setDetail(detailObj);

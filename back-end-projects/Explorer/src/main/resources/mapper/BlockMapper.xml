@@ -34,10 +34,12 @@
 
 
   <select id="selectBlocksByPage" resultType="com.github.ontio.model.dto.BlockDto">
-    select <include refid="basicColumns"/>
-    from tbl_block
-    order by block_height desc
-    limit #{startIndex}, #{pageSize}
+      select
+      <include refid="basicColumns"/>
+      from tbl_block
+      where block_height &lt;= (select max(block_height) - #{startIndex} from tbl_block)
+      order by block_height desc
+      limit #{pageSize}
   </select>
 
   <select id="selectOneByHeight" resultType="com.github.ontio.model.dto.BlockDto">

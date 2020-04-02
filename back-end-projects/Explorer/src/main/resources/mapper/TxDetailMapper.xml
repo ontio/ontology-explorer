@@ -96,52 +96,45 @@
 
 
     <select id="selectTransferTxsByPage" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT *
-        FROM
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail d
+        INNER JOIN
         (
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-              UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-        ) a
-        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+        SELECT DISTINCT tx_hash AS `hash`
+        FROM tbl_tx_detail_index
+        WHERE address = #{address}
+        <if test="assetName != '' and assetName != null">
+            AND asset_name = #{assetName}
+        </if>
+        ORDER BY desc_block_height, tx_hash, tx_index
         LIMIT #{startIndex}, #{pageSize}
+        ) idx ON idx.hash = d.tx_hash
+        WHERE d.from_address = #{address}
+        OR d.to_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            AND d.asset_name = #{assetName}
+        </if>
+        AND d.event_type IN (2, 3)
+        ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT *
-        FROM
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail d
+        INNER JOIN
         (
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-              UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type IN (2, 3)
-        ) a
-        where a.txTime &gt;= #{startTime}
-        and <![CDATA[ a.txTime <= #{endTime} ]]>
-        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+        SELECT tx_hash AS `hash`, tx_index AS `index`
+        FROM tbl_tx_detail_index
+        WHERE address = #{address}
+        AND tx_time &gt;= #{startTime}
+        AND tx_time &lt;= #{endTime}
+        <if test="assetName != '' and assetName != null">
+            AND asset_name = #{assetName}
+        </if>
+        ORDER BY desc_block_height, tx_hash, tx_index
+        ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
     </select>
 
 
@@ -355,8 +348,47 @@
     <select id="selectTransferTxCountByAddr" resultType="java.lang.Integer">
         SELECT count(1)
         FROM tbl_tx_detail
-        WHERE from_address = #{address}
-        OR to_address = #{address}
+        WHERE from_address = #{address} OR to_address = #{address}
+    </select>
+
+    <select id="selectTransferTxsOfTokenType" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        <choose>
+            <when test="token_type == 'oep4'">
+                FROM tbl_oep4_tx_detail d
+            </when>
+            <when test="token_type == 'oep5'">
+                FROM tbl_oep5_tx_detail d
+            </when>
+            <otherwise>
+                FROM tbl_oep8_tx_detail d
+            </otherwise>
+        </choose>
+        INNER JOIN
+        (
+        SELECT DISTINCT idx.tx_hash AS `hash`
+        FROM tbl_tx_detail_index idx
+        <choose>
+            <when test="token_type == 'oep4'">
+                INNER JOIN tbl_oep4 o
+            </when>
+            <when test="token_type == 'oep5'">
+                INNER JOIN tbl_oep5 o
+            </when>
+            <otherwise>
+                INNER JOIN tbl_oep8 o
+            </otherwise>
+        </choose>
+        ON o.symbol = idx.asset_name
+        WHERE idx.address = #{address}
+        ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
+        LIMIT #{startIndex}, #{pageSize}
+        ) idx ON idx.hash = d.tx_hash
+        WHERE d.from_address = #{address}
+        OR d.to_address = #{address}
+        AND d.event_type IN (2, 3)
+        ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 
 </mapper>

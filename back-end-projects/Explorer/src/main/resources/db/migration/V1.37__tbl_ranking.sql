@@ -1,0 +1,2 @@
+ALTER TABLE tbl_ranking
+    MODIFY percentage DECIMAL(6, 2) NOT NULL DEFAULT 0;

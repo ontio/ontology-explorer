@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.AddressDailyAggregationMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.AddressDailyAggregation">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="address" jdbcType="CHAR" property="address"/>
+        <result column="token_contract_hash" jdbcType="CHAR" property="tokenContractHash"/>
+        <result column="date_id" jdbcType="INTEGER" property="dateId"/>
+        <result column="balance" jdbcType="DECIMAL" property="balance"/>
+        <result column="usd_price" jdbcType="DECIMAL" property="usdPrice"/>
+        <result column="max_balance" jdbcType="DECIMAL" property="maxBalance"/>
+        <result column="min_balance" jdbcType="DECIMAL" property="minBalance"/>
+        <result column="deposit_tx_count" jdbcType="INTEGER" property="depositTxCount"/>
+        <result column="withdraw_tx_count" jdbcType="INTEGER" property="withdrawTxCount"/>
+        <result column="deposit_amount" jdbcType="DECIMAL" property="depositAmount"/>
+        <result column="withdraw_amount" jdbcType="DECIMAL" property="withdrawAmount"/>
+        <result column="deposit_address_count" jdbcType="INTEGER" property="depositAddressCount"/>
+        <result column="withdraw_address_count" jdbcType="INTEGER" property="withdrawAddressCount"/>
+        <result column="tx_address_count" jdbcType="INTEGER" property="txAddressCount"/>
+        <result column="fee_amount" jdbcType="DECIMAL" property="feeAmount"/>
+        <result column="contract_count" jdbcType="INTEGER" property="contractCount"/>
+        <result column="is_virtual" jdbcType="BIT" property="isVirtual"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="findAggregations" resultType="com.github.ontio.model.dto.aggregation.AddressAggregationDto">
+        SELECT d.date,
+        a.balance,
+        a.deposit_tx_count + a.withdraw_tx_count AS tx_count,
+        a.deposit_address_count AS deposit_addr,
+        a.withdraw_address_count AS withdraw_addr
+        FROM tbl_address_daily_aggregation a
+        INNER JOIN tbl_date d ON d.id = a.date_id
+        WHERE a.address = #{address}
+        AND a.token_contract_hash = #{tokenContractHash}
+        AND a.date_id &gt; 0
+        <if test="from != null">
+            AND d.date &gt;= #{from}
+        </if>
+        <if test="to != null">
+            AND d.date &lt;= #{to}
+        </if>
+        ORDER BY a.date_id
+    </select>
+
+    <select id="findAggregationsForToken" resultType="com.github.ontio.model.dto.aggregation.AddressAggregationDto">
+        SELECT d.date,
+        a.contract_count,
+        a.deposit_tx_count AS deposit_count,
+        a.withdraw_tx_count AS withdraw_count,
+        a.deposit_tx_count + a.withdraw_tx_count AS tx_count,
+        a.deposit_address_count AS deposit_addr,
+        a.withdraw_address_count AS withdraw_addr,
+        a.tx_address_count AS tx_addr
+        FROM tbl_address_daily_aggregation a
+        INNER JOIN tbl_date d ON d.id = a.date_id
+        WHERE a.address = #{address}
+        AND a.token_contract_hash = #{tokenContractHash}
+        AND a.date_id &gt; 0
+        <if test="from != null">
+            AND d.date &gt;= #{from}
+        </if>
+        <if test="to != null">
+            AND d.date &lt;= #{to}
+        </if>
+        ORDER BY a.date_id
+    </select>
+
+    <select id="findMaxBalance" resultType="com.github.ontio.model.dto.aggregation.ExtremeBalanceDto">
+        SELECT d.date, max_balance AS balance
+        FROM tbl_address_daily_aggregation a
+                 INNER JOIN tbl_date d ON a.date_id = d.id
+        WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id > 0 AND
+                max_balance = (
+                SELECT max_balance AS balance
+                FROM tbl_address_daily_aggregation
+                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND date_id &lt;&gt; -1
+                ORDER BY update_time DESC
+                LIMIT 1
+            )
+        ORDER BY date_id
+        LIMIT 1
+    </select>
+
+    <select id="findMinBalance" resultType="com.github.ontio.model.dto.aggregation.ExtremeBalanceDto">
+        SELECT d.date, min_balance AS balance
+        FROM tbl_address_daily_aggregation a
+                 INNER JOIN tbl_date d ON a.date_id = d.id
+        WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id > 0 AND
+                min_balance = (
+                SELECT min_balance AS balance
+                FROM tbl_address_daily_aggregation
+                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND date_id &lt;&gt; -1
+                ORDER BY update_time DESC
+                LIMIT 1
+            )
+        ORDER BY date_id
+        LIMIT 1
+    </select>
+
+    <select id="countAddressTotalTx" resultType="java.lang.Integer">
+        SELECT deposit_tx_count + withdraw_tx_count
+        FROM tbl_address_daily_aggregation aggr
+        <if test="asset_name != null and asset_name != ''">
+            LEFT OUTER JOIN tbl_contract c ON c.contract_hash = aggr.token_contract_hash
+        </if>
+        WHERE aggr.address = #{address}
+        <choose>
+            <when test="asset_name != null and asset_name != ''">
+                AND c.name = #{asset_name}
+            </when>
+            <otherwise>
+                AND aggr.token_contract_hash = '$$ALL$$'
+            </otherwise>
+        </choose>
+        AND aggr.date_id &lt;= 0
+        ORDER BY aggr.update_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="countAddressTotalTxOfTokenType" resultType="java.lang.Integer">
+        SELECT sum(aggr.deposit_tx_count + aggr.withdraw_tx_count)
+        FROM tbl_address_daily_aggregation aggr
+        INNER JOIN (
+        SELECT aggr.address, aggr.token_contract_hash, max(aggr.update_time) AS update_time
+        FROM tbl_address_daily_aggregation aggr
+        <choose>
+            <when test="token_type == 'oep4'">
+                INNER JOIN tbl_oep4 o ON o.contract_hash = aggr.token_contract_hash
+            </when>
+            <when test="token_type == 'oep5'">
+                INNER JOIN tbl_oep5 o ON o.contract_hash = aggr.token_contract_hash
+            </when>
+            <otherwise>
+                INNER JOIN tbl_oep8 o ON o.contract_hash = aggr.token_contract_hash
+            </otherwise>
+        </choose>
+        WHERE aggr.address = #{address} AND aggr.date_id &lt;= 0
+        GROUP BY aggr.address, aggr.token_contract_hash
+        ) AS tmp
+        ON tmp.address = aggr.address
+        AND tmp.token_contract_hash = aggr.token_contract_hash
+        AND tmp.update_time &lt;= aggr.update_time
+        WHERE aggr.date_id &lt;= 0
+    </select>
+
+</mapper>

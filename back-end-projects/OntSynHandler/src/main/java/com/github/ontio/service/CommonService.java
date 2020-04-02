@@ -7,9 +7,28 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.payload.DeployCode;
-import com.github.ontio.mapper.*;
+import com.github.ontio.mapper.BlockMapper;
+import com.github.ontio.mapper.ContractMapper;
+import com.github.ontio.mapper.CurrentMapper;
+import com.github.ontio.mapper.Oep4TxDetailMapper;
+import com.github.ontio.mapper.Oep5DragonMapper;
+import com.github.ontio.mapper.Oep5TxDetailMapper;
+import com.github.ontio.mapper.Oep8TxDetailMapper;
+import com.github.ontio.mapper.OntidTxDetailMapper;
+import com.github.ontio.mapper.TxDetailDailyMapper;
+import com.github.ontio.mapper.TxDetailIndexMapper;
+import com.github.ontio.mapper.TxDetailMapper;
+import com.github.ontio.mapper.TxEventLogMapper;
 import com.github.ontio.model.common.BatchBlockDto;
-import com.github.ontio.model.dao.*;
+import com.github.ontio.model.dao.Current;
+import com.github.ontio.model.dao.Oep4TxDetail;
+import com.github.ontio.model.dao.Oep5Dragon;
+import com.github.ontio.model.dao.Oep5TxDetail;
+import com.github.ontio.model.dao.Oep8TxDetail;
+import com.github.ontio.model.dao.OntidTxDetail;
+import com.github.ontio.model.dao.TxDetail;
+import com.github.ontio.model.dao.TxDetailDaily;
+import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +61,12 @@ public class CommonService {
     private final BlockMapper blockMapper;
     private final ContractMapper contractMapper;
     private final TxDetailDailyMapper txDetailDailyMapper;
+    private final TxDetailIndexMapper txDetailIndexMapper;
 
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
                          Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
-                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper) {
+                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.currentMapper = currentMapper;
@@ -59,6 +79,7 @@ public class CommonService {
         this.oep5DragonMapper = oep5DragonMapper;
         this.contractMapper = contractMapper;
         this.txDetailDailyMapper = txDetailDailyMapper;
+        this.txDetailIndexMapper = txDetailIndexMapper;
     }
 
     /**
@@ -68,7 +89,7 @@ public class CommonService {
      * @param batchBlockDto
      */
     @Transactional(rollbackFor = Exception.class)
-    public void batchInsertDb(int tHeight, BatchBlockDto batchBlockDto) {
+    public void batchInsertDb(int beginHeight, int tHeight, BatchBlockDto batchBlockDto) {
         //插入tbl_tx_detail表
         if (batchBlockDto.getTxDetails().size() > 0) {
             int count = batchBlockDto.getTxDetails().size();
@@ -82,6 +103,7 @@ public class CommonService {
             } else {
                 txDetailMapper.batchInsert(batchBlockDto.getTxDetails());
             }
+            buildTxDetailIndex(beginHeight, tHeight);
         }
         //插入tbl_tx_detail_daily表
         if (batchBlockDto.getTxDetailDailys().size() > 0) {
@@ -99,6 +121,8 @@ public class CommonService {
         }
         //插入tbl_tx_eventlog表
         if (batchBlockDto.getTxEventLogs().size() > 0) {
+            int maxId = txEventLogMapper.findMaxId();
+            txEventLogMapper.resetAutoIncrementId(maxId + 1);
             int count = batchBlockDto.getTxEventLogs().size();
             if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
                 for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
@@ -488,5 +512,9 @@ public class CommonService {
         return totalSupply;
     }
 
+    private void buildTxDetailIndex(int beginHeight, int endHeight) {
+        txDetailIndexMapper.buildTxDetailIndexForFromAddress(beginHeight, endHeight);
+        txDetailIndexMapper.buildTxDetailIndexForToAddress(beginHeight, endHeight);
+    }
 
 }

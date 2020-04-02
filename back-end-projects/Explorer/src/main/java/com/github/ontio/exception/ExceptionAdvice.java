@@ -1,6 +1,7 @@
 package com.github.ontio.exception;
 
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.util.ErrorInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -91,7 +92,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseBean globalException(HttpServletRequest request, Throwable ex) {
         log.error("error...", ex);
-        return new ResponseBean(this.getStatus(request).value(), ex.getMessage(), null);
+        return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), null);
     }
 
     /**

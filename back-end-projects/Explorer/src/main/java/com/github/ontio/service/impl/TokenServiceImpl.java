@@ -1,27 +1,43 @@
 package com.github.ontio.service.impl;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.exception.ExplorerException;
-import com.github.ontio.mapper.*;
+import com.github.ontio.mapper.Oep4Mapper;
+import com.github.ontio.mapper.Oep5Mapper;
+import com.github.ontio.mapper.Oep8Mapper;
+import com.github.ontio.mapper.Oep8TxDetailMapper;
+import com.github.ontio.mapper.RankingMapper;
+import com.github.ontio.mapper.TokenDailyAggregationMapper;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dao.Oep4;
-import com.github.ontio.model.dao.Oep5;
-import com.github.ontio.model.dao.Oep8;
-import com.github.ontio.model.dto.*;
+import com.github.ontio.model.dto.Oep4DetailDto;
+import com.github.ontio.model.dto.Oep5DetailDto;
+import com.github.ontio.model.dto.Oep8DetailDto;
+import com.github.ontio.model.dto.TokenPriceDto;
+import com.github.ontio.model.dto.TxDetailDto;
+import com.github.ontio.model.dto.ranking.TokenRankingDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
+import com.github.ontio.util.external.CoinMarketCapApi;
+import com.github.ontio.util.external.CoinMarketCapQuotes;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.*;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author zhouq
@@ -32,43 +48,67 @@ import java.util.*;
 @Slf4j
 public class TokenServiceImpl implements ITokenService {
 
+    private static final String TOKEN_SORT_PATTERN = "-?(address_count|tx_count|create_time)";
+
     private final Oep4Mapper oep4Mapper;
     private final Oep5Mapper oep5Mapper;
     private final Oep8Mapper oep8Mapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
+    private final TokenDailyAggregationMapper tokenDailyAggregationMapper;
+    private final RankingMapper rankingMapper;
+    private final CoinMarketCapApi coinMarketCapApi;
 
     @Autowired
-    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Oep8TxDetailMapper oep8TxDetailMapper) {
+    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
+            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
+            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.tokenDailyAggregationMapper = tokenDailyAggregationMapper;
+        this.rankingMapper = rankingMapper;
+        this.coinMarketCapApi = coinMarketCapApi;
     }
 
     @Override
-    public ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize) {
+    public ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize, List<String> sorts) {
 
         int total = 0;
         PageResponseBean pageResponseBean = new PageResponseBean(new ArrayList(), total);
+        List<String> ascending;
+        List<String> descending;
+        if (sorts == null || sorts.isEmpty()) {
+            ascending = null;
+            descending = Collections.singletonList("create_time");
+        } else {
+            ascending = sorts.stream()
+                    .filter(sort -> Pattern.matches(TOKEN_SORT_PATTERN, sort) && !sort.startsWith("-"))
+                    .collect(Collectors.toList());
+            descending = sorts.stream()
+                    .filter(sort -> Pattern.matches(TOKEN_SORT_PATTERN, sort) && sort.startsWith("-"))
+                    .map(sort -> sort.substring(1))
+                    .collect(Collectors.toList());
+        }
 
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_OEP4:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep4DetailDto> oep4DetailDtos = oep4Mapper.selectOep4Tokens();
+                List<Oep4DetailDto> oep4DetailDtos = oep4Mapper.selectOep4Tokens(ascending, descending);
                 total = ((Long) ((Page) oep4DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep4DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP5:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep5DetailDto> oep5DetailDtos = oep5Mapper.selectOep5Tokens();
+                List<Oep5DetailDto> oep5DetailDtos = oep5Mapper.selectOep5Tokens(ascending, descending);
                 total = ((Long) ((Page) oep5DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep5DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP8:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens();
+                List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens(ascending, descending);
                 total = ((Long) ((Page) oep8DetailDtos).getTotal()).intValue();
                 //OEP8同一个合约hash有多种token，需要根据tokenId分类
                 oep8DetailDtos.forEach(item -> {
@@ -149,7 +189,8 @@ public class TokenServiceImpl implements ITokenService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<TxDetailDto> txDetailDtos = oep8TxDetailMapper.selectTxsByCalledContractHashAndTokenName(contractHash, tokenName, start, pageSize);
+        List<TxDetailDto> txDetailDtos = oep8TxDetailMapper.selectTxsByCalledContractHashAndTokenName(contractHash, tokenName,
+                start, pageSize);
         Integer count = oep8TxDetailMapper.selectCountByCalledContracthashAndTokenName(contractHash, tokenName);
 
         PageResponseBean pageResponseBean = new PageResponseBean(txDetailDtos, count);
@@ -157,7 +198,44 @@ public class TokenServiceImpl implements ITokenService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
+    @Override
+    public ResponseBean queryDailyAggregations(String tokenType, String contractHash, Date from, Date to) {
+        Object result = null;
+        if (ConstantParam.ASSET_TYPE_OEP4.equalsIgnoreCase(tokenType)) {
+            result = tokenDailyAggregationMapper.findAggregations(contractHash, from, to);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
 
+    @Override
+    public ResponseBean queryRankings(List<Short> rankingIds, short duration) {
+        List<TokenRankingDto> rankings = rankingMapper.findTokenRankings(rankingIds, duration);
+        Map<Short, List<TokenRankingDto>> rankingMap =
+                rankings.stream().collect(Collectors.groupingBy(TokenRankingDto::getRankingId));
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rankingMap);
+    }
 
+    @Override
+    public ResponseBean queryPrice(String token, String fiat) {
+        String key = token + "-" + fiat;
+        CoinMarketCapQuotes quotes = tokenQuotes.get(key);
+        TokenPriceDto dto = TokenPriceDto.from(token, quotes);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), dto);
+    }
+
+    private LoadingCache<String, CoinMarketCapQuotes> tokenQuotes;
+
+    @Autowired
+    public void setParamsConfig(ParamsConfig paramsConfig) {
+        tokenQuotes = Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofMinutes(paramsConfig.getCoinMarketCapRefreshInterval()))
+                .build(key -> {
+                    String[] parts = key.split("-");
+                    if (parts.length < 2) {
+                        throw new IllegalArgumentException("invalid token-fiat pair: " + key);
+                    }
+                    return coinMarketCapApi.getQuotes(parts[0], parts[1]);
+                });
+    }
 
 }
