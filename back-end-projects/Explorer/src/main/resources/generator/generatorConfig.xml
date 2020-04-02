@@ -41,7 +41,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="tbl_block" domainObjectName="Block">
+<!--        <table tableName="tbl_block" domainObjectName="Block">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
@@ -155,6 +155,10 @@
 
         <table tableName="tbl_node_rank_change" domainObjectName="NodeRankChange">
             <generatedKey column="public_key" sqlStatement="JDBC"/>
+        </table>-->
+
+        <table tableName="tbl_oep_logo" domainObjectName="OepLogo">
+            <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
     </context>
