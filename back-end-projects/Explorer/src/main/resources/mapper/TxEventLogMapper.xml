@@ -41,16 +41,21 @@
     and <![CDATA[ tx_time <= #{endTime} ]]>
   </select>
 
-  <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
-    SELECT
-    <include refid="txBasicColumns"/>
+  <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dao.TxEventLog">
+    SELECT tx_hash AS txHash,
+      tx_type AS txType,
+      tx_time AS txTime,
+      block_height AS blockHeight,
+      confirm_flag AS confirmFlag,
+      block_index AS blockIndex,
+      fee AS fee
     FROM tbl_tx_eventlog tx
-    INNER JOIN (
-    SELECT id
-    FROM tbl_tx_eventlog
-    WHERE id &lt;= (select max(id) - #{startIndex} from tbl_tx_eventlog)
-    ORDER BY id DESC
-    LIMIT #{pageSize}
+           INNER JOIN (
+      SELECT id
+      FROM tbl_tx_eventlog
+      WHERE id &lt;= (SELECT max(id) - #{startIndex} FROM tbl_tx_eventlog)
+      ORDER BY id DESC
+      LIMIT #{pageSize}
     ) tmp ON tx.id = tmp.id
   </select>
 
