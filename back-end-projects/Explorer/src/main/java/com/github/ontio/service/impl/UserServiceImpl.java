@@ -7,7 +7,6 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Digest;
-import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.AddressBlacklistMapper;
 import com.github.ontio.mapper.UserAddressMapper;
 import com.github.ontio.mapper.UserMapper;
@@ -119,9 +118,9 @@ public class UserServiceImpl implements IUserService {
     public ResponseBean queryLoginUserInfo(String qrCodeId) {
         String token = redisTemplate.opsForValue().get(String.format(RedisKey.USERLOGIN_QRCODEID, qrCodeId));
         if (token == null) {
-            throw new ExplorerException(ErrorInfo.QRCODE_EXPIRED);
+            return Helper.successResult(ErrorInfo.QRCODE_EXPIRED.code());
         } else if ("".equals(token)) {
-            throw new ExplorerException(ErrorInfo.NO_LOGIN_USERINFO);
+            return Helper.successResult(ErrorInfo.NO_LOGIN_USERINFO.code());
         }
         String ontId = JwtUtil.getClaim(token, ConstantParam.JWT_LOGINID).asString();
         User user = userMapper.selectByPrimaryKey(ontId);
