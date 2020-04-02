@@ -156,4 +156,8 @@ public class ParamsConfig {
     @Value("${login.qrcode.url:https://explorer.ont.io/v2/users/login_qrcode/}")
     public String loginQrCodeUrl;
 
+
+    @Value("${oneUser.address.count.limit")
+    public int oneUserAddressCountLimit;
+
 }
