@@ -56,8 +56,8 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
 
     @Override
     public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch) {
-        return;
-/*        Object event = disruptorEvent.getEvent();
+        //return;
+        Object event = disruptorEvent.getEvent();
         if(event instanceof TxDetail){
             TxDetail txDetail = (TxDetail) event;
             log.info("{} disruptor consumer receive tx:{}", Thread.currentThread().getName(), JSONObject.toJSONString(txDetail));
@@ -79,7 +79,7 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
                     handleDepositTransferTx(txDetail, dto);
                 });
             }
-        }*/
+        }
 
     }
 
