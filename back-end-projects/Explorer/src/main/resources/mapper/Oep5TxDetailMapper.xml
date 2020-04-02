@@ -51,24 +51,26 @@
   </select>
 
   <select id="selectTxs4Dragon" resultType="com.github.ontio.model.dto.Oep5TxDetailDto">
-    SELECT a.*, b.json_url AS jsonUrl
-    FROM (
-      SELECT DISTINCT tx_hash AS txHash,
-        block_height AS blockHeight,
-        tx_type AS txType,
-        tx_time AS txTime,
-        block_index AS blockIndex,
-        confirm_flag AS confirmFlag,
-        fee AS fee,
-        called_contract_hash AS calledContractHash,
-        asset_name AS assetName
-      FROM tbl_oep5_tx_detail
+    SELECT tx_hash AS txHash,
+      block_height AS blockHeight,
+      tx_type AS txType,
+      tx_time AS txTime,
+      block_index AS blockIndex,
+      confirm_flag AS confirmFlag,
+      fee AS fee,
+      called_contract_hash AS calledContractHash,
+      asset_name AS assetName
+    FROM tbl_oep5_tx_detail d
+           INNER JOIN
+    (
+      SELECT DISTINCT tx_hash AS `hash`
+      FROM tbl_tx_detail_index
       WHERE called_contract_hash = #{calledContractHash}
-      ORDER BY block_height DESC
+      ORDER BY desc_block_height
       LIMIT #{startIndex}, #{pageSize}
-    ) a
-           LEFT JOIN tbl_oep5_dragon b ON a.calledContractHash = b.contract_hash
-      AND a.assetname = b.asset_name
+    ) idx ON d.tx_hash = idx.hash
+    WHERE d.event_type &lt;&gt; 2
+    ORDER BY blockHeight DESC
   </select>
 
 
