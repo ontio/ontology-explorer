@@ -153,4 +153,7 @@ public class ParamsConfig {
     @Value("${identity.salt}")
     public String IDENTITY_SALT;
 
+    @Value("${login.qrcode.url:https://explorer.ont.io/v2/users/login_qrcode/}")
+    public String loginQrCodeUrl;
+
 }
