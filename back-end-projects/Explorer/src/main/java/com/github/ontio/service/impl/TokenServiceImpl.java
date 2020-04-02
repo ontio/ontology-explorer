@@ -31,10 +31,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +47,8 @@ import java.util.stream.Collectors;
 @Service("TokenService")
 @Slf4j
 public class TokenServiceImpl implements ITokenService {
+
+    private static final String TOKEN_SORT_PATTERN = "-?(address_count|tx_count|create_time)";
 
     private final Oep4Mapper oep4Mapper;
     private final Oep5Mapper oep5Mapper;
@@ -68,29 +72,43 @@ public class TokenServiceImpl implements ITokenService {
     }
 
     @Override
-    public ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize) {
+    public ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize, List<String> sorts) {
 
         int total = 0;
         PageResponseBean pageResponseBean = new PageResponseBean(new ArrayList(), total);
+        List<String> ascending;
+        List<String> descending;
+        if (sorts == null || sorts.isEmpty()) {
+            ascending = null;
+            descending = Collections.singletonList("create_time");
+        } else {
+            ascending = sorts.stream()
+                    .filter(sort -> Pattern.matches(TOKEN_SORT_PATTERN, sort) && !sort.startsWith("-"))
+                    .collect(Collectors.toList());
+            descending = sorts.stream()
+                    .filter(sort -> Pattern.matches(TOKEN_SORT_PATTERN, sort) && sort.startsWith("-"))
+                    .map(sort -> sort.substring(1))
+                    .collect(Collectors.toList());
+        }
 
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_OEP4:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep4DetailDto> oep4DetailDtos = oep4Mapper.selectOep4Tokens();
+                List<Oep4DetailDto> oep4DetailDtos = oep4Mapper.selectOep4Tokens(ascending, descending);
                 total = ((Long) ((Page) oep4DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep4DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP5:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep5DetailDto> oep5DetailDtos = oep5Mapper.selectOep5Tokens();
+                List<Oep5DetailDto> oep5DetailDtos = oep5Mapper.selectOep5Tokens(ascending, descending);
                 total = ((Long) ((Page) oep5DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep5DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP8:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens();
+                List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens(ascending, descending);
                 total = ((Long) ((Page) oep8DetailDtos).getTotal()).intValue();
                 //OEP8同一个合约hash有多种token，需要根据tokenId分类
                 oep8DetailDtos.forEach(item -> {

@@ -27,6 +27,7 @@ import com.github.ontio.mapper.TxEventLogMapper;
 import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.OntidTxDetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
@@ -62,7 +63,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Override
     public ResponseBean queryLatestTxs(int count) {
 
-        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(0, count);
+        List<TxEventLog> txEventLogDtos = txEventLogMapper.selectTxsByPage(0, count);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txEventLogDtos);
     }
@@ -72,7 +73,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
-        List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(start, pageSize);
+        List<TxEventLog> txEventLogDtos = txEventLogMapper.selectTxsByPage(start, pageSize);
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 

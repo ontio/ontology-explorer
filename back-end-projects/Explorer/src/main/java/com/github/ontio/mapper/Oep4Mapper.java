@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface Oep4Mapper extends Mapper<Oep4> {
 
-    List<Oep4DetailDto> selectOep4Tokens();
+    List<Oep4DetailDto> selectOep4Tokens(@Param("ascending") List<String> ascending, @Param("descending") List<String> descending);
 
     Oep4DetailDto selectOep4TokenDetail(@Param("contractHash") String contractHash);
 

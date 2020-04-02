@@ -16,7 +16,7 @@ public interface Oep8Mapper extends Mapper<Oep8> {
 
     List<Map<String, String>> selectAuditPassedOep8(@Param("symbol") String symbol);
 
-    List<Oep8DetailDto> selectOep8Tokens();
+    List<Oep8DetailDto> selectOep8Tokens(@Param("ascending") List<String> ascending, @Param("descending") List<String> descending);
 
     Oep8DetailDto selectOep8TokenDetail(@Param("contractHash") String contractHash);
 

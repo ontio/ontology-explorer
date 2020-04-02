@@ -100,5 +100,50 @@
         LIMIT 1
     </select>
 
+    <select id="countAddressTotalTx" resultType="java.lang.Integer">
+        SELECT deposit_tx_count + withdraw_tx_count
+        FROM tbl_address_daily_aggregation aggr
+        <if test="asset_name != null and asset_name != ''">
+            LEFT OUTER JOIN tbl_contract c ON c.contract_hash = aggr.token_contract_hash
+        </if>
+        WHERE aggr.address = #{address}
+        <choose>
+            <when test="asset_name != null and asset_name != ''">
+                AND c.name = #{asset_name}
+            </when>
+            <otherwise>
+                AND aggr.token_contract_hash = '$$ALL$$'
+            </otherwise>
+        </choose>
+        AND aggr.date_id &lt;= 0
+        ORDER BY aggr.update_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="countAddressTotalTxOfTokenType" resultType="java.lang.Integer">
+        SELECT sum(aggr.deposit_tx_count + aggr.withdraw_tx_count)
+        FROM tbl_address_daily_aggregation aggr
+        INNER JOIN (
+        SELECT aggr.address, aggr.token_contract_hash, max(aggr.update_time) AS update_time
+        FROM tbl_address_daily_aggregation aggr
+        <choose>
+            <when test="token_type == 'oep4'">
+                INNER JOIN tbl_oep4 o ON o.contract_hash = aggr.token_contract_hash
+            </when>
+            <when test="token_type == 'oep5'">
+                INNER JOIN tbl_oep5 o ON o.contract_hash = aggr.token_contract_hash
+            </when>
+            <otherwise>
+                INNER JOIN tbl_oep8 o ON o.contract_hash = aggr.token_contract_hash
+            </otherwise>
+        </choose>
+        WHERE aggr.address = #{address} AND aggr.date_id &lt;= 0
+        GROUP BY aggr.address, aggr.token_contract_hash
+        ) AS tmp
+        ON tmp.address = aggr.address
+        AND tmp.token_contract_hash = aggr.token_contract_hash
+        AND tmp.update_time &lt;= aggr.update_time
+        WHERE aggr.date_id &lt;= 0
+    </select>
 
 </mapper>
