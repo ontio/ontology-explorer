@@ -4,7 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 @Builder
 @AllArgsConstructor
@@ -24,6 +31,8 @@ public class UserAddress {
     /**
      * 地址
      */
+    @NotEmpty
+    @Pattern(regexp = "A[A-Za-z0-9]{33}")
     private String address;
 
     /**
@@ -34,6 +43,8 @@ public class UserAddress {
     /**
      * 监听策略。0:不监听 1:监听所有入金出金，2:只监听入金 3:只监听出金
      */
+    @Min(0)
+    @Max(3)
     private Integer strategy;
 
     /**

@@ -202,7 +202,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseBean addOrUpdateUserAddresses(List<UserAddress> userAddressList, String ontId) {
-        if (userAddressList.size() > 5) {
+        if (userAddressList.size() > paramsConfig.oneUserAddressCountLimit) {
             //normal response can refresh token
             return Helper.errorResult(ErrorInfo.ADDRESS_TOOMANY, false);
         }
