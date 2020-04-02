@@ -1,7 +1,6 @@
 package com.github.ontio.mapper;
 
 import com.alibaba.fastjson.JSONArray;
-import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.model.dto.TxBasicDto;
 import com.github.ontio.model.dto.TxEventLogDto;
 import org.apache.ibatis.annotations.Param;
@@ -14,7 +13,7 @@ import java.util.List;
 @Repository
 public interface TxEventLogMapper extends Mapper<TxEventLogDto> {
 
-    List<TxEventLog> selectTxsByPage(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
+    List<TxEventLogDto> selectTxsByPage(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 
     List<TxEventLogDto> selectNonontidTxsByPage(@Param("startIndex") int startIndex, @Param("pageSize") int pageSize);
 

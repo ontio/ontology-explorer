@@ -41,14 +41,17 @@
     and <![CDATA[ tx_time <= #{endTime} ]]>
   </select>
 
-  <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dao.TxEventLog">
+  <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
     SELECT tx_hash AS txHash,
       tx_type AS txType,
       tx_time AS txTime,
       block_height AS blockHeight,
       confirm_flag AS confirmFlag,
       block_index AS blockIndex,
-      fee AS fee
+      fee AS fee,
+      event_log AS eventLog,
+      ontid_tx_flag AS ontidTxFlag,
+      called_contract_hash AS calledContractHash
     FROM tbl_tx_eventlog tx
            INNER JOIN (
       SELECT id
@@ -60,11 +63,20 @@
   </select>
 
   <select id="selectNonontidTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
-    select <include refid="txBasicColumns" />
-    from tbl_tx_eventlog
-    where ontid_tx_flag = false
-    order by block_height DESC
-    limit #{startIndex}, #{pageSize}
+    SELECT tx_hash AS txHash,
+      tx_type AS txType,
+      tx_time AS txTime,
+      block_height AS blockHeight,
+      confirm_flag AS confirmFlag,
+      block_index AS blockIndex,
+      fee AS fee,
+      event_log AS eventLog,
+      ontid_tx_flag AS ontidTxFlag,
+      called_contract_hash AS calledContractHash
+    FROM tbl_tx_eventlog
+    WHERE ontid_tx_flag = FALSE
+    ORDER BY block_height DESC
+    LIMIT #{startIndex}, #{pageSize}
   </select>
 
   <select id="selectTxsByCalledContractHash" resultType="com.github.ontio.model.dto.TxEventLogDto">
