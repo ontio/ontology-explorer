@@ -34,9 +34,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -73,11 +71,19 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResponseBean queryQrCode() {
+    public ResponseBean queryWebQrCode() {
         String qrCodeId = Helper.generateQrCodeId();
-        QrCodeDto qrCodeDto = generateQrCode(qrCodeId);
         redisTemplate.opsForValue().set(String.format(RedisKey.USERLOGIN_QRCODEID, qrCodeId), "", 2, TimeUnit.MINUTES);
-        return Helper.successResult(qrCodeDto);
+        Map<String, String> rsMap = new HashMap<>();
+        rsMap.put("ONTAuthScanProtocol", paramsConfig.loginQrCodeUrl + qrCodeId);
+        rsMap.put("Id", qrCodeId);
+        return Helper.successResult(rsMap);
+    }
+
+    @Override
+    public QrCodeDto queryQrCode(String qrCodeId) {
+        QrCodeDto qrCodeDto = generateQrCode(qrCodeId);
+        return qrCodeDto;
     }
 
     private QrCodeDto generateQrCode(String qrCodeId) {
@@ -212,6 +218,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseBean delUserAddress(String address, String ontId) {
+        if (address.length() != 34 || !address.startsWith("A")) {
+            return Helper.errorResult(ErrorInfo.ADDRESS_FORMAT_INCORRECT, false);
+        }
         UserAddress userAddress = UserAddress.builder()
                 .ontId(ontId)
                 .address(address)

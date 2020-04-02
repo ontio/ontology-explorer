@@ -7,6 +7,7 @@ import com.github.ontio.model.dao.User;
 import com.github.ontio.model.dao.UserAddress;
 import com.github.ontio.model.dto.login.CallBackDto;
 import com.github.ontio.model.dto.login.CallBackResponse;
+import com.github.ontio.model.dto.login.QrCodeDto;
 import com.github.ontio.service.IUserService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -41,10 +42,17 @@ public class UserController {
     private final IUserService userService;
 
 
-    @ApiOperation(value = "Query login qrcode")
-    @GetMapping(value = "/login_qrcode")
-    public ResponseBean queryQrCode() {
-        ResponseBean rs = userService.queryQrCode();
+    @ApiOperation(value = "Web Query login qrcode")
+    @GetMapping(value = "/web_login_qrcode")
+    public ResponseBean queryWebQrCode() {
+        ResponseBean rs = userService.queryWebQrCode();
+        return rs;
+    }
+
+    @ApiOperation(value = "ONTO APP Query login qrcode")
+    @GetMapping(value = "/login_qrcode/{qrcode_id}")
+    public QrCodeDto queryQrCode(@PathVariable("qrcode_id") String qrcodeId) {
+        QrCodeDto rs = userService.queryQrCode(qrcodeId);
         return rs;
     }
 

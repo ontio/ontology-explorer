@@ -5,6 +5,7 @@ import com.github.ontio.model.dao.User;
 import com.github.ontio.model.dao.UserAddress;
 import com.github.ontio.model.dto.login.CallBackDto;
 import com.github.ontio.model.dto.login.CallBackResponse;
+import com.github.ontio.model.dto.login.QrCodeDto;
 
 import java.util.List;
 
@@ -15,7 +16,9 @@ import java.util.List;
  */
 public interface IUserService {
 
-    ResponseBean queryQrCode();
+    ResponseBean queryWebQrCode();
+
+    QrCodeDto queryQrCode(String qrcodeId);
 
     ResponseBean queryLoginUserInfo(String code);
 

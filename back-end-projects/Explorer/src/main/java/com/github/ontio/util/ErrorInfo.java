@@ -104,6 +104,9 @@ public enum ErrorInfo {
 
     ADDRESS_ONTID_UNMATCH(61019,"Address unmatch ontid."),
 
+    ADDRESS_FORMAT_INCORRECT(61020,"Address format incorrect."),
+
+
 
 
 
