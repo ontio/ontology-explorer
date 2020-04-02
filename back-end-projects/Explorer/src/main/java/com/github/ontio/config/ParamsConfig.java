@@ -157,7 +157,7 @@ public class ParamsConfig {
     public String loginQrCodeUrl;
 
 
-    @Value("${oneUser.address.count.limit")
-    public int oneUserAddressCountLimit;
+    @Value("${oneUser.address.count.limit}")
+    public Integer oneUserAddressCountLimit;
 
 }
