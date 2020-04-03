@@ -218,7 +218,7 @@ public class TokenServiceImpl implements ITokenService {
         Example example = new Example(OepLogo.class);
         example.and()
                 .andEqualTo("contractHash", contractHash);
-        example.orderBy("tokenId").asc();
+        example.orderBy("id").desc();
         List<OepLogo> oepLogos = oepLogoMapper.selectByExample(example);
         Long total = ((Page) oepLogos).getTotal();
         PageResponseBean responseBean = new PageResponseBean(oepLogos, total.intValue());
