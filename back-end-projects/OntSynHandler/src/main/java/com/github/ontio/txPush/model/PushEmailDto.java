@@ -29,14 +29,15 @@ public class PushEmailDto {
     private String assetName;
     private String amount;
     private String time;
-    private String tAddress;
+    private String toAddress;
+    private String fromAddress;
 
     public static final String DEPOSIT = "deposit";
     public static final String WITHDRAW = "withdraw";
 
-    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static PushEmailDto buildDto(PushUserAddressInfoDto pushUserAddressInfoDto, TxDetail txDetail, String txDes) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         PushEmailDtoBuilder builder = PushEmailDto.builder()
                 .email(pushUserAddressInfoDto.getEmail())
                 .userName(pushUserAddressInfoDto.getUserName())
@@ -44,15 +45,15 @@ public class PushEmailDto {
                 .txHash(txDetail.getTxHash())
                 .amount(txDetail.getAmount().stripTrailingZeros().toPlainString())
                 .time(sdf.format(new Date(txDetail.getTxTime() * 1000L)))
-                .assetName(txDetail.getAssetName());
+                .assetName(txDetail.getAssetName())
+                .fromAddress(txDetail.getFromAddress())
+                .toAddress(txDetail.getToAddress());
         if (DEPOSIT.equals(txDes)) {
             return builder.userAddress(txDetail.getToAddress())
-                    .tAddress(txDetail.getFromAddress())
                     .txDes(DEPOSIT)
                     .build();
         } else {
             return builder.userAddress(txDetail.getFromAddress())
-                    .tAddress(txDetail.getToAddress())
                     .txDes(WITHDRAW)
                     .build();
         }

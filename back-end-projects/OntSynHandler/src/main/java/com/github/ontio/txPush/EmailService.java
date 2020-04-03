@@ -92,12 +92,13 @@ public class EmailService {
     private String convertVerificationCode(PushEmailDto pushEmailDto) {
 
         JSONObject sub = new JSONObject();
+        sub.put("%ontId%", Arrays.asList(pushEmailDto.getOntId()));
         sub.put("%address%", Arrays.asList(pushEmailDto.getUserAddress()));
-        sub.put("%des%", Arrays.asList(pushEmailDto.getTxDes()));
+        sub.put("%fromAddress%", Arrays.asList(pushEmailDto.getFromAddress()));
         sub.put("%hash%", Arrays.asList(pushEmailDto.getTxHash()));
-        sub.put("%assetname%", Arrays.asList(pushEmailDto.getAssetName()));
+        sub.put("%assetName%", Arrays.asList(pushEmailDto.getAssetName()));
         sub.put("%time%", Arrays.asList(pushEmailDto.getTime()));
-        sub.put("%taddress%", Arrays.asList(pushEmailDto.getTAddress()));
+        sub.put("%toAddress%", Arrays.asList(pushEmailDto.getToAddress()));
         sub.put("%amount%", Arrays.asList(pushEmailDto.getAmount()));
 
         JSONObject ret = new JSONObject();
