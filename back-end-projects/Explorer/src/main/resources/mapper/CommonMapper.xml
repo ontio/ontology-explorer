@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.CommonMapper">
+  
+  <select id="findGovernanceInfo" resultType="com.github.ontio.model.dto.GovernanceInfoDto">
+    SELECT address,
+      consensus_pos AS consensusPos,
+      candidate_pos AS candidatePos,
+      new_pos AS newPos,
+      withdraw_consensus_pos AS withdrawConsensusPos,
+      withdraw_candidate_pos AS withdrawCandidatePos,
+      withdraw_unfreeze_pos AS withdrawUnfreezePos
+    FROM tbl_governance_info
+    WHERE peer_pub_key = #{pubKey}
+    ORDER BY consensus_pos + candidate_pos + new_pos DESC
+    LIMIT #{start}, #{size}
+  </select>
+  
+</mapper>
