@@ -18,7 +18,7 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://127.0.0.1:3306/explorer?serverTimezone=UTC&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"
                         userId="root"
-                        password="${MYSQL_ROOT_PASSWORD}">
+                        password="zaq12wsx">
         </jdbcConnection>
 
         <javaModelGenerator targetPackage="com.github.ontio.model.dao" targetProject="src/main/java">
@@ -41,7 +41,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="tbl_block" domainObjectName="Block">
+<!--        <table tableName="tbl_block" domainObjectName="Block">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
@@ -155,6 +155,10 @@
 
         <table tableName="tbl_node_rank_change" domainObjectName="NodeRankChange">
             <generatedKey column="public_key" sqlStatement="JDBC"/>
+        </table>-->
+
+        <table tableName="tbl_oep_logo" domainObjectName="OepLogo">
+            <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
 
     </context>

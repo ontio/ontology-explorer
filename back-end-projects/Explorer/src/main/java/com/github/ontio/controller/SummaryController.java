@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/v2/summary")
 public class SummaryController {
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
@@ -27,7 +26,7 @@ public class SummaryController {
 
 
     @ApiOperation(value = "Get blockchain latest summary information")
-    @GetMapping(value = "/blockchain/latest-info")
+    @GetMapping(value = "/v2/summary/blockchain/latest-info")
     public ResponseBean getBlockChainLatestInfo() {
 
         log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
@@ -35,7 +34,7 @@ public class SummaryController {
     }
 
     @ApiOperation(value = "Get blockchain tps information")
-    @GetMapping(value = "/blockchain/tps")
+    @GetMapping(value = "/v2/summary/blockchain/tps")
     public ResponseBean getBlockChainTps() {
 
         log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
@@ -45,7 +44,7 @@ public class SummaryController {
 
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get blockchain daily summary information")
-    @GetMapping(value = "/blockchain/daily")
+    @GetMapping(value = "/v2/summary/blockchain/daily")
     public ResponseBean getBlockChainSummary(@RequestParam("start_time") Long startTime,
                                         @RequestParam("end_time") Long endTime) {
 
@@ -60,7 +59,7 @@ public class SummaryController {
 
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get contract daily summary information")
-    @GetMapping(value = "/contracts/{contract_hash}/daily")
+    @GetMapping(value = "/v2/summary/contracts/{contract_hash}/daily")
     public ResponseBean getContractSummary(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
                                            @RequestParam("start_time") Long startTime,
                                            @RequestParam("end_time") Long endTime) {
@@ -72,4 +71,24 @@ public class SummaryController {
         }
         return summaryService.getContractDailySummary(contractHash, startTime, endTime);
     }
+
+
+    @ApiOperation(value = "Get ONT,ONG total supply")
+    @GetMapping(value = "/v2/summary/native/totalsupply")
+    public ResponseBean queryNativeTotalSupply() {
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        ResponseBean rs = summaryService.getNativeTotalSupply();
+        return rs;
+    }
+
+
+    @ApiOperation(value = "Get ONT,ONG total supply")
+    @GetMapping(value = "/api/v1/explorer/summary/native/totalsupply")
+    public ResponseBean queryNativeTotalSupplyV1() {
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        ResponseBean rs = summaryService.getNativeTotalSupply();
+        return rs;
+    }
+
+
 }

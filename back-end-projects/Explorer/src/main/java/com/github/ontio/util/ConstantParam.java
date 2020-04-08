@@ -79,7 +79,15 @@ public class ConstantParam {
             //技术社区奖励锁仓地址
             "AcdUMgeF16ScW9ts3kiD3pZkjYRMdYwtVQ",
             //生态合作地址
-            "AMX6ZebrPDFELCYRMpSMbZWrhWkKbKg4y8");
+            "AMX6ZebrPDFELCYRMpSMbZWrhWkKbKg4y8",
+            //oge 地址
+            "ARHGtgY9Z8HdChFEjdPKKhpT4WDKfVntfC",
+            //社区地址
+            "ATBdqiUBKnNoJE4L53UkZZjWyFjd1AdamL",
+            //NEO counsel
+            "AR36E5jLdWDKW3Yg51qDFWPGKSLvfPhbqS",
+            //NGC
+            "Af48R4EUNYm6kg9kS7rn5xj4fneuFpbkXi");
 
 
     //资产类型
@@ -163,6 +171,10 @@ public class ConstantParam {
     public static final String CONTRACTHASH_ONG = "0200000000000000000000000000000000000000";
 
     public static final String CONTRACTHASH_ONT = "0100000000000000000000000000000000000000";
+
+    public static final String HTTPHEADER_TOKEN = "ont_exp_token";
+
+    public static final String JWT_LOGINID = "loginId";
 
 
 }

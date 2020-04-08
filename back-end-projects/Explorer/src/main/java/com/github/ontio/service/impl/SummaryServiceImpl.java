@@ -11,6 +11,7 @@ import com.github.ontio.service.ISummaryService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
+import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,21 +26,26 @@ import java.util.Map;
 @Service("SummaryService")
 public class SummaryServiceImpl implements ISummaryService {
 
+    private static final Integer TIMESTAMP_20190630000000_UTC = 1561852800;
+    private static final Integer TIMESTAMP_20180630000000_UTC = 1530316800;
+
     private final ParamsConfig paramsConfig;
     private final TxEventLogMapper txEventLogMapper;
     private final DailySummaryMapper dailySummaryMapper;
     private final ContractDailySummaryMapper contractDailySummaryMapper;
     private final CurrentMapper currentMapper;
     private final AddressDailySummaryMapper addressDailySummaryMapper;
+    private final OntologySDKService ontologySDKService;
 
     @Autowired
-    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper) {
+    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper, OntologySDKService ontologySDKService) {
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.dailySummaryMapper = dailySummaryMapper;
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.currentMapper = currentMapper;
         this.addressDailySummaryMapper = addressDailySummaryMapper;
+        this.ontologySDKService = ontologySDKService;
     }
 
 
@@ -114,5 +120,28 @@ public class SummaryServiceImpl implements ISummaryService {
         PageResponseBean pageResponseBean = new PageResponseBean(contractDailySummaryDtos, contractDailySummaryDtos.size());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
+    }
+
+
+    @Override
+    public ResponseBean getNativeTotalSupply() {
+
+        BigDecimal specialAddrOnt = new BigDecimal("0");
+        for (String addr :
+                ConstantParam.SPECIALADDRLIST) {
+            Map<String, String> map = ontologySDKService.getNativeAssetBalance(addr);
+            specialAddrOnt = specialAddrOnt.add(new BigDecimal(map.get("ont")));
+        }
+        BigDecimal ontTotalSupply = ConstantParam.ONT_TOTAL.subtract(specialAddrOnt);
+
+        BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(TIMESTAMP_20180630000000_UTC)).multiply(new BigDecimal(5));
+        BigDecimal ong02 = new BigDecimal(System.currentTimeMillis() / 1000L).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+        BigDecimal totalOng = ong01.add(ong02);
+        BigDecimal ongTotalSupply = totalOng.multiply(ontTotalSupply).divide(ConstantParam.ONT_TOTAL);
+
+        Map<String, BigDecimal> rsMap = new HashMap<>();
+        rsMap.put("ong", ongTotalSupply);
+        rsMap.put("ont", ontTotalSupply);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
     }
 }
