@@ -19,8 +19,23 @@
 package com.github.ontio.service.impl;
 
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.*;
-import com.github.ontio.model.dao.*;
+import com.github.ontio.mapper.CommonMapper;
+import com.github.ontio.mapper.NetNodeInfoMapper;
+import com.github.ontio.mapper.NodeBonusMapper;
+import com.github.ontio.mapper.NodeInfoOffChainMapper;
+import com.github.ontio.mapper.NodeInfoOnChainMapper;
+import com.github.ontio.mapper.NodeOverviewMapper;
+import com.github.ontio.mapper.NodeRankChangeMapper;
+import com.github.ontio.mapper.NodeRankHistoryMapper;
+import com.github.ontio.model.dao.NetNodeInfo;
+import com.github.ontio.model.dao.NodeBonus;
+import com.github.ontio.model.dao.NodeInfoOffChain;
+import com.github.ontio.model.dao.NodeInfoOnChain;
+import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
+import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
+import com.github.ontio.model.dao.NodeRankChange;
+import com.github.ontio.model.dao.NodeRankHistory;
+import com.github.ontio.model.dto.GovernanceInfoDto;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
 import com.github.ontio.service.INodesService;
 import lombok.extern.slf4j.Slf4j;
@@ -52,15 +67,17 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
+    private final CommonMapper commonMapper;
+
     @Autowired
     public NodesServiceImpl(ParamsConfig paramsConfig,
-                            NodeBonusMapper nodeBonusMapper,
-                            NetNodeInfoMapper netNodeInfoMapper,
-                            NodeOverviewMapper nodeOverviewMapper,
-                            NodeRankChangeMapper nodeRankChangeMapper,
-                            NodeInfoOnChainMapper nodeInfoOnChainMapper,
-                            NodeRankHistoryMapper nodeRankHistoryMapper,
-                            NodeInfoOffChainMapper nodeInfoOffChainMapper) {
+            NodeBonusMapper nodeBonusMapper,
+            NetNodeInfoMapper netNodeInfoMapper,
+            NodeOverviewMapper nodeOverviewMapper,
+            NodeRankChangeMapper nodeRankChangeMapper,
+            NodeInfoOnChainMapper nodeInfoOnChainMapper,
+            NodeRankHistoryMapper nodeRankHistoryMapper,
+            NodeInfoOffChainMapper nodeInfoOffChainMapper, CommonMapper commonMapper) {
         this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
         this.netNodeInfoMapper = netNodeInfoMapper;
@@ -69,6 +86,7 @@ public class NodesServiceImpl implements INodesService {
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.nodeRankHistoryMapper = nodeRankHistoryMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
+        this.commonMapper = commonMapper;
     }
 
     public long getBlkCountToNxtRnd() {
@@ -339,6 +357,12 @@ public class NodesServiceImpl implements INodesService {
             log.warn("Selecting node rank change info failed: {}", e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public List<GovernanceInfoDto> getGovernanceInfo(String pubKey, Integer pageNum, Integer pageSize) {
+        int start = Math.max(pageSize * (pageNum - 1), 0);
+        return commonMapper.findGovernanceInfo(pubKey, start, pageSize);
     }
 
 }

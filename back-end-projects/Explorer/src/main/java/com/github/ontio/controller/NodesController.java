@@ -2,8 +2,15 @@ package com.github.ontio.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dao.*;
-import com.github.ontio.model.dto.NodeInfoOnChainDto;
+import com.github.ontio.model.dao.NetNodeInfo;
+import com.github.ontio.model.dao.NodeBonus;
+import com.github.ontio.model.dao.NodeInfoOffChain;
+import com.github.ontio.model.dao.NodeInfoOnChain;
+import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
+import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
+import com.github.ontio.model.dao.NodeRankChange;
+import com.github.ontio.model.dao.NodeRankHistory;
+import com.github.ontio.model.dto.GovernanceInfoDto;
 import com.github.ontio.service.impl.ConfigServiceImpl;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.service.impl.OntSdkServiceImpl;
@@ -12,8 +19,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -264,6 +277,17 @@ public class NodesController {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), new ArrayList<>());
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodePositionChangeList);
+    }
+
+    @ApiOperation(value = "Get governance info by peer public key")
+    @GetMapping(value = "/governance-info")
+    public ResponseBean getGovernanceInfo(
+            @RequestParam(value = "pk") @Pattern(regexp = "^[0-9a-f]{60,140}$") String publicKey,
+            @RequestParam(value = "page_number") @Min(1) Integer pageNum,
+            @RequestParam(value = "page_size") @Min(1) @Max(50) Integer pageSize
+    ) {
+        List<GovernanceInfoDto> governanceInfos = nodesService.getGovernanceInfo(publicKey, pageNum, pageSize);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), governanceInfos);
     }
 
 }
