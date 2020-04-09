@@ -121,6 +121,8 @@ public class CommonService {
         }
         //插入tbl_tx_eventlog表
         if (batchBlockDto.getTxEventLogs().size() > 0) {
+            int maxId = txEventLogMapper.findMaxId();
+            txEventLogMapper.resetAutoIncrementId(maxId + 1);
             int count = batchBlockDto.getTxEventLogs().size();
             if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
                 for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {

@@ -21,12 +21,14 @@ package com.github.ontio.util;
 
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
+import com.github.ontio.model.common.ResponseBean;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Base64;
+import java.util.Random;
 
 /**
  * @author zhouq
@@ -60,6 +62,28 @@ public class Helper {
         return !isEmptyOrNull(params);
     }
 
+    public static ResponseBean successResult(Object obj) {
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), obj);
+    }
+
+    public static ResponseBean errorResult(ErrorInfo errorInfo, Object obj) {
+        return new ResponseBean(errorInfo.code(), errorInfo.desc(), obj);
+    }
+
+    public static String generateQrCodeId() {
+        return String.valueOf(System.currentTimeMillis()) + getRandomString(5);
+    }
+
+    public static String getRandomString(int length) {
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(62);
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
 
     /**
      * 判断时间范围是否超过一个月
@@ -133,6 +157,7 @@ public class Helper {
 
     /**
      * 判断redis的key是否属于REDIS_LONGEXPIRETIME_KEYLIST
+     *
      * @param redisKey
      * @return
      */
@@ -154,6 +179,7 @@ public class Helper {
 
     /**
      * 判断redis的key是否属于REDIS_MEDIUMEXPIRETIME_KEYLIST
+     *
      * @param redisKey
      * @return
      */
@@ -219,7 +245,6 @@ public class Helper {
     public static String currentMethod() {
         return new Exception("").getStackTrace()[1].getMethodName();
     }
-
 
 
     /**

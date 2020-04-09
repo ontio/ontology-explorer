@@ -57,6 +57,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -144,6 +145,7 @@ public class ContractServiceImpl implements IContractService {
                 //TODO 云斗龙特殊查询，多asset_name,json_url字段。后续oep5需要统一规范
                 if (paramsConfig.OEP5_DRAGON_CONTRACTHASH.equals(contractHash)) {
                     List<Oep5TxDetailDto> oep5TxDetailDtos = oep5TxDetailMapper.selectTxs4Dragon(contractHash, start, pageSize);
+                    oep5TxDetailDtos = filterDragonTxDetails(oep5TxDetailDtos);
                     count = oep5TxDetailMapper.selectCountByCalledContracthash(contractHash);
                     pageResponseBean = new PageResponseBean(oep5TxDetailDtos, count);
                 } else {
@@ -191,6 +193,7 @@ public class ContractServiceImpl implements IContractService {
                 //TODO 云斗龙特殊查询，多asset_name,json_url字段。后续oep5需要统一规范
                 if (paramsConfig.OEP5_DRAGON_CONTRACTHASH.equals(contractHash)) {
                     List<Oep5TxDetailDto> oep5TxDetailDtos = oep5TxDetailMapper.selectTxs4Dragon(contractHash, start, pageSize);
+                    oep5TxDetailDtos = filterDragonTxDetails(oep5TxDetailDtos);
                     count = oep5TxDetailMapper.selectCountByCalledContracthash(contractHash);
                     pageResponseBean = new PageResponseBean(oep5TxDetailDtos, count);
                 } else {
@@ -634,6 +637,23 @@ public class ContractServiceImpl implements IContractService {
         calendar.set(Calendar.SECOND, 0);
         long zeroHourTimestamp = calendar.getTimeInMillis() / 1000L;
         return zeroHourTimestamp;
+    }
+
+    private List<Oep5TxDetailDto> filterDragonTxDetails(List<Oep5TxDetailDto> details) {
+        if (details == null || details.isEmpty()) {
+            return details;
+        }
+        Map<String, Oep5TxDetailDto> detailMap = new LinkedHashMap<>();
+        details.forEach(detail -> detailMap.compute(detail.getTxHash(), (k, v) -> {
+            if (v == null) {
+                return detail;
+            } else if (detail.getAssetName() != null && detail.getAssetName().startsWith("HyperDragons")) {
+                return detail;
+            } else {
+                return v;
+            }
+        }));
+        return new ArrayList<>(detailMap.values());
     }
 
 }
