@@ -3,19 +3,11 @@ package com.github.ontio.service.impl;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.Oep4Mapper;
-import com.github.ontio.mapper.Oep5Mapper;
-import com.github.ontio.mapper.Oep8Mapper;
-import com.github.ontio.mapper.Oep8TxDetailMapper;
-import com.github.ontio.mapper.RankingMapper;
-import com.github.ontio.mapper.TokenDailyAggregationMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dto.Oep4DetailDto;
-import com.github.ontio.model.dto.Oep5DetailDto;
-import com.github.ontio.model.dto.Oep8DetailDto;
-import com.github.ontio.model.dto.TokenPriceDto;
-import com.github.ontio.model.dto.TxDetailDto;
+import com.github.ontio.model.dao.OepLogo;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.model.dto.ranking.TokenRankingDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
@@ -28,13 +20,10 @@ import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,11 +42,12 @@ public class TokenServiceImpl implements ITokenService {
     private final TokenDailyAggregationMapper tokenDailyAggregationMapper;
     private final RankingMapper rankingMapper;
     private final CoinMarketCapApi coinMarketCapApi;
+    private final OepLogoMapper oepLogoMapper;
 
     @Autowired
     public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
-            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
-            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi) {
+                            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
+                            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
@@ -65,6 +55,7 @@ public class TokenServiceImpl implements ITokenService {
         this.tokenDailyAggregationMapper = tokenDailyAggregationMapper;
         this.rankingMapper = rankingMapper;
         this.coinMarketCapApi = coinMarketCapApi;
+        this.oepLogoMapper = oepLogoMapper;
     }
 
     @Override
@@ -220,4 +211,17 @@ public class TokenServiceImpl implements ITokenService {
                 });
     }
 
+
+    @Override
+    public ResponseBean queryOepLogos(String contractHash, int pageSize, int pageNumber) {
+        PageHelper.startPage(pageNumber, pageSize);
+        Example example = new Example(OepLogo.class);
+        example.and()
+                .andEqualTo("contractHash", contractHash);
+        example.orderBy("id").desc();
+        List<OepLogo> oepLogos = oepLogoMapper.selectByExample(example);
+        Long total = ((Page) oepLogos).getTotal();
+        PageResponseBean responseBean = new PageResponseBean(oepLogos, total.intValue());
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), responseBean);
+    }
 }

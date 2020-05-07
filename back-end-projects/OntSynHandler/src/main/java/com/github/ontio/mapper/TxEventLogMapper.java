@@ -10,5 +10,9 @@ import java.util.List;
 public interface TxEventLogMapper extends Mapper<TxEventLog> {
 
     void batchInsert(List<TxEventLog> list);
+    
+    int findMaxId();
+    
+    void resetAutoIncrementId(int id);
 
 }

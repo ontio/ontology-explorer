@@ -36,6 +36,7 @@ import com.github.ontio.model.dao.*;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
+import com.github.ontio.txPush.TransferTransactionPush;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,13 +74,16 @@ public class TxHandlerThread {
 
     private final Oep5Mapper oep5Mapper;
 
+    private final TransferTransactionPush transferTransactionPush;
+
     @Autowired
-    public TxHandlerThread(ParamsConfig paramsConfig, ContractMapper contractMapper, CommonService commonService, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper) {
+    public TxHandlerThread(ParamsConfig paramsConfig, ContractMapper contractMapper, CommonService commonService, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TransferTransactionPush transferTransactionPush) {
         this.paramsConfig = paramsConfig;
         this.contractMapper = contractMapper;
         this.commonService = commonService;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
+        this.transferTransactionPush = transferTransactionPush;
     }
 
     @Async
@@ -464,7 +468,9 @@ public class TxHandlerThread {
                 ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
             }
         }
-
+        if (EventTypeEnum.Transfer.type() == eventType) {
+            transferTransactionPush.publish(txDetail);
+        }
     }
 
 
@@ -721,6 +727,8 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
         ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
+
+        transferTransactionPush.publish(txDetail);
     }
 
     /**
@@ -743,6 +751,7 @@ public class TxHandlerThread {
                                        int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag,
                                        String contractAddress, JSONObject oep5Obj, String payer, String calledContractHash) throws Exception {
 
+        Boolean isTransfer = Boolean.FALSE;
         String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
         //只解析birth和transfer合约方法
         if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
@@ -784,6 +793,7 @@ public class TxHandlerThread {
             } else {
                 amount = ConstantParam.ONE;
                 dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
+                isTransfer = Boolean.TRUE;
             }
             assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
         } else {
@@ -805,6 +815,7 @@ public class TxHandlerThread {
                 //transfer方法，tokenid在位置3
                 assetName = oep5Obj.getString("symbol") + stateArray.get(3);
                 amount = ConstantParam.ONE;
+                isTransfer = Boolean.TRUE;
             }
         }
 
@@ -816,6 +827,10 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
         ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
+
+        if (isTransfer) {
+            transferTransactionPush.publish(txDetail);
+        }
     }
 
     private void handleOep4TransferTxn(JSONArray stateArray, int txType, String txHash, int blockHeight,
@@ -824,6 +839,7 @@ public class TxHandlerThread {
         String fromAddress = "";
         String toAddress = "";
         BigDecimal eventAmount = new BigDecimal("0");
+        Boolean isTransfer = Boolean.FALSE;
 
         if (stateArray.size() != 4) {
             log.warn("Invalid OEP-4 event in transaction {}", txHash);
@@ -851,6 +867,7 @@ public class TxHandlerThread {
                 log.warn("Parsing OEP-4 transfer event failed in transaction {}", txHash);
             }
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
+            isTransfer = Boolean.TRUE;
         }
 
         if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
@@ -886,6 +903,10 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
         ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
+
+        if (isTransfer) {
+            transferTransactionPush.publish(txDetail);
+        }
     }
 
     private BigDecimal BigDecimalFromNeoVmData(String value) {

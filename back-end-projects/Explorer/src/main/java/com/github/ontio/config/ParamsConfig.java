@@ -141,4 +141,23 @@ public class ParamsConfig {
         }
     }
 
+    @Value("${login.callbackUrl:https://explorer.ont.io/v2/users/login}")
+    public String loginCallbackUrl;
+
+    @Value("${identity.ontid}")
+    public String IDENTITY_ONTID;
+
+    @Value("${identity.password}")
+    public String IDENTITY_PASSWORD;
+
+    @Value("${identity.salt}")
+    public String IDENTITY_SALT;
+
+    @Value("${login.qrcode.url:https://explorer.ont.io/v2/users/login_qrcode/}")
+    public String loginQrCodeUrl;
+
+
+    @Value("${oneUser.address.count.limit}")
+    public Integer oneUserAddressCountLimit;
+
 }

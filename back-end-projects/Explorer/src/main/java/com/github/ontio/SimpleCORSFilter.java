@@ -19,6 +19,7 @@
 
 package com.github.ontio;
 
+import com.github.ontio.util.ConstantParam;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -29,26 +30,26 @@ import java.io.IOException;
 @Component
 public class SimpleCORSFilter implements Filter {
 
-	public void doFilter(ServletRequest req, ServletResponse res,
+    public void doFilter(ServletRequest req, ServletResponse res,
                          FilterChain chain) throws IOException, ServletException {
-		HttpServletResponse response = (HttpServletResponse) res;
-		HttpServletRequest request = (HttpServletRequest) req;
-		String origin = request.getHeader("Origin");
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		response.setHeader("Access-Control-Allow-Credentials", "true");
-		response.setHeader("Access-Control-Allow-Methods",
-				"POST, PUT, GET, OPTIONS, DELETE");
-		response.setHeader("Access-Control-Max-Age", "3600");
-		response.setHeader(
-				"Access-Control-Allow-Headers",
-				"Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With");
-		chain.doFilter(req, res);
-	}
+        HttpServletResponse response = (HttpServletResponse) res;
+        HttpServletRequest request = (HttpServletRequest) req;
+        String origin = request.getHeader("Origin");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods",
+                "POST, PUT, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader(
+                "Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+        response.setHeader("Access-Control-Expose-Headers", ConstantParam.HTTPHEADER_TOKEN);
+        chain.doFilter(req, res);
+    }
 
-	public void init(FilterConfig filterConfig) {
-	}
+    public void init(FilterConfig filterConfig) {
+    }
 
-	public void destroy() {
-	}
+    public void destroy() {
+    }
 
 }

@@ -16,7 +16,7 @@
         </plugin>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://127.0.0.1:3306/explorer_v2?characterEncoding=UTF-8"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/explorer?characterEncoding=UTF-8"
                         userId="root"
                         password="zaq12wsx">
         </jdbcConnection>
@@ -55,9 +55,9 @@
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>-->
 
-        <table tableName="tbl_tx_eventlog" domainObjectName="TxEventLog">
+<!--        <table tableName="tbl_tx_eventlog" domainObjectName="TxEventLog">
             <generatedKey column="id" sqlStatement="JDBC"/>
-        </table>
+        </table>-->
 
 <!--        <table tableName="tbl_ontid_tx_detail" domainObjectName="OntidTxDetail">
             <generatedKey column="id" sqlStatement="JDBC"/>
@@ -130,6 +130,15 @@
         <table tableName="tbl_address_daily_summary" domainObjectName="AddressDailySummary">
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>-->
+
+
+        <table tableName="tbl_user_address" domainObjectName="UserAddress">
+            <generatedKey column="id" sqlStatement="JDBC"/>
+        </table>
+
+        <table tableName="tbl_user" domainObjectName="User">
+            <generatedKey column="ont_id" sqlStatement="JDBC"/>
+        </table>
 
 
     </context>

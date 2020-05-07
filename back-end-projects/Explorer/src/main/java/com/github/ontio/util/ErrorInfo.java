@@ -88,6 +88,25 @@ public enum ErrorInfo {
      */
     ALREADY_AUDITPASS(61011,"FAIL, already on shelves."),
 
+    QRCODE_EXPIRED(61012,"Qrcode expired."),
+
+    NO_LOGIN_USERINFO(61013,"No login user info."),
+
+    TOKEN_EXPIRED(61014,"Token expired."),
+
+    TOKEN_UNMATCH(61015,"Token unmatch."),
+
+    TOKEN_EMPTY(61016,"Token empty."),
+
+    IN_BLACKADDRESS(61017,"Address in blacklist."),
+
+    ADDRESS_TOOMANY(61018,"Too many addresses."),
+
+    ADDRESS_ONTID_UNMATCH(61019,"Address unmatch ontid."),
+
+    ADDRESS_FORMAT_INCORRECT(61020,"Address format incorrect."),
+
+
 
 
 
@@ -115,6 +134,10 @@ public enum ErrorInfo {
      * error occur when operate db
      */
     DB_ERROR(62005, "FAIL, db operate fail."),
+
+    VERIFY_SIGN_FAILED(62006,"Verify signature failed."),
+
+    TX_ERROR(62007,"transaction error."),
 
 
     /**

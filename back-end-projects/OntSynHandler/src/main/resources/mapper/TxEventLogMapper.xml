@@ -48,5 +48,15 @@
       )
     </foreach>
   </insert>
+  
+  <update id="resetAutoIncrementId">
+    ALTER TABLE tbl_tx_eventlog
+      AUTO_INCREMENT = #{id};
+  </update>
+
+  <select id="findMaxId" resultType="java.lang.Integer">
+    SELECT if(max(id) IS NULL, 0, max(id))
+    FROM tbl_tx_eventlog;
+  </select>
 
 </mapper>
