@@ -27,7 +27,19 @@ public class PushConfig {
     @Value("${sendcloud.email.transaction.template}")
     public String SC_EMAIL_TX_TEMPLATE;
 
-    @Value("${oneEmail.oneDay.maxTime}")
-    public int ONEEMAIL_ONEDAY_MAXTIME;
+    @Value("${perEmail.perDay.upperLimit}")
+    public int PEREMAIL_PERDAY_UPPERLIMIT;
+
+    @Value("${perUPush.perDay.upperLimit}")
+    public int PERUPUSH_PERDAY_UPPERLIMIT;
+
+    @Value("${ontoservice.host}")
+    public String ONTOSERVICE_HOST;
+
+    @Value("${ontoservice.appId}")
+    public String ONTOSERVICE_APPID;
+
+    @Value("${ontoservice.appSecret}")
+    public String ONTOSERVICE_APPSECRET;
 
 }

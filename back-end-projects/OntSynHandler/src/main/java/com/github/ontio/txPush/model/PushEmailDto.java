@@ -1,11 +1,14 @@
 package com.github.ontio.txPush.model;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.github.ontio.model.dao.TxDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,12 +21,14 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class PushEmailDto {
 
     private String email;
     private String userName;
     private String ontId;
     private String userAddress;
+    private String note;
     private String txDes;
     private String txHash;
     private String assetName;
@@ -31,6 +36,8 @@ public class PushEmailDto {
     private String time;
     private String toAddress;
     private String fromAddress;
+    private String channel;
+    private BigDecimal amountThreshold;
 
     public static final String DEPOSIT = "deposit";
     public static final String WITHDRAW = "withdraw";
@@ -42,6 +49,9 @@ public class PushEmailDto {
                 .email(pushUserAddressInfoDto.getEmail())
                 .userName(pushUserAddressInfoDto.getUserName())
                 .ontId(pushUserAddressInfoDto.getOntId())
+                .note(pushUserAddressInfoDto.getNote())
+                .channel(pushUserAddressInfoDto.getChannel())
+                .amountThreshold(pushUserAddressInfoDto.getAmountThreshold())
                 .txHash(txDetail.getTxHash())
                 .amount(txDetail.getAmount().stripTrailingZeros().toPlainString())
                 .time(sdf.format(new Date(txDetail.getTxTime() * 1000L)))

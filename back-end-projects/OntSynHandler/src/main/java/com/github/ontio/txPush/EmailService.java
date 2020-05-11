@@ -66,8 +66,8 @@ public class EmailService {
     public void sendTransferTxInfoEmail(PushEmailDto pushEmailDto) {
         log.info("{}...email:{},ontId:{},txDetail:{}", Helper.currentMethod(), pushEmailDto.getEmail(), pushEmailDto.getOntId(), JSONObject.toJSONString(pushEmailDto));
         int time = emailCountCache.get(pushEmailDto.getEmail());
-        if (time > pushConfig.ONEEMAIL_ONEDAY_MAXTIME) {
-            log.warn("email:{} exceed one day max time:{}", pushEmailDto.getEmail(), pushConfig.ONEEMAIL_ONEDAY_MAXTIME);
+        if (time > pushConfig.PEREMAIL_PERDAY_UPPERLIMIT) {
+            log.warn("email:{} exceed one day max time:{}", pushEmailDto.getEmail(), pushConfig.PEREMAIL_PERDAY_UPPERLIMIT);
             return;
         }
 
