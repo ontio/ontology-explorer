@@ -1,6 +1,10 @@
 package com.github.ontio.model.dao;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.math.BigDecimal;
 
 @Table(name = "tbl_user_address")
 public class UserAddress {
@@ -34,6 +38,17 @@ public class UserAddress {
      */
     @Column(name = "include_oep_token")
     private Boolean includeOepToken;
+
+    /**
+     * 转账金额阈值
+     */
+    @Column(name = "amount_threshold")
+    private BigDecimal amountThreshold;
+
+    /**
+     * 登记渠道。explorer，onto
+     */
+    private String channel;
 
     /**
      * @return id
@@ -137,5 +152,41 @@ public class UserAddress {
      */
     public void setIncludeOepToken(Boolean includeOepToken) {
         this.includeOepToken = includeOepToken;
+    }
+
+    /**
+     * 获取转账金额阈值
+     *
+     * @return amount_threshold - 转账金额阈值
+     */
+    public BigDecimal getAmountThreshold() {
+        return amountThreshold;
+    }
+
+    /**
+     * 设置转账金额阈值
+     *
+     * @param amountThreshold 转账金额阈值
+     */
+    public void setAmountThreshold(BigDecimal amountThreshold) {
+        this.amountThreshold = amountThreshold;
+    }
+
+    /**
+     * 获取登记渠道。explorer，onto
+     *
+     * @return channel - 登记渠道。explorer，onto
+     */
+    public String getChannel() {
+        return channel;
+    }
+
+    /**
+     * 设置登记渠道。explorer，onto
+     *
+     * @param channel 登记渠道。explorer，onto
+     */
+    public void setChannel(String channel) {
+        this.channel = channel == null ? null : channel.trim();
     }
 }
