@@ -7,7 +7,6 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Digest;
-import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.AddressBlacklistMapper;
 import com.github.ontio.mapper.UserAddressMapper;
 import com.github.ontio.mapper.UserMapper;
@@ -248,23 +247,25 @@ public class UserServiceImpl implements IUserService {
     @Override
     public ResponseBean queryUserInfo(String ontId) {
 
+        Map<String, Object> rsMap = new HashMap<>();
         User user = userMapper.selectByPrimaryKey(ontId);
         if (user == null) {
-            throw new ExplorerException(ErrorInfo.NOT_FOUND);
+            rsMap.put("email", "");
+            rsMap.put("user_name", "");
+            rsMap.put("addresses", new ArrayList<>());
+        } else {
+            UserAddress userAddress = UserAddress.builder()
+                    .ontId(ontId)
+                    .build();
+            List<UserAddress> userAddresses = userAddressMapper.select(userAddress);
+            userAddresses.stream().parallel().forEach(item -> {
+                item.setOntId(null);
+                item.setId(null);
+            });
+            rsMap.put("email", user.getEmail());
+            rsMap.put("user_name", user.getUserName());
+            rsMap.put("addresses", userAddresses);
         }
-        UserAddress userAddress = UserAddress.builder()
-                .ontId(ontId)
-                .build();
-        List<UserAddress> userAddresses = userAddressMapper.select(userAddress);
-        userAddresses.stream().parallel().forEach(item->{
-            item.setOntId(null);
-            item.setId(null);
-        });
-
-        Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("email", user.getEmail());
-        rsMap.put("user_name", user.getUserName());
-        rsMap.put("addresses", userAddresses);
         return Helper.successResult(rsMap);
     }
 }
