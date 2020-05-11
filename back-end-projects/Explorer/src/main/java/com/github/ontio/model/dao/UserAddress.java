@@ -1,5 +1,8 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.ontio.util.TxAmountSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -8,15 +11,13 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_user_address")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserAddress {
     @Id
     @GeneratedValue(generator = "JDBC")
@@ -31,8 +32,6 @@ public class UserAddress {
     /**
      * 地址
      */
-    @NotEmpty
-    @Pattern(regexp = "A[A-Za-z0-9]{33}")
     private String address;
 
     /**
@@ -43,8 +42,6 @@ public class UserAddress {
     /**
      * 监听策略。0:不监听 1:监听所有入金出金，2:只监听入金 3:只监听出金
      */
-    @Min(0)
-    @Max(3)
     private Integer strategy;
 
     /**
@@ -52,6 +49,18 @@ public class UserAddress {
      */
     @Column(name = "include_oep_token")
     private Boolean includeOepToken;
+
+    /**
+     * ONT,ONG转账金额阈值
+     */
+    @JsonSerialize(using = TxAmountSerializer.class)
+    @Column(name = "amount_threshold")
+    private BigDecimal amountThreshold = new BigDecimal("0");
+
+    /**
+     * 登记渠道。explorer，onto
+     */
+    private String channel = "explorer";
 
     /**
      * @return id
@@ -155,5 +164,41 @@ public class UserAddress {
      */
     public void setIncludeOepToken(Boolean includeOepToken) {
         this.includeOepToken = includeOepToken;
+    }
+
+    /**
+     * 获取ONT,ONG转账金额阈值
+     *
+     * @return amount_threshold - ONT,ONG转账金额阈值
+     */
+    public BigDecimal getAmountThreshold() {
+        return amountThreshold;
+    }
+
+    /**
+     * 设置ONT,ONG转账金额阈值
+     *
+     * @param amountThreshold ONT,ONG转账金额阈值
+     */
+    public void setAmountThreshold(BigDecimal amountThreshold) {
+        this.amountThreshold = amountThreshold;
+    }
+
+    /**
+     * 获取登记渠道。explorer，onto
+     *
+     * @return channel - 登记渠道。explorer，onto
+     */
+    public String getChannel() {
+        return channel;
+    }
+
+    /**
+     * 设置登记渠道。explorer，onto
+     *
+     * @param channel 登记渠道。explorer，onto
+     */
+    public void setChannel(String channel) {
+        this.channel = channel == null ? null : channel.trim();
     }
 }

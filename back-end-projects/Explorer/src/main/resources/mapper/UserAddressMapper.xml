@@ -11,6 +11,8 @@
     <result column="note" jdbcType="VARCHAR" property="note" />
     <result column="strategy" jdbcType="INTEGER" property="strategy" />
     <result column="include_oep_token" jdbcType="BIT" property="includeOepToken" />
+    <result column="amount_threshold" jdbcType="DECIMAL" property="amountThreshold" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
   </resultMap>
 
 
@@ -21,7 +23,9 @@
     address,
     note,
     strategy,
-    include_oep_token
+    include_oep_token,
+    amount_threshold,
+    channel
     )
     VALUES
     <foreach collection="list" item="item" separator=",">
@@ -30,13 +34,17 @@
     #{item.address},
     #{item.note},
     #{item.strategy},
-    #{item.includeOepToken}
+    #{item.includeOepToken},
+    #{item.amountThreshold},
+    #{item.channel}
     )
     </foreach>
     ON DUPLICATE KEY UPDATE
     note=values(note),
     strategy=values(strategy),
-    include_oep_token=values(include_oep_token)
+    include_oep_token=values(include_oep_token),
+    amount_threshold=values(amount_threshold),
+    channel=values(channel)
   </update>
 
 </mapper>
