@@ -30,6 +30,9 @@ public interface IUserService {
 
     ResponseBean delUserAddress(String address, String ontId);
 
-    ResponseBean updateUser(User user);
+    ResponseBean addOrUpdateUser(User user);
+
+    ResponseBean queryUserInfo(String ontId);
+
 
 }
