@@ -166,10 +166,14 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
         Map<String, List<PushUserAddressInfoDto>> map = new HashMap<>();
         List<PushUserAddressInfoDto> userAddressInfoDtos = userAddressMapper.selectUserAddressInfo();
         userAddressInfoDtos.forEach(item -> {
-            List<PushUserAddressInfoDto> list = map.computeIfAbsent(item.getAddress(), key -> new ArrayList<PushUserAddressInfoDto>() {{
-                add(item);
-            }});
-            list.add(item);
+            if (map.containsKey(item.getAddress())) {
+                List<PushUserAddressInfoDto> list = map.get(item.getAddress());
+                list.add(item);
+            } else {
+                map.put(item.getAddress(), new ArrayList<PushUserAddressInfoDto>() {{
+                    add(item);
+                }});
+            }
         });
         return map;
     }
