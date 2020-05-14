@@ -95,10 +95,8 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
             return;
         }
         PushEmailDto pushEmailDto = new PushEmailDto();
-        if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())) {
-            pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
-        } else if (ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
-            txDetail.setAmount(txDetail.getAmount().divide(ConstantParam.ONG_DECIMAL));
+        if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())
+                || ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
             pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
         } else {
             if (dto.getIncludeOepToken()) {
@@ -116,10 +114,8 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
             return;
         }
         PushEmailDto pushEmailDto = new PushEmailDto();
-        if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())) {
-            pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
-        } else if (ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
-            txDetail.setAmount(txDetail.getAmount().divide(ConstantParam.ONG_DECIMAL));
+        if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())
+                || ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
             pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
         } else {
             if (dto.getIncludeOepToken()) {

@@ -3,6 +3,7 @@ package com.github.ontio.txPush.model;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.github.ontio.model.dao.TxDetail;
+import com.github.ontio.utils.ConstantParam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,11 +54,15 @@ public class PushEmailDto {
                 .channel(pushUserAddressInfoDto.getChannel())
                 .amountThreshold(pushUserAddressInfoDto.getAmountThreshold())
                 .txHash(txDetail.getTxHash())
-                .amount(txDetail.getAmount().stripTrailingZeros().toPlainString())
                 .time(sdf.format(new Date(txDetail.getTxTime() * 1000L)))
                 .assetName(txDetail.getAssetName())
                 .fromAddress(txDetail.getFromAddress())
                 .toAddress(txDetail.getToAddress());
+        if (ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
+            builder.amount(txDetail.getAmount().divide(ConstantParam.ONG_DECIMAL).stripTrailingZeros().toPlainString());
+        } else {
+            builder.amount(txDetail.getAmount().stripTrailingZeros().toPlainString());
+        }
         if (DEPOSIT.equals(txDes)) {
             return builder.userAddress(txDetail.getToAddress())
                     .txDes(DEPOSIT)
