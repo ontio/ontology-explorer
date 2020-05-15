@@ -201,8 +201,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseBean addOrUpdateUserAddresses(List<UserAddress> userAddressList, String ontId) {
-        if (userAddressList.size() > paramsConfig.oneUserAddressCountLimit) {
-            //normal response can refresh token
+
+        Boolean flag = checkAddressLimit(userAddressList, ontId);
+        if (!flag) {
             return Helper.errorResult(ErrorInfo.ADDRESS_TOOMANY, false);
         }
         if (CollectionUtils.containsAny(blackAddressCache.get(CACHEKEY_BLACKADDR), userAddressList.stream().map(key -> key.getAddress()).collect(Collectors.toList()))) {
@@ -213,6 +214,18 @@ public class UserServiceImpl implements IUserService {
         });
         userAddressMapper.saveUserAddress(userAddressList);
         return Helper.successResult(true);
+    }
+
+    private Boolean checkAddressLimit(List<UserAddress> userAddressList, String ontId) {
+        UserAddress userAddress = UserAddress.builder().ontId(ontId).build();
+        List<UserAddress> dbUserAddressList = userAddressMapper.select(userAddress);
+        List<String> dbAddressList = dbUserAddressList.stream().map(item -> item.getAddress()).collect(Collectors.toList());
+        List<String> addressList = userAddressList.stream().map(item -> item.getAddress()).collect(Collectors.toList());
+        addressList.removeAll(dbAddressList);
+        if ((dbAddressList.size() + addressList.size() > paramsConfig.oneUserAddressCountLimit)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
