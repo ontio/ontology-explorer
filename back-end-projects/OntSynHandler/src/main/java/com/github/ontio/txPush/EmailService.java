@@ -15,6 +15,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -91,13 +92,15 @@ public class EmailService {
 
     private String convertVerificationCode(PushEmailDto pushEmailDto) {
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC+0:00"));
         JSONObject sub = new JSONObject();
         sub.put("%ontId%", Arrays.asList(pushEmailDto.getOntId()));
         sub.put("%address%", Arrays.asList(pushEmailDto.getUserAddress()));
         sub.put("%fromAddress%", Arrays.asList(pushEmailDto.getFromAddress()));
         sub.put("%hash%", Arrays.asList(pushEmailDto.getTxHash()));
         sub.put("%assetName%", Arrays.asList(pushEmailDto.getAssetName()));
-        sub.put("%time%", Arrays.asList(pushEmailDto.getTime()));
+        sub.put("%time%", Arrays.asList(sdf.format(new Date(pushEmailDto.getTime() * 1000L))));
         sub.put("%toAddress%", Arrays.asList(pushEmailDto.getToAddress()));
         sub.put("%amount%", Arrays.asList(pushEmailDto.getAmount()));
 

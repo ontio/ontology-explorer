@@ -10,8 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author zhouq
@@ -34,7 +32,7 @@ public class PushEmailDto {
     private String txHash;
     private String assetName;
     private String amount;
-    private String time;
+    private long time;
     private String toAddress;
     private String fromAddress;
     private String channel;
@@ -45,7 +43,6 @@ public class PushEmailDto {
 
 
     public static PushEmailDto buildDto(PushUserAddressInfoDto pushUserAddressInfoDto, TxDetail txDetail, String txDes) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         PushEmailDtoBuilder builder = PushEmailDto.builder()
                 .email(pushUserAddressInfoDto.getEmail())
                 .userName(pushUserAddressInfoDto.getUserName())
@@ -54,7 +51,7 @@ public class PushEmailDto {
                 .channel(pushUserAddressInfoDto.getChannel())
                 .amountThreshold(pushUserAddressInfoDto.getAmountThreshold())
                 .txHash(txDetail.getTxHash())
-                .time(sdf.format(new Date(txDetail.getTxTime() * 1000L)))
+                .time(txDetail.getTxTime())
                 .assetName(txDetail.getAssetName())
                 .fromAddress(txDetail.getFromAddress())
                 .toAddress(txDetail.getToAddress());
