@@ -9,6 +9,7 @@ import com.github.ontio.txPush.model.PushEmailDto;
 import com.github.ontio.txPush.model.PushStrategyEnum;
 import com.github.ontio.txPush.model.PushUserAddressInfoDto;
 import com.github.ontio.utils.ConstantParam;
+import com.github.ontio.utils.Helper;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,11 +33,14 @@ import java.util.concurrent.TimeUnit;
 public class TransferTransactionPush implements DisruptorEventPublisher, EventHandler<DisruptorEvent> {
 
     private static final String USERADDRCACHE_KEY = "userAddress";
+    private static final String CHANNEL_EXPLORER = "explorer";
+    private static final String CHANNEL_ONTO = "onto";
 
     private LoadingCache<String, Map<String, List<PushUserAddressInfoDto>>> userAddressCache;
 
     private final UserAddressMapper userAddressMapper;
     private final EmailService emailService;
+    private final OntoService ontoService;
 
     private RingBuffer<DisruptorEvent> ringBuffer;
 
@@ -45,22 +50,23 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
     }
 
     @Autowired
-    public TransferTransactionPush(UserAddressMapper userAddressMapper, EmailService emailService) {
+    public TransferTransactionPush(UserAddressMapper userAddressMapper, EmailService emailService, OntoService ontoService) {
         Disruptor<DisruptorEvent> disruptor = createDisruptor(65536, ProducerType.SINGLE);
         disruptor.handleEventsWith(this);
         disruptor.start();
         this.ringBuffer = disruptor.getRingBuffer();
         this.userAddressMapper = userAddressMapper;
         this.emailService = emailService;
+        this.ontoService = ontoService;
     }
 
     @Override
     public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch) {
         //return;
         Object event = disruptorEvent.getEvent();
-        if(event instanceof TxDetail){
+        if (event instanceof TxDetail) {
             TxDetail txDetail = (TxDetail) event;
-            log.info("{} disruptor consumer receive tx:{}", Thread.currentThread().getName(), JSONObject.toJSONString(txDetail));
+            log.info("disruptor consumer receive tx:{}", JSONObject.toJSONString(txDetail));
             String fromAddress = txDetail.getFromAddress();
             String toAddress = txDetail.getToAddress();
             if (fromAddress.equals(toAddress)) {
@@ -85,38 +91,59 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
 
 
     private void handleWithdrawTransferTx(TxDetail txDetail, PushUserAddressInfoDto dto) {
-        if (dto.getStrategy() == PushStrategyEnum.AllPush.value() ||
-                dto.getStrategy() == PushStrategyEnum.WithdrawPush.value()) {
-            if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())) {
-                PushEmailDto pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
-                emailService.sendTransferTxInfoEmail(pushEmailDto);
-            } else if (ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
-                txDetail.setAmount(txDetail.getAmount().divide(ConstantParam.ONG_DECIMAL));
-
-                PushEmailDto pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
-                emailService.sendTransferTxInfoEmail(pushEmailDto);
-            } else if (dto.getIncludeOepToken()) {
-                PushEmailDto pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
-                emailService.sendTransferTxInfoEmail(pushEmailDto);
+        if (dto.getStrategy() == PushStrategyEnum.DepositPush.value()) {
+            return;
+        }
+        PushEmailDto pushEmailDto = new PushEmailDto();
+        if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())
+                || ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
+            pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
+        } else {
+            if (dto.getIncludeOepToken()) {
+                pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
+            } else {
+                return;
             }
         }
+        sendNotification(pushEmailDto);
     }
 
 
     private void handleDepositTransferTx(TxDetail txDetail, PushUserAddressInfoDto dto) {
-        if (dto.getStrategy() == PushStrategyEnum.AllPush.value() ||
-                dto.getStrategy() == PushStrategyEnum.DepositPush.value()) {
-            if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())) {
-                PushEmailDto pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
-                emailService.sendTransferTxInfoEmail(pushEmailDto);
-            } else if (ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
-                txDetail.setAmount(txDetail.getAmount().divide(ConstantParam.ONG_DECIMAL));
+        if (dto.getStrategy() == PushStrategyEnum.WithdrawPush.value()) {
+            return;
+        }
+        PushEmailDto pushEmailDto = new PushEmailDto();
+        if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())
+                || ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
+            pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
+        } else {
+            if (dto.getIncludeOepToken()) {
+                pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
+            } else {
+                return;
+            }
+        }
+        sendNotification(pushEmailDto);
+    }
 
-                PushEmailDto pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
-                emailService.sendTransferTxInfoEmail(pushEmailDto);
-            } else if (dto.getIncludeOepToken()) {
-                PushEmailDto pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
-                emailService.sendTransferTxInfoEmail(pushEmailDto);
+    private void sendNotification(PushEmailDto pushEmailDto) {
+        if (CHANNEL_EXPLORER.equals(pushEmailDto.getChannel()) && Helper.isNotEmptyOrNull(pushEmailDto.getEmail())) {
+            emailService.sendTransferTxInfoEmail(pushEmailDto);
+        } else if (CHANNEL_ONTO.equals(pushEmailDto.getChannel())) {
+            String assetName = pushEmailDto.getAssetName();
+            if (ConstantParam.ASSET_NAME_ONG.equals(assetName) || ConstantParam.ASSET_NAME_ONT.equals(assetName)) {
+                if (new BigDecimal(pushEmailDto.getAmount()).compareTo(pushEmailDto.getAmountThreshold()) >= 0) {
+                    ontoService.sendTransferTxInfo2OntoService(pushEmailDto);
+                    if (Helper.isNotEmptyOrNull(pushEmailDto.getEmail())) {
+                        emailService.sendTransferTxInfoEmail(pushEmailDto);
+                    }
+                }
+            } else {
+                ontoService.sendTransferTxInfo2OntoService(pushEmailDto);
+                if (Helper.isNotEmptyOrNull(pushEmailDto.getEmail())) {
+                    emailService.sendTransferTxInfoEmail(pushEmailDto);
+                }
             }
         }
     }

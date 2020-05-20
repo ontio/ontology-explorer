@@ -37,7 +37,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v2/users/")
+@RequestMapping("/v2/users")
 @Validated
 public class UserController {
 
@@ -111,6 +111,32 @@ public class UserController {
 
 
     @ApiImplicitParams({@ApiImplicitParam(paramType = "header", dataType = "String", name = "ONT_EXP_TOKEN", value = "login token", required = true)})
+    @ApiOperation(value = "Add user addresses")
+    @PostMapping(value = "/new_address")
+    public ResponseBean addUserAddresses(@RequestParam("ont_id") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontId,
+                                         @RequestBody @Valid UserAddress userAddress) {
+        log.info("###{}.{} begin...ontId:{}", CLASS_NAME, Helper.currentMethod(), ontId);
+        checkToken(ontId);
+        ResponseBean rs = userService.addUserAddress(userAddress, ontId);
+        refreshToken(ontId);
+        return rs;
+    }
+
+
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "header", dataType = "String", name = "ONT_EXP_TOKEN", value = "login token", required = true)})
+    @ApiOperation(value = "Update user addresses")
+    @PutMapping(value = "/addresses")
+    public ResponseBean updateUserAddress(@RequestParam("ont_id") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontId,
+                                          @RequestBody @Valid UserAddress userAddress) {
+        log.info("###{}.{} begin...ontId:{}", CLASS_NAME, Helper.currentMethod(), ontId);
+        checkToken(ontId);
+        ResponseBean rs = userService.updateUserAddress(userAddress, ontId);
+        refreshToken(ontId);
+        return rs;
+    }
+
+
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "header", dataType = "String", name = "ONT_EXP_TOKEN", value = "login token", required = true)})
     @ApiOperation(value = "Delete user address")
     @DeleteMapping(value = "/addresses")
     public ResponseBean delUserAddress(@RequestParam("ont_id") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontId,
@@ -124,14 +150,26 @@ public class UserController {
 
 
     @ApiImplicitParams({@ApiImplicitParam(paramType = "header", dataType = "String", name = "ONT_EXP_TOKEN", value = "login token", required = true)})
-    @ApiOperation(value = "Update user information")
+    @ApiOperation(value = "Add or Update user information")
     @PostMapping
-    public ResponseBean updateUser(@RequestParam("ont_id") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontId,
-                                   @RequestBody @Validated User user) {
+    public ResponseBean addOrUpdateUser(@RequestParam("ont_id") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontId,
+                                        @RequestBody @Validated User user) {
         log.info("###{}.{} begin...ontId:{}", CLASS_NAME, Helper.currentMethod(), ontId);
         checkToken(ontId);
         user.setOntId(ontId);
-        ResponseBean rs = userService.updateUser(user);
+        ResponseBean rs = userService.addOrUpdateUser(user);
+        refreshToken(ontId);
+        return rs;
+    }
+
+
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "header", dataType = "String", name = "ONT_EXP_TOKEN", value = "login token", required = true)})
+    @ApiOperation(value = "Query user information and Addresses")
+    @GetMapping
+    public ResponseBean queryUserInfo(@RequestParam("ont_id") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontId) {
+        log.info("###{}.{} begin...ontId:{}", CLASS_NAME, Helper.currentMethod(), ontId);
+        checkToken(ontId);
+        ResponseBean rs = userService.queryUserInfo(ontId);
         refreshToken(ontId);
         return rs;
     }

@@ -7,6 +7,7 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Digest;
+import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.AddressBlacklistMapper;
 import com.github.ontio.mapper.UserAddressMapper;
 import com.github.ontio.mapper.UserMapper;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -201,8 +203,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseBean addOrUpdateUserAddresses(List<UserAddress> userAddressList, String ontId) {
-        if (userAddressList.size() > paramsConfig.oneUserAddressCountLimit) {
-            //normal response can refresh token
+
+        Boolean flag = checkAddressLimit(userAddressList, ontId);
+        if (!flag) {
             return Helper.errorResult(ErrorInfo.ADDRESS_TOOMANY, false);
         }
         if (CollectionUtils.containsAny(blackAddressCache.get(CACHEKEY_BLACKADDR), userAddressList.stream().map(key -> key.getAddress()).collect(Collectors.toList()))) {
@@ -213,6 +216,18 @@ public class UserServiceImpl implements IUserService {
         });
         userAddressMapper.saveUserAddress(userAddressList);
         return Helper.successResult(true);
+    }
+
+    private Boolean checkAddressLimit(List<UserAddress> userAddressList, String ontId) {
+        UserAddress userAddress = UserAddress.builder().ontId(ontId).build();
+        List<UserAddress> dbUserAddressList = userAddressMapper.select(userAddress);
+        List<String> dbAddressList = dbUserAddressList.stream().map(item -> item.getAddress()).collect(Collectors.toList());
+        List<String> addressList = userAddressList.stream().map(item -> item.getAddress()).collect(Collectors.toList());
+        addressList.removeAll(dbAddressList);
+        if ((dbAddressList.size() + addressList.size() > paramsConfig.oneUserAddressCountLimit)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -233,8 +248,74 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public ResponseBean updateUser(User user) {
-        userMapper.updateByPrimaryKeySelective(user);
+    public ResponseBean addUserAddress(UserAddress userAddress, String ontId) {
+        UserAddress userAddress1 = UserAddress.builder().ontId(ontId).build();
+        List<UserAddress> dbUserAddressList = userAddressMapper.select(userAddress1);
+        if (dbUserAddressList.size() >= paramsConfig.oneUserAddressCountLimit) {
+            return Helper.errorResult(ErrorInfo.ADDRESS_TOOMANY, false);
+        }
+        List<String> dbAddressList = dbUserAddressList.stream().map(item -> item.getAddress()).collect(Collectors.toList());
+        if (dbAddressList.contains(userAddress.getAddress())) {
+            return Helper.errorResult(ErrorInfo.ALREADY_EXIST, false);
+        }
+        if (CollectionUtils.containsAny(blackAddressCache.get(CACHEKEY_BLACKADDR), Arrays.asList(userAddress.getAddress()))) {
+            return Helper.errorResult(ErrorInfo.IN_BLACKADDRESS, false);
+        }
+        userAddress.setOntId(ontId);
+        userAddressMapper.insertSelective(userAddress);
         return Helper.successResult(true);
+    }
+
+
+    @Override
+    public ResponseBean updateUserAddress(UserAddress userAddress, String ontId) {
+        Example example = new Example(UserAddress.class);
+        example.and()
+                .andEqualTo("ontId", ontId)
+                .andEqualTo("address", userAddress.getAddress());
+        int count = userAddressMapper.selectCountByExample(example);
+        if (count == 0) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND);
+        }
+        userAddressMapper.updateByExampleSelective(userAddress, example);
+        return Helper.successResult(true);
+    }
+
+
+    @Override
+    public ResponseBean addOrUpdateUser(User user) {
+        User user1 = userMapper.selectByPrimaryKey(user.getOntId());
+        if (user1 == null) {
+            user.setLastLoginTime(new Date());
+            userMapper.insertSelective(user);
+        } else {
+            userMapper.updateByPrimaryKeySelective(user);
+        }
+        return Helper.successResult(true);
+    }
+
+    @Override
+    public ResponseBean queryUserInfo(String ontId) {
+
+        Map<String, Object> rsMap = new HashMap<>();
+        User user = userMapper.selectByPrimaryKey(ontId);
+        if (user == null) {
+            rsMap.put("email", "");
+            rsMap.put("user_name", "");
+            rsMap.put("addresses", new ArrayList<>());
+        } else {
+            UserAddress userAddress = UserAddress.builder()
+                    .ontId(ontId)
+                    .build();
+            List<UserAddress> userAddresses = userAddressMapper.select(userAddress);
+            userAddresses.stream().parallel().forEach(item -> {
+                item.setOntId(null);
+                item.setId(null);
+            });
+            rsMap.put("email", user.getEmail());
+            rsMap.put("user_name", user.getUserName());
+            rsMap.put("addresses", userAddresses);
+        }
+        return Helper.successResult(rsMap);
     }
 }

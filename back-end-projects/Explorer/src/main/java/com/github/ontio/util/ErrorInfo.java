@@ -80,7 +80,7 @@ public enum ErrorInfo {
     /**
      * serialized error
      */
-    ALREADY_EXSIT(61010,"FAIL, already exsit."),
+    ALREADY_EXIST(61010,"FAIL, already exist."),
 
 
     /**
