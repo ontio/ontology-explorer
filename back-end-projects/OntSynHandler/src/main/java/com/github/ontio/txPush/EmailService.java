@@ -103,6 +103,7 @@ public class EmailService {
         sub.put("%time%", Arrays.asList(sdf.format(new Date(pushEmailDto.getTime() * 1000L))));
         sub.put("%toAddress%", Arrays.asList(pushEmailDto.getToAddress()));
         sub.put("%amount%", Arrays.asList(pushEmailDto.getAmount()));
+        sub.put("%url_hash%", Arrays.asList(pushEmailDto.getTxHash()));
 
         JSONObject ret = new JSONObject();
         ret.put("to", Arrays.asList(pushEmailDto.getEmail()));
