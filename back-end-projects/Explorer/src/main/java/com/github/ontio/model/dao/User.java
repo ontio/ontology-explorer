@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.ontio.util.TxDateSerializer;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tbl_user")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class User {
     /**
      * ONT ID
