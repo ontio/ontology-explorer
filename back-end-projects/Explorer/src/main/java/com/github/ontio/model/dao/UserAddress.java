@@ -1,6 +1,8 @@
 package com.github.ontio.model.dao;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.ontio.util.TxAmountSerializer;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Table(name = "tbl_user_address")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserAddress {
     @Id
     @GeneratedValue(generator = "JDBC")

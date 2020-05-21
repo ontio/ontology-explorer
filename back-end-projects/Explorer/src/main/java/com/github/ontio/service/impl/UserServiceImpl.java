@@ -164,7 +164,7 @@ public class UserServiceImpl implements IUserService {
                     .lastLoginTime(now)
                     .createTime(now)
                     .build();
-            userMapper.insert(user);
+            addOrUpdateUserInfo(user);
         }
         return CallBackResponse.successResponse(new JSONObject());
     }
@@ -203,7 +203,6 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResponseBean addOrUpdateUserAddresses(List<UserAddress> userAddressList, String ontId) {
-
         Boolean flag = checkAddressLimit(userAddressList, ontId);
         if (!flag) {
             return Helper.errorResult(ErrorInfo.ADDRESS_TOOMANY, false);
@@ -214,8 +213,7 @@ public class UserServiceImpl implements IUserService {
         userAddressList.forEach(userAddress -> {
             userAddress.setOntId(ontId);
         });
-        userAddressMapper.saveUserAddress(userAddressList);
-        return Helper.successResult(true);
+        return saveUserAddresses(userAddressList, ontId);
     }
 
     private Boolean checkAddressLimit(List<UserAddress> userAddressList, String ontId) {
@@ -230,20 +228,28 @@ public class UserServiceImpl implements IUserService {
         return true;
     }
 
+    private ResponseBean saveUserAddresses(List<UserAddress> userAddressList, String ontId) {
+        String response = HttpClientUtil.postRequest(paramsConfig.managementHost + ConstantParam.MANAGEMENT_USERADDRESS_URI + "?ont_id=" + ontId, JacksonUtil.beanToJSonStr(userAddressList), new HashMap<>());
+        ResponseBean responseBean = JacksonUtil.jsonStrToBean(response, ResponseBean.class);
+        return responseBean;
+    }
+
+
     @Override
     public ResponseBean delUserAddress(String address, String ontId) {
         if (address.length() != 34 || !address.startsWith("A")) {
             return Helper.errorResult(ErrorInfo.ADDRESS_FORMAT_INCORRECT, false);
         }
-        UserAddress userAddress = UserAddress.builder()
-                .ontId(ontId)
-                .address(address)
-                .build();
-        int count = userAddressMapper.delete(userAddress);
-        if (count == 0) {
-            return Helper.errorResult(ErrorInfo.ADDRESS_ONTID_UNMATCH, false);
-        }
-        return Helper.successResult(true);
+        return deteleUserAddress(ontId, address);
+    }
+
+    private ResponseBean deteleUserAddress(String ontId, String address) {
+        UserAddress userAddress = new UserAddress();
+        userAddress.setOntId(ontId);
+        userAddress.setAddress(address);
+        String response = HttpClientUtil.deleteRequest(paramsConfig.managementHost + ConstantParam.MANAGEMENT_USERADDRESS_URI, JacksonUtil.beanToJSonStr(userAddress), new HashMap<>());
+        ResponseBean responseBean = JacksonUtil.jsonStrToBean(response, ResponseBean.class);
+        return responseBean;
     }
 
 
@@ -262,8 +268,14 @@ public class UserServiceImpl implements IUserService {
             return Helper.errorResult(ErrorInfo.IN_BLACKADDRESS, false);
         }
         userAddress.setOntId(ontId);
-        userAddressMapper.insertSelective(userAddress);
-        return Helper.successResult(true);
+        return addUserAddress(userAddress);
+    }
+
+
+    private ResponseBean addUserAddress(UserAddress userAddress) {
+        String response = HttpClientUtil.postRequest(paramsConfig.managementHost + ConstantParam.MANAGEMENT_NEWUSERADDRESS_URI, JacksonUtil.beanToJSonStr(userAddress), new HashMap<>());
+        ResponseBean responseBean = JacksonUtil.jsonStrToBean(response, ResponseBean.class);
+        return responseBean;
     }
 
 
@@ -277,21 +289,25 @@ public class UserServiceImpl implements IUserService {
         if (count == 0) {
             throw new ExplorerException(ErrorInfo.NOT_FOUND);
         }
-        userAddressMapper.updateByExampleSelective(userAddress, example);
-        return Helper.successResult(true);
+        return updateUserAddress(userAddress);
+    }
+
+    private ResponseBean updateUserAddress(UserAddress userAddress) {
+        String response = HttpClientUtil.putRequest(paramsConfig.managementHost + ConstantParam.MANAGEMENT_USERADDRESS_URI, JacksonUtil.beanToJSonStr(userAddress), new HashMap<>());
+        ResponseBean responseBean = JacksonUtil.jsonStrToBean(response, ResponseBean.class);
+        return responseBean;
     }
 
 
     @Override
     public ResponseBean addOrUpdateUser(User user) {
-        User user1 = userMapper.selectByPrimaryKey(user.getOntId());
-        if (user1 == null) {
-            user.setLastLoginTime(new Date());
-            userMapper.insertSelective(user);
-        } else {
-            userMapper.updateByPrimaryKeySelective(user);
-        }
-        return Helper.successResult(true);
+        return addOrUpdateUserInfo(user);
+    }
+
+    private ResponseBean addOrUpdateUserInfo(User user) {
+        String response = HttpClientUtil.postRequest(paramsConfig.managementHost + ConstantParam.MANAGEMENT_USER_URI, JacksonUtil.beanToJSonStr(user), new HashMap<>());
+        ResponseBean responseBean = JacksonUtil.jsonStrToBean(response, ResponseBean.class);
+        return responseBean;
     }
 
     @Override
