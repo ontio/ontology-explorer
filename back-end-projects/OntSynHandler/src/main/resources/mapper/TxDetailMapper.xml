@@ -1,73 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.TxDetailMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxDetail">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
-    <id column="tx_index" jdbcType="INTEGER" property="txIndex" />
-    <result column="tx_type" jdbcType="INTEGER" property="txType" />
-    <result column="tx_time" jdbcType="INTEGER" property="txTime" />
-    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
-    <result column="amount" jdbcType="DECIMAL" property="amount" />
-    <result column="fee" jdbcType="DECIMAL" property="fee" />
-    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
-    <result column="from_address" jdbcType="VARCHAR" property="fromAddress" />
-    <result column="to_address" jdbcType="VARCHAR" property="toAddress" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
-    <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
-    <result column="event_type" jdbcType="INTEGER" property="eventType" />
-    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
-    <result column="payer" jdbcType="VARCHAR" property="payer" />
-    <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxDetail">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="tx_hash" jdbcType="VARCHAR" property="txHash"/>
+        <id column="tx_index" jdbcType="INTEGER" property="txIndex"/>
+        <result column="tx_type" jdbcType="INTEGER" property="txType"/>
+        <result column="tx_time" jdbcType="INTEGER" property="txTime"/>
+        <result column="block_height" jdbcType="INTEGER" property="blockHeight"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="fee" jdbcType="DECIMAL" property="fee"/>
+        <result column="asset_name" jdbcType="VARCHAR" property="assetName"/>
+        <result column="from_address" jdbcType="VARCHAR" property="fromAddress"/>
+        <result column="to_address" jdbcType="VARCHAR" property="toAddress"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="block_index" jdbcType="INTEGER" property="blockIndex"/>
+        <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag"/>
+        <result column="event_type" jdbcType="INTEGER" property="eventType"/>
+        <result column="contract_hash" jdbcType="VARCHAR" property="contractHash"/>
+        <result column="payer" jdbcType="VARCHAR" property="payer"/>
+        <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash"/>
+    </resultMap>
 
 
-  
-  <insert id="batchInsert" parameterType="java.util.List">
-    INSERT INTO tbl_tx_detail (
-	`tx_hash`,
-	`tx_type`,
-	`tx_time`,
-	`block_height`,
-	`amount`,
-	`fee`,
-	`asset_name`,
-	`from_address`,
-	`to_address`,
-	`description`,
-	`block_index`,
-	`tx_index`,
-	`confirm_flag`,
-	`event_type`,
-	`contract_hash`,
-	`payer`,
-	`called_contract_hash`
-    )
-    VALUES
-    <foreach collection="list" item="item" index="index" separator=",">
-    (
-      #{item.txHash},
-      #{item.txType},
-      #{item.txTime},
-      #{item.blockHeight},
-      #{item.amount},
-      #{item.fee},
-      #{item.assetName},
-      #{item.fromAddress},
-      #{item.toAddress},
-      #{item.description},
-      #{item.blockIndex},
-      #{item.txIndex},
-      #{item.confirmFlag},
-      #{item.eventType},
-      #{item.contractHash},
-      #{item.payer},
-      #{item.calledContractHash}
-    )
-    </foreach>
-  </insert>
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO tbl_tx_detail (
+        `tx_hash`,
+        `tx_type`,
+        `tx_time`,
+        `block_height`,
+        `amount`,
+        `fee`,
+        `asset_name`,
+        `from_address`,
+        `to_address`,
+        `description`,
+        `block_index`,
+        `tx_index`,
+        `confirm_flag`,
+        `event_type`,
+        `contract_hash`,
+        `payer`,
+        `called_contract_hash`
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.txHash},
+            #{item.txType},
+            #{item.txTime},
+            #{item.blockHeight},
+            #{item.amount},
+            #{item.fee},
+            #{item.assetName},
+            #{item.fromAddress},
+            #{item.toAddress},
+            #{item.description},
+            #{item.blockIndex},
+            #{item.txIndex},
+            #{item.confirmFlag},
+            #{item.eventType},
+            #{item.contractHash},
+            #{item.payer},
+            #{item.calledContractHash}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE from_address = values(from_address), to_address = values(to_address), asset_name =
+        values(asset_name), event_type = values(event_type), description = values(description)
+    </insert>
+
+    <select id="findMissingFromBlock" resultType="java.lang.Integer">
+        SELECT block_height
+        FROM tbl_tx_detail
+        WHERE called_contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
+        ORDER BY id
+        LIMIT 1;
+    </select>
+
+    <select id="findMissingToBlock" resultType="java.lang.Integer">
+        SELECT block_height
+        FROM tbl_tx_detail
+        WHERE called_contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
+        ORDER BY id DESC
+        LIMIT 1;
+    </select>
 
 </mapper>

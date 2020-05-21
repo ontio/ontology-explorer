@@ -25,6 +25,10 @@
     <result column="dappstore_flag" jdbcType="BIT" property="dappstoreFlag" />
     <result column="total_reward" jdbcType="DECIMAL" property="totalReward" />
     <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="re_sync_status" jdbcType="INTEGER" property="reSyncStatus" />
+    <result column="re_sync_from_block" jdbcType="INTEGER" property="reSyncFromBlock" />
+    <result column="re_sync_to_block" jdbcType="INTEGER" property="reSyncToBlock" />
     <result column="abi" jdbcType="LONGVARCHAR" property="abi" />
     <result column="code" jdbcType="LONGVARCHAR" property="code" />
     <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode" />
@@ -58,7 +62,7 @@
     `lastweek_reward`
     )
     VALUES
-    <foreach collection="list" item="item" index="index" separator=",">
+    <foreach collection="list" index="index" item="item" separator=",">
       (
       #{item.contractHash},
       #{item.name},

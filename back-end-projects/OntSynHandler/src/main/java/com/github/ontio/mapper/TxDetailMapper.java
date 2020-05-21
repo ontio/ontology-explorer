@@ -10,4 +10,9 @@ import java.util.List;
 public interface TxDetailMapper extends Mapper<TxDetail> {
 
     void batchInsert(List<TxDetail> list);
+    
+    Integer findMissingFromBlock(String contractHash);
+    
+    Integer findMissingToBlock(String contractHash);
+    
 }
