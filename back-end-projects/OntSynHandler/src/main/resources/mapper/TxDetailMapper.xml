@@ -68,13 +68,13 @@
             )
         </foreach>
         ON DUPLICATE KEY UPDATE from_address = values(from_address), to_address = values(to_address), asset_name =
-        values(asset_name), event_type = values(event_type), description = values(description)
+        values(asset_name), event_type = values(event_type), description = values(description), amount = values(amount)
     </insert>
 
     <select id="findMissingFromBlock" resultType="java.lang.Integer">
         SELECT block_height
         FROM tbl_tx_detail
-        WHERE called_contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
+        WHERE contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
         ORDER BY id
         LIMIT 1;
     </select>
@@ -82,7 +82,7 @@
     <select id="findMissingToBlock" resultType="java.lang.Integer">
         SELECT block_height
         FROM tbl_tx_detail
-        WHERE called_contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
+        WHERE contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
         ORDER BY id DESC
         LIMIT 1;
     </select>

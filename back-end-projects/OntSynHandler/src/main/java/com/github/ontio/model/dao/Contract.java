@@ -130,7 +130,7 @@ public class Contract {
     private String channel;
 
     /**
-     * 重新同步状态：0 - 等待重新同步；1 - 已重新同步
+     * 重新同步状态：0 - 无需重新同步；1 - 需要重新同步；2 - 重新同步完成；3 - 完成重新统计
      */
     @Column(name = "re_sync_status")
     private Integer reSyncStatus;
@@ -146,6 +146,12 @@ public class Contract {
      */
     @Column(name = "re_sync_to_block")
     private Integer reSyncToBlock;
+
+    /**
+     * 重新统计完成高度
+     */
+    @Column(name = "re_sync_stat_block")
+    private Integer reSyncStatBlock;
 
     /**
      * 合约abi
@@ -647,6 +653,14 @@ public class Contract {
      */
     public void setSourceCode(String sourceCode) {
         this.sourceCode = sourceCode == null ? null : sourceCode.trim();
+    }
+
+    public Integer getReSyncStatBlock() {
+        return reSyncStatBlock;
+    }
+
+    public void setReSyncStatBlock(Integer reSyncStatBlock) {
+        this.reSyncStatBlock = reSyncStatBlock;
     }
 
     @Builder

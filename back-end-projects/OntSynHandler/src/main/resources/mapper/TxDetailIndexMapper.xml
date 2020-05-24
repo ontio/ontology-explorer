@@ -9,7 +9,7 @@
         FROM tbl_tx_detail
         WHERE block_height BETWEEN #{beginHeight} AND #{endHeight} AND from_address &lt;&gt; '' AND event_type IN (2, 3)
         <if test="contractHash != null and contractHash != ''">
-            AND called_contract_hash = #{contractHash}
+            AND contract_hash = #{contractHash}
         </if>
         ORDER BY block_height, tx_time
         ON DUPLICATE KEY UPDATE tx_direction = 1;
@@ -22,7 +22,7 @@
         FROM tbl_tx_detail
         WHERE block_height BETWEEN #{beginHeight} AND #{endHeight} AND to_address &lt;&gt; '' AND event_type IN (2, 3)
         <if test="contractHash != null and contractHash != ''">
-            AND called_contract_hash = #{contractHash}
+            AND contract_hash = #{contractHash}
         </if>
         ORDER BY block_height, tx_time
         ON DUPLICATE KEY UPDATE tx_direction = 2;

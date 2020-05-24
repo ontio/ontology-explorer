@@ -39,6 +39,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -67,17 +68,20 @@ public class BlockReSyncTask {
 
 	@Scheduled(initialDelay = 1000 * 5, fixedRate = 1000 * 60 * 60)
 	public void reSyncContracts() {
-		log.info("Staring block re-sync");
-		try {
-			for (Contract contract : findContractsForReSync()) {
-				reSyncContract(contract);
+		if (paramsConfig.reSyncEnabled) {
+			log.info("Staring block re-sync");
+			try {
+				for (Contract contract : findContractsForReSync()) {
+					reSyncContract(contract);
+				}
+			} catch (Exception e) {
+				log.error("Exception occured，Synchronization thread can't work,error ...", e);
 			}
-		} catch (Exception e) {
-			log.error("Exception occured，Synchronization thread can't work,error ...", e);
 		}
 	}
 
 	private void reSyncContract(Contract contract) throws Exception {
+		TimeUnit.SECONDS.sleep(30); // waiting for normal block syncing to avoid stale state
 		String contractHash = contract.getContractHash();
 		Integer fromBlock = contract.getReSyncFromBlock();
 		if (fromBlock == null || fromBlock == 0) {
@@ -87,9 +91,12 @@ public class BlockReSyncTask {
 		if (toBlock == null || toBlock == 0) {
 			toBlock = txDetailMapper.findMissingToBlock(contractHash);
 		}
+		
 		if (fromBlock == null || toBlock == null) {
 			log.info("contract {} has been fully synced", contractHash);
-			contract.setReSyncStatus(1);
+			contract.setReSyncFromBlock(0);
+			contract.setReSyncToBlock(0);
+			contract.setReSyncStatus(2);
 			contractMapper.updateByPrimaryKeySelective(contract);
 			return;
 		}
@@ -97,11 +104,13 @@ public class BlockReSyncTask {
 		contract.setReSyncToBlock(toBlock);
 		contractMapper.updateByPrimaryKeySelective(contract);
 
+		log.info("start re-sync contract {} from {} to {}", contractHash, fromBlock, toBlock);
+
 		for (int beginHeight = fromBlock; beginHeight <= toBlock; beginHeight += paramsConfig.BATCHINSERT_BLOCK_COUNT) {
 			batchHandleBlockAndInsertDb(beginHeight, Math.min(beginHeight + paramsConfig.BATCHINSERT_BLOCK_COUNT - 1, toBlock),
 					contractHash);
 		}
-		contract.setReSyncStatus(1);
+		contract.setReSyncStatus(2);
 		contractMapper.updateByPrimaryKeySelective(contract);
 	}
 
@@ -109,7 +118,7 @@ public class BlockReSyncTask {
 		Example example = new Example(Contract.class);
 		example.and()
 				.andEqualTo("auditFlag", 1)
-				.andEqualTo("reSyncStatus", 0);
+				.andEqualTo("reSyncStatus", 1);
 		List<Contract> contracts = contractMapper.selectByExample(example);
 		return contracts.stream().filter(contract -> {
 			String hash = contract.getContractHash();
