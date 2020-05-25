@@ -160,4 +160,7 @@ public class ParamsConfig {
     @Value("${oneUser.address.count.limit}")
     public Integer oneUserAddressCountLimit;
 
+    @Value("${management.host}")
+    public String managementHost;
+
 }

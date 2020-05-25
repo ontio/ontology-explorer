@@ -1,5 +1,7 @@
 package com.github.ontio.model.dao;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.ontio.util.TxDateSerializer;
 import lombok.AllArgsConstructor;
@@ -10,7 +12,6 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tbl_user")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class User {
     /**
      * ONT ID
@@ -36,8 +38,7 @@ public class User {
     /**
      * 邮箱
      */
-    @NotEmpty
-    @Pattern(regexp = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", message = "email format error")
+    @Pattern(regexp = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$|^$", message = "email format error")
     private String email;
 
     /**

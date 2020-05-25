@@ -11,6 +11,8 @@
     <result column="note" jdbcType="VARCHAR" property="note" />
     <result column="strategy" jdbcType="INTEGER" property="strategy" />
     <result column="include_oep_token" jdbcType="BIT" property="includeOepToken" />
+    <result column="amount_threshold" jdbcType="DECIMAL" property="amountThreshold" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
   </resultMap>
 
   <select id="selectUserAddressInfo" resultType="com.github.ontio.txPush.model.PushUserAddressInfoDto">
@@ -21,7 +23,9 @@
         b.note as note,
         b.strategy as strategy,
         b.include_oep_token as includeOepToken,
-        b.address as address
+        b.address as address,
+        b.amount_threshold as amountThreshold,
+        b.channel as channel
     FROM
         tbl_user a
     LEFT JOIN tbl_user_address b ON a.ont_id = b.ont_id

@@ -177,4 +177,13 @@ public class ConstantParam {
     public static final String JWT_LOGINID = "loginId";
 
 
+    /**
+     * management url
+     */
+    public static final String MANAGEMENT_USER_URI = "/v2/users";
+
+    public static final String MANAGEMENT_USERADDRESS_URI = "/v2/users/addresses";
+
+    public static final String MANAGEMENT_NEWUSERADDRESS_URI = "/v2/users/new_address";
+
 }

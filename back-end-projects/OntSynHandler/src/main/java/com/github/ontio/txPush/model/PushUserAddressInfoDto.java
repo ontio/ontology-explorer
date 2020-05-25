@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * @author zhouq
  * @version 1.0
@@ -29,5 +31,9 @@ public class PushUserAddressInfoDto {
     private Integer strategy;
 
     private Boolean includeOepToken;
+
+    private BigDecimal amountThreshold;
+
+    private String channel;
 
 }
