@@ -18,6 +18,7 @@
 
 package com.github.ontio.service;
 
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.dao.NetNodeInfo;
 import com.github.ontio.model.dao.NodeBonus;
 import com.github.ontio.model.dao.NodeInfoOffChain;
@@ -26,7 +27,6 @@ import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
 import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
 import com.github.ontio.model.dao.NodeRankChange;
 import com.github.ontio.model.dao.NodeRankHistory;
-import com.github.ontio.model.dto.GovernanceInfoDto;
 
 import java.util.List;
 
@@ -70,6 +70,6 @@ public interface INodesService {
 
     List<NodeRankHistory> getRecentNodeRankHistory();
 
-    List<GovernanceInfoDto> getGovernanceInfo(String pubKey, Integer pageNum, Integer pageSize);
+    PageResponseBean getGovernanceInfo(String pubKey, Integer pageNum, Integer pageSize);
 
 }

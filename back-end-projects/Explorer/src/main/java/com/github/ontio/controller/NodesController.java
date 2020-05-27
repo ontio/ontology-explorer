@@ -1,6 +1,7 @@
 package com.github.ontio.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.NetNodeInfo;
 import com.github.ontio.model.dao.NodeBonus;
@@ -10,7 +11,6 @@ import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
 import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
 import com.github.ontio.model.dao.NodeRankChange;
 import com.github.ontio.model.dao.NodeRankHistory;
-import com.github.ontio.model.dto.GovernanceInfoDto;
 import com.github.ontio.service.impl.ConfigServiceImpl;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.service.impl.OntSdkServiceImpl;
@@ -286,8 +286,8 @@ public class NodesController {
             @RequestParam(value = "page_number") @Min(1) Integer pageNum,
             @RequestParam(value = "page_size") @Min(1) @Max(50) Integer pageSize
     ) {
-        List<GovernanceInfoDto> governanceInfos = nodesService.getGovernanceInfo(publicKey, pageNum, pageSize);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), governanceInfos);
+        PageResponseBean response = nodesService.getGovernanceInfo(publicKey, pageNum, pageSize);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
 }

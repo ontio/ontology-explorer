@@ -27,6 +27,7 @@ import com.github.ontio.mapper.NodeInfoOnChainMapper;
 import com.github.ontio.mapper.NodeOverviewMapper;
 import com.github.ontio.mapper.NodeRankChangeMapper;
 import com.github.ontio.mapper.NodeRankHistoryMapper;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.dao.NetNodeInfo;
 import com.github.ontio.model.dao.NodeBonus;
 import com.github.ontio.model.dao.NodeInfoOffChain;
@@ -360,9 +361,11 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public List<GovernanceInfoDto> getGovernanceInfo(String pubKey, Integer pageNum, Integer pageSize) {
+    public PageResponseBean getGovernanceInfo(String pubKey, Integer pageNum, Integer pageSize) {
         int start = Math.max(pageSize * (pageNum - 1), 0);
-        return commonMapper.findGovernanceInfo(pubKey, start, pageSize);
+        List<GovernanceInfoDto> result = commonMapper.findGovernanceInfo(pubKey, start, pageSize);
+        int count = commonMapper.countGovernanceInfo(pubKey);
+        return new PageResponseBean(result, count);
     }
 
 }

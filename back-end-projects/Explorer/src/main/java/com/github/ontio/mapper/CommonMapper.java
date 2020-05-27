@@ -14,4 +14,6 @@ public interface CommonMapper {
 
 	List<GovernanceInfoDto> findGovernanceInfo(@Param("pubKey") String pubKey, @Param("start") int start, @Param("size") int size);
 
+	int countGovernanceInfo(@Param("pubKey") String pubKey);
+
 }
