@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.TxEventLogMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxEventLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
+    <result column="tx_type" jdbcType="INTEGER" property="txType" />
+    <result column="tx_time" jdbcType="INTEGER" property="txTime" />
+    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+    <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
+    <result column="event_log" jdbcType="VARCHAR" property="eventLog" />
+    <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
+    <result column="ontid_tx_flag" jdbcType="BIT" property="ontidTxFlag" />
+  </resultMap>
+
+
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO `tbl_tx_eventlog` (
+    `tx_hash`,
+    `tx_type`,
+    `tx_time`,
+    `block_height`,
+    `block_index`,
+    `fee`,
+    `confirm_flag`,
+    `event_log`,
+    `called_contract_hash`,
+    `ontid_tx_flag`
+    )
+    VALUES
+    <foreach collection="list" index="index" item="item" separator=",">
+      (
+      #{item.txHash},
+      #{item.txType},
+      #{item.txTime},
+      #{item.blockHeight},
+      #{item.blockIndex},
+      #{item.fee},
+      #{item.confirmFlag},
+      #{item.eventLog},
+      #{item.calledContractHash},
+      #{item.ontidTxFlag}
+      )
+    </foreach>
+  </insert>
+  
+  <update id="resetAutoIncrementId">
+    ALTER TABLE tbl_tx_eventlog
+      AUTO_INCREMENT = #{id};
+  </update>
+
+  <select id="findMaxId" resultType="java.lang.Integer">
+    SELECT if(max(id) IS NULL, 0, max(id))
+    FROM tbl_tx_eventlog;
+  </select>
+
+</mapper>

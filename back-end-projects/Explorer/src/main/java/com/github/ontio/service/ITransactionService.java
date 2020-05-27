@@ -19,7 +19,7 @@
 
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.model.common.ResponseBean;
 
 /**
  * @author zhouq
@@ -29,88 +29,39 @@ import com.github.ontio.paramBean.Result;
 public interface ITransactionService {
 
     /**
-     * query txn by txid
-     *
-     * @param txid
-     * @return
-     */
-    Result queryTxnDetailByHash(String txid);
-
-    /**
-     * query the last few transactions
+     * query latest transaction list
      *
      * @return
      */
-    Result queryTxnList(int amount);
+    ResponseBean queryLatestTxs(int count);
 
     /**
-     * query txn by page
+     * query transaction list by page
      *
-     * @param pageSize
-     * @param pageNumber
      * @return
      */
-    Result queryTxnList(int pageSize, int pageNumber);
+    ResponseBean queryTxsByPage(int pageNumber, int pageSize);
 
     /**
-     *  query asset balance and transactions
+     * query latest nonontid transaction list
      *
-     * @param address
      * @return
      */
-    Result queryAddressInfo(String address, int pageNumber, int pageSize);
+    ResponseBean queryLatestNonontidTxs(int count);
 
     /**
-     *  query the specially asset balance and transactions
+     * query nonontid transaction list by page
      *
-     * @param address
      * @return
      */
-    Result queryAddressInfo(String address, int pageNumber, int pageSize, String assetName);
+    ResponseBean queryNonontidTxsByPage(int pageNumber, int pageSize);
 
     /**
-     *  query the specially asset balance and transactions
-     *
-     * @param address
+     * query transaction detail by hash
+     * @param txHash
      * @return
      */
-    Result queryAddressInfoByTimeAndPage(String address, String assetName, int pageSize, int time);
+    ResponseBean queryTxDetailByHash(String txHash);
 
-    /**
-     *  query the specially asset balance and transactions
-     *
-     * @param address
-     * @return
-     */
-    Result queryAddressInfoByTime(String address, String assetName, int beginTime, int endTime);
 
-    /**
-     *  query the specially asset balance and transactions
-     *
-     * @param address
-     * @return
-     */
-    Result queryAddressInfoByTime(String address, String assetName, int beginTime);
-
-    /**
-     * 查询地址余额
-     * @param address
-     * @return
-     */
-    Result queryAddressBalance(String address);
-
-    /**
-     * 查询地址列表
-     * @return
-     */
-    Result queryAddressList();
-
-    /**
-     * query txn by page
-     * @param contractHash   contractHash
-     * @param pageNumber the start page
-     * @param pageSize   the amount of each page
-     * @return
-     */
-    Result queryContractTxsByPage(String contractHash, int pageSize, int pageNumber);
 }
