@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +35,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@Validated
 @RequestMapping(value = "/v2/nodes")
 public class NodesController {
 
@@ -282,9 +284,10 @@ public class NodesController {
     @ApiOperation(value = "Get governance info by peer public key")
     @GetMapping(value = "/governance-info")
     public ResponseBean getGovernanceInfo(
-            @RequestParam(value = "pk") @Pattern(regexp = "^[0-9a-f]{60,140}$") String publicKey,
-            @RequestParam(value = "page_number") @Min(1) Integer pageNum,
-            @RequestParam(value = "page_size") @Min(1) @Max(50) Integer pageSize
+            @RequestParam(value = "pk") @Pattern(regexp = "^[0-9a-f]{60,140}$", message = "Invalid public key") String publicKey,
+            @RequestParam(value = "page_number") @Min(value = 1, message = "Invalid page number") Integer pageNum,
+            @RequestParam(value = "page_size") @Min(value = 1, message = "Invalid page size") @Max(value = 50, message =
+                    "Invalid page size") Integer pageSize
     ) {
         PageResponseBean response = nodesService.getGovernanceInfo(publicKey, pageNum, pageSize);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
