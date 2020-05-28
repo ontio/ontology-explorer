@@ -372,15 +372,17 @@
         <choose>
             <when test="token_type == 'oep4'">
                 INNER JOIN tbl_oep4 o
+                ON o.symbol = idx.asset_name
             </when>
             <when test="token_type == 'oep5'">
                 INNER JOIN tbl_oep5 o
+                ON o.contract_hash = idx.called_contract_hash
             </when>
             <otherwise>
                 INNER JOIN tbl_oep8 o
+                ON o.symbol = idx.asset_name
             </otherwise>
         </choose>
-        ON o.symbol = idx.asset_name
         WHERE idx.address = #{address}
         ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
         LIMIT #{startIndex}, #{pageSize}
