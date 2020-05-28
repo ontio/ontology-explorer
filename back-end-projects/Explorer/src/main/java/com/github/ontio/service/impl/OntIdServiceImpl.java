@@ -125,7 +125,13 @@ public class OntIdServiceImpl implements IOntIdService {
     public ResponseBean queryOntidDdo(String ontId) {
 
         initSDK();
-        String ddoStr = sdkService.getDDO(ontId);
+        String ddoStr;
+        try {
+            ddoStr = sdkService.getDocument(ontId);
+        } catch (Exception e) {
+            log.error("getDocument error...", e);
+            ddoStr = sdkService.getDDO(ontId);
+        }
         log.info("{} query ddo info:{}", ontId, ddoStr);
         if (Helper.isEmptyOrNull(ddoStr)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);

@@ -31,10 +31,12 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.payload.InvokeWasmCode;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -61,6 +63,55 @@ public class OntologySDKService {
 
     public OntologySDKService(ParamsConfig param) {
         this.paramsConfig = param;
+    }
+
+    public String getDocument(String ontId) throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        String documentStr = "";
+        documentStr = ontSdk.nativevm().ontId().sendGetDocument(ontId);
+        if (!StringUtils.isEmpty(documentStr)) {
+            Map<String, Object> ddo = new HashMap<>();
+            JSONObject documentObj = JSONObject.parseObject(documentStr);
+
+            ontId = documentObj.getString("id");
+            ddo.put("OntId", ontId);
+
+            JSONArray attributes = documentObj.getJSONArray("attribute");
+            if (null == attributes) {
+                attributes = new JSONArray();
+            } else {
+                for (int i = 0; i < attributes.size(); i++) {
+                    JSONObject attribute = attributes.getJSONObject(i);
+                    String key = attribute.getString("key");
+                    String value = attribute.getString("value");
+                    String newKey = key.substring(key.indexOf("#") + 1);
+                    attribute.put("Key", newKey);
+                    attribute.remove("key");
+                    attribute.put("Value", value);
+                    attribute.remove("value");
+                }
+            }
+            ddo.put("Attributes", attributes);
+
+            JSONArray publicKeys = documentObj.getJSONArray("publicKey");
+            List<Map<String, Object>> owners = new ArrayList<>();
+            for (int i = 0; i < publicKeys.size(); i++) {
+                Map<String, Object> owner = new HashMap<>();
+                JSONObject publicKey = publicKeys.getJSONObject(i);
+                String pubKeyId = publicKey.getString("id");
+                String value = publicKey.getString("publicKeyHex");
+                String type = publicKey.getString("type");
+                owner.put("Curve", "");
+                owner.put("PubKeyId", pubKeyId);
+                owner.put("Type", type);
+                owner.put("Value", value);
+                owners.add(owner);
+            }
+            ddo.put("Owners", owners);
+
+            documentStr = JSON.toJSONString(ddo);
+        }
+        return documentStr;
     }
 
     public String getDDO(String ontId) {
@@ -311,8 +362,12 @@ public class OntologySDKService {
             Boolean verify = Boolean.FALSE;
             OntSdk ontSdk = OntSdk.getInstance();
             ontSdk.setRestful(paramsConfig.MASTERNODE_RESTFUL_URL);
-            String issuerDdo = ontSdk.nativevm().ontId().sendGetDDO(ontId);
-
+            String issuerDdo;
+            try {
+                issuerDdo = getDocument(ontId);
+            } catch (Exception e) {
+                issuerDdo = ontSdk.nativevm().ontId().sendGetDDO(ontId);
+            }
             JSONArray owners = JSONObject.parseObject(issuerDdo).getJSONArray("Owners");
             for (int i = 0; i < owners.size(); ++i) {
                 String pubkeyStr = owners.getJSONObject(i).getString("Value");
