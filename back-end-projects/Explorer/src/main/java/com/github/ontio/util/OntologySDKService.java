@@ -404,4 +404,17 @@ public class OntologySDKService {
         return "";
     }
 
+    /**
+     * verify signature by publicKey
+     *
+     * @param publicKey
+     * @param origDataStr
+     * @param signatureStr
+     * @return
+     */
+    public boolean verifySignatureByPublicKey(String publicKey, String origDataStr, String signatureStr) throws Exception {
+        Account account = new Account(false, Helper.hexToBytes(publicKey));
+        Boolean verify = account.verifySignature(origDataStr.getBytes(), Helper.hexToBytes(signatureStr));
+        return verify;
+    }
 }

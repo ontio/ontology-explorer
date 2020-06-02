@@ -43,6 +43,23 @@ public class NodeInfoOffChain {
     @Column(name = "social_media")
     private String socialMedia;
 
+    private String telegram;
+
+    private String twitter;
+
+    private String facebook;
+
+    @Column(name = "open_mail")
+    private String openMail;
+
+    @Column(name = "contact_mail")
+    private String contactMail;
+
+    @Column(name = "open_flag")
+    private Boolean openFlag;
+
+    private Integer verification;
+
     /**
      * @return public_key
      */
@@ -223,5 +240,91 @@ public class NodeInfoOffChain {
      */
     public void setSocialMedia(String socialMedia) {
         this.socialMedia = socialMedia == null ? null : socialMedia.trim();
+    }
+
+    /**
+     * @return telegram
+     */
+    public String getTelegram() {
+        return telegram;
+    }
+
+    /**
+     * @param telegram
+     */
+    public void setTelegram(String telegram) {
+        this.telegram = telegram == null ? null : telegram.trim();
+    }
+
+    /**
+     * @return twitter
+     */
+    public String getTwitter() {
+        return twitter;
+    }
+
+    /**
+     * @param twitter
+     */
+    public void setTwitter(String twitter) {
+        this.twitter = twitter == null ? null : twitter.trim();
+    }
+
+    /**
+     * @return facebook
+     */
+    public String getFacebook() {
+        return facebook;
+    }
+
+    /**
+     * @param facebook
+     */
+    public void setFacebook(String facebook) {
+        this.facebook = facebook == null ? null : facebook.trim();
+    }
+
+    /**
+     * @return openMail
+     */
+    public String getOpenMail() {
+        return openMail;
+    }
+
+    /**
+     * @param openMail
+     */
+    public void setOpenMail(String openMail) {
+        this.openMail = openMail == null ? null : openMail.trim();
+    }
+
+    /**
+     * @return contactMail
+     */
+    public String getContactMail() {
+        return contactMail;
+    }
+
+    /**
+     * @param contactMail
+     */
+    public void setContactMail(String contactMail) {
+        this.contactMail = contactMail == null ? null : contactMail.trim();
+    }
+
+    public Boolean getOpenFlag() {
+        return openFlag;
+    }
+
+    public void setOpenFlag(Boolean openFlag) {
+        this.openFlag = openFlag;
+    }
+
+    public Integer getVerification() {
+        return verification;
+    }
+
+    public void setVerification(Integer verification) {
+        this.verification = verification;
     }
 }

@@ -18,8 +18,9 @@
 
 package com.github.ontio.service;
 
+import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.model.dto.NodeInfoOnChainDto;
+import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
 
 import java.util.List;
 
@@ -28,6 +29,8 @@ public interface INodesService {
     List<NodeInfoOnChainWithRankChange> getCurrentOnChainInfo();
 
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey);
+
+    ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto nodeInfoOffChainDto) throws Exception;
 
     List<NodeInfoOffChain> getCurrentOffChainInfo();
 
@@ -62,4 +65,5 @@ public interface INodesService {
     List<NodeRankChange> getNodeRankChange(boolean isDesc);
 
     List<NodeRankHistory> getRecentNodeRankHistory();
+
 }

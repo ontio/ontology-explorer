@@ -3,7 +3,9 @@ package com.github.ontio.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
+import com.github.ontio.model.dto.NodeInfoOffChainDto;
 import com.github.ontio.model.dto.NodeInfoOnChainDto;
+import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
 import com.github.ontio.service.impl.ConfigServiceImpl;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.service.impl.OntSdkServiceImpl;
@@ -127,6 +129,13 @@ public class NodesController {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
+    }
+
+    @ApiOperation(value = "insert or update node register information by public key")
+    @PostMapping(value = "/off-chain-info")
+    public ResponseBean updateOffChainInfoByPublicKey(@RequestBody UpdateOffChainNodeInfoDto updateOffChainNodeInfoDto) throws Exception {
+        ResponseBean responseBean = nodesService.updateOffChainInfoByPublicKey(updateOffChainNodeInfoDto);
+        return responseBean;
     }
 
     @ApiOperation(value = "Get reward per 10000 ONT stake unit")
