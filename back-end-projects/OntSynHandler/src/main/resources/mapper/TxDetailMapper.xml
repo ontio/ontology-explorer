@@ -74,16 +74,18 @@
     <select id="findMissingFromBlock" resultType="java.lang.Integer">
         SELECT block_height
         FROM tbl_tx_detail
-        WHERE contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
-        ORDER BY id
+        WHERE tx_time >= (SELECT create_time FROM tbl_contract WHERE contract_hash = #{contractHash}) AND
+            contract_hash = #{contractHash} AND from_address = '' AND to_address = '' AND event_type IN (2, 3)
+        ORDER BY tx_time
         LIMIT 1;
     </select>
 
     <select id="findMissingToBlock" resultType="java.lang.Integer">
         SELECT block_height
         FROM tbl_tx_detail
-        WHERE contract_hash = #{contractHash} AND from_address = '' AND to_address = ''
-        ORDER BY id DESC
+        WHERE tx_time >= (SELECT create_time FROM tbl_contract WHERE contract_hash = #{contractHash}) AND
+            contract_hash = #{contractHash} AND from_address = '' AND to_address = '' AND event_type IN (2, 3)
+        ORDER BY tx_time DESC
         LIMIT 1;
     </select>
 

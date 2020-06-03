@@ -66,16 +66,20 @@ public class BlockReSyncTask {
 		this.commonService = commonService;
 	}
 
-	@Scheduled(initialDelay = 1000 * 5, fixedRate = 1000 * 60 * 60)
+	@Scheduled(initialDelay = 1000 * 15, fixedRate = 1000 * 60 * 10)
 	public void reSyncContracts() {
 		if (paramsConfig.reSyncEnabled) {
-			log.info("Staring block re-sync");
+			log.info("Starting block re-sync");
 			try {
-				for (Contract contract : findContractsForReSync()) {
+				List<Contract> contracts = findContractsForReSync();
+				if (contracts.isEmpty()) {
+					log.info("no contracts need re-sync");
+				}
+				for (Contract contract : contracts) {
 					reSyncContract(contract);
 				}
 			} catch (Exception e) {
-				log.error("Exception occured，Synchronization thread can't work,error ...", e);
+				log.error("exception when re-syncing contracts", e);
 			}
 		}
 	}
