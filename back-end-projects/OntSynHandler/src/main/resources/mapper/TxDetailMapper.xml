@@ -75,7 +75,7 @@
         SELECT block_height
         FROM tbl_tx_detail
         WHERE tx_time >= (SELECT create_time FROM tbl_contract WHERE contract_hash = #{contractHash}) AND
-            contract_hash = #{contractHash} AND from_address = '' AND to_address = '' AND event_type IN (2, 3)
+            contract_hash = #{contractHash} AND from_address = '' AND to_address = '' AND event_type = 0
         ORDER BY tx_time
         LIMIT 1;
     </select>
@@ -84,7 +84,7 @@
         SELECT block_height
         FROM tbl_tx_detail
         WHERE tx_time >= (SELECT create_time FROM tbl_contract WHERE contract_hash = #{contractHash}) AND
-            contract_hash = #{contractHash} AND from_address = '' AND to_address = '' AND event_type IN (2, 3)
+            contract_hash = #{contractHash} AND from_address = '' AND to_address = '' AND event_type = 0
         ORDER BY tx_time DESC
         LIMIT 1;
     </select>

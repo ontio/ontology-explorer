@@ -143,10 +143,7 @@ public class TxReSyncThread {
             //invoke smart contract transaction
             JSONArray notifyArray = eventLogObj.getJSONArray("Notify");
             //no event transaction or deploy smart contract transaction
-            if (notifyArray.size() == 0) {
-                insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                        gasConsumed, 1, EventTypeEnum.Others.type(), "", payer, calledContractHash);
-            } else {
+            if (notifyArray.size() != 0) {
                 JSONArray stateArray = null;
                 for (int i = 0, len = notifyArray.size(); i < len; i++) {
                     JSONObject notifyObj = (JSONObject) notifyArray.get(i);
@@ -156,9 +153,6 @@ public class TxReSyncThread {
                     if (object instanceof JSONArray) {
                         stateArray = (JSONArray) object;
                     } else {
-                        //other transaction
-                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
                         continue;
                     }
 

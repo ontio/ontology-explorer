@@ -100,7 +100,7 @@ public class BlockReSyncTask {
 			log.info("contract {} has been fully synced", contractHash);
 			contract.setReSyncFromBlock(0);
 			contract.setReSyncToBlock(0);
-			contract.setReSyncStatus(2);
+			contract.setReSyncStatus(3);
 			contractMapper.updateByPrimaryKeySelective(contract);
 			return;
 		}
