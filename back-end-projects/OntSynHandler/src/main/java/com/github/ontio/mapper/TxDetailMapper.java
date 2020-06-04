@@ -1,6 +1,7 @@
 package com.github.ontio.mapper;
 
 import com.github.ontio.model.dao.TxDetail;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 import tk.mybatis.mapper.common.Mapper;
 
@@ -13,6 +14,8 @@ public interface TxDetailMapper extends Mapper<TxDetail> {
     
     Integer findMissingFromBlock(String contractHash);
     
-    Integer findMissingToBlock(String contractHash);
+    Integer findMissingToBlock(@Param("contractHash") String contractHash, @Param("firstBlock") Integer firstBlock);
+    
+    Integer findFirstTransferBlock(String contractHash);
     
 }

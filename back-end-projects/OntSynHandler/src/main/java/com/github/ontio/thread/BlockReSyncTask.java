@@ -93,7 +93,8 @@ public class BlockReSyncTask {
 		}
 		Integer toBlock = contract.getReSyncToBlock();
 		if (toBlock == null || toBlock == 0) {
-			toBlock = txDetailMapper.findMissingToBlock(contractHash);
+			Integer firstBlock = txDetailMapper.findFirstTransferBlock(contractHash);
+			toBlock = txDetailMapper.findMissingToBlock(contractHash, firstBlock);
 		}
 		
 		if (fromBlock == null || toBlock == null) {
@@ -129,7 +130,7 @@ public class BlockReSyncTask {
 			return ConstantParam.OEP4CONTRACTS.contains(hash) || ConstantParam.OEP5CONTRACTS.contains(hash) || ConstantParam.OEP8CONTRACTS.contains(hash);
 		}).collect(Collectors.toList());
 	}
-
+	
 	/**
 	 * 批量处理区块和插入DB
 	 */

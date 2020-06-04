@@ -83,10 +83,32 @@
     <select id="findMissingToBlock" resultType="java.lang.Integer">
         SELECT block_height
         FROM tbl_tx_detail
-        WHERE tx_time >= (SELECT create_time FROM tbl_contract WHERE contract_hash = #{contractHash}) AND
-            called_contract_hash = #{contractHash} AND from_address = '' AND to_address = '' AND event_type = 0
-        ORDER BY tx_time DESC
+        WHERE called_contract_hash = #{contractHash} AND block_height &lt; #{firstBlock}
+        ORDER BY block_height DESC
         LIMIT 1;
+    </select>
+
+    <select id="findFirstTransferBlock" resultType="java.lang.Integer">
+        SELECT if
+            (
+                exists
+                    (
+                        SELECT block_height
+                        FROM tbl_tx_detail
+                        WHERE called_contract_hash = #{contractHash} AND event_type = 3
+                    ),
+                (
+                    SELECT block_height
+                    FROM tbl_tx_detail
+                    WHERE called_contract_hash = #{contractHash} AND event_type = 3
+                    ORDER BY block_height
+                    LIMIT 1
+                ),
+                (
+                    SELECT max(block_height)
+                    FROM tbl_tx_detail
+                )
+            );
     </select>
 
 </mapper>
