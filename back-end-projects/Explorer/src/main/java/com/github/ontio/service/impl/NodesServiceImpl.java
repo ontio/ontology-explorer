@@ -59,6 +59,8 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
+    private final NodeOverviewHistoryMapper nodeOverviewHistoryMapper;
+
     @Autowired
     public NodesServiceImpl(ParamsConfig paramsConfig,
                             NodeBonusMapper nodeBonusMapper,
@@ -67,7 +69,8 @@ public class NodesServiceImpl implements INodesService {
                             NodeRankChangeMapper nodeRankChangeMapper,
                             NodeInfoOnChainMapper nodeInfoOnChainMapper,
                             NodeRankHistoryMapper nodeRankHistoryMapper,
-                            NodeInfoOffChainMapper nodeInfoOffChainMapper) {
+                            NodeInfoOffChainMapper nodeInfoOffChainMapper,
+                            NodeOverviewHistoryMapper nodeOverviewHistoryMapper) {
         this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
         this.netNodeInfoMapper = netNodeInfoMapper;
@@ -76,6 +79,7 @@ public class NodesServiceImpl implements INodesService {
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.nodeRankHistoryMapper = nodeRankHistoryMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
+        this.nodeOverviewHistoryMapper = nodeOverviewHistoryMapper;
     }
 
     private OntologySDKService sdk;
@@ -385,6 +389,17 @@ public class NodesServiceImpl implements INodesService {
             log.warn("Selecting node rank change info failed: {}", e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public JSONObject getRndHistory(int pageSize, int pageNumber) {
+        int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
+        List<NodeOverviewHistory> list = nodeOverviewHistoryMapper.selectNodeRndHistory(start, pageSize);
+        int count = nodeOverviewHistoryMapper.selectNodeRndHistoryCount();
+        JSONObject result = new JSONObject();
+        result.put("rnd_history_list", list);
+        result.put("count", count);
+        return result;
     }
 
 }

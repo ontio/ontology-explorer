@@ -16,6 +16,8 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -54,6 +56,14 @@ public class NodesController {
         JSONObject result = new JSONObject();
         result.put("count_to_next_round", blkCountToNxtRnd);
         result.put("max_staking_change_count", maxStakingChangeCount);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+    @ApiOperation(value = "Get block height and time of round history")
+    @GetMapping(value = "/round-history")
+    public ResponseBean getRndHistory(@RequestParam("page_size") @Max(5) @Min(1) int pageSize,
+                                      @RequestParam("page_number") @Min(1) int pageNumber) {
+        JSONObject result = nodesService.getRndHistory(pageSize, pageNumber);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 

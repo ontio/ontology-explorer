@@ -66,6 +66,12 @@ GET /v2/nodes/all-in-network
 GET /v2/nodes/block-count-to-next-round
 ```
 
+### Get block height and time of round history
+
+```
+GET /v2/nodes/round-history
+```
+
 ### Get staking rewards per 10000 ONT
 
 ```

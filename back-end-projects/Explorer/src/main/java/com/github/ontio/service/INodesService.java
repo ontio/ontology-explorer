@@ -18,6 +18,7 @@
 
 package com.github.ontio.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
@@ -65,5 +66,7 @@ public interface INodesService {
     List<NodeRankChange> getNodeRankChange(boolean isDesc);
 
     List<NodeRankHistory> getRecentNodeRankHistory();
+
+    JSONObject getRndHistory(int pageSize, int pageNumber);
 
 }
