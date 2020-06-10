@@ -47,10 +47,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 
@@ -493,11 +490,14 @@ public class TxHandlerThread {
                                int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx,
                                String contractAddress, String payer, String calledContractHash) throws Exception {
 
+        log.info("parse state:{}", Arrays.toString(stateList.toArray()));
         String action = stateList.getString(0);
         String ontId = "";
         if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
             ontId = stateList.getString(1);
         } else {
+            log.info("size:{}",stateList.size());
+            log.info("parse state:{}", Arrays.toString(stateList.toArray()));
             ontId = stateList.getString(2);
         }
         String descriptionStr = formatOntIdOperation(ontId, action, stateList);
