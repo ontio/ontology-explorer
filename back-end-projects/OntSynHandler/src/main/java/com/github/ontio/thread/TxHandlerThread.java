@@ -490,7 +490,6 @@ public class TxHandlerThread {
                                int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx,
                                String contractAddress, String payer, String calledContractHash) throws Exception {
 
-        log.info("parse state:{}", Arrays.toString(stateList.toArray()));
         String action = stateList.getString(0);
         String ontId = "";
         if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)
@@ -498,8 +497,6 @@ public class TxHandlerThread {
                 || OntIdEventDesEnum.REMOVECONTROLLER.des().equals(action)) {
             ontId = stateList.getString(1);
         } else {
-            log.info("size:{}", stateList.size());
-            log.info("parse state:{}", Arrays.toString(stateList.toArray()));
             ontId = stateList.getString(2);
         }
         String descriptionStr = formatOntIdOperation(ontId, action, stateList);
