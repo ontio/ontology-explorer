@@ -596,7 +596,7 @@ public class TxHandlerThread {
             }
             str = descriptionSb.substring(0, descriptionSb.length() - 1);
 
-        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equals(action)) {
+        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equals(action) || OntIdEventDesEnum.RECOVERYOPE.des().toLowerCase().equals(action)) {
             log.info("compare action: {} & {}", OntIdEventDesEnum.RECOVERYOPE.des(), action);
             String op = stateList.getString(1);
             String address = "";
