@@ -493,10 +493,12 @@ public class TxHandlerThread {
         log.info("parse state:{}", Arrays.toString(stateList.toArray()));
         String action = stateList.getString(0);
         String ontId = "";
-        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
+        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)
+                || OntIdEventDesEnum.REVOKE.des().equals(action)
+                || OntIdEventDesEnum.REMOVECONTROLLER.des().equals(action)) {
             ontId = stateList.getString(1);
         } else {
-            log.info("size:{}",stateList.size());
+            log.info("size:{}", stateList.size());
             log.info("parse state:{}", Arrays.toString(stateList.toArray()));
             ontId = stateList.getString(2);
         }
