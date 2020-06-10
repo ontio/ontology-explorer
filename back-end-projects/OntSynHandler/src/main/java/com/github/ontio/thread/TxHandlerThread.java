@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -594,16 +595,23 @@ public class TxHandlerThread {
             str = descriptionSb.substring(0, descriptionSb.length() - 1);
 
         } else if (OntIdEventDesEnum.RECOVERYOPE.des().equals(action)) {
-
+            log.info("compare action: {} & {}", OntIdEventDesEnum.RECOVERYOPE.des(), action);
             String op = stateList.getString(1);
-            String address = Address.parse(stateList.getString(3)).toBase58();
+            String address = "";
+            try {
+                address = Address.parse(stateList.getString(3)).toBase58();
+            } catch (Exception e) {
+                op = op + " " + OntIdEventDesEnum.RECOVERYOPE.des();
+            }
             log.info("####Recovery op:{}, ontid:{}, address:{}####", op, ontId, address);
 
             descriptionSb.append(op);
             descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
             descriptionSb.append(ontId);
-            descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
-            descriptionSb.append(address);
+            if (!StringUtils.isEmpty(address)) {
+                descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
+                descriptionSb.append(address);
+            }
 
             str = descriptionSb.toString();
         }
