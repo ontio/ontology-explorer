@@ -66,7 +66,7 @@ public class BlockReSyncTask {
 		this.commonService = commonService;
 	}
 
-	@Scheduled(initialDelay = 1000 * 15, fixedRate = 1000 * 60 * 10)
+	@Scheduled(initialDelay = 1000 * 30, fixedRate = 1000 * 60 * 10)
 	public void reSyncContracts() {
 		if (paramsConfig.reSyncEnabled) {
 			log.info("Starting block re-sync");
