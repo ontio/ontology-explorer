@@ -76,7 +76,8 @@
                 max_balance = (
                 SELECT max_balance AS balance
                 FROM tbl_address_daily_aggregation
-                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND date_id &lt;&gt; -1
+                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND
+                    date_id &lt;&gt; -1 AND date_id &lt;&gt; -(~0 >> 33) - 1
                 ORDER BY update_time DESC
                 LIMIT 1
             )
@@ -92,7 +93,8 @@
                 min_balance = (
                 SELECT min_balance AS balance
                 FROM tbl_address_daily_aggregation
-                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND date_id &lt;&gt; -1
+                WHERE address = #{address} AND token_contract_hash = #{tokenContractHash} AND date_id &lt;= 0 AND
+                    date_id &lt;&gt; -1 AND date_id &lt;&gt; -(~0 >> 33) - 1
                 ORDER BY update_time DESC
                 LIMIT 1
             )
@@ -115,26 +117,26 @@
                 AND aggr.token_contract_hash = '$$ALL$$'
             </otherwise>
         </choose>
-        AND aggr.date_id &lt;= 0
+        AND aggr.date_id &lt;= 0 AND date_id &lt;&gt; -(~0 >> 33) - 1
         ORDER BY aggr.update_time DESC
         LIMIT 1
     </select>
 
     <select id="countAddressTotalTxOfTokenType" resultType="java.lang.Integer">
-        SELECT count(DISTINCT tx_hash)
-        FROM tbl_tx_detail_index idx
+        SELECT ifnull(sum(aggr.deposit_tx_count + aggr.withdraw_tx_count), 0)
+        FROM tbl_address_daily_aggregation aggr
         <choose>
             <when test="token_type == 'oep4'">
-                INNER JOIN tbl_oep4 o ON o.contract_hash = idx.called_contract_hash
+                INNER JOIN tbl_oep4 o ON o.contract_hash = aggr.token_contract_hash
             </when>
             <when test="token_type == 'oep5'">
-                INNER JOIN tbl_oep5 o ON o.contract_hash = idx.called_contract_hash
+                INNER JOIN tbl_oep5 o ON o.contract_hash = aggr.token_contract_hash
             </when>
             <otherwise>
-                INNER JOIN tbl_oep8 o ON o.contract_hash = idx.called_contract_hash
+                INNER JOIN tbl_oep8 o ON o.contract_hash = aggr.token_contract_hash
             </otherwise>
         </choose>
-        WHERE idx.address = #{address}
+        WHERE aggr.address = #{address} AND aggr.date_id = -(~0 >> 33) - 1 AND o.audit_flag = 1;
     </select>
 
 </mapper>
