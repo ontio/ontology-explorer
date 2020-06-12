@@ -60,5 +60,12 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
     List<TransferTxDto> selectTransferTxsOfTokenType(@Param("address") String address, @Param("token_type") String tokenType,
             @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
+    List<String> selectCalledContractHashesOfTokenType(@Param("tokenType") String tokenType);
+
+    List<String> selectAssetNamesOfTokenType(@Param("tokenType") String tokenType);
+
+    List<TransferTxDto> selectTransferTxsOfHashes(@Param("address") String address, @Param("hashes") List<String> contractHashes,
+            @Param("assetNames") List<String> assetNames, @Param("tokenType") String tokenType,
+            @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
 }

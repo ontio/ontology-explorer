@@ -1243,8 +1243,12 @@ public class AddressServiceImpl implements IAddressService {
         if (txCount == null || txCount == 0) {
             pageResponse = new PageResponseBean(Collections.emptyList(), 0);
         } else {
+            List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
+            List<String> assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) 
+                    : null;
             int start = Math.max(pageSize * (pageNumber - 1), 0);
-            List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfTokenType(address, tokenType, start, pageSize);
+            List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
+                    tokenType, start, pageSize);
             transferTxDtos = formatTransferTxDtos(transferTxDtos);
             pageResponse = new PageResponseBean(transferTxDtos, txCount);
         }
