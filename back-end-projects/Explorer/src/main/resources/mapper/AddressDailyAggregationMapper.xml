@@ -127,16 +127,17 @@
         FROM tbl_address_daily_aggregation aggr
         <choose>
             <when test="token_type == 'oep4'">
-                INNER JOIN tbl_oep4 o ON o.contract_hash = aggr.token_contract_hash
+                INNER JOIN tbl_oep4 o ON o.contract_hash = aggr.token_contract_hash AND o.audit_flag = 1
             </when>
             <when test="token_type == 'oep5'">
-                INNER JOIN tbl_oep5 o ON o.contract_hash = aggr.token_contract_hash
+                INNER JOIN tbl_oep5 o ON o.contract_hash = aggr.token_contract_hash AND o.audit_flag = 1
             </when>
             <otherwise>
-                INNER JOIN tbl_oep8 o ON o.contract_hash = aggr.token_contract_hash
+                INNER JOIN (SELECT DISTINCT contract_hash FROM tbl_oep8 WHERE audit_flag = 1) o
+                ON o.contract_hash = aggr.token_contract_hash
             </otherwise>
         </choose>
-        WHERE aggr.address = #{address} AND aggr.date_id = -(~0 >> 33) - 1 AND o.audit_flag = 1;
+        WHERE aggr.address = #{address} AND aggr.date_id = -(~0 >> 33) - 1
     </select>
 
 </mapper>
