@@ -3,11 +3,21 @@ package com.github.ontio.service.impl;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.*;
+import com.github.ontio.mapper.Oep4Mapper;
+import com.github.ontio.mapper.Oep5Mapper;
+import com.github.ontio.mapper.Oep8Mapper;
+import com.github.ontio.mapper.Oep8TxDetailMapper;
+import com.github.ontio.mapper.OepLogoMapper;
+import com.github.ontio.mapper.RankingMapper;
+import com.github.ontio.mapper.TokenDailyAggregationMapper;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.OepLogo;
-import com.github.ontio.model.dto.*;
+import com.github.ontio.model.dto.Oep4DetailDto;
+import com.github.ontio.model.dto.Oep5DetailDto;
+import com.github.ontio.model.dto.Oep8DetailDto;
+import com.github.ontio.model.dto.TokenPriceDto;
+import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.model.dto.ranking.TokenRankingDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
@@ -23,7 +33,13 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +50,8 @@ import java.util.stream.Collectors;
 @Service("TokenService")
 @Slf4j
 public class TokenServiceImpl implements ITokenService {
+
+    private static final String TOKEN_SORT_PATTERN = "-?(address_count|tx_count|create_time)";
 
     private final Oep4Mapper oep4Mapper;
     private final Oep5Mapper oep5Mapper;
@@ -46,8 +64,8 @@ public class TokenServiceImpl implements ITokenService {
 
     @Autowired
     public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
-                            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
-                            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper) {
+            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
+            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
@@ -59,29 +77,43 @@ public class TokenServiceImpl implements ITokenService {
     }
 
     @Override
-    public ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize) {
+    public ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize, List<String> sorts) {
 
         int total = 0;
         PageResponseBean pageResponseBean = new PageResponseBean(new ArrayList(), total);
+        List<String> ascending;
+        List<String> descending;
+        if (sorts == null || sorts.isEmpty()) {
+            ascending = null;
+            descending = Collections.singletonList("create_time");
+        } else {
+            ascending = sorts.stream()
+                    .filter(sort -> Pattern.matches(TOKEN_SORT_PATTERN, sort) && !sort.startsWith("-"))
+                    .collect(Collectors.toList());
+            descending = sorts.stream()
+                    .filter(sort -> Pattern.matches(TOKEN_SORT_PATTERN, sort) && sort.startsWith("-"))
+                    .map(sort -> sort.substring(1))
+                    .collect(Collectors.toList());
+        }
 
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_OEP4:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep4DetailDto> oep4DetailDtos = oep4Mapper.selectOep4Tokens();
+                List<Oep4DetailDto> oep4DetailDtos = oep4Mapper.selectOep4Tokens(ascending, descending);
                 total = ((Long) ((Page) oep4DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep4DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP5:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep5DetailDto> oep5DetailDtos = oep5Mapper.selectOep5Tokens();
+                List<Oep5DetailDto> oep5DetailDtos = oep5Mapper.selectOep5Tokens(ascending, descending);
                 total = ((Long) ((Page) oep5DetailDtos).getTotal()).intValue();
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep5DetailDtos);
                 break;
             case ConstantParam.ASSET_TYPE_OEP8:
                 PageHelper.startPage(pageNumber, pageSize);
-                List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens();
+                List<Oep8DetailDto> oep8DetailDtos = oep8Mapper.selectOep8Tokens(ascending, descending);
                 total = ((Long) ((Page) oep8DetailDtos).getTotal()).intValue();
                 //OEP8同一个合约hash有多种token，需要根据tokenId分类
                 oep8DetailDtos.forEach(item -> {

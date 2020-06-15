@@ -41,13 +41,16 @@ public class TokenController {
 
     @ApiOperation(value = "Get token list by token type")
     @GetMapping(value = "/{token_type}")
-    public ResponseBean queryTokensByPage(@PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8", message = "Incorrect token type") String tokenType,
-                                          @RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
-                                          @RequestParam("page_number") @Min(1) Integer pageNumber) {
+    public ResponseBean queryTokensByPage(
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8", message = "Incorrect token type") String tokenType,
+            @RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
+            @RequestParam("page_number") @Min(1) Integer pageNumber,
+            @RequestParam(name = "sort", required = false) List<String> sorts
+    ) {
 
         log.info("###{}.{} begin...token_type:{}", CLASS_NAME, Helper.currentMethod(), tokenType);
 
-        ResponseBean rs = tokenService.queryTokensByPage(tokenType, pageNumber, pageSize);
+        ResponseBean rs = tokenService.queryTokensByPage(tokenType, pageNumber, pageSize, sorts);
         return rs;
     }
 

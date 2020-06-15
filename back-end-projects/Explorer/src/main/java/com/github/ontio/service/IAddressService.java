@@ -30,4 +30,8 @@ public interface IAddressService {
 
     ResponseBean queryRankings(List<Short> rankingIds, short duration);
 
+    ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize);
+
+    ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize);
+
 }

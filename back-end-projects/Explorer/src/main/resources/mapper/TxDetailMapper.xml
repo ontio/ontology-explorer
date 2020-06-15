@@ -348,8 +348,127 @@
     <select id="selectTransferTxCountByAddr" resultType="java.lang.Integer">
         SELECT count(1)
         FROM tbl_tx_detail
-        WHERE from_address = #{address}
-        OR to_address = #{address}
+        WHERE from_address = #{address} OR to_address = #{address}
+    </select>
+
+    <select id="selectTransferTxsOfTokenType" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        <choose>
+            <when test="token_type == 'oep4'">
+                FROM tbl_oep4_tx_detail d
+            </when>
+            <when test="token_type == 'oep5'">
+                FROM tbl_oep5_tx_detail d
+            </when>
+            <otherwise>
+                FROM tbl_oep8_tx_detail d
+            </otherwise>
+        </choose>
+        INNER JOIN
+        (
+        SELECT DISTINCT idx.tx_hash AS `hash`
+        FROM tbl_tx_detail_index idx
+        <choose>
+            <when test="token_type == 'oep4'">
+                INNER JOIN tbl_oep4 o
+            </when>
+            <when test="token_type == 'oep5'">
+                INNER JOIN tbl_oep5 o
+            </when>
+            <otherwise>
+                INNER JOIN tbl_oep8 o
+            </otherwise>
+        </choose>
+        ON o.contract_hash = idx.called_contract_hash
+        WHERE idx.address = #{address}
+        AND o.audit_flag = 1
+        ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
+        LIMIT #{startIndex}, #{pageSize}
+        ) idx ON idx.hash = d.tx_hash
+        WHERE d.from_address = #{address}
+        OR d.to_address = #{address}
+        AND d.event_type IN (2, 3)
+        ORDER BY block_height DESC, tx_hash, tx_index
+    </select>
+
+    <select id="selectCalledContractHashesOfTokenType" resultType="java.lang.String">
+        SELECT
+        DISTINCT o.contract_hash
+        <choose>
+            <when test="tokenType == 'oep4'">
+                FROM tbl_oep4 o
+            </when>
+            <when test="tokenType == 'oep5'">
+                FROM tbl_oep5 o
+            </when>
+            <otherwise>
+                FROM tbl_oep8 o
+            </otherwise>
+        </choose>
+        WHERE o.audit_flag = 1
+    </select>
+
+    <select id="selectAssetNamesOfTokenType" resultType="java.lang.String">
+        SELECT
+        DISTINCT o.symbol
+        <choose>
+            <when test="tokenType == 'oep4'">
+                FROM tbl_oep4 o
+            </when>
+            <when test="tokenType == 'oep5'">
+                FROM tbl_oep5 o
+            </when>
+            <otherwise>
+                FROM tbl_oep8 o
+            </otherwise>
+        </choose>
+        WHERE o.audit_flag = 1
+    </select>
+
+    <select id="selectTransferTxsOfHashes" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        <choose>
+            <when test="tokenType == 'oep4'">
+                FROM tbl_oep4_tx_detail d
+            </when>
+            <when test="tokenType == 'oep5'">
+                FROM tbl_oep5_tx_detail d
+            </when>
+            <otherwise>
+                FROM tbl_oep8_tx_detail d
+            </otherwise>
+        </choose>
+        INNER JOIN
+        (
+        SELECT DISTINCT idx.tx_hash AS `hash`
+        FROM tbl_tx_detail_index idx
+        WHERE idx.address = #{address}
+        <if test="hashes != null and hashes.size() > 0">
+            AND
+            <if test="assetNames != null and assetNames.size() > 0 and address != 'AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK'">
+                (
+            </if>
+            idx.called_contract_hash IN
+            <foreach collection="hashes" item="hash" open="(" separator="," close=")">
+                #{hash}
+            </foreach>
+        </if>
+        <if test="assetNames != null and assetNames.size() > 0 and address != 'AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK'">
+            OR idx.asset_name IN
+            <foreach collection="assetNames" item="assetName" open="(" separator="," close=")">
+                #{assetName}
+            </foreach>
+            )
+        </if>
+        ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
+        LIMIT #{startIndex}, #{pageSize}
+        ) idx ON idx.hash = d.tx_hash
+        WHERE d.from_address = #{address}
+        OR d.to_address = #{address}
+        AND d.event_type IN (2, 3)
+        ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 
 </mapper>

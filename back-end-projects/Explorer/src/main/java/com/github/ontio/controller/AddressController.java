@@ -194,4 +194,32 @@ public class AddressController {
         return addressService.queryRankings(rankingIds, duration);
     }
 
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get address transfer transaction list by params", notes = "(page_number+page_size)")
+    @GetMapping(value = "/{address}/txs")
+    public ResponseBean queryAddressTransferTxsWithTotal(
+            @PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+            @RequestParam(name = "asset_name", required = false) String assetName,
+            @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
+            @RequestParam(name = "page_number") @Min(1) Integer pageNumber
+    ) {
+        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+
+        return addressService.queryTransferTxsWithTotalByPage(address, assetName, pageNumber, pageSize);
+    }
+
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get address transfer transaction list of token type by params", notes = "(page_number+page_size)")
+    @GetMapping(value = "/{address}/{token_type}/txs")
+    public ResponseBean queryAddressTransferTxsOfTokenType(
+            @PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8", message = "Incorrect token type") String tokenType,
+            @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
+            @RequestParam(name = "page_number") @Min(1) Integer pageNumber
+    ) {
+        log.info("####{}.{} begin...address:{};token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
+
+        return addressService.queryTransferTxsOfTokenTypeByPage(address, tokenType, pageNumber, pageSize);
+    }
+
 }
