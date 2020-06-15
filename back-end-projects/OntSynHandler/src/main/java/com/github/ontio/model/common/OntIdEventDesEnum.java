@@ -41,7 +41,11 @@ public enum OntIdEventDesEnum {
     /**
      * Attribute operation
      */
-    ATTRIBUTEOPE("Attribute");
+    ATTRIBUTEOPE("Attribute"),
+
+    REMOVECONTROLLER("RemoveController"),
+
+    REVOKE("Revoke");
 
 
     private String des;
