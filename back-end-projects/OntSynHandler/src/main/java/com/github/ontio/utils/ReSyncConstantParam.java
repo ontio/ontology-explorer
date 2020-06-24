@@ -17,45 +17,33 @@
  */
 
 
-package com.github.ontio.model.common;
+package com.github.ontio.utils;
 
+import com.github.ontio.model.common.BatchBlockDto;
 
-public enum OntIdEventDesEnum {
+import java.util.ArrayList;
+import java.util.List;
 
+public final class ReSyncConstantParam {
+    /**
+     * the number of new ontid of batch block
+     */
+    public static int BATCHBLOCK_ONTID_COUNT = 0;
 
     /**
-     * Register OntId
+     * the number of transactions of batch block
      */
-    REGISTERONTID("Register"),
+    public static int BATCHBLOCK_TX_COUNT = 0;
 
     /**
-     * PublicKey operation
+     * the contracthash list of batch block
      */
-    PUBLICKEYOPE("PublicKey"),
+    public static List<String> BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
 
     /**
-     * PublicKey operation
+     * the batchblockdto of batch block
      */
-    RECOVERYOPE("Recovery"),
+    public static BatchBlockDto BATCHBLOCKDTO = new BatchBlockDto();
 
-    /**
-     * Attribute operation
-     */
-    ATTRIBUTEOPE("Attribute"),
-
-    REMOVECONTROLLER("RemoveController"),
-
-    REVOKE("Revoke");
-
-
-    private String des;
-
-    OntIdEventDesEnum(String des) {
-        this.des = des;
-    }
-
-    public String des() {
-        return this.des;
-    }
 
 }

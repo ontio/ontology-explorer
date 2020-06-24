@@ -35,6 +35,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component("BlockHandlerThread")
@@ -64,6 +65,9 @@ public class BlockHandlerThread extends Thread {
     public void run() {
         log.info("Staring block sync");
         try {
+            // 等待30秒，等待OEP合约信息刷新
+            TimeUnit.SECONDS.sleep(30);
+            
             ConstantParam.MASTERNODE_RESTFULURL = paramsConfig.MASTERNODE_RESTFUL_URL;
             //初始化node列表
             initNodeRestfulList();

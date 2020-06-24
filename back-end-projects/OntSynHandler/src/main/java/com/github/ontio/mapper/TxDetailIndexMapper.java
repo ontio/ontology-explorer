@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public interface TxDetailIndexMapper {
 
-	int buildTxDetailIndexForFromAddress(@Param("beginHeight") int beginHeight, @Param("endHeight") int endHeight);
+	int buildTxDetailIndexForFromAddress(@Param("beginHeight") int beginHeight, @Param("endHeight") int endHeight, @Param(
+			"contractHash") String contractHash);
 
-	int buildTxDetailIndexForToAddress(@Param("beginHeight") int beginHeight, @Param("endHeight") int endHeight);
+	int buildTxDetailIndexForToAddress(@Param("beginHeight") int beginHeight, @Param("endHeight") int endHeight, @Param(
+			"contractHash") String contractHash);
 
 }

@@ -20,17 +20,24 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.ontio.mapper.ContractMapper;
 import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.mapper.TxEventLogMapper;
+import com.github.ontio.model.common.ContractType;
 import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.common.TxTypeEnum;
+import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.OntidTxDetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.model.dto.TxEventLogDto;
+import com.github.ontio.model.dto.TxEventLogTxTypeDto;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -39,19 +46,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("TransactionService")
 public class TransactionServiceImpl implements ITransactionService {
 
+    private static final String NATIVE_CALLED_CONTRACT_HASH = "792e4e61746976652e496e766f6b65";
+
     private final TxDetailMapper txDetailMapper;
     private final CurrentMapper currentMapper;
     private final OntidTxDetailMapper ontidTxDetailMapper;
     private final TxEventLogMapper txEventLogMapper;
+    private LoadingCache<String, ContractType> contractTypes;
 
     @Autowired
-    public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper) {
+    public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper,
+            OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper) {
         this.txDetailMapper = txDetailMapper;
         this.currentMapper = currentMapper;
         this.ontidTxDetailMapper = ontidTxDetailMapper;
@@ -63,8 +76,12 @@ public class TransactionServiceImpl implements ITransactionService {
     public ResponseBean queryLatestTxs(int count) {
 
         List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(0, count);
+        List<TxEventLogTxTypeDto> result = null;
+        if (txEventLogDtos != null) {
+            result = txEventLogDtos.stream().map(this::convertTxEventLog).collect(Collectors.toList());
+        }
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txEventLogDtos);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
     @Override
@@ -73,10 +90,14 @@ public class TransactionServiceImpl implements ITransactionService {
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
         List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(start, pageSize);
+        List<TxEventLogTxTypeDto> result = null;
+        if (txEventLogDtos != null) {
+            result = txEventLogDtos.stream().map(this::convertTxEventLog).collect(Collectors.toList());
+        }
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(txEventLogDtos, currentDto.getTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(result, currentDto.getTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -85,8 +106,12 @@ public class TransactionServiceImpl implements ITransactionService {
     public ResponseBean queryLatestNonontidTxs(int count) {
 
         List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectNonontidTxsByPage(0, count);
+        List<TxEventLogTxTypeDto> result = null;
+        if (txEventLogDtos != null) {
+            result = txEventLogDtos.stream().map(this::convertTxEventLog).collect(Collectors.toList());
+        }
 
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txEventLogDtos);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
     @Override
@@ -95,10 +120,14 @@ public class TransactionServiceImpl implements ITransactionService {
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
         List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectNonontidTxsByPage(start, pageSize);
+        List<TxEventLogTxTypeDto> result = null;
+        if (txEventLogDtos != null) {
+            result = txEventLogDtos.stream().map(this::convertTxEventLog).collect(Collectors.toList());
+        }
 
         CurrentDto currentDto = currentMapper.selectSummaryInfo();
 
-        PageResponseBean pageResponseBean = new PageResponseBean(txEventLogDtos, currentDto.getTxCount() - currentDto.getOntidTxCount());
+        PageResponseBean pageResponseBean = new PageResponseBean(result, currentDto.getTxCount() - currentDto.getOntidTxCount());
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
@@ -148,5 +177,57 @@ public class TransactionServiceImpl implements ITransactionService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetailDto);
     }
 
+    private TxEventLogTxTypeDto convertTxEventLog(TxEventLog eventLog) {
+        TxEventLogTxTypeDto dto = new TxEventLogTxTypeDto();
+        dto.setTxHash(eventLog.getTxHash());
+        dto.setTxTime(eventLog.getTxTime());
+        dto.setBlockHeight(eventLog.getBlockHeight());
+        dto.setBlockIndex(eventLog.getBlockIndex());
+        dto.setConfirmFlag(eventLog.getConfirmFlag());
+        dto.setFee(eventLog.getFee());
+        dto.setTxType(determineTxType(eventLog));
+        return dto;
+    }
+
+    private TxTypeEnum determineTxType(TxEventLog eventLog) {
+        TxTypeEnum txType = null;
+        if (eventLog.getTxType() == 208) {
+            txType = TxTypeEnum.CONTRACT_DEPLOYMENT;
+        } else {
+            String calledContractHash = eventLog.getCalledContractHash();
+            if (NATIVE_CALLED_CONTRACT_HASH.equals(calledContractHash)) {
+                if (eventLog.getOntidTxFlag()) {
+                    txType = TxTypeEnum.ONT_ID;
+                } else if (eventLog.getEventLog().contains("0100000000000000000000000000000000000000")) {
+                    txType = TxTypeEnum.ONT_TRANSFER;
+                } else if (eventLog.getEventLog().contains("0200000000000000000000000000000000000000")) {
+                    txType = TxTypeEnum.ONG_TRANSFER;
+                }
+            } else {
+                ContractType contractType = contractTypes.get(calledContractHash);
+                if (contractType.isOep4()) {
+                    txType = TxTypeEnum.OEP4;
+                } else if (contractType.isOep5()) {
+                    txType = TxTypeEnum.OEP5;
+                } else if (contractType.isOep8()) {
+                    txType = TxTypeEnum.OEP8;
+                } else {
+                    txType = TxTypeEnum.CONTRACT_CALL;
+                }
+            }
+        }
+        return txType;
+    }
+
+    @Autowired
+    public void setContractMapper(ContractMapper contractMapper) {
+        this.contractTypes = Caffeine.newBuilder()
+                .maximumSize(4096)
+                .expireAfterWrite(Duration.ofHours(1))
+                .build(contractHash -> {
+                    ContractType contractType = contractMapper.findContractType(contractHash);
+                    return contractType == null ? ContractType.NULL : contractType;
+                });
+    }
 
 }

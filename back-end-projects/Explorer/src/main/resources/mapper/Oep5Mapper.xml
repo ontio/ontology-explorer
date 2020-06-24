@@ -31,17 +31,28 @@
       a.logo as logo,
       a.create_time as createTime,
       a.update_time as updateTime,
-      a.contact_info as contactInfo,
-      a.address_count as addressCount,
-      a.tx_count as txCount,
-      b.total_supply as totalSupply,
-      b.symbol as symbol,
-      b.vm_category as vmCategory
+    a.contact_info as contactInfo,
+    a.address_count as addressCount,
+    a.tx_count as txCount,
+    b.total_supply as totalSupply,
+    b.symbol as symbol,
+    b.vm_category as vmCategory
     FROM tbl_contract a, tbl_oep5 b
     where a.contract_hash = b.contract_hash
     and a.audit_flag = 1
     and b.audit_flag = 1
-    order by a.create_time desc
+    <trim prefix="order by" prefixOverrides=",">
+      <if test="ascending != null">
+        <foreach collection="ascending" item="sort">
+          , a.${sort}
+        </foreach>
+      </if>
+      <if test="descending != null">
+        <foreach collection="descending" item="sort">
+          , a.${sort} desc
+        </foreach>
+      </if>
+    </trim>
   </select>
 
   <select id="selectOep5TokenDetail" resultType="com.github.ontio.model.dto.Oep5DetailDto">

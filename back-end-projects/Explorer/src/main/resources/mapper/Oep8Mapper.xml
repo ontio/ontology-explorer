@@ -46,18 +46,28 @@
 		b.contact_info as contactInfo,
 		b.create_time as createTime,
 		b.update_time as updateTime,
-		b.logo as logo,
-		b.tx_count as txCount,
-		b.creator as creator,
-		b.address_count as addressCount
-	FROM tbl_oep8 a, tbl_contract b
-	where a.contract_hash = b.contract_hash
-	and a.audit_flag = 1
-    and b.audit_flag = 1
-	GROUP BY
-		a.contract_hash
-	ORDER BY
-		b.create_time desc
+	  b.logo as logo,
+	  b.tx_count as txCount,
+	  b.creator as creator,
+	  b.address_count as addressCount
+	  FROM tbl_oep8 a, tbl_contract b
+	  where a.contract_hash = b.contract_hash
+	  and a.audit_flag = 1
+	  and b.audit_flag = 1
+	  GROUP BY
+	  a.contract_hash
+	  <trim prefix="order by" prefixOverrides=",">
+		  <if test="ascending != null">
+			  <foreach collection="ascending" item="sort">
+				  , b.${sort}
+			  </foreach>
+		  </if>
+		  <if test="descending != null">
+			  <foreach collection="descending" item="sort">
+				  , b.${sort} desc
+			  </foreach>
+		  </if>
+	  </trim>
   </select>
 
 	<select id="selectOep8TokenDetail" resultType="com.github.ontio.model.dto.Oep8DetailDto">

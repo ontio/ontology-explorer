@@ -68,6 +68,8 @@
       #{item.calledContractHash}
       )
     </foreach>
+    ON DUPLICATE KEY UPDATE from_address = values(from_address), to_address = values(to_address), asset_name =
+    values(asset_name), event_type = values(event_type), description = values(description), amount = values(amount)
   </insert>
 
 

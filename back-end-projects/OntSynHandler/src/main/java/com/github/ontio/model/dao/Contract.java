@@ -125,6 +125,35 @@ public class Contract {
     private BigDecimal lastweekReward;
 
     /**
+     * 提交渠道
+     */
+    private String channel;
+
+    /**
+     * 重新同步状态：0 - 无需重新同步；1 - 需要重新同步；2 - 重新同步完成；3 - 完成重新统计
+     */
+    @Column(name = "re_sync_status")
+    private Integer reSyncStatus;
+
+    /**
+     * 重新同步起始高度
+     */
+    @Column(name = "re_sync_from_block")
+    private Integer reSyncFromBlock;
+
+    /**
+     * 重新同步结束高度
+     */
+    @Column(name = "re_sync_to_block")
+    private Integer reSyncToBlock;
+
+    /**
+     * 重新统计完成高度
+     */
+    @Column(name = "re_sync_stat_block")
+    private Integer reSyncStatBlock;
+
+    /**
      * 合约abi
      */
     private String abi;
@@ -139,33 +168,6 @@ public class Contract {
      */
     @Column(name = "source_code")
     private String sourceCode;
-
-    @Builder
-    public Contract(String contractHash, String name, Integer createTime, Integer updateTime, Boolean auditFlag, String contactInfo, String description, String type, String logo, String creator, Integer addressCount, Integer txCount, BigDecimal ontSum, BigDecimal ongSum, String tokenSum, String category, String dappName, Boolean dappstoreFlag, BigDecimal totalReward, BigDecimal lastweekReward, String abi, String code, String sourceCode) {
-        this.contractHash = contractHash;
-        this.name = name;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-        this.auditFlag = auditFlag;
-        this.contactInfo = contactInfo;
-        this.description = description;
-        this.type = type;
-        this.logo = logo;
-        this.creator = creator;
-        this.addressCount = addressCount;
-        this.txCount = txCount;
-        this.ontSum = ontSum;
-        this.ongSum = ongSum;
-        this.tokenSum = tokenSum;
-        this.category = category;
-        this.dappName = dappName;
-        this.dappstoreFlag = dappstoreFlag;
-        this.totalReward = totalReward;
-        this.lastweekReward = lastweekReward;
-        this.abi = abi;
-        this.code = code;
-        this.sourceCode = sourceCode;
-    }
 
     /**
      * 获取合约hash值
@@ -528,6 +530,78 @@ public class Contract {
     }
 
     /**
+     * 获取提交渠道
+     *
+     * @return channel - 提交渠道
+     */
+    public String getChannel() {
+        return channel;
+    }
+
+    /**
+     * 设置提交渠道
+     *
+     * @param channel 提交渠道
+     */
+    public void setChannel(String channel) {
+        this.channel = channel == null ? null : channel.trim();
+    }
+
+    /**
+     * 获取重新同步状态：0 - 等待重新同步；1 - 已重新同步
+     *
+     * @return re_sync_status - 重新同步状态：0 - 等待重新同步；1 - 已重新同步
+     */
+    public Integer getReSyncStatus() {
+        return reSyncStatus;
+    }
+
+    /**
+     * 设置重新同步状态：0 - 等待重新同步；1 - 已重新同步
+     *
+     * @param reSyncStatus 重新同步状态：0 - 等待重新同步；1 - 已重新同步
+     */
+    public void setReSyncStatus(Integer reSyncStatus) {
+        this.reSyncStatus = reSyncStatus;
+    }
+
+    /**
+     * 获取重新同步起始高度
+     *
+     * @return re_sync_from_block - 重新同步起始高度
+     */
+    public Integer getReSyncFromBlock() {
+        return reSyncFromBlock;
+    }
+
+    /**
+     * 设置重新同步起始高度
+     *
+     * @param reSyncFromBlock 重新同步起始高度
+     */
+    public void setReSyncFromBlock(Integer reSyncFromBlock) {
+        this.reSyncFromBlock = reSyncFromBlock;
+    }
+
+    /**
+     * 获取重新同步结束高度
+     *
+     * @return re_sync_to_block - 重新同步结束高度
+     */
+    public Integer getReSyncToBlock() {
+        return reSyncToBlock;
+    }
+
+    /**
+     * 设置重新同步结束高度
+     *
+     * @param reSyncToBlock 重新同步结束高度
+     */
+    public void setReSyncToBlock(Integer reSyncToBlock) {
+        this.reSyncToBlock = reSyncToBlock;
+    }
+
+    /**
      * 获取合约abi
      *
      * @return abi - 合约abi
@@ -579,5 +653,40 @@ public class Contract {
      */
     public void setSourceCode(String sourceCode) {
         this.sourceCode = sourceCode == null ? null : sourceCode.trim();
+    }
+
+    public Integer getReSyncStatBlock() {
+        return reSyncStatBlock;
+    }
+
+    public void setReSyncStatBlock(Integer reSyncStatBlock) {
+        this.reSyncStatBlock = reSyncStatBlock;
+    }
+
+    @Builder
+    public Contract(String contractHash, String name, Integer createTime, Integer updateTime, Boolean auditFlag, String contactInfo, String description, String type, String logo, String creator, Integer addressCount, Integer txCount, BigDecimal ontSum, BigDecimal ongSum, String tokenSum, String category, String dappName, Boolean dappstoreFlag, BigDecimal totalReward, BigDecimal lastweekReward, String abi, String code, String sourceCode) {
+        this.contractHash = contractHash;
+        this.name = name;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+        this.auditFlag = auditFlag;
+        this.contactInfo = contactInfo;
+        this.description = description;
+        this.type = type;
+        this.logo = logo;
+        this.creator = creator;
+        this.addressCount = addressCount;
+        this.txCount = txCount;
+        this.ontSum = ontSum;
+        this.ongSum = ongSum;
+        this.tokenSum = tokenSum;
+        this.category = category;
+        this.dappName = dappName;
+        this.dappstoreFlag = dappstoreFlag;
+        this.totalReward = totalReward;
+        this.lastweekReward = lastweekReward;
+        this.abi = abi;
+        this.code = code;
+        this.sourceCode = sourceCode;
     }
 }

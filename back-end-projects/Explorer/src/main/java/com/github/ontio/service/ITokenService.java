@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface ITokenService {
 
-    ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize);
+    ResponseBean queryTokensByPage(String tokenType, Integer pageNumber, Integer pageSize, List<String> sorts);
 
     ResponseBean queryTokenDetail(String tokenType, String contractHash);
 

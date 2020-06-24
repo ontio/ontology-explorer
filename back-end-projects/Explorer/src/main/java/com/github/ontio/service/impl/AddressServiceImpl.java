@@ -12,6 +12,7 @@ import com.github.ontio.mapper.Oep5Mapper;
 import com.github.ontio.mapper.Oep8Mapper;
 import com.github.ontio.mapper.RankingMapper;
 import com.github.ontio.mapper.TxDetailMapper;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1216,6 +1218,41 @@ public class AddressServiceImpl implements IAddressService {
         Map<Short, List<AddressRankingDto>> rankingMap =
                 rankings.stream().collect(Collectors.groupingBy(AddressRankingDto::getRankingId));
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rankingMap);
+    }
+
+    @Override
+    public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
+        PageResponseBean pageResponse;
+        Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
+        if (txCount == null || txCount == 0) {
+            pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+        } else {
+            int start = Math.max(pageSize * (pageNumber - 1), 0);
+            List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
+            transferTxDtos = formatTransferTxDtos(transferTxDtos);
+            pageResponse = new PageResponseBean(transferTxDtos, txCount);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
+    }
+
+    @Override
+    public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize) {
+        tokenType = tokenType.toLowerCase();
+        PageResponseBean pageResponse;
+        Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
+        if (txCount == null || txCount == 0) {
+            pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+        } else {
+            List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
+            List<String> assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) 
+                    : null;
+            int start = Math.max(pageSize * (pageNumber - 1), 0);
+            List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
+                    tokenType, start, pageSize);
+            transferTxDtos = formatTransferTxDtos(transferTxDtos);
+            pageResponse = new PageResponseBean(transferTxDtos, txCount);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
     }
 
     /**
