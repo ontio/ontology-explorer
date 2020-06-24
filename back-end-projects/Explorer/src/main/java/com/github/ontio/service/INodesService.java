@@ -27,6 +27,10 @@ import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
 import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
 import com.github.ontio.model.dao.NodeRankChange;
 import com.github.ontio.model.dao.NodeRankHistory;
+import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.*;
+import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
 
 import java.util.List;
 
@@ -35,6 +39,8 @@ public interface INodesService {
     List<NodeInfoOnChainWithRankChange> getCurrentOnChainInfo();
 
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey);
+
+    ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto nodeInfoOffChainDto) throws Exception;
 
     List<NodeInfoOffChain> getCurrentOffChainInfo();
 
@@ -71,5 +77,8 @@ public interface INodesService {
     List<NodeRankHistory> getRecentNodeRankHistory();
 
     PageResponseBean getGovernanceInfo(String pubKey, Integer pageNum, Integer pageSize);
+
+
+    JSONObject getRndHistory(int pageSize, int pageNumber);
 
 }

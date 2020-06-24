@@ -32,7 +32,6 @@ import java.util.List;
 public class ConstantParam {
 
 
-
     /**
      * claim
      */
@@ -165,7 +164,7 @@ public class ConstantParam {
 
     public static final String VM_CATEGORY_NEOVM = "neovm";
 
-    public static final String VM_CATEGORY_WASMVM= "wasmvm";
+    public static final String VM_CATEGORY_WASMVM = "wasmvm";
 
 
     public static final String CONTRACTHASH_ONG = "0200000000000000000000000000000000000000";
@@ -186,4 +185,11 @@ public class ConstantParam {
 
     public static final String MANAGEMENT_NEWUSERADDRESS_URI = "/v2/users/new_address";
 
+    /**
+     * node verification
+     */
+    public static final Integer NODE_NOT_VERIFIED = 0;
+    public static final Integer NODE_VERIFIED = 1;
+
+    public static final Integer CANDIDATE_NODE = 1;
 }

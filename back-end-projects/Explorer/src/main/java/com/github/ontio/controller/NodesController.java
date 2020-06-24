@@ -11,6 +11,7 @@ import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
 import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
 import com.github.ontio.model.dao.NodeRankChange;
 import com.github.ontio.model.dao.NodeRankHistory;
+import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
 import com.github.ontio.service.impl.ConfigServiceImpl;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.service.impl.OntSdkServiceImpl;
@@ -20,10 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -67,6 +65,14 @@ public class NodesController {
         JSONObject result = new JSONObject();
         result.put("count_to_next_round", blkCountToNxtRnd);
         result.put("max_staking_change_count", maxStakingChangeCount);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+    @ApiOperation(value = "Get block height and time of round history")
+    @GetMapping(value = "/round-history")
+    public ResponseBean getRndHistory(@RequestParam("page_size") @Max(5) @Min(1) int pageSize,
+                                      @RequestParam("page_number") @Min(1) int pageNumber) {
+        JSONObject result = nodesService.getRndHistory(pageSize, pageNumber);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
@@ -142,6 +148,13 @@ public class NodesController {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
+    }
+
+    @ApiOperation(value = "insert or update node register information by public key")
+    @PostMapping(value = "/off-chain-info")
+    public ResponseBean updateOffChainInfoByPublicKey(@RequestBody UpdateOffChainNodeInfoDto updateOffChainNodeInfoDto) throws Exception {
+        ResponseBean responseBean = nodesService.updateOffChainInfoByPublicKey(updateOffChainNodeInfoDto);
+        return responseBean;
     }
 
     @ApiOperation(value = "Get reward per 10000 ONT stake unit")

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodeOverviewHistoryMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodeOverviewHistory">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="rnd_start_blk" jdbcType="BIGINT" property="rndStartBlk"/>
+        <result column="rnd_end_blk" jdbcType="BIGINT" property="rndEndBlk"/>
+        <result column="rnd_start_time" jdbcType="INTEGER" property="rndStartTime"/>
+        <result column="rnd_end_time" jdbcType="INTEGER" property="rndEndTime"/>
+    </resultMap>
+
+    <select id="selectNodeRndHistory" resultMap="BaseResultMap">
+        SELECT id,
+        rnd_start_blk,
+        rnd_end_blk,
+        rnd_start_time,
+        rnd_end_time
+        FROM tbl_node_overview_history
+        ORDER BY rnd_start_blk DESC
+        LIMIT #{start},#{size};
+    </select>
+
+    <select id="selectNodeRndHistoryCount" resultType="Integer">
+        SELECT COUNT(1)
+        FROM tbl_node_overview_history;
+    </select>
+</mapper>
