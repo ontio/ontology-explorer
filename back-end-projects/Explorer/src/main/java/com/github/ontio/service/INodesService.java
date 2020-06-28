@@ -81,4 +81,7 @@ public interface INodesService {
 
     JSONObject getRndHistory(int pageSize, int pageNumber);
 
+    PageResponseBean getNodesInspire(Integer pageNum, Integer pageSize);
+
+    NodeInspire getNodesInspireByPublicKey(String publicKey);
 }

@@ -23,7 +23,7 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.model.dto.NodeInfoOffChainDto;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.mapper.CommonMapper;
 import com.github.ontio.mapper.NetNodeInfoMapper;
 import com.github.ontio.mapper.NodeBonusMapper;
@@ -41,17 +41,16 @@ import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
 import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
 import com.github.ontio.model.dao.NodeRankChange;
 import com.github.ontio.model.dao.NodeRankHistory;
-import com.github.ontio.model.dto.GovernanceInfoDto;
-import com.github.ontio.model.dto.NodeInfoOnChainDto;
-import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
 import com.github.ontio.service.INodesService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +80,10 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeOverviewHistoryMapper nodeOverviewHistoryMapper;
 
+    private final NodeInspireMapper nodeInspireMapper;
+
+    private final TokenServiceImpl tokenService;
+
     @Autowired
     public NodesServiceImpl(ParamsConfig paramsConfig,
                             NodeBonusMapper nodeBonusMapper,
@@ -91,7 +94,9 @@ public class NodesServiceImpl implements INodesService {
                             NodeRankHistoryMapper nodeRankHistoryMapper,
                             NodeInfoOffChainMapper nodeInfoOffChainMapper,
                             CommonMapper commonMapper,
-                            NodeOverviewHistoryMapper nodeOverviewHistoryMapper
+                            NodeOverviewHistoryMapper nodeOverviewHistoryMapper,
+                            NodeInspireMapper nodeInspireMapper,
+                            TokenServiceImpl tokenService
     ) {
         this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
@@ -103,6 +108,8 @@ public class NodesServiceImpl implements INodesService {
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
         this.commonMapper = commonMapper;
         this.nodeOverviewHistoryMapper = nodeOverviewHistoryMapper;
+        this.nodeInspireMapper = nodeInspireMapper;
+        this.tokenService = tokenService;
     }
 
     private OntologySDKService sdk;
@@ -431,6 +438,19 @@ public class NodesServiceImpl implements INodesService {
         result.put("rnd_history_list", list);
         result.put("count", count);
         return result;
+    }
+
+    @Override
+    public PageResponseBean getNodesInspire(Integer pageNum, Integer pageSize) {
+        int start = Math.max(pageSize * (pageNum - 1), 0);
+        List<NodeInspire> result = nodeInspireMapper.selectNodesInspire(start, pageSize);
+        int count = nodeInspireMapper.selectNodesInspireCount();
+        return new PageResponseBean(result, count);
+    }
+
+    @Override
+    public NodeInspire getNodesInspireByPublicKey(String publicKey) {
+        return nodeInspireMapper.selectByPrimaryKey(publicKey);
     }
 
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodeInspireMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodeInspire">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="public_key" jdbcType="VARCHAR" property="publicKey"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="current_stake" jdbcType="BIGINT" property="currentStake"/>
+        <result column="node_release_inspire" jdbcType="BIGINT" property="nodeReleaseInspire"/>
+        <result column="node_release_inspire_rate" jdbcType="VARCHAR" property="nodeReleaseInspireRate"/>
+        <result column="user_release_inspire" jdbcType="BIGINT" property="userReleaseInspire"/>
+        <result column="user_release_inspire_rate" jdbcType="VARCHAR" property="userReleaseInspireRate"/>
+        <result column="node_commission_inspire" jdbcType="BIGINT" property="nodeCommissionInspire"/>
+        <result column="node_commission_inspire_rate" jdbcType="VARCHAR" property="nodeCommissionInspireRate"/>
+        <result column="user_commission_inspire" jdbcType="BIGINT" property="userCommissionInspire"/>
+        <result column="user_commission_inspire_rate" jdbcType="VARCHAR" property="userCommissionInspireRate"/>
+        <result column="node_foundation_inspire" jdbcType="BIGINT" property="nodeFoundationInspire"/>
+        <result column="node_foundation_inspire_rate" jdbcType="VARCHAR" property="nodeFoundationInspireRate"/>
+        <result column="user_foundation_inspire" jdbcType="BIGINT" property="userFoundationInspire"/>
+        <result column="user_foundation_inspire_rate" jdbcType="VARCHAR" property="userFoundationInspireRate"/>
+    </resultMap>
+    <!--
+    self-defined SQL
+    -->
+    <select id="selectNodesInspire" resultMap="BaseResultMap">
+        SELECT
+        public_key,
+        address,
+        name,
+        status,
+        current_stake,
+        node_release_inspire,
+        node_release_inspire_rate,
+        user_release_inspire,
+        user_release_inspire_rate,
+        node_commission_inspire,
+        node_commission_inspire_rate,
+        user_commission_inspire,
+        user_commission_inspire_rate,
+        node_foundation_inspire,
+        node_foundation_inspire_rate,
+        user_foundation_inspire,
+        user_foundation_inspire_rate
+        FROM tbl_node_inspire
+        LIMIT #{start},#{pageSize}
+    </select>
+
+    <select id="selectNodesInspireCount" resultType="Integer">
+        SELECT
+        COUNT(1)
+        FROM tbl_node_inspire
+    </select>
+</mapper>
