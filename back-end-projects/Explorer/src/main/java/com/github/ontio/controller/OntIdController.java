@@ -19,87 +19,88 @@
 
 package com.github.ontio.controller;
 
-import com.github.ontio.aop.RequestLimit;
-import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.paramBean.Result;
 import com.github.ontio.service.impl.OntIdServiceImpl;
-import com.github.ontio.util.Helper;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
+import com.github.ontio.utils.Helper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
 
 /**
  * @author zhouq
  * @version 1.0
  * @date 2018/3/15
  */
-@Validated
 @RestController
-@RequestMapping(value = "/v2")
-@Slf4j
+@EnableAutoConfiguration
+@RequestMapping(value = "/api/v1/explorer/")
 public class OntIdController {
+
+    private static final Logger logger = LoggerFactory.getLogger(OntIdController.class);
 
     private final String CLASS_NAME = this.getClass().getSimpleName();
 
-    private final OntIdServiceImpl ontIdService;
-
     @Autowired
-    public OntIdController(OntIdServiceImpl ontIdService) {
-        this.ontIdService = ontIdService;
-    }
+    private OntIdServiceImpl ontIdService;
 
 
-    @ApiOperation(value = "Get latest ONT ID transaction list")
-    @GetMapping(value = "/latest-ontids")
-    public ResponseBean queryLatestOntIdTxs(@RequestParam("count") @Max(50) @Min(1) int count) {
+    /**
+     * 查询ontid操作记录列表
+     *
+     * @return
+     */
+    @RequestMapping(value = "/ontidlist/{amount}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryOntIdList(@PathVariable("amount") int amount) {
 
-        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        logger.info("amount:{}",amount);
 
-        ResponseBean rs = ontIdService.queryLatestOntIdTxs(count);
+        Result rs = ontIdService.queryOntIdList(amount);
         return rs;
     }
 
+    /**
+     * 分页查询ontid操作记录列表
+     *
+     * @return
+     */
+    @RequestMapping(value = "/ontidlist/{pagesize}/{pagenumber}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryOntIdListByPage(@PathVariable("pagesize") int pageSize,
+                                       @PathVariable("pagenumber") int pageNumber) {
 
-    @RequestLimit(count = 120)
-    @ApiOperation(value = "Get ONT ID transaction list by page")
-    @GetMapping(value = "/ontids")
-    public ResponseBean queryOntIdTxsByPage(@RequestParam("page_size") @Max(20) @Min(1) int pageSize,
-                                            @RequestParam("page_number") @Min(1) int pageNumber) {
+        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        logger.info("pageSize:{}, pagenumber:{}", pageSize, pageNumber);
 
-        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
-
-        ResponseBean rs = ontIdService.queryOntidTxsByPage(pageSize, pageNumber);
+        Result rs = ontIdService.queryOntIdList(pageSize, pageNumber);
         return rs;
+
     }
 
-    @RequestLimit(count = 120)
-    @ApiOperation(value = "Get ONT ID transaction list by page")
-    @GetMapping(value = "/ontids/{ontid}/transactions")
-    public ResponseBean queryOntIdTxsByOntid(@PathVariable("ontid") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontid,
-                                             @RequestParam("page_size") @Max(20) @Min(1) int pageSize,
-                                             @RequestParam("page_number") @Min(1) int pageNumber) {
 
-        log.info("####{}.{} begin...ontid:{}", CLASS_NAME, Helper.currentMethod(), ontid);
+    /**
+     * 查询某个ontid详情
+     *
+     * @param ontId
+     * @return
+     */
+    @RequestMapping(value = "/ontid/{ontid}/{pagesize}/{pagenumber}", method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryOntIdDetail(@PathVariable("ontid") String ontId,
+                                   @PathVariable("pagesize") int pageSize,
+                                   @PathVariable("pagenumber") int pageNumber) {
 
-        ResponseBean rs = ontIdService.queryOntIdTxsByOntid(ontid, pageSize, pageNumber);
+        logger.info("########{}.{} begin...",CLASS_NAME, Helper.currentMethod());
+        logger.info("ontId:{},pageSize:{},pageNumber", ontId, pageSize, pageNumber);
+
+        Result rs = ontIdService.queryOntIdDetail(ontId, pageSize, pageNumber);
         return rs;
+
     }
 
-    @RequestLimit(count = 120)
-    @ApiOperation(value = "Get ONT ID Ddo by page")
-    @GetMapping(value = "/ontids/{ontid}/ddo")
-    public ResponseBean queryOntIdDdo(@PathVariable("ontid") @Pattern(regexp = "did:ont:[A-Za-z0-9]{34}", message = "Incorrect ONT ID format") String ontid) {
-
-        log.info("####{}.{} begin...ontid:{}", CLASS_NAME, Helper.currentMethod(), ontid);
-
-        ResponseBean rs = ontIdService.queryOntidDdo(ontid);
-        return rs;
-    }
 
 
 }
