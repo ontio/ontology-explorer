@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.OntidTxDetailMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.OntidTxDetail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
+    <result column="tx_type" jdbcType="INTEGER" property="txType" />
+    <result column="ontid" jdbcType="VARCHAR" property="ontid" />
+    <result column="tx_time" jdbcType="INTEGER" property="txTime" />
+    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="fee" jdbcType="DECIMAL" property="fee" />
+  </resultMap>
+
+
+
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO tbl_ontid_tx_detail (
+      `tx_hash`,
+      `tx_type`,
+      `ontid`,
+      `tx_time`,
+      `block_height`,
+      `description`,
+      `fee`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.txHash},
+      #{item.txType},
+      #{item.ontid},
+      #{item.txTime},
+      #{item.blockHeight},
+      #{item.description},
+      #{item.fee}
+      )
+    </foreach>
+  </insert>
+
+</mapper>

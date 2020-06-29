@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.BlockMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Block">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="txs_root" jdbcType="VARCHAR" property="txsRoot" />
+    <result column="block_time" jdbcType="INTEGER" property="blockTime" />
+    <result column="consensus_data" jdbcType="VARCHAR" property="consensusData" />
+    <result column="bookkeepers" jdbcType="VARCHAR" property="bookkeepers" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="block_size" jdbcType="INTEGER" property="blockSize" />
+  </resultMap>
+
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO `tbl_block` (
+      `block_height`,
+      `block_hash`,
+      `txs_root`,
+      `block_time`,
+      `consensus_data`,
+      `bookkeepers`,
+      `tx_count`,
+      `block_size`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.blockHeight},
+      #{item.blockHash},
+      #{item.txsRoot},
+      #{item.blockTime},
+      #{item.consensusData},
+      #{item.bookkeepers},
+      #{item.txCount},
+      #{item.blockSize}
+      )
+    </foreach>
+  </insert>
+
+</mapper>

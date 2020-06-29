@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodeRankHistoryMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodeRankHistory">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="public_key" jdbcType="VARCHAR" property="publicKey"/>
+        <id column="block_height" jdbcType="BIGINT" property="blockHeight"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="node_rank" jdbcType="INTEGER" property="nodeRank"/>
+    </resultMap>
+    <select id="selectCurrentRoundBlockHeight" resultType="java.lang.Long" useCache="false">
+        SELECT block_height
+        FROM tbl_node_rank_history
+        ORDER BY block_height DESC
+        LIMIT 1;
+    </select>
+    <select id="selectRecentNodeRankHistory" parameterType="java.lang.Long"
+            resultType="com.github.ontio.model.dao.NodeRankHistory" useCache="true">
+        SELECT public_key AS publicKey, address, name, node_rank AS nodeRank, block_height AS blockHeight
+        FROM tbl_node_rank_history
+        WHERE block_height > #{firstRoundBlockHeight};
+    </select>
+    <select id="selectNodeRankHistoryListByBlockHeight" parameterType="java.lang.Long"
+            resultType="com.github.ontio.model.dao.NodeRankHistory"
+            useCache="false">
+        SELECT public_key AS publicKey, address, name, node_rank AS nodeRank, block_height AS blockHeight
+        FROM tbl_node_rank_history
+        WHERE block_height = #{blockHeight};
+    </select>
+</mapper>
