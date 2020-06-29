@@ -1,0 +1,1 @@
+ALTER TABLE `tbl_node_overview_history` ADD COLUMN `cycle` INT(11) DEFAULT NULL COMMENT '周期数';
