@@ -408,13 +408,13 @@ public class OntologySDKService {
      * verify signature by publicKey
      *
      * @param publicKey
-     * @param origDataStr
+     * @param origData
      * @param signatureStr
      * @return
      */
-    public boolean verifySignatureByPublicKey(String publicKey, String origDataStr, String signatureStr) throws Exception {
+    public boolean verifySignatureByPublicKey(String publicKey, byte[] origData, String signatureStr) throws Exception {
         Account account = new Account(false, Helper.hexToBytes(publicKey));
-        Boolean verify = account.verifySignature(origDataStr.getBytes(), Helper.hexToBytes(signatureStr));
+        Boolean verify = account.verifySignature(origData, Helper.hexToBytes(signatureStr));
         return verify;
     }
 }

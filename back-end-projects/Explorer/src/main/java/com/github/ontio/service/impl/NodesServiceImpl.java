@@ -19,6 +19,7 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.ResponseBean;
@@ -227,13 +228,14 @@ public class NodesServiceImpl implements INodesService {
         String stakePublicKey = updateOffChainNodeInfoDto.getPublicKey();
         String signature = updateOffChainNodeInfoDto.getSignature();
 
+        byte[] nodeInfoBytes = Helper.hexToBytes(nodeInfo);
         initSDK();
-        boolean verify = sdk.verifySignatureByPublicKey(stakePublicKey, nodeInfo, signature);
+        boolean verify = sdk.verifySignatureByPublicKey(stakePublicKey, nodeInfoBytes, signature);
         if (!verify) {
             return new ResponseBean(ErrorInfo.VERIFY_SIGN_FAILED.code(), ErrorInfo.VERIFY_SIGN_FAILED.desc(), "");
         }
-
-        NodeInfoOffChain nodeInfoOffChain = JSONObject.parseObject(nodeInfo, NodeInfoOffChain.class);
+        String nodeInfoStr = new String(nodeInfoBytes, "UTF-8");
+        NodeInfoOffChain nodeInfoOffChain = JSONObject.parseObject(nodeInfoStr, NodeInfoOffChain.class);
         nodeInfoOffChain.setVerification(ConstantParam.NODE_NOT_VERIFIED);
         nodeInfoOffChain.setOntId("");
         nodeInfoOffChain.setNodeType(ConstantParam.CANDIDATE_NODE);
