@@ -38,7 +38,7 @@ public interface INodesService {
 
     List<NodeInfoOnChainWithRankChange> getCurrentOnChainInfo();
 
-    NodeInfoOffChain getCurrentOffChainInfo(String publicKey);
+    NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag);
 
     ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto nodeInfoOffChainDto) throws Exception;
 

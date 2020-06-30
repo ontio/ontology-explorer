@@ -10,18 +10,18 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="current_stake" jdbcType="BIGINT" property="currentStake"/>
-        <result column="node_release_inspire" jdbcType="BIGINT" property="nodeReleaseInspire"/>
-        <result column="node_release_inspire_rate" jdbcType="VARCHAR" property="nodeReleaseInspireRate"/>
-        <result column="user_release_inspire" jdbcType="BIGINT" property="userReleaseInspire"/>
-        <result column="user_release_inspire_rate" jdbcType="VARCHAR" property="userReleaseInspireRate"/>
-        <result column="node_commission_inspire" jdbcType="BIGINT" property="nodeCommissionInspire"/>
-        <result column="node_commission_inspire_rate" jdbcType="VARCHAR" property="nodeCommissionInspireRate"/>
-        <result column="user_commission_inspire" jdbcType="BIGINT" property="userCommissionInspire"/>
-        <result column="user_commission_inspire_rate" jdbcType="VARCHAR" property="userCommissionInspireRate"/>
-        <result column="node_foundation_inspire" jdbcType="BIGINT" property="nodeFoundationInspire"/>
-        <result column="node_foundation_inspire_rate" jdbcType="VARCHAR" property="nodeFoundationInspireRate"/>
-        <result column="user_foundation_inspire" jdbcType="BIGINT" property="userFoundationInspire"/>
-        <result column="user_foundation_inspire_rate" jdbcType="VARCHAR" property="userFoundationInspireRate"/>
+        <result column="node_released_ong_incentive" jdbcType="BIGINT" property="nodeReleasedOngIncentive"/>
+        <result column="node_released_ong_incentive_rate" jdbcType="VARCHAR" property="nodeReleasedOngIncentiveRate"/>
+        <result column="user_released_ong_incentive" jdbcType="BIGINT" property="userReleasedOngIncentive"/>
+        <result column="user_released_ong_incentive_rate" jdbcType="VARCHAR" property="userReleasedOngIncentiveRate"/>
+        <result column="node_gas_fee_incentive" jdbcType="BIGINT" property="nodeGasFeeIncentive"/>
+        <result column="node_gas_fee_incentive_rate" jdbcType="VARCHAR" property="nodeGasFeeIncentiveRate"/>
+        <result column="user_gas_fee_incentive" jdbcType="BIGINT" property="userGasFeeIncentive"/>
+        <result column="user_gas_fee_incentive_rate" jdbcType="VARCHAR" property="userGasFeeIncentiveRate"/>
+        <result column="node_foundation_bonus_incentive" jdbcType="BIGINT" property="nodeFoundationBonusIncentive"/>
+        <result column="node_foundation_bonus_incentive_rate" jdbcType="VARCHAR" property="nodeFoundationBonusIncentiveRate"/>
+        <result column="user_foundation_bonus_incentive" jdbcType="BIGINT" property="userFoundationBonusIncentive"/>
+        <result column="user_foundation_bonus_incentive_rate" jdbcType="VARCHAR" property="userFoundationBonusIncentiveRate"/>
     </resultMap>
     <!--
     self-defined SQL
@@ -33,18 +33,18 @@
         name,
         status,
         current_stake,
-        node_release_inspire,
-        node_release_inspire_rate,
-        user_release_inspire,
-        user_release_inspire_rate,
-        node_commission_inspire,
-        node_commission_inspire_rate,
-        user_commission_inspire,
-        user_commission_inspire_rate,
-        node_foundation_inspire,
-        node_foundation_inspire_rate,
-        user_foundation_inspire,
-        user_foundation_inspire_rate
+        node_released_ong_incentive,
+        node_released_ong_incentive_rate,
+        user_released_ong_incentive,
+        user_released_ong_incentive_rate,
+        node_gas_fee_incentive,
+        node_gas_fee_incentive_rate,
+        user_gas_fee_incentive,
+        user_gas_fee_incentive_rate,
+        node_foundation_bonus_incentive,
+        node_foundation_bonus_incentive_rate,
+        user_foundation_bonus_incentive,
+        user_foundation_bonus_incentive_rate
         FROM tbl_node_inspire
         LIMIT #{start},#{pageSize}
     </select>
