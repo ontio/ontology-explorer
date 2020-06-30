@@ -63,7 +63,7 @@ public class NodesController {
 
     @ApiOperation(value = "Get block height and time of round history")
     @GetMapping(value = "/round-history")
-    public ResponseBean getRndHistory(@RequestParam("page_size") @Max(5) @Min(1) int pageSize,
+    public ResponseBean getRndHistory(@RequestParam("page_size") @Max(10) @Min(1) int pageSize,
                                       @RequestParam("page_number") @Min(1) int pageNumber) {
         JSONObject result = nodesService.getRndHistory(pageSize, pageNumber);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
@@ -133,18 +133,28 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
 
-    @ApiOperation(value = "Get node register information by public key")
+    @ApiOperation(value = "Get open node register information by public key")
     @GetMapping(value = "/off-chain-info")
-    public ResponseBean getOffChainInfoByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
-        NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfo(publicKey);
+    public ResponseBean getOpenOffChainInfoByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfo(publicKey, 1);
         if (nodeInfoList == null) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
 
-    @ApiOperation(value = "insert or update node register information by public key")
-    @PostMapping(value = "/off-chain-info")
+    @ApiOperation(value = "Get node register information by public key")
+    @GetMapping(value = "/off-chain-info/public")
+    public ResponseBean getOffChainInfoByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfo(publicKey, null);
+        if (nodeInfoList == null) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
+    }
+
+    //    @ApiOperation(value = "insert or update node register information by public key")
+//    @PostMapping(value = "/off-chain-info")
     public ResponseBean updateOffChainInfoByPublicKey(@RequestBody UpdateOffChainNodeInfoDto updateOffChainNodeInfoDto) throws Exception {
         ResponseBean responseBean = nodesService.updateOffChainInfoByPublicKey(updateOffChainNodeInfoDto);
         return responseBean;
@@ -303,7 +313,7 @@ public class NodesController {
     @GetMapping(value = "/inspire/all")
     public ResponseBean getNodesInspire(
             @RequestParam(value = "page_number") @Min(value = 1, message = "Invalid page number") Integer pageNum,
-            @RequestParam(value = "page_size") @Min(value = 1, message = "Invalid page size") @Max(value = 50, message =
+            @RequestParam(value = "page_size") @Min(value = 1, message = "Invalid page size") @Max(value = 200, message =
                     "Invalid page size") Integer pageSize
     ) {
         PageResponseBean response = nodesService.getNodesInspire(pageNum, pageSize);

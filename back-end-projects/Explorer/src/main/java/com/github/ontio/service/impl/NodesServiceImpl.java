@@ -21,6 +21,7 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
@@ -213,9 +214,9 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public NodeInfoOffChain getCurrentOffChainInfo(String publicKey) {
+    public NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag) {
         try {
-            return nodeInfoOffChainMapper.selectByPublicKey(publicKey);
+            return nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
         } catch (Exception e) {
             log.warn("Select node off chain info by public key {} failed: {}", publicKey, e.getMessage());
             return new NodeInfoOffChain();
@@ -240,7 +241,7 @@ public class NodesServiceImpl implements INodesService {
         nodeInfoOffChain.setOntId("");
         nodeInfoOffChain.setNodeType(ConstantParam.CANDIDATE_NODE);
         String nodePublicKey = nodeInfoOffChain.getPublicKey();
-        NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey(nodePublicKey);
+        NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey(nodePublicKey, null);
         if (null == nodeInfoOffChainDto) {
             // insert
             nodeInfoOffChainMapper.insertSelective(nodeInfoOffChain);
@@ -452,7 +453,11 @@ public class NodesServiceImpl implements INodesService {
 
     @Override
     public NodeInspire getNodesInspireByPublicKey(String publicKey) {
-        return nodeInspireMapper.selectByPrimaryKey(publicKey);
+        NodeInspire nodeInspire = nodeInspireMapper.selectByPrimaryKey(publicKey);
+        if (nodeInspire == null) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND);
+        }
+        return nodeInspire;
     }
 
 }

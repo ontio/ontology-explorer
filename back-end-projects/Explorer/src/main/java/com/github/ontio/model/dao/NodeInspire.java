@@ -30,40 +30,40 @@ public class NodeInspire {
     @Column(name = "current_stake")
     private Long currentStake;
 
-    @Column(name = "node_release_inspire")
-    private Long nodeReleaseInspire;
+    @Column(name = "node_released_ong_incentive")
+    private Long nodeReleasedOngIncentive;
 
-    @Column(name = "node_release_inspire_rate")
-    private String nodeReleaseInspireRate;
+    @Column(name = "node_released_ong_incentive_rate")
+    private String nodeReleasedOngIncentiveRate;
 
-    @Column(name = "user_release_inspire")
-    private Long userReleaseInspire;
+    @Column(name = "user_released_ong_incentive")
+    private Long userReleasedOngIncentive;
 
-    @Column(name = "user_release_inspire_rate")
-    private String userReleaseInspireRate;
+    @Column(name = "user_released_ong_incentive_rate")
+    private String userReleasedOngIncentiveRate;
 
-    @Column(name = "node_commission_inspire")
-    private Long nodeCommissionInspire;
+    @Column(name = "node_gas_fee_incentive")
+    private Long nodeGasFeeIncentive;
 
-    @Column(name = "node_commission_inspire_rate")
-    private String nodeCommissionInspireRate;
+    @Column(name = "node_gas_fee_incentive_rate")
+    private String nodeGasFeeIncentiveRate;
 
-    @Column(name = "user_commission_inspire")
-    private Long userCommissionInspire;
+    @Column(name = "user_gas_fee_incentive")
+    private Long userGasFeeIncentive;
 
-    @Column(name = "user_commission_inspire_rate")
-    private String userCommissionInspireRate;
+    @Column(name = "user_gas_fee_incentive_rate")
+    private String userGasFeeIncentiveRate;
 
-    @Column(name = "node_foundation_inspire")
-    private Long nodeFoundationInspire;
+    @Column(name = "node_foundation_bonus_incentive")
+    private Long nodeFoundationBonusIncentive;
 
-    @Column(name = "node_foundation_inspire_rate")
-    private String nodeFoundationInspireRate;
+    @Column(name = "node_foundation_bonus_incentive_rate")
+    private String nodeFoundationBonusIncentiveRate;
 
-    @Column(name = "user_foundation_inspire")
-    private Long userFoundationInspire;
+    @Column(name = "user_foundation_bonus_incentive")
+    private Long userFoundationBonusIncentive;
 
-    @Column(name = "user_foundation_inspire_rate")
-    private String userFoundationInspireRate;
+    @Column(name = "user_foundation_bonus_incentive_rate")
+    private String userFoundationBonusIncentiveRate;
 
 }

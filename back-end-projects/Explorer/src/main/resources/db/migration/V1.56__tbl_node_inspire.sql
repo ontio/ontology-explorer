@@ -1,0 +1,12 @@
+ALTER TABLE `tbl_node_inspire` CHANGE `node_release_inspire` `node_released_ong_incentive` BIGINT(20);
+ALTER TABLE `tbl_node_inspire` CHANGE `node_release_inspire_rate` `node_released_ong_incentive_rate` VARCHAR(100);
+ALTER TABLE `tbl_node_inspire` CHANGE `user_release_inspire` `user_released_ong_incentive` BIGINT(20);
+ALTER TABLE `tbl_node_inspire` CHANGE `user_release_inspire_rate` `user_released_ong_incentive_rate` VARCHAR(100);
+ALTER TABLE `tbl_node_inspire` CHANGE `node_commission_inspire` `node_gas_fee_incentive` BIGINT(20);
+ALTER TABLE `tbl_node_inspire` CHANGE `node_commission_inspire_rate` `node_gas_fee_incentive_rate` VARCHAR(100);
+ALTER TABLE `tbl_node_inspire` CHANGE `user_commission_inspire` `user_gas_fee_incentive` BIGINT(20);
+ALTER TABLE `tbl_node_inspire` CHANGE `user_commission_inspire_rate` `user_gas_fee_incentive_rate` VARCHAR(100);
+ALTER TABLE `tbl_node_inspire` CHANGE `node_foundation_inspire` `node_foundation_bonus_incentive` BIGINT(20);
+ALTER TABLE `tbl_node_inspire` CHANGE `node_foundation_inspire_rate` `node_foundation_bonus_incentive_rate` VARCHAR(100);
+ALTER TABLE `tbl_node_inspire` CHANGE `user_foundation_inspire` `user_foundation_bonus_incentive` BIGINT(20);
+ALTER TABLE `tbl_node_inspire` CHANGE `user_foundation_inspire_rate` `user_foundation_bonus_incentive_rate` VARCHAR(100);
