@@ -10,6 +10,7 @@
         <result column="rnd_end_blk" jdbcType="BIGINT" property="rndEndBlk"/>
         <result column="rnd_start_time" jdbcType="INTEGER" property="rndStartTime"/>
         <result column="rnd_end_time" jdbcType="INTEGER" property="rndEndTime"/>
+        <result column="cycle" jdbcType="INTEGER" property="cycle"/>
     </resultMap>
 
     <select id="selectNodeRndHistory" resultMap="BaseResultMap">
@@ -17,7 +18,8 @@
         rnd_start_blk,
         rnd_end_blk,
         rnd_start_time,
-        rnd_end_time
+        rnd_end_time,
+        cycle
         FROM tbl_node_overview_history
         ORDER BY rnd_start_blk DESC
         LIMIT #{start},#{size};

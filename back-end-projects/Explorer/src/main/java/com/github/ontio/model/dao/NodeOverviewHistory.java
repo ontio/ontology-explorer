@@ -23,6 +23,8 @@ public class NodeOverviewHistory {
     @Column(name = "rnd_end_time")
     private Integer rndEndTime;
 
+    private Integer cycle;
+
     public Integer getId() {
         return id;
     }
@@ -61,5 +63,13 @@ public class NodeOverviewHistory {
 
     public void setRndEndTime(Integer rndEndTime) {
         this.rndEndTime = rndEndTime;
+    }
+
+    public Integer getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(Integer cycle) {
+        this.cycle = cycle;
     }
 }
