@@ -26,18 +26,26 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Common;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.payload.InvokeWasmCode;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.crypto.Curve;
+import com.github.ontio.crypto.KeyType;
+import com.github.ontio.io.BinaryReader;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -49,6 +57,7 @@ import java.util.*;
 @Component
 public class OntologySDKService {
 
+    private String ontIdContractAddress = "0000000000000000000000000000000000000003";
     private static OntologySDKService instance = null;
 
     @Autowired
@@ -109,6 +118,13 @@ public class OntologySDKService {
             }
             ddo.put("Owners", owners);
 
+            JSONArray members = new JSONArray();
+            JSONObject controllerObj = documentObj.getJSONObject("controller");
+            if (!CollectionUtils.isEmpty(controllerObj)) {
+                members = controllerObj.getJSONArray("members");
+            }
+            ddo.put("Controller", members);
+
             documentStr = JSON.toJSONString(ddo);
         }
         return documentStr;
@@ -118,7 +134,7 @@ public class OntologySDKService {
         OntSdk ontSdk = getOntSdk();
         String ddoStr = "";
         try {
-            ddoStr = ontSdk.nativevm().ontId().sendGetDDO(ontId);
+            ddoStr = sendGetDDO(ontId);
         } catch (Exception e) {
             log.error("getDDO error...", e);
             e.printStackTrace();
@@ -416,5 +432,134 @@ public class OntologySDKService {
         Account account = new Account(false, Helper.hexToBytes(publicKey));
         Boolean verify = account.verifySignature(origData, Helper.hexToBytes(signatureStr));
         return verify;
+    }
+
+    /**
+     * @param ontid
+     * @return
+     * @throws Exception
+     * @deprecated 已废弃使用
+     */
+    //TODO should remove this method
+    public String sendGetDDO(String ontid) throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        if (ontid == null) {
+            throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
+        }
+
+        List list = new ArrayList();
+        list.add(ontid.getBytes());
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = ontSdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontIdContractAddress)), "getDDO", arg, null, 0, 0);
+        Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+        String res = ((JSONObject) obj).getString("Result");
+        if (res.equals("")) {
+            return res;
+        }
+        Map map = parseDdoData(ontid, res);
+        if (map.size() == 0) {
+            return "";
+        }
+        return JSON.toJSONString(map);
+    }
+
+    private Map parseDdoData(String ontid, String obj) throws Exception {
+        byte[] bys = Helper.hexToBytes(obj);
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(bys);
+        BinaryReader br = new BinaryReader(bais);
+        byte[] publickeyBytes;
+        byte[] attributeBytes;
+        byte[] recoveryBytes;
+        byte[] controllerBytes;
+        try {
+            publickeyBytes = br.readVarBytes();
+        } catch (Exception e) {
+            publickeyBytes = new byte[]{};
+        }
+        try {
+            attributeBytes = br.readVarBytes();
+        } catch (Exception e) {
+            e.printStackTrace();
+            attributeBytes = new byte[]{};
+        }
+        try {
+            recoveryBytes = br.readVarBytes();
+        } catch (Exception e) {
+            recoveryBytes = new byte[]{};
+        }
+        try {
+            controllerBytes = br.readVarBytes();
+        } catch (Exception e) {
+            controllerBytes = new byte[]{};
+        }
+
+        List pubKeyList = new ArrayList();
+        if (publickeyBytes.length != 0) {
+            ByteArrayInputStream bais1 = new ByteArrayInputStream(publickeyBytes);
+            BinaryReader br1 = new BinaryReader(bais1);
+            while (true) {
+                try {
+                    Map publicKeyMap = new HashMap();
+                    publicKeyMap.put("PubKeyId", ontid + "#keys-" + String.valueOf(br1.readInt()));
+                    byte[] pubKey = br1.readVarBytes();
+                    if (pubKey.length == 33) {
+                        publicKeyMap.put("Type", KeyType.ECDSA.name());
+                        publicKeyMap.put("Curve", Curve.P256);
+                        publicKeyMap.put("Value", Helper.toHexString(pubKey));
+                    } else {
+                        publicKeyMap.put("Type", KeyType.fromLabel(pubKey[0]));
+                        publicKeyMap.put("Curve", Curve.fromLabel(pubKey[1]));
+                        publicKeyMap.put("Value", Helper.toHexString(pubKey));
+                    }
+
+                    pubKeyList.add(publicKeyMap);
+                } catch (Exception e) {
+                    break;
+                }
+            }
+        }
+        List attrsList = new ArrayList();
+        if (attributeBytes.length != 0) {
+            ByteArrayInputStream bais2 = new ByteArrayInputStream(attributeBytes);
+            BinaryReader br2 = new BinaryReader(bais2);
+            while (true) {
+                try {
+                    Map<String, Object> attributeMap = new HashMap();
+                    attributeMap.put("Key", new String(br2.readVarBytes()));
+                    attributeMap.put("Type", new String(br2.readVarBytes()));
+                    attributeMap.put("Value", new String(br2.readVarBytes()));
+                    attrsList.add(attributeMap);
+                } catch (Exception e) {
+                    break;
+                }
+            }
+        }
+
+        List<String> controllers = new ArrayList<>();
+        if (controllerBytes.length != 0) {
+            String controllerStr = new String(controllerBytes);
+            if (controllerStr.startsWith(Common.didont)) {
+                controllers.add(controllerStr);
+                log.info(controllerStr);
+            } else {
+                JSONObject jsonObject = JSON.parseObject(controllerStr);
+                List<String> members = jsonObject.getObject("members", List.class);
+                for (String controller : members) {
+                    controllers.add(controller);
+                }
+            }
+        }
+
+        Map map = new HashMap();
+        map.put("Owners", pubKeyList);
+        map.put("Attributes", attrsList);
+        if (recoveryBytes.length != 0) {
+            map.put("Recovery", Address.parse(Helper.toHexString(recoveryBytes)).toBase58());
+        }
+        map.put("OntId", ontid);
+        map.put("Controller", controllers);
+        return map;
     }
 }
