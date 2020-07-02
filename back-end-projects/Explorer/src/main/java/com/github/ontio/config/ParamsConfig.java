@@ -163,4 +163,6 @@ public class ParamsConfig {
     @Value("${management.host}")
     public String managementHost;
 
+    @Value("${timestamp.20200707000000.utc}")
+    public Integer TIMESTAMP_20200707000000_UTC;
 }

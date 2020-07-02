@@ -70,8 +70,8 @@ public class AddressServiceImpl implements IAddressService {
 
     @Autowired
     public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper,
-            ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
-            RankingMapper rankingMapper) {
+                              ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
+                              RankingMapper rankingMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
@@ -1043,9 +1043,17 @@ public class AddressServiceImpl implements IAddressService {
             BigDecimal ong02 =
                     new BigDecimal(now).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
             totalOng = ong01.add(ong02);
+        } else if (latestOntTransferTxTime < paramsConfig.TIMESTAMP_20200707000000_UTC) {
+            if (now < paramsConfig.TIMESTAMP_20200707000000_UTC) {
+                totalOng =
+                        new BigDecimal(now).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+            } else {
+                totalOng =
+                        new BigDecimal(paramsConfig.TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+            }
+
         } else {
-            totalOng =
-                    new BigDecimal(now).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+            totalOng = BigDecimal.ZERO;
         }
         BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
 
@@ -1072,7 +1080,7 @@ public class AddressServiceImpl implements IAddressService {
      * @return
      */
     private List<TransferTxDto> getTransferTxDtosByPage(int pageNumber, int pageSize,
-            List<TransferTxDto> formattedTransferTxDtos) {
+                                                        List<TransferTxDto> formattedTransferTxDtos) {
 
         int start = (pageNumber - 1) * pageSize > formattedTransferTxDtos.size() ? formattedTransferTxDtos.size() :
                 (pageNumber - 1) * pageSize;
@@ -1091,7 +1099,7 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime,
-            String addressType) {
+                                                    String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
 
@@ -1130,7 +1138,7 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize,
-            String addressType) {
+                                                           String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
 
@@ -1179,13 +1187,13 @@ public class AddressServiceImpl implements IAddressService {
 
                              @Override
                              public long expireAfterUpdate(String key, ExtremeBalanceDto value, long currentTime,
-                                     long currentDuration) {
+                                                           long currentDuration) {
                                  return currentDuration;
                              }
 
                              @Override
                              public long expireAfterRead(String key, ExtremeBalanceDto value, long currentTime,
-                                     long currentDuration) {
+                                                         long currentDuration) {
                                  return currentDuration;
                              }
                          }
@@ -1244,7 +1252,7 @@ public class AddressServiceImpl implements IAddressService {
             pageResponse = new PageResponseBean(Collections.emptyList(), 0);
         } else {
             List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
-            List<String> assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) 
+            List<String> assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType)
                     : null;
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
