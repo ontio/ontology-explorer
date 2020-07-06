@@ -184,9 +184,26 @@ public class NodesServiceImpl implements INodesService {
     public List<NodeInfoOffChain> getCurrentOffChainInfo() {
         try {
             NodeInfoOffChainDto nodeInfoOffChainDto = NodeInfoOffChainDto.builder()
-                    .openFlag(Boolean.TRUE)
                     .build();
-            return nodeInfoOffChainMapper.select(nodeInfoOffChainDto);
+            List<NodeInfoOffChain> list = nodeInfoOffChainMapper.select(nodeInfoOffChainDto);
+            list.forEach(one->{
+                if (!one.getOpenFlag()) {
+                    one.setContactMail("");
+                    one.setFacebook("");
+                    one.setIntroduction("");
+                    one.setIp("");
+                    one.setLatitude(BigDecimal.ZERO);
+                    one.setLongitude(BigDecimal.ZERO);
+                    one.setLogoUrl("");
+                    one.setRegion("");
+                    one.setSocialMedia("");
+                    one.setTelegram("");
+                    one.setTwitter("");
+                    one.setWebsite("");
+                    one.setOpenMail("");
+                }
+            });
+            return list;
         } catch (Exception e) {
             log.error("Select node infos off chain failed: {}", e.getMessage());
             return new ArrayList<>();
@@ -216,7 +233,23 @@ public class NodesServiceImpl implements INodesService {
     @Override
     public NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag) {
         try {
-            return nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
+            NodeInfoOffChainDto one = nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
+            if (!one.getOpenFlag()) {
+                one.setContactMail("");
+                one.setFacebook("");
+                one.setIntroduction("");
+                one.setIp("");
+                one.setLatitude(BigDecimal.ZERO);
+                one.setLongitude(BigDecimal.ZERO);
+                one.setLogoUrl("");
+                one.setRegion("");
+                one.setSocialMedia("");
+                one.setTelegram("");
+                one.setTwitter("");
+                one.setWebsite("");
+                one.setOpenMail("");
+            }
+            return one;
         } catch (Exception e) {
             log.warn("Select node off chain info by public key {} failed: {}", publicKey, e.getMessage());
             return new NodeInfoOffChain();

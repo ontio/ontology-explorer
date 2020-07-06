@@ -136,7 +136,7 @@ public class NodesController {
     @ApiOperation(value = "Get open node register information by public key")
     @GetMapping(value = "/off-chain-info")
     public ResponseBean getOpenOffChainInfoByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
-        NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfo(publicKey, 1);
+        NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfo(publicKey, null);
         if (nodeInfoList == null) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
