@@ -1056,8 +1056,16 @@ public class AddressServiceImpl implements IAddressService {
                             new BigDecimal(now).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
                 }
             } else {
-                totalOng =
-                        new BigDecimal(paramsConfig.TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+                if (latestOntTransferTxTime < 1593388800) {
+                    BigDecimal totalOng1 =
+                            new BigDecimal(1593388800).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(new BigDecimal(4));
+                    BigDecimal totalOng2 =
+                            new BigDecimal(paramsConfig.TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(1593388800)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+                    totalOng = totalOng1.add(totalOng2);
+                } else {
+                    totalOng =
+                            new BigDecimal(paramsConfig.TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+                }
             }
 
         } else {
