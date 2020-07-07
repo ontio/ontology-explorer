@@ -40,6 +40,8 @@ public interface INodesService {
 
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag);
 
+    NodeInfoOffChain getCurrentOffChainInfoPunlic(String publicKey, Integer openFlag);
+
     ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto nodeInfoOffChainDto) throws Exception;
 
     List<NodeInfoOffChain> getCurrentOffChainInfo();
@@ -84,4 +86,5 @@ public interface INodesService {
     PageResponseBean getNodesInspire(Integer pageNum, Integer pageSize);
 
     NodeInspire getNodesInspireByPublicKey(String publicKey);
+
 }
