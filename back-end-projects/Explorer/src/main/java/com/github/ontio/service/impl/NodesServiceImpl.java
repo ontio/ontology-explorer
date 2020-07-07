@@ -257,6 +257,16 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
+    public NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag) {
+        try {
+            return  nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
+        } catch (Exception e) {
+            log.warn("Select node off chain info by public key {} failed: {}", publicKey, e.getMessage());
+            return new NodeInfoOffChain();
+        }
+    }
+
+    @Override
     public ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto updateOffChainNodeInfoDto) throws Exception {
         String nodeInfo = updateOffChainNodeInfoDto.getNodeInfo();
         String stakePublicKey = updateOffChainNodeInfoDto.getPublicKey();
