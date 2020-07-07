@@ -40,7 +40,7 @@ public interface INodesService {
 
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag);
 
-    NodeInfoOffChain getCurrentOffChainInfoPunlic(String publicKey, Integer openFlag);
+    NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag);
 
     ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto nodeInfoOffChainDto) throws Exception;
 

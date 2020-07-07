@@ -257,7 +257,7 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public NodeInfoOffChain getCurrentOffChainInfoPunlic(String publicKey, Integer openFlag) {
+    public NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag) {
         try {
             return  nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
         } catch (Exception e) {
