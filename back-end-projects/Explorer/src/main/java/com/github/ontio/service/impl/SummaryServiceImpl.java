@@ -4,6 +4,7 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.OngSupply;
 import com.github.ontio.model.dto.ContractDailySummaryDto;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.DailySummaryDto;
@@ -15,6 +16,7 @@ import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -26,6 +28,8 @@ import java.util.Map;
 @Service("SummaryService")
 public class SummaryServiceImpl implements ISummaryService {
 
+    private static final Integer TIMESTAMP_20200707000000_UTC = 1594080000;
+    private static final Integer TIMESTAMP_20200629000000_UTC = 1593388800;
     private static final Integer TIMESTAMP_20190630000000_UTC = 1561852800;
     private static final Integer TIMESTAMP_20180630000000_UTC = 1530316800;
 
@@ -36,9 +40,11 @@ public class SummaryServiceImpl implements ISummaryService {
     private final CurrentMapper currentMapper;
     private final AddressDailySummaryMapper addressDailySummaryMapper;
     private final OntologySDKService ontologySDKService;
+    private final OngSupplyMapper ongSupplyMapper;
 
     @Autowired
-    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper, OntologySDKService ontologySDKService) {
+    public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper, OntologySDKService ontologySDKService
+    ,OngSupplyMapper ongSupplyMapper) {
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.dailySummaryMapper = dailySummaryMapper;
@@ -46,6 +52,7 @@ public class SummaryServiceImpl implements ISummaryService {
         this.currentMapper = currentMapper;
         this.addressDailySummaryMapper = addressDailySummaryMapper;
         this.ontologySDKService = ontologySDKService;
+        this.ongSupplyMapper = ongSupplyMapper;
     }
 
 
@@ -135,10 +142,17 @@ public class SummaryServiceImpl implements ISummaryService {
         BigDecimal ontTotalSupply = ConstantParam.ONT_TOTAL.subtract(specialAddrOnt);
 
         BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(TIMESTAMP_20180630000000_UTC)).multiply(new BigDecimal(5));
-        BigDecimal ong02 = new BigDecimal(System.currentTimeMillis() / 1000L).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
-        BigDecimal totalOng = ong01.add(ong02);
+        BigDecimal ong02 = new BigDecimal(TIMESTAMP_20200629000000_UTC).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(new BigDecimal(4));
+        BigDecimal ong03 = new BigDecimal(TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(TIMESTAMP_20200629000000_UTC)).multiply(new BigDecimal(3));
+        BigDecimal totalOng = ong01.add(ong02).add(ong03);
         BigDecimal ongTotalSupply = totalOng.multiply(ontTotalSupply).divide(ConstantParam.ONT_TOTAL);
 
+        List<OngSupply> ongSupplies = ongSupplyMapper.selectAll();
+        if (!CollectionUtils.isEmpty(ongSupplies)) {
+            OngSupply ongSupply = ongSupplies.get(0);
+            BigDecimal roundOngSupply = ongSupply.getOngSupply();
+            ongTotalSupply = ongTotalSupply.add(roundOngSupply);
+        }
         Map<String, BigDecimal> rsMap = new HashMap<>();
         rsMap.put("ong", ongTotalSupply);
         rsMap.put("ont", ontTotalSupply);
