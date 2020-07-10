@@ -186,6 +186,10 @@ public class SummaryServiceImpl implements ISummaryService {
                 BigDecimal roundOngSupply = ongSupply.getOngSupply();
                 ongTotalSupply = ongTotalSupply.add(roundOngSupply);
             }
+            BigDecimal billion = new BigDecimal(1000000000);
+            if (ongTotalSupply.compareTo(billion) == 1) {
+                ongTotalSupply = billion;
+            }
             return ongTotalSupply;
         }
         return null;
