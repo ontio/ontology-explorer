@@ -44,7 +44,7 @@ public class SummaryServiceImpl implements ISummaryService {
 
     @Autowired
     public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper, OntologySDKService ontologySDKService
-    ,OngSupplyMapper ongSupplyMapper) {
+            , OngSupplyMapper ongSupplyMapper) {
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.dailySummaryMapper = dailySummaryMapper;
@@ -157,5 +157,37 @@ public class SummaryServiceImpl implements ISummaryService {
         rsMap.put("ong", ongTotalSupply);
         rsMap.put("ont", ontTotalSupply);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
+    }
+
+    @Override
+    public BigDecimal queryNativeTotalCirculatingSupply(String token) {
+        BigDecimal specialAddrOnt = new BigDecimal("0");
+        for (String addr :
+                ConstantParam.SPECIALADDRLIST) {
+            Map<String, String> map = ontologySDKService.getNativeAssetBalance(addr);
+            specialAddrOnt = specialAddrOnt.add(new BigDecimal(map.get("ont")));
+        }
+        BigDecimal ontTotalSupply = ConstantParam.ONT_TOTAL.subtract(specialAddrOnt);
+
+        if ("ont".equals(token.toLowerCase())) {
+            return ontTotalSupply;
+        }
+
+        if ("ong".equals(token.toLowerCase())) {
+            BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(TIMESTAMP_20180630000000_UTC)).multiply(new BigDecimal(5));
+            BigDecimal ong02 = new BigDecimal(TIMESTAMP_20200629000000_UTC).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(new BigDecimal(4));
+            BigDecimal ong03 = new BigDecimal(TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(TIMESTAMP_20200629000000_UTC)).multiply(new BigDecimal(3));
+            BigDecimal totalOng = ong01.add(ong02).add(ong03);
+            BigDecimal ongTotalSupply = totalOng.multiply(ontTotalSupply).divide(ConstantParam.ONT_TOTAL);
+
+            List<OngSupply> ongSupplies = ongSupplyMapper.selectAll();
+            if (!CollectionUtils.isEmpty(ongSupplies)) {
+                OngSupply ongSupply = ongSupplies.get(0);
+                BigDecimal roundOngSupply = ongSupply.getOngSupply();
+                ongTotalSupply = ongTotalSupply.add(roundOngSupply);
+            }
+            return ongTotalSupply;
+        }
+        return null;
     }
 }

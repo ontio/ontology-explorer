@@ -11,6 +11,8 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @RestController
 public class SummaryController {
@@ -90,5 +92,12 @@ public class SummaryController {
         return rs;
     }
 
+    @ApiOperation(value = "Get ONT,ONG total supply")
+    @GetMapping(value = "/v2/summary/native/circulating-supply/{token}")
+    public BigDecimal queryNativeTotalCirculatingSupply(@PathVariable String token) {
+        log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+        BigDecimal rs = summaryService.queryNativeTotalCirculatingSupply(token);
+        return rs;
+    }
 
 }
