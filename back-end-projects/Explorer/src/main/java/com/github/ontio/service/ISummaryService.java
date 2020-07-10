@@ -2,6 +2,8 @@ package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
 
+import java.math.BigDecimal;
+
 public interface ISummaryService {
 
     ResponseBean getBlockChainLatestInfo();
@@ -13,5 +15,7 @@ public interface ISummaryService {
     ResponseBean getContractDailySummary(String contractHash, Long startTime, Long endTime);
 
     ResponseBean getNativeTotalSupply();
+
+    BigDecimal queryNativeTotalCirculatingSupply(String token);
 
 }
