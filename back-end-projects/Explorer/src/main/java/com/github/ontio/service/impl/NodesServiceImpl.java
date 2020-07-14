@@ -595,13 +595,10 @@ public class NodesServiceImpl implements INodesService {
 
         // ONT,ONG price
         ResponseBean ongResp = tokenService.queryPrice("ong", "usd");
-        String ongPrice = ((JSONObject) ongResp.getResult()).getJSONObject("prices").getJSONObject("USD").getString("price");
+        BigDecimal ong = ((TokenPriceDto) ongResp.getResult()).getPrices().get("USD").getPrice();
 
         ResponseBean ontResp = tokenService.queryPrice("ont", "usd");
-        String ontPrice = ((JSONObject) ontResp.getResult()).getJSONObject("prices").getJSONObject("USD").getString("price");
-
-        BigDecimal ong = new BigDecimal(ongPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal ont = new BigDecimal(ontPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal ont = ((TokenPriceDto) ontResp.getResult()).getPrices().get("USD").getPrice();
 
 //        BigDecimal ong = new BigDecimal("0.19").setScale(2, BigDecimal.ROUND_HALF_UP);
 //        BigDecimal ont = new BigDecimal("0.69").setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -775,13 +772,11 @@ public class NodesServiceImpl implements INodesService {
 
         // ONT,ONG price
         ResponseBean ongResp = tokenService.queryPrice("ong", "usd");
-        String ongPrice = ((JSONObject) ongResp.getResult()).getJSONObject("prices").getJSONObject("USD").getString("price");
+        BigDecimal ong = ((TokenPriceDto) ongResp.getResult()).getPrices().get("USD").getPrice();
 
         ResponseBean ontResp = tokenService.queryPrice("ont", "usd");
-        String ontPrice = ((JSONObject) ontResp.getResult()).getJSONObject("prices").getJSONObject("USD").getString("price");
+        BigDecimal ont = ((TokenPriceDto) ontResp.getResult()).getPrices().get("USD").getPrice();
 
-        BigDecimal ong = new BigDecimal(ongPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal ont = new BigDecimal(ontPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
 
 //        BigDecimal ong = new BigDecimal("0.19").setScale(2, BigDecimal.ROUND_HALF_UP);
 //        BigDecimal ont = new BigDecimal("0.69").setScale(2, BigDecimal.ROUND_HALF_UP);
