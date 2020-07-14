@@ -331,23 +331,23 @@ public class NodesController {
     }
 
     @ApiOperation(value = "calculation node inspire")
-    @GetMapping(value = "/node-inspire/calculation-info")
-    public ResponseBean getCalculationNodeInspireInfo() {
-        CalculationInspireInfoDto response = nodesService.getCalculationNodeInspireInfo();
+    @GetMapping(value = "/node-incentives/calculation-info")
+    public ResponseBean getCalculationNodeIncentivesInfo() {
+        CalculationInspireInfoDto response = nodesService.getCalculationNodeIncentivesInfo();
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
     @ApiOperation(value = "calculate node inspire")
-    @PostMapping(value = "/node-inspire/calculation")
-    public ResponseBean calculationNodeInspire(@RequestBody NodeInspireCalculationDto dto) {
-        InspireResultDto response = nodesService.calculationNodeInspire(dto);
+    @PostMapping(value = "/node-incentives/calculation")
+    public ResponseBean calculationNodeIncentives(@RequestBody NodeInspireCalculationDto dto) {
+        InspireResultDto response = nodesService.calculationNodeIncentives(dto);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
     @ApiOperation(value = "calculate user inspire")
-    @PostMapping(value = "/user-inspire/calculation")
-    public ResponseBean calculationUserInspire(@RequestBody UserInspireCalculationDto dto) throws SDKException {
-        InspireResultDto response = nodesService.calculationUserInspire(dto);
+    @PostMapping(value = "/user-incentives/calculation")
+    public ResponseBean calculationUserIncentives(@RequestBody UserInspireCalculationDto dto) throws SDKException {
+        InspireResultDto response = nodesService.calculationUserIncentives(dto);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 }
