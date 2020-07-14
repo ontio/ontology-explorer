@@ -24,4 +24,9 @@ public interface NodeInfoOnChainMapper extends Mapper<NodeInfoOnChain> {
     Long selectCandidateNodeCount();
 
     Long selectConsensusNodeCount();
+
+    NodeInfoOnChain selectTheLastConsensusNodeInfo();
+
+    NodeInfoOnChain selectThe49thNodeInfo();
+
 }

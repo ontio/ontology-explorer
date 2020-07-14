@@ -562,4 +562,10 @@ public class OntologySDKService {
         map.put("Controller", controllers);
         return map;
     }
+
+    public String getAuthorizeInfo(String publicKey, String address) throws SDKException {
+        OntSdk ontSdk = getOntSdk();
+        Address addr = Address.decodeBase58(address);
+        return ontSdk.nativevm().governance().getAuthorizeInfo(publicKey, addr);
+    }
 }

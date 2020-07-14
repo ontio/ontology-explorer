@@ -102,4 +102,41 @@
         WHERE status = 2;
     </select>
 
+    <select id="selectTheLastConsensusNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
+        SELECT node_rank,
+               name,
+               current_stake,
+               progress,
+               detail_url,
+               public_key,
+               address,
+               status,
+               init_pos,
+               total_pos,
+               max_authorize,
+               node_proportion,
+               current_stake_percentage
+        FROM tbl_node_info_on_chain
+        WHERE status = 2
+        ORDER BY node_rank DESC
+        LIMIT 1;
+    </select>
+
+    <select id="selectThe49thNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
+        SELECT node_rank,
+               name,
+               current_stake,
+               progress,
+               detail_url,
+               public_key,
+               address,
+               status,
+               init_pos,
+               total_pos,
+               max_authorize,
+               node_proportion,
+               current_stake_percentage
+        FROM tbl_node_info_on_chain
+        WHERE node_rank = 49;
+    </select>
 </mapper>
