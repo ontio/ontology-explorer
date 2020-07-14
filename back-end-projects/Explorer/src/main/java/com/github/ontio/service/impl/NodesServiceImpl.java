@@ -510,7 +510,7 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public CalculationInspireInfoDto getCalculationNodeInspireInfo() {
+    public CalculationInspireInfoDto getCalculationNodeIncentivesInfo() {
         NodeInfoOnChain theLastConsensusNode = nodeInfoOnChainMapper.selectTheLastConsensusNodeInfo();
         NodeInfoOnChain the49thNode = nodeInfoOnChainMapper.selectThe49thNodeInfo();
         CalculationInspireInfoDto resp = new CalculationInspireInfoDto();
@@ -521,10 +521,15 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public InspireResultDto calculationNodeInspire(NodeInspireCalculationDto dto) {
+    public InspireResultDto calculationNodeIncentives(NodeInspireCalculationDto dto) {
         Long initPos = dto.getInitPos();
         Integer nodeType = dto.getNodeType();
         String nodeProportionStr = dto.getNodeProportion();
+        String proportion = nodeProportionStr.replace("%", "");
+        BigDecimal nodeProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        if (initPos < 0 || BigDecimal.ZERO.compareTo(nodeProportion) == 1 || new BigDecimal(1).compareTo(nodeProportion) == -1) {
+            throw new ExplorerException(ErrorInfo.PARAM_ERROR);
+        }
         List<NodeInfoOnChain> nodeInfoOnChains = nodeInfoOnChainMapper.selectAll();
         if (CollectionUtils.isEmpty(nodeInfoOnChains)) {
             return null;
@@ -592,16 +597,12 @@ public class NodesServiceImpl implements INodesService {
         // 数据库获取预测一年累积的手续费总量
         BigDecimal commission = params.getGasFee();
 
-
         // ONT,ONG price
         ResponseBean ongResp = tokenService.queryPrice("ong", "usd");
         BigDecimal ong = ((TokenPriceDto) ongResp.getResult()).getPrices().get("USD").getPrice();
 
         ResponseBean ontResp = tokenService.queryPrice("ont", "usd");
         BigDecimal ont = ((TokenPriceDto) ontResp.getResult()).getPrices().get("USD").getPrice();
-
-//        BigDecimal ong = new BigDecimal("0.19").setScale(2, BigDecimal.ROUND_HALF_UP);
-//        BigDecimal ont = new BigDecimal("0.69").setScale(2, BigDecimal.ROUND_HALF_UP);
 
         // 节点的收益计算
         BigDecimal oneHundred = new BigDecimal(100);
@@ -611,8 +612,6 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal finalCommission = BigDecimal.ZERO;
         BigDecimal foundationInspire = BigDecimal.ZERO;
 
-        String proportion = nodeProportionStr.replace("%", "");
-        BigDecimal nodeProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
         BigDecimal currentStake = new BigDecimal(initPos);
         BigDecimal nodeStake = new BigDecimal(initPos);
 
@@ -651,7 +650,7 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public InspireResultDto calculationUserInspire(UserInspireCalculationDto dto) throws SDKException {
+    public InspireResultDto calculationUserIncentives(UserInspireCalculationDto dto) throws SDKException {
         String[] nodeSplit = paramsConfig.FOUNDATION_NODES.split(",");
         List<String> foundationNodes = Arrays.asList(nodeSplit);
         String[] addressSplit = paramsConfig.FOUNDATION_ADDRESSES.split(",");
@@ -659,7 +658,9 @@ public class NodesServiceImpl implements INodesService {
 
         Long stakeAmount = dto.getStakeAmount();
         String publicKey = dto.getPublicKey();
-
+        if (stakeAmount < 0) {
+            throw new ExplorerException(ErrorInfo.PARAM_ERROR);
+        }
         NodeInfoOnChain theLastConsensusNode = nodeInfoOnChainMapper.selectTheLastConsensusNodeInfo();
         String theLastConsensusNodePublicKey = theLastConsensusNode.getPublicKey();
         Long theLastConsensusNodeStake = theLastConsensusNode.getCurrentStake();
@@ -776,10 +777,6 @@ public class NodesServiceImpl implements INodesService {
 
         ResponseBean ontResp = tokenService.queryPrice("ont", "usd");
         BigDecimal ont = ((TokenPriceDto) ontResp.getResult()).getPrices().get("USD").getPrice();
-
-
-//        BigDecimal ong = new BigDecimal("0.19").setScale(2, BigDecimal.ROUND_HALF_UP);
-//        BigDecimal ont = new BigDecimal("0.69").setScale(2, BigDecimal.ROUND_HALF_UP);
 
         // 节点的收益计算
         BigDecimal oneHundred = new BigDecimal(100);

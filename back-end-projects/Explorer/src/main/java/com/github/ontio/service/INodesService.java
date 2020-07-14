@@ -88,10 +88,10 @@ public interface INodesService {
 
     NodeInspire getNodesInspireByPublicKey(String publicKey);
 
-    CalculationInspireInfoDto getCalculationNodeInspireInfo();
+    CalculationInspireInfoDto getCalculationNodeIncentivesInfo();
 
-    InspireResultDto calculationNodeInspire(NodeInspireCalculationDto dto);
+    InspireResultDto calculationNodeIncentives(NodeInspireCalculationDto dto);
 
-    InspireResultDto calculationUserInspire(UserInspireCalculationDto dto) throws SDKException;
+    InspireResultDto calculationUserIncentives(UserInspireCalculationDto dto) throws SDKException;
 
 }
