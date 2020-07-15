@@ -30,7 +30,8 @@ import com.github.ontio.model.dao.NodeRankHistory;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
+import com.github.ontio.model.dto.*;
+import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.List;
 
@@ -86,5 +87,11 @@ public interface INodesService {
     PageResponseBean getNodesInspire(Integer pageNum, Integer pageSize);
 
     NodeInspire getNodesInspireByPublicKey(String publicKey);
+
+    CalculationInspireInfoDto getCalculationNodeIncentivesInfo();
+
+    InspireResultDto calculationNodeIncentives(NodeInspireCalculationDto dto);
+
+    InspireResultDto calculationUserIncentives(UserInspireCalculationDto dto) throws SDKException;
 
 }

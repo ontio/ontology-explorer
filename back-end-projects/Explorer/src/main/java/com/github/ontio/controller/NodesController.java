@@ -4,7 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.model.dto.UpdateOffChainNodeInfoDto;
+import com.github.ontio.model.dto.*;
+import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.service.impl.ConfigServiceImpl;
 import com.github.ontio.service.impl.NodesServiceImpl;
 import com.github.ontio.service.impl.OntSdkServiceImpl;
@@ -326,6 +327,27 @@ public class NodesController {
             @RequestParam(value = "public_key") @Pattern(regexp = "^[0-9a-f]{60,140}$", message = "Invalid public key") String publicKey
     ) {
         NodeInspire response = nodesService.getNodesInspireByPublicKey(publicKey);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
+    }
+
+    @ApiOperation(value = "calculation node inspire")
+    @GetMapping(value = "/node-incentives/calculation-info")
+    public ResponseBean getCalculationNodeIncentivesInfo() {
+        CalculationInspireInfoDto response = nodesService.getCalculationNodeIncentivesInfo();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
+    }
+
+    @ApiOperation(value = "calculate node inspire")
+    @PostMapping(value = "/node-incentives/calculation")
+    public ResponseBean calculationNodeIncentives(@RequestBody NodeInspireCalculationDto dto) {
+        InspireResultDto response = nodesService.calculationNodeIncentives(dto);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
+    }
+
+    @ApiOperation(value = "calculate user inspire")
+    @PostMapping(value = "/user-incentives/calculation")
+    public ResponseBean calculationUserIncentives(@RequestBody UserInspireCalculationDto dto) throws SDKException {
+        InspireResultDto response = nodesService.calculationUserIncentives(dto);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 }

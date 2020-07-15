@@ -43,24 +43,26 @@ import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
 import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
 import com.github.ontio.model.dao.NodeRankChange;
 import com.github.ontio.model.dao.NodeRankHistory;
+import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.service.INodesService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service("NodesService")
 public class NodesServiceImpl implements INodesService {
+
+    private static final String CALCULATION_NODE = "CALCULATION_NODE";
+    private static final BigDecimal RELEASE_ONG = new BigDecimal(365 * 24 * 60 * 60);
 
     private final ParamsConfig paramsConfig;
 
@@ -86,6 +88,8 @@ public class NodesServiceImpl implements INodesService {
 
     private final TokenServiceImpl tokenService;
 
+    private final InspireCalculationParamsMapper inspireCalculationParamsMapper;
+
     @Autowired
     public NodesServiceImpl(ParamsConfig paramsConfig,
                             NodeBonusMapper nodeBonusMapper,
@@ -98,7 +102,8 @@ public class NodesServiceImpl implements INodesService {
                             CommonMapper commonMapper,
                             NodeOverviewHistoryMapper nodeOverviewHistoryMapper,
                             NodeInspireMapper nodeInspireMapper,
-                            TokenServiceImpl tokenService
+                            TokenServiceImpl tokenService,
+                            InspireCalculationParamsMapper inspireCalculationParamsMapper
     ) {
         this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
@@ -112,6 +117,7 @@ public class NodesServiceImpl implements INodesService {
         this.nodeOverviewHistoryMapper = nodeOverviewHistoryMapper;
         this.nodeInspireMapper = nodeInspireMapper;
         this.tokenService = tokenService;
+        this.inspireCalculationParamsMapper = inspireCalculationParamsMapper;
     }
 
     private OntologySDKService sdk;
@@ -186,7 +192,7 @@ public class NodesServiceImpl implements INodesService {
             NodeInfoOffChainDto nodeInfoOffChainDto = NodeInfoOffChainDto.builder()
                     .build();
             List<NodeInfoOffChain> list = nodeInfoOffChainMapper.select(nodeInfoOffChainDto);
-            list.forEach(one->{
+            list.forEach(one -> {
                 if (!one.getOpenFlag()) {
                     one.setContactMail("");
                     one.setFacebook("");
@@ -259,7 +265,7 @@ public class NodesServiceImpl implements INodesService {
     @Override
     public NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag) {
         try {
-            return  nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
+            return nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
         } catch (Exception e) {
             log.warn("Select node off chain info by public key {} failed: {}", publicKey, e.getMessage());
             return new NodeInfoOffChain();
@@ -503,4 +509,360 @@ public class NodesServiceImpl implements INodesService {
         return nodeInspire;
     }
 
+    @Override
+    public CalculationInspireInfoDto getCalculationNodeIncentivesInfo() {
+        NodeInfoOnChain theLastConsensusNode = nodeInfoOnChainMapper.selectTheLastConsensusNodeInfo();
+        NodeInfoOnChain the49thNode = nodeInfoOnChainMapper.selectThe49thNodeInfo();
+        CalculationInspireInfoDto resp = new CalculationInspireInfoDto();
+        resp.setTheLastConsensusRank(theLastConsensusNode.getNodeRank());
+        resp.setTheLastConsensusStake(theLastConsensusNode.getCurrentStake());
+        resp.setThe_49thNodeStake(the49thNode.getCurrentStake());
+        return resp;
+    }
+
+    @Override
+    public InspireResultDto calculationNodeIncentives(NodeInspireCalculationDto dto) {
+        Long initPos = dto.getInitPos();
+        Integer nodeType = dto.getNodeType();
+        String nodeProportionStr = dto.getNodeProportion();
+        String proportion = nodeProportionStr.replace("%", "");
+        BigDecimal nodeProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        if (initPos < 0 || BigDecimal.ZERO.compareTo(nodeProportion) == 1 || new BigDecimal(1).compareTo(nodeProportion) == -1) {
+            throw new ExplorerException(ErrorInfo.PARAM_ERROR);
+        }
+        List<NodeInfoOnChain> nodeInfoOnChains = nodeInfoOnChainMapper.selectAll();
+        if (CollectionUtils.isEmpty(nodeInfoOnChains)) {
+            return null;
+        }
+        NodeInfoOnChain newNode = new NodeInfoOnChain();
+        newNode.setPublicKey(CALCULATION_NODE);
+        newNode.setInitPos(initPos);
+        newNode.setTotalPos(0L);
+        newNode.setStatus(nodeType);
+        newNode.setCurrentStake(initPos);
+        nodeInfoOnChains.add(newNode);
+        nodeInfoOnChains.sort((v1, v2) -> Long.compare(v2.getInitPos() + v2.getTotalPos(), v1.getInitPos() + v1.getTotalPos()));
+
+        List<NodeInfoOnChain> consensusNodes = new ArrayList<>();
+        List<NodeInfoOnChain> candidateNodes = new ArrayList<>();
+        Long top49Stake = 0L;
+        int nodeIndex = 0;
+        // filter consensus and candidate node
+        for (int i = 0; i < nodeInfoOnChains.size(); i++) {
+            NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChains.get(i);
+            Integer status = nodeInfoOnChain.getStatus();
+            if (status.equals(2)) {
+                consensusNodes.add(nodeInfoOnChain);
+            } else if (status.equals(1)) {
+                candidateNodes.add(nodeInfoOnChain);
+            }
+            if (i < 49) {
+                Long currentStake = nodeInfoOnChain.getCurrentStake();
+                top49Stake += currentStake;
+            }
+            if (CALCULATION_NODE.equals(nodeInfoOnChain.getPublicKey())) {
+                nodeIndex = i;
+            }
+        }
+
+        // Top 49 节点的质押总和
+        BigDecimal topStake = new BigDecimal(top49Stake);
+
+        // 第一轮
+        BigDecimal first = new BigDecimal(10000000).divide(topStake, 12, BigDecimal.ROUND_HALF_UP);
+        // 第二轮 数据库获取
+        List<InspireCalculationParams> inspireCalculationParams = inspireCalculationParamsMapper.selectAll();
+        if (CollectionUtils.isEmpty(inspireCalculationParams)) {
+            return null;
+        }
+        InspireCalculationParams params = inspireCalculationParams.get(0);
+        BigDecimal totalFpFu = params.getTotalFpFu();
+        BigDecimal totalSr = params.getTotalSr();
+        BigDecimal ont = params.getOntPrice();
+        BigDecimal ong = params.getOngPrice();
+        BigDecimal subtract = topStake.subtract(totalFpFu);
+        BigDecimal second = totalSr.divide(subtract, 12, BigDecimal.ROUND_HALF_UP);
+
+        //  候选节点的质押总和
+        BigDecimal candidateTotalStake = getTotalStake(candidateNodes);
+
+        BigDecimal consensusTotalStake = getTotalStake(consensusNodes);
+        BigDecimal consensusCount = new BigDecimal(consensusNodes.size());
+        //  共识节点的平均质押量
+        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 12, BigDecimal.ROUND_HALF_UP);
+
+        // A 为所有共识节点的激励系数总和
+        Map<String, BigDecimal> consensusInspireMap = new HashMap<>();
+        BigDecimal totalConsensusInspire = BigDecimal.ZERO;
+        if (nodeType.equals(2)) {
+            totalConsensusInspire = getConsensusInspire(consensusAverageStake, consensusInspireMap, consensusNodes);
+        }
+
+
+        // 数据库获取预测一年累积的手续费总量
+        BigDecimal commission = params.getGasFee();
+
+        // 节点的收益计算
+        BigDecimal oneHundred = new BigDecimal(100);
+
+        InspireResultDto nodeInspire = new InspireResultDto();
+        BigDecimal finalReleaseOng = BigDecimal.ZERO;
+        BigDecimal finalCommission = BigDecimal.ZERO;
+        BigDecimal foundationInspire = BigDecimal.ZERO;
+
+        BigDecimal currentStake = new BigDecimal(initPos);
+        BigDecimal nodeStake = new BigDecimal(initPos);
+
+        if (nodeType.equals(2)) {
+            BigDecimal consensusInspire = consensusInspireMap.get(CALCULATION_NODE);
+            // 共识节点手续费和释放的 ONG
+            finalReleaseOng = getReleaseAndCommissionOng(consensusInspire, RELEASE_ONG, totalConsensusInspire);
+            finalCommission = getReleaseAndCommissionOng(consensusInspire, commission, totalConsensusInspire);
+        } else if (nodeType.equals(1)) {
+            // 候选节点手续费和释放的 ONG
+            finalReleaseOng = getReleaseAndCommissionOng(currentStake, RELEASE_ONG, candidateTotalStake);
+            finalCommission = getReleaseAndCommissionOng(currentStake, commission, candidateTotalStake);
+        }
+
+        if (nodeIndex < 49) {
+            foundationInspire = first.multiply(currentStake).multiply(new BigDecimal(1).add(second));
+        }
+        BigDecimal finalNodeReleaseOng = finalReleaseOng.multiply(nodeProportion);
+        BigDecimal finalNodeCommission = finalCommission.multiply(nodeProportion);
+
+        BigDecimal nodeStakeUsd = nodeStake.multiply(ont);
+        BigDecimal nodeReleaseUsd = finalNodeReleaseOng.multiply(ong);
+        BigDecimal nodeCommissionUsd = finalNodeCommission.multiply(ong);
+        BigDecimal nodeFoundationUsd = foundationInspire.multiply(ong);
+
+
+        nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.setScale(4, BigDecimal.ROUND_DOWN ).toPlainString());
+        nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.setScale(4, BigDecimal.ROUND_DOWN ).toPlainString());
+        nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.setScale(4, BigDecimal.ROUND_DOWN ).toPlainString());
+
+        nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleaseUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setNodeGasFeeIncentiveRate(nodeCommissionUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setNodeFoundationBonusIncentiveRate(nodeFoundationUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+
+        return nodeInspire;
+    }
+
+    @Override
+    public InspireResultDto calculationUserIncentives(UserInspireCalculationDto dto) throws SDKException {
+        String[] nodeSplit = paramsConfig.FOUNDATION_NODES.split(",");
+        List<String> foundationNodes = Arrays.asList(nodeSplit);
+        String[] addressSplit = paramsConfig.FOUNDATION_ADDRESSES.split(",");
+        List<String> foundationAddresses = Arrays.asList(addressSplit);
+
+        Long stakeAmount = dto.getStakeAmount();
+        String publicKey = dto.getPublicKey();
+        if (stakeAmount <= 0) {
+            throw new ExplorerException(ErrorInfo.PARAM_ERROR);
+        }
+        Long oldCurrentStake = 0L;
+        Long newCurrentStake = 0L;
+        NodeInfoOnChain theLastConsensusNode = nodeInfoOnChainMapper.selectTheLastConsensusNodeInfo();
+        String theLastConsensusNodePublicKey = theLastConsensusNode.getPublicKey();
+        Long theLastConsensusNodeStake = theLastConsensusNode.getCurrentStake();
+        List<NodeInfoOnChain> nodeInfoOnChains = nodeInfoOnChainMapper.selectAll();
+        if (CollectionUtils.isEmpty(nodeInfoOnChains)) {
+            return null;
+        }
+        NodeInfoOnChain calculationNode = new NodeInfoOnChain();
+        for (NodeInfoOnChain one : nodeInfoOnChains) {
+            if (one.getPublicKey().equals(publicKey)) {
+                oldCurrentStake = one.getCurrentStake();
+                Long initPos = one.getInitPos();
+                Long totalPos = one.getTotalPos();
+                Long maxAuthorize = one.getMaxAuthorize();
+                Long allowMaxStake = maxAuthorize - totalPos;
+                Long newTotalPos = (totalPos + stakeAmount) > maxAuthorize ? maxAuthorize : (totalPos + stakeAmount);
+                if (stakeAmount > allowMaxStake) {
+                    stakeAmount = allowMaxStake;
+                }
+
+                newCurrentStake = initPos + newTotalPos;
+                one.setTotalPos(newTotalPos);
+                one.setCurrentStake(newCurrentStake);
+                // 候选节点顶掉共识的情况
+                if ((one.getStatus().equals(1) && newCurrentStake > theLastConsensusNodeStake)
+                        || (one.getStatus().equals(1) && newCurrentStake.equals(theLastConsensusNodeStake) && publicKey.compareTo(theLastConsensusNodePublicKey) == 1)) {
+
+                    one.setStatus(2);
+                    for (NodeInfoOnChain consensus : nodeInfoOnChains) {
+                        if (consensus.getPublicKey().equals(theLastConsensusNodePublicKey)) {
+                            consensus.setStatus(1);
+                            break;
+                        }
+                    }
+                }
+                calculationNode = one;
+                break;
+            }
+        }
+        nodeInfoOnChains.sort((v1, v2) -> Long.compare(v2.getInitPos() + v2.getTotalPos(), v1.getInitPos() + v1.getTotalPos()));
+        BigDecimal stakeAmountDecimal = new BigDecimal(stakeAmount);
+
+        List<NodeInfoOnChain> consensusNodes = new ArrayList<>();
+        List<NodeInfoOnChain> candidateNodes = new ArrayList<>();
+        Long top49Stake = 0L;
+
+        BigDecimal oldSr = BigDecimal.ZERO;
+        BigDecimal newSr = BigDecimal.ZERO;
+        String proportion = calculationNode.getNodeProportion().replace("%", "");
+        BigDecimal userProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        if (foundationNodes.contains(publicKey)) {
+            initSDK();
+            Long fu = 0L;
+            Long fp = calculationNode.getInitPos();
+            for (String address : foundationAddresses) {
+                String authorizeInfo = sdk.getAuthorizeInfo(publicKey, address);
+                Long consensusPos = 0L;
+                if (!StringUtils.isEmpty(authorizeInfo)) {
+                    consensusPos = JSONObject.parseObject(authorizeInfo).getLong("consensusPos");
+                }
+                fu += consensusPos;
+            }
+
+            // old sr
+            BigDecimal decimal1 = userProportion.multiply(new BigDecimal(fu * oldCurrentStake)).divide(new BigDecimal(oldCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal subtract1 = new BigDecimal(1).subtract(userProportion);
+            BigDecimal decimal2 = new BigDecimal(fp).multiply(subtract1);
+            oldSr = decimal1.add(decimal2);
+
+            // new sr
+            BigDecimal decimal3 = userProportion.multiply(new BigDecimal(fu * newCurrentStake)).divide(new BigDecimal(newCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal subtract2 = new BigDecimal(1).subtract(userProportion);
+            BigDecimal decimal4 = new BigDecimal(fp).multiply(subtract2);
+            newSr = decimal3.add(decimal4);
+        }
+
+        // filter consensus and candidate node
+        for (int i = 0; i < nodeInfoOnChains.size(); i++) {
+            NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChains.get(i);
+            Integer status = nodeInfoOnChain.getStatus();
+            if (status.equals(2)) {
+                consensusNodes.add(nodeInfoOnChain);
+            } else if (status.equals(1)) {
+                candidateNodes.add(nodeInfoOnChain);
+            }
+
+            if (i < 49) {
+                Long currentStake = nodeInfoOnChain.getCurrentStake();
+                top49Stake += currentStake;
+            }
+        }
+
+        // Top 49 节点的质押总和
+        BigDecimal topStake = new BigDecimal(top49Stake);
+
+        // 第一轮
+        BigDecimal first = new BigDecimal(10000000).divide(topStake, 12, BigDecimal.ROUND_HALF_UP);
+        // 第二轮 数据库获取
+        List<InspireCalculationParams> inspireCalculationParams = inspireCalculationParamsMapper.selectAll();
+        if (CollectionUtils.isEmpty(inspireCalculationParams)) {
+            return null;
+        }
+        InspireCalculationParams params = inspireCalculationParams.get(0);
+        BigDecimal totalFpFu = params.getTotalFpFu();
+        BigDecimal totalSr = params.getTotalSr();
+        totalSr = totalSr.subtract(oldSr).add(newSr);
+        BigDecimal ont = params.getOntPrice();
+        BigDecimal ong = params.getOngPrice();
+        BigDecimal subtract = topStake.subtract(totalFpFu);
+        BigDecimal second = totalSr.divide(subtract, 12, BigDecimal.ROUND_HALF_UP);
+
+        //  候选节点的质押总和
+        BigDecimal candidateTotalStake = getTotalStake(candidateNodes);
+
+        BigDecimal consensusTotalStake = getTotalStake(consensusNodes);
+        BigDecimal consensusCount = new BigDecimal(consensusNodes.size());
+        //  共识节点的平均质押量
+        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 12, BigDecimal.ROUND_HALF_UP);
+
+        // A 为所有共识节点的激励系数总和
+        Map<String, BigDecimal> consensusInspireMap = new HashMap<>();
+        BigDecimal totalConsensusInspire = getConsensusInspire(consensusAverageStake, consensusInspireMap, consensusNodes);
+
+
+        // 数据库获取预测一年累积的手续费总量
+        BigDecimal commission = params.getGasFee();
+
+        // 节点的收益计算
+        BigDecimal oneHundred = new BigDecimal(100);
+
+        InspireResultDto nodeInspire = new InspireResultDto();
+        BigDecimal finalReleaseOng = BigDecimal.ZERO;
+        BigDecimal finalCommission = BigDecimal.ZERO;
+        BigDecimal userFoundationInspire = BigDecimal.ZERO;
+
+        Integer status = calculationNode.getStatus();
+
+        BigDecimal currentStake = new BigDecimal(calculationNode.getCurrentStake());
+        BigDecimal totalPos = new BigDecimal(calculationNode.getTotalPos());
+
+        if (status.equals(2)) {
+            BigDecimal consensusInspire = consensusInspireMap.get(publicKey);
+            // 共识节点手续费和释放的 ONG
+            finalReleaseOng = getReleaseAndCommissionOng(consensusInspire, RELEASE_ONG, totalConsensusInspire);
+            finalCommission = getReleaseAndCommissionOng(consensusInspire, commission, totalConsensusInspire);
+        } else if (status.equals(1)) {
+            // 候选节点手续费和释放的 ONG
+            finalReleaseOng = getReleaseAndCommissionOng(currentStake, RELEASE_ONG, candidateTotalStake);
+            finalCommission = getReleaseAndCommissionOng(currentStake, commission, candidateTotalStake);
+        }
+        if (foundationNodes.contains(publicKey)) {
+            BigDecimal fp = new BigDecimal(calculationNode.getInitPos());
+            BigDecimal siSubFp = currentStake.subtract(fp);
+            // 用户收益
+            BigDecimal siPb = currentStake.multiply(userProportion);
+            BigDecimal add = siPb.divide(siSubFp, 12, BigDecimal.ROUND_HALF_UP).add(second);
+            userFoundationInspire = first.multiply(stakeAmountDecimal).multiply(add);
+        }
+
+        BigDecimal finalUserReleaseOng = finalReleaseOng.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal finalUserCommission = finalCommission.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
+
+        BigDecimal stakeAmountUsd = stakeAmountDecimal.multiply(ont);
+        BigDecimal userReleaseUsd = finalUserReleaseOng.multiply(ong);
+        BigDecimal userCommissionUsd = finalUserCommission.multiply(ong);
+        BigDecimal userFoundationUsd = userFoundationInspire.multiply(ong);
+
+        nodeInspire.setUserReleasedOngIncentive(finalUserReleaseOng.setScale(4, BigDecimal.ROUND_DOWN ).toPlainString());
+        nodeInspire.setUserGasFeeIncentive(finalUserCommission.setScale(4, BigDecimal.ROUND_DOWN ).toPlainString());
+        nodeInspire.setUserFoundationBonusIncentive(userFoundationInspire.setScale(4, BigDecimal.ROUND_DOWN ).toPlainString());
+
+        nodeInspire.setUserReleasedOngIncentiveRate(userReleaseUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setUserGasFeeIncentiveRate(userCommissionUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setUserFoundationBonusIncentiveRate(userFoundationUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+
+        return nodeInspire;
+    }
+
+    private BigDecimal getTotalStake(List<NodeInfoOnChain> nodes) {
+        Long totalStake = 0L;
+        for (NodeInfoOnChain node : nodes) {
+            Long currentStake = node.getCurrentStake();
+            totalStake += currentStake;
+        }
+        return new BigDecimal(totalStake);
+    }
+
+    private BigDecimal getConsensusInspire(BigDecimal consensusAverageStake, Map<String, BigDecimal> consensusInspireMap, List<NodeInfoOnChain> consensusNodes) {
+        BigDecimal totalConsensusInspire = BigDecimal.ZERO;
+        for (NodeInfoOnChain nodeInfoOnChain : consensusNodes) {
+            Long currentStake = nodeInfoOnChain.getCurrentStake();
+            String publicKey = nodeInfoOnChain.getPublicKey();
+            BigDecimal xi = new BigDecimal(currentStake * 0.5).divide(consensusAverageStake, 12, BigDecimal.ROUND_HALF_UP);
+            double pow = Math.pow(Math.E, (BigDecimal.ZERO.subtract(xi)).doubleValue());
+            BigDecimal consensusInspire = xi.multiply(new BigDecimal(pow)).setScale(12, BigDecimal.ROUND_HALF_UP);
+            consensusInspireMap.put(publicKey, consensusInspire);
+            totalConsensusInspire = totalConsensusInspire.add(consensusInspire);
+        }
+        return totalConsensusInspire;
+    }
+
+    private BigDecimal getReleaseAndCommissionOng(BigDecimal value, BigDecimal ong, BigDecimal totalConsensusInspire) {
+        return new BigDecimal(0.5).multiply(ong).multiply(value).divide(totalConsensusInspire, 12, BigDecimal.ROUND_HALF_UP);
+    }
 }

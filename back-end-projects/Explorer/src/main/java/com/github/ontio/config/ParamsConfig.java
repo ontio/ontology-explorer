@@ -165,4 +165,9 @@ public class ParamsConfig {
 
     @Value("${timestamp.20200707000000.utc}")
     public Integer TIMESTAMP_20200707000000_UTC;
+
+    @Value("${foundation.nodes}")
+    public String FOUNDATION_NODES;
+    @Value("${foundation.addresses}")
+    public String FOUNDATION_ADDRESSES;
 }
