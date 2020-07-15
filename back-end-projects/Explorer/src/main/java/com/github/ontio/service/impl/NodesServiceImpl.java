@@ -656,9 +656,11 @@ public class NodesServiceImpl implements INodesService {
 
         Long stakeAmount = dto.getStakeAmount();
         String publicKey = dto.getPublicKey();
-        if (stakeAmount < 0) {
+        if (stakeAmount <= 0) {
             throw new ExplorerException(ErrorInfo.PARAM_ERROR);
         }
+        Long oldCurrentStake = 0L;
+        Long newCurrentStake = 0L;
         NodeInfoOnChain theLastConsensusNode = nodeInfoOnChainMapper.selectTheLastConsensusNodeInfo();
         String theLastConsensusNodePublicKey = theLastConsensusNode.getPublicKey();
         Long theLastConsensusNodeStake = theLastConsensusNode.getCurrentStake();
@@ -669,6 +671,7 @@ public class NodesServiceImpl implements INodesService {
         NodeInfoOnChain calculationNode = new NodeInfoOnChain();
         for (NodeInfoOnChain one : nodeInfoOnChains) {
             if (one.getPublicKey().equals(publicKey)) {
+                oldCurrentStake = one.getCurrentStake();
                 Long initPos = one.getInitPos();
                 Long totalPos = one.getTotalPos();
                 Long maxAuthorize = one.getMaxAuthorize();
@@ -678,7 +681,7 @@ public class NodesServiceImpl implements INodesService {
                     stakeAmount = allowMaxStake;
                 }
 
-                Long newCurrentStake = initPos + newTotalPos;
+                newCurrentStake = initPos + newTotalPos;
                 one.setTotalPos(newTotalPos);
                 one.setCurrentStake(newCurrentStake);
                 // 候选节点顶掉共识的情况
@@ -703,9 +706,11 @@ public class NodesServiceImpl implements INodesService {
         List<NodeInfoOnChain> consensusNodes = new ArrayList<>();
         List<NodeInfoOnChain> candidateNodes = new ArrayList<>();
         Long top49Stake = 0L;
-        BigDecimal fuFp = BigDecimal.ZERO;
-        int nodeIndex = 0;
 
+        BigDecimal oldSr = BigDecimal.ZERO;
+        BigDecimal newSr = BigDecimal.ZERO;
+        String proportion = calculationNode.getNodeProportion().replace("%", "");
+        BigDecimal userProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
         if (foundationNodes.contains(publicKey)) {
             initSDK();
             Long fu = 0L;
@@ -718,7 +723,18 @@ public class NodesServiceImpl implements INodesService {
                 }
                 fu += consensusPos;
             }
-            fuFp = new BigDecimal(fp).add(new BigDecimal(fu));
+
+            // old sr
+            BigDecimal decimal1 = userProportion.multiply(new BigDecimal(fu * oldCurrentStake)).divide(new BigDecimal(oldCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal subtract1 = new BigDecimal(1).subtract(userProportion);
+            BigDecimal decimal2 = new BigDecimal(fp).multiply(subtract1);
+            oldSr = decimal1.add(decimal2);
+
+            // new sr
+            BigDecimal decimal3 = userProportion.multiply(new BigDecimal(fu * newCurrentStake)).divide(new BigDecimal(newCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal subtract2 = new BigDecimal(1).subtract(userProportion);
+            BigDecimal decimal4 = new BigDecimal(fp).multiply(subtract2);
+            newSr = decimal3.add(decimal4);
         }
 
         // filter consensus and candidate node
@@ -735,9 +751,6 @@ public class NodesServiceImpl implements INodesService {
                 Long currentStake = nodeInfoOnChain.getCurrentStake();
                 top49Stake += currentStake;
             }
-            if (publicKey.equals(nodeInfoOnChain.getPublicKey())) {
-                nodeIndex = i;
-            }
         }
 
         // Top 49 节点的质押总和
@@ -753,6 +766,7 @@ public class NodesServiceImpl implements INodesService {
         InspireCalculationParams params = inspireCalculationParams.get(0);
         BigDecimal totalFpFu = params.getTotalFpFu();
         BigDecimal totalSr = params.getTotalSr();
+        totalSr = totalSr.subtract(oldSr).add(newSr);
         BigDecimal ont = params.getOntPrice();
         BigDecimal ong = params.getOngPrice();
         BigDecimal subtract = topStake.subtract(totalFpFu);
@@ -780,17 +794,12 @@ public class NodesServiceImpl implements INodesService {
         InspireResultDto nodeInspire = new InspireResultDto();
         BigDecimal finalReleaseOng = BigDecimal.ZERO;
         BigDecimal finalCommission = BigDecimal.ZERO;
-        BigDecimal foundationInspire = BigDecimal.ZERO;
         BigDecimal userFoundationInspire = BigDecimal.ZERO;
 
         Integer status = calculationNode.getStatus();
-        String proportion = calculationNode.getNodeProportion().replace("%", "");
-        BigDecimal userProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal nodeProportion = new BigDecimal(1).subtract(userProportion);
+
         BigDecimal currentStake = new BigDecimal(calculationNode.getCurrentStake());
-        BigDecimal nodeStake = new BigDecimal(calculationNode.getInitPos());
         BigDecimal totalPos = new BigDecimal(calculationNode.getTotalPos());
-        BigDecimal userStake;
 
         if (status.equals(2)) {
             BigDecimal consensusInspire = consensusInspireMap.get(publicKey);
@@ -805,15 +814,12 @@ public class NodesServiceImpl implements INodesService {
         if (foundationNodes.contains(publicKey)) {
             BigDecimal fp = new BigDecimal(calculationNode.getInitPos());
             BigDecimal siSubFp = currentStake.subtract(fp);
-            foundationInspire = first.multiply(siSubFp).multiply(nodeProportion);
             // 用户收益
-            userStake = currentStake.subtract(fuFp);
             BigDecimal siPb = currentStake.multiply(userProportion);
             BigDecimal add = siPb.divide(siSubFp, 12, BigDecimal.ROUND_HALF_UP).add(second);
             userFoundationInspire = first.multiply(stakeAmountDecimal).multiply(add);
-        } else if (nodeIndex < 49) {
-            foundationInspire = first.multiply(currentStake).multiply(new BigDecimal(1).add(second));
         }
+
         BigDecimal finalUserReleaseOng = finalReleaseOng.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
         BigDecimal finalUserCommission = finalCommission.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
 
