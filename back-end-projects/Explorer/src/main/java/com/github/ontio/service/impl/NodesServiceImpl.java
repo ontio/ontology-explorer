@@ -569,7 +569,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal topStake = new BigDecimal(top49Stake);
 
         // 第一轮
-        BigDecimal first = new BigDecimal(10000000).divide(topStake, 10, BigDecimal.ROUND_HALF_UP);
+        BigDecimal first = new BigDecimal(10000000).divide(topStake, 12, BigDecimal.ROUND_HALF_UP);
         // 第二轮 数据库获取
         List<InspireCalculationParams> inspireCalculationParams = inspireCalculationParamsMapper.selectAll();
         if (CollectionUtils.isEmpty(inspireCalculationParams)) {
@@ -577,6 +577,8 @@ public class NodesServiceImpl implements INodesService {
         }
         InspireCalculationParams params = inspireCalculationParams.get(0);
         BigDecimal second = params.getSecondRoundIncentive();
+        BigDecimal ont = params.getOntPrice();
+        BigDecimal ong = params.getOngPrice();
 
         //  候选节点的质押总和
         BigDecimal candidateTotalStake = getTotalStake(candidateNodes);
@@ -584,7 +586,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal consensusTotalStake = getTotalStake(consensusNodes);
         BigDecimal consensusCount = new BigDecimal(consensusNodes.size());
         //  共识节点的平均质押量
-        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 12, BigDecimal.ROUND_HALF_UP);
 
         // A 为所有共识节点的激励系数总和
         Map<String, BigDecimal> consensusInspireMap = new HashMap<>();
@@ -596,13 +598,6 @@ public class NodesServiceImpl implements INodesService {
 
         // 数据库获取预测一年累积的手续费总量
         BigDecimal commission = params.getGasFee();
-
-        // ONT,ONG price
-        ResponseBean ongResp = tokenService.queryPrice("ong", "usd");
-        BigDecimal ong = ((TokenPriceDto) ongResp.getResult()).getPrices().get("USD").getPrice();
-
-        ResponseBean ontResp = tokenService.queryPrice("ont", "usd");
-        BigDecimal ont = ((TokenPriceDto) ontResp.getResult()).getPrices().get("USD").getPrice();
 
         // 节点的收益计算
         BigDecimal oneHundred = new BigDecimal(100);
@@ -642,9 +637,9 @@ public class NodesServiceImpl implements INodesService {
         nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.longValue());
         nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.longValue());
 
-        nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleaseUsd.divide(nodeStakeUsd, 4, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-        nodeInspire.setNodeGasFeeIncentiveRate(nodeCommissionUsd.divide(nodeStakeUsd, 4, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-        nodeInspire.setNodeFoundationBonusIncentiveRate(nodeFoundationUsd.divide(nodeStakeUsd, 4, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleaseUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setNodeGasFeeIncentiveRate(nodeCommissionUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setNodeFoundationBonusIncentiveRate(nodeFoundationUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
 
         return nodeInspire;
     }
@@ -746,7 +741,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal topStake = new BigDecimal(top49Stake);
 
         // 第一轮
-        BigDecimal first = new BigDecimal(10000000).divide(topStake, 10, BigDecimal.ROUND_HALF_UP);
+        BigDecimal first = new BigDecimal(10000000).divide(topStake, 12, BigDecimal.ROUND_HALF_UP);
         // 第二轮 数据库获取
         List<InspireCalculationParams> inspireCalculationParams = inspireCalculationParamsMapper.selectAll();
         if (CollectionUtils.isEmpty(inspireCalculationParams)) {
@@ -754,6 +749,8 @@ public class NodesServiceImpl implements INodesService {
         }
         InspireCalculationParams params = inspireCalculationParams.get(0);
         BigDecimal second = params.getSecondRoundIncentive();
+        BigDecimal ont = params.getOntPrice();
+        BigDecimal ong = params.getOngPrice();
 
         //  候选节点的质押总和
         BigDecimal candidateTotalStake = getTotalStake(candidateNodes);
@@ -761,7 +758,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal consensusTotalStake = getTotalStake(consensusNodes);
         BigDecimal consensusCount = new BigDecimal(consensusNodes.size());
         //  共识节点的平均质押量
-        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 12, BigDecimal.ROUND_HALF_UP);
 
         // A 为所有共识节点的激励系数总和
         Map<String, BigDecimal> consensusInspireMap = new HashMap<>();
@@ -770,13 +767,6 @@ public class NodesServiceImpl implements INodesService {
 
         // 数据库获取预测一年累积的手续费总量
         BigDecimal commission = params.getGasFee();
-
-        // ONT,ONG price
-        ResponseBean ongResp = tokenService.queryPrice("ong", "usd");
-        BigDecimal ong = ((TokenPriceDto) ongResp.getResult()).getPrices().get("USD").getPrice();
-
-        ResponseBean ontResp = tokenService.queryPrice("ont", "usd");
-        BigDecimal ont = ((TokenPriceDto) ontResp.getResult()).getPrices().get("USD").getPrice();
 
         // 节点的收益计算
         BigDecimal oneHundred = new BigDecimal(100);
@@ -813,13 +803,13 @@ public class NodesServiceImpl implements INodesService {
             // 用户收益
             userStake = currentStake.subtract(fuFp);
             BigDecimal siPb = currentStake.multiply(userProportion);
-            BigDecimal add = siPb.divide(siSubFp, 10, BigDecimal.ROUND_HALF_UP).add(second);
+            BigDecimal add = siPb.divide(siSubFp, 12, BigDecimal.ROUND_HALF_UP).add(second);
             userFoundationInspire = first.multiply(stakeAmountDecimal).multiply(add);
         } else if (nodeIndex < 49) {
             foundationInspire = first.multiply(currentStake).multiply(new BigDecimal(1).add(second));
         }
-        BigDecimal finalUserReleaseOng = finalReleaseOng.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal finalUserCommission = finalCommission.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 10, BigDecimal.ROUND_HALF_UP);
+        BigDecimal finalUserReleaseOng = finalReleaseOng.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal finalUserCommission = finalCommission.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
 
         BigDecimal stakeAmountUsd = stakeAmountDecimal.multiply(ont);
         BigDecimal userReleaseUsd = finalUserReleaseOng.multiply(ong);
@@ -830,9 +820,9 @@ public class NodesServiceImpl implements INodesService {
         nodeInspire.setUserGasFeeIncentive(finalUserCommission.longValue());
         nodeInspire.setUserFoundationBonusIncentive(userFoundationInspire.longValue());
 
-        nodeInspire.setUserReleasedOngIncentiveRate(userReleaseUsd.divide(stakeAmountUsd, 4, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-        nodeInspire.setUserGasFeeIncentiveRate(userCommissionUsd.divide(stakeAmountUsd, 4, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-        nodeInspire.setUserFoundationBonusIncentiveRate(userFoundationUsd.divide(stakeAmountUsd, 4, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setUserReleasedOngIncentiveRate(userReleaseUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setUserGasFeeIncentiveRate(userCommissionUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setUserFoundationBonusIncentiveRate(userFoundationUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
 
         return nodeInspire;
     }
@@ -851,9 +841,9 @@ public class NodesServiceImpl implements INodesService {
         for (NodeInfoOnChain nodeInfoOnChain : consensusNodes) {
             Long currentStake = nodeInfoOnChain.getCurrentStake();
             String publicKey = nodeInfoOnChain.getPublicKey();
-            BigDecimal xi = new BigDecimal(currentStake * 0.5).divide(consensusAverageStake, 2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal xi = new BigDecimal(currentStake * 0.5).divide(consensusAverageStake, 12, BigDecimal.ROUND_HALF_UP);
             double pow = Math.pow(Math.E, (BigDecimal.ZERO.subtract(xi)).doubleValue());
-            BigDecimal consensusInspire = xi.multiply(new BigDecimal(pow)).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal consensusInspire = xi.multiply(new BigDecimal(pow)).setScale(12, BigDecimal.ROUND_HALF_UP);
             consensusInspireMap.put(publicKey, consensusInspire);
             totalConsensusInspire = totalConsensusInspire.add(consensusInspire);
         }
@@ -861,6 +851,6 @@ public class NodesServiceImpl implements INodesService {
     }
 
     private BigDecimal getReleaseAndCommissionOng(BigDecimal value, BigDecimal ong, BigDecimal totalConsensusInspire) {
-        return new BigDecimal(0.5).multiply(ong).multiply(value).divide(totalConsensusInspire, 2, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(0.5).multiply(ong).multiply(value).divide(totalConsensusInspire, 12, BigDecimal.ROUND_HALF_UP);
     }
 }

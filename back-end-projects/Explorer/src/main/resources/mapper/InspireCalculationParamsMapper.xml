@@ -8,6 +8,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="second_round_incentive" jdbcType="DECIMAL" property="secondRoundIncentive"/>
         <result column="gas_fee" jdbcType="DECIMAL" property="gasFee"/>
+        <result column="ont_price" jdbcType="DECIMAL" property="ontPrice"/>
+        <result column="ong_price" jdbcType="DECIMAL" property="ongPrice"/>
     </resultMap>
 
 </mapper>

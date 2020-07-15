@@ -21,4 +21,9 @@ public class InspireCalculationParams {
     @Column(name = "gas_fee")
     private BigDecimal gasFee;
 
+    @Column(name = "ont_price")
+    private BigDecimal ontPrice;
+
+    @Column(name = "ong_price")
+    private BigDecimal ongPrice;
 }
