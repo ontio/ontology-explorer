@@ -576,9 +576,12 @@ public class NodesServiceImpl implements INodesService {
             return null;
         }
         InspireCalculationParams params = inspireCalculationParams.get(0);
-        BigDecimal second = params.getSecondRoundIncentive();
+        BigDecimal totalFpFu = params.getTotalFpFu();
+        BigDecimal totalSr = params.getTotalSr();
         BigDecimal ont = params.getOntPrice();
         BigDecimal ong = params.getOngPrice();
+        BigDecimal subtract = topStake.subtract(totalFpFu);
+        BigDecimal second = totalSr.divide(subtract, 12, BigDecimal.ROUND_HALF_UP);
 
         //  候选节点的质押总和
         BigDecimal candidateTotalStake = getTotalStake(candidateNodes);
@@ -748,9 +751,12 @@ public class NodesServiceImpl implements INodesService {
             return null;
         }
         InspireCalculationParams params = inspireCalculationParams.get(0);
-        BigDecimal second = params.getSecondRoundIncentive();
+        BigDecimal totalFpFu = params.getTotalFpFu();
+        BigDecimal totalSr = params.getTotalSr();
         BigDecimal ont = params.getOntPrice();
         BigDecimal ong = params.getOngPrice();
+        BigDecimal subtract = topStake.subtract(totalFpFu);
+        BigDecimal second = totalSr.divide(subtract, 12, BigDecimal.ROUND_HALF_UP);
 
         //  候选节点的质押总和
         BigDecimal candidateTotalStake = getTotalStake(candidateNodes);
