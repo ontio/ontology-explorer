@@ -15,8 +15,11 @@ public class InspireCalculationParams {
     @GeneratedValue(generator = "JDBC")
     private Integer id;
 
-    @Column(name = "second_round_incentive")
-    private BigDecimal secondRoundIncentive;
+    @Column(name = "total_fp_fu")
+    private BigDecimal totalFpFu;
+
+    @Column(name = "total_sr")
+    private BigDecimal totalSr;
 
     @Column(name = "gas_fee")
     private BigDecimal gasFee;
