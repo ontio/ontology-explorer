@@ -633,9 +633,9 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal nodeFoundationUsd = foundationInspire.multiply(ong);
 
 
-        nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.longValue());
-        nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.longValue());
-        nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.longValue());
+        nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.setScale(12, BigDecimal.ROUND_HALF_UP).toPlainString());
+        nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.setScale(12, BigDecimal.ROUND_HALF_UP).toPlainString());
+        nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.setScale(12, BigDecimal.ROUND_HALF_UP).toPlainString());
 
         nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleaseUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
         nodeInspire.setNodeGasFeeIncentiveRate(nodeCommissionUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
@@ -816,9 +816,9 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal userCommissionUsd = finalUserCommission.multiply(ong);
         BigDecimal userFoundationUsd = userFoundationInspire.multiply(ong);
 
-        nodeInspire.setUserReleasedOngIncentive(finalUserReleaseOng.longValue());
-        nodeInspire.setUserGasFeeIncentive(finalUserCommission.longValue());
-        nodeInspire.setUserFoundationBonusIncentive(userFoundationInspire.longValue());
+        nodeInspire.setUserReleasedOngIncentive(finalUserReleaseOng.setScale(12, BigDecimal.ROUND_HALF_UP).toPlainString());
+        nodeInspire.setUserGasFeeIncentive(finalUserCommission.setScale(12, BigDecimal.ROUND_HALF_UP).toPlainString());
+        nodeInspire.setUserFoundationBonusIncentive(userFoundationInspire.setScale(12, BigDecimal.ROUND_HALF_UP).toPlainString());
 
         nodeInspire.setUserReleasedOngIncentiveRate(userReleaseUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
         nodeInspire.setUserGasFeeIncentiveRate(userCommissionUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
