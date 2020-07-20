@@ -117,9 +117,7 @@
                node_proportion,
                current_stake_percentage
         FROM tbl_node_info_on_chain
-        WHERE status = 2
-        ORDER BY node_rank DESC
-        LIMIT 1;
+        WHERE node_rank = #{rankNumber};
     </select>
 
     <select id="selectThe49thNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
