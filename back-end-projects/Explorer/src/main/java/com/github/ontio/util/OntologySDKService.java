@@ -31,6 +31,7 @@ import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.DataSignature;
+import com.github.ontio.core.governance.Configuration;
 import com.github.ontio.core.payload.InvokeWasmCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
@@ -59,6 +60,7 @@ public class OntologySDKService {
 
     private String ontIdContractAddress = "0000000000000000000000000000000000000003";
     private static OntologySDKService instance = null;
+    private final String contractAddress = "0000000000000000000000000000000000000007";
 
     @Autowired
     private ParamsConfig paramsConfig;
@@ -567,5 +569,28 @@ public class OntologySDKService {
         OntSdk ontSdk = getOntSdk();
         Address addr = Address.decodeBase58(address);
         return ontSdk.nativevm().governance().getAuthorizeInfo(publicKey, addr);
+    }
+
+    public int getPreConsensusCount() {
+        try {
+            Configuration preConfiguration = getPreConfiguration();
+            return preConfiguration.K;
+        } catch (Exception e) {
+            log.warn("Getting authorize info failed: {}", e.getMessage());
+        }
+        return 0;
+    }
+
+    public Configuration getPreConfiguration() throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        String res = ontSdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString("preConfig".getBytes()));
+        if(res == null){
+            return null;
+        }
+        Configuration configuration = new Configuration();
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(res));
+        BinaryReader reader = new BinaryReader(in);
+        configuration.deserialize(reader);
+        return configuration;
     }
 }
