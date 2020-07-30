@@ -153,6 +153,12 @@ public class NodesServiceImpl implements INodesService {
             Map<String, NodeRankChange> nodeRankChangeMap = getNodeRankChange();
             List<NodeInfoOnChainWithRankChange> nodeInfoOnChainWithRankChanges = new ArrayList<>();
             for (NodeInfoOnChainDto nodeInfo : nodeInfoOnChainList) {
+                Long maxAuthorize = nodeInfo.getMaxAuthorize();
+                Long initPos = nodeInfo.getInitPos();
+                long tenTimesInitPos = initPos * 10;
+                if (maxAuthorize > tenTimesInitPos) {
+                    nodeInfo.setMaxAuthorize(tenTimesInitPos);
+                }
                 NodeRankChange nodeRankChange = nodeRankChangeMap.getOrDefault(nodeInfo.getPublicKey(), null);
                 if (nodeRankChange == null) {
                     nodeInfoOnChainWithRankChanges.add(new NodeInfoOnChainWithRankChange(nodeInfo, 0));
