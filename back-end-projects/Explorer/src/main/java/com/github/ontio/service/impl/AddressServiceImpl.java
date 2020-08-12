@@ -119,6 +119,9 @@ public class AddressServiceImpl implements IAddressService {
                 case ConstantParam.ASSET_TYPE_ALL:
                     balanceList = getAllAssetBalance(address);
                     break;
+                case ConstantParam.ASSET_TYPE_NATIVE_OEP4:
+                    balanceList = getNativeAndOep4Balance(address);
+                    break;
                 default:
                     break;
             }
@@ -139,6 +142,8 @@ public class AddressServiceImpl implements IAddressService {
                 case ConstantParam.ASSET_TYPE_ALL:
                     balanceList = getAllAssetBalanceOld(address);
                     break;
+                case ConstantParam.ASSET_TYPE_NATIVE_OEP4:
+                    balanceList = getNativeAndOep4BalanceOld(address);
                 default:
                     break;
             }
@@ -470,6 +475,29 @@ public class AddressServiceImpl implements IAddressService {
         balanceDtos.addAll(getOep4BalanceOld(address, ""));
         balanceDtos.addAll(getOep5BalanceOld(address, "", ""));
         balanceDtos.addAll(getOep8BalanceOld(address, ""));
+        return balanceDtos;
+    }
+
+
+    /**
+     * get native and oep4 asset balance
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getNativeAndOep4Balance(String address) {
+
+        List<BalanceDto> balanceDtos = new ArrayList<>();
+        balanceDtos.addAll(getNativeBalance(address));
+        balanceDtos.addAll(getOep4Balance(address, ""));
+        return balanceDtos;
+    }
+
+    private List<BalanceDto> getNativeAndOep4BalanceOld(String address) {
+
+        List<BalanceDto> balanceDtos = new ArrayList<>();
+        balanceDtos.addAll(getNativeBalance(address));
+        balanceDtos.addAll(getOep4BalanceOld(address, ""));
         return balanceDtos;
     }
 
