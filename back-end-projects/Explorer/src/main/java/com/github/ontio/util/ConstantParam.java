@@ -100,6 +100,8 @@ public class ConstantParam {
 
     public static final String ASSET_TYPE_ALL = "all";
 
+    public static final String ASSET_TYPE_NATIVE_OEP4 = "native-oep4";
+
     //合约审核标识
     public static final Boolean AUDIT_PASSED = true;
 

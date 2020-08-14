@@ -50,7 +50,7 @@ public class AddressController {
     @GetMapping(value = "/{address}/{token_type}/balances")
     public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address " +
             "format") String address,
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all", message =
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all|native-oep4|NATIVE-OEP4", message =
                     "Incorrect token type") String tokenType) {
 
         log.info("####{}.{} begin...address:{},token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
