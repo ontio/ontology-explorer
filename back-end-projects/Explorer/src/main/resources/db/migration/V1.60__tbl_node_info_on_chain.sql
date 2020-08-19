@@ -1,0 +1,1 @@
+ALTER TABLE tbl_node_info_on_chain ADD COLUMN user_proportion varchar(64) NOT NULL COMMENT '用户质押部分分配比例' AFTER node_proportion;

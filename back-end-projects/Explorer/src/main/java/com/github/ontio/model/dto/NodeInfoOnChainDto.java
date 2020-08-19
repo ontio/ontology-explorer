@@ -12,9 +12,9 @@ public class NodeInfoOnChainDto extends NodeInfoOnChain {
     //@Builder
     public NodeInfoOnChainDto(Integer nodeRank, String name, Long currentStake, String progress, String detailUrl,
                               String publicKey, String address, Integer status, Long initPos, Long totalPos,
-                              Long maxAuthorize, String nodeProportion, String currentStakePercentage) {
+                              Long maxAuthorize, String nodeProportion, String userProportion, String currentStakePercentage) {
         super(nodeRank, name, currentStake, progress, detailUrl, publicKey, address, status, initPos, totalPos,
-                maxAuthorize, nodeProportion, currentStakePercentage);
+                maxAuthorize, nodeProportion, userProportion, currentStakePercentage);
     }
 
 }
