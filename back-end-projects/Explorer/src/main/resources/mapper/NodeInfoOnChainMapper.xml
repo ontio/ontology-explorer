@@ -17,6 +17,7 @@
         <result column="total_pos" jdbcType="BIGINT" property="totalPos"/>
         <result column="max_authorize" jdbcType="BIGINT" property="maxAuthorize"/>
         <result column="node_proportion" jdbcType="VARCHAR" property="nodeProportion"/>
+        <result column="user_proportion" jdbcType="VARCHAR" property="userProportion"/>
         <result column="current_stake_percentage" jdbcType="VARCHAR" property="currentStakePercentage"/>
     </resultMap>
 
@@ -39,6 +40,7 @@
                total_pos,
                max_authorize,
                node_proportion,
+               user_proportion,
                current_stake_percentage
         FROM tbl_node_info_on_chain
     </select>
@@ -61,6 +63,7 @@
                total_pos,
                max_authorize,
                node_proportion,
+               user_proportion,
                current_stake_percentage
         FROM tbl_node_info_on_chain
         WHERE public_key = #{publicKey}
@@ -80,6 +83,7 @@
                total_pos,
                max_authorize,
                node_proportion,
+               user_proportion,
                current_stake_percentage
         FROM tbl_node_info_on_chain
         WHERE name LIKE concat('%', #{name}, '%');
@@ -115,6 +119,7 @@
                total_pos,
                max_authorize,
                node_proportion,
+               user_proportion,
                current_stake_percentage
         FROM tbl_node_info_on_chain
         WHERE node_rank = #{rankNumber};
