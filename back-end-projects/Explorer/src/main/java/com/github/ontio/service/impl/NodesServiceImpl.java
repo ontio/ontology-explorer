@@ -728,8 +728,10 @@ public class NodesServiceImpl implements INodesService {
 
         BigDecimal oldSr = BigDecimal.ZERO;
         BigDecimal newSr = BigDecimal.ZERO;
-        String proportion = calculationNode.getNodeProportion().replace("%", "");
-        BigDecimal userProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        String initProportion = calculationNode.getNodeProportion().replace("%", "");
+        String stakeProportion = calculationNode.getUserProportion().replace("%", "");
+        BigDecimal initUserProportion = new BigDecimal(initProportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal stakeUserProportion = new BigDecimal(stakeProportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
         if (foundationNodes.contains(publicKey)) {
             initSDK();
             Long fu = 0L;
@@ -744,14 +746,14 @@ public class NodesServiceImpl implements INodesService {
             }
 
             // old sr
-            BigDecimal decimal1 = userProportion.multiply(new BigDecimal(fu * oldCurrentStake)).divide(new BigDecimal(oldCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
-            BigDecimal subtract1 = new BigDecimal(1).subtract(userProportion);
+            BigDecimal decimal1 = initUserProportion.multiply(new BigDecimal(fu * oldCurrentStake)).divide(new BigDecimal(oldCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal subtract1 = new BigDecimal(1).subtract(initUserProportion);
             BigDecimal decimal2 = new BigDecimal(fp).multiply(subtract1);
             oldSr = decimal1.add(decimal2);
 
             // new sr
-            BigDecimal decimal3 = userProportion.multiply(new BigDecimal(fu * newCurrentStake)).divide(new BigDecimal(newCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
-            BigDecimal subtract2 = new BigDecimal(1).subtract(userProportion);
+            BigDecimal decimal3 = initUserProportion.multiply(new BigDecimal(fu * newCurrentStake)).divide(new BigDecimal(newCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal subtract2 = new BigDecimal(1).subtract(initUserProportion);
             BigDecimal decimal4 = new BigDecimal(fp).multiply(subtract2);
             newSr = decimal3.add(decimal4);
         }
@@ -818,7 +820,9 @@ public class NodesServiceImpl implements INodesService {
 
         BigDecimal currentStake = new BigDecimal(calculationNode.getCurrentStake());
         Long totalPos1 = calculationNode.getTotalPos();
+        Long initPos = calculationNode.getInitPos();
         BigDecimal totalPos = new BigDecimal(totalPos1);
+        BigDecimal nodeStake = new BigDecimal(initPos);
 
         if (status.equals(2)) {
             BigDecimal consensusInspire = consensusInspireMap.get(publicKey);
@@ -834,17 +838,25 @@ public class NodesServiceImpl implements INodesService {
             BigDecimal fp = new BigDecimal(calculationNode.getInitPos());
             BigDecimal siSubFp = currentStake.subtract(fp);
             // 用户收益
-            BigDecimal siPb = currentStake.multiply(userProportion);
+            BigDecimal siPb = currentStake.multiply(initUserProportion);
             BigDecimal add = siPb.divide(siSubFp, 12, BigDecimal.ROUND_HALF_UP).add(second);
             userFoundationInspire = first.multiply(stakeAmountDecimal).multiply(add);
         }
-
         if (totalPos.compareTo(BigDecimal.ZERO) == 0) {
             totalPos = new BigDecimal(1);
         }
+        BigDecimal userStakePercentInTotalPos = stakeAmountDecimal.divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal initPercent = nodeStake.divide(currentStake, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal stakePercent = totalPos.divide(currentStake, 12, BigDecimal.ROUND_HALF_UP);
 
-        BigDecimal finalUserReleaseOng = finalReleaseOng.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
-        BigDecimal finalUserCommission = finalCommission.multiply(userProportion).multiply(stakeAmountDecimal).divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal initPartFinalReleaseOng = finalReleaseOng.multiply(initPercent);
+        BigDecimal stakePartFinalReleaseOng = finalReleaseOng.multiply(stakePercent);
+
+        BigDecimal initPartFinalCommission = finalCommission.multiply(initPercent);
+        BigDecimal stakePartFinalCommission = finalCommission.multiply(stakePercent);
+
+        BigDecimal finalUserReleaseOng = ((initPartFinalReleaseOng.multiply(initUserProportion)).add((stakePartFinalReleaseOng.multiply(stakeUserProportion)))).multiply(userStakePercentInTotalPos);
+        BigDecimal finalUserCommission = ((initPartFinalCommission.multiply(initUserProportion)).add((stakePartFinalCommission.multiply(stakeUserProportion)))).multiply(userStakePercentInTotalPos);
 
         BigDecimal stakeAmountUsd = stakeAmountDecimal.multiply(ont);
         BigDecimal userReleaseUsd = finalUserReleaseOng.multiply(ong);
