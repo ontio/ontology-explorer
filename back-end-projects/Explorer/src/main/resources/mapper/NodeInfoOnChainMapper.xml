@@ -138,6 +138,7 @@
                total_pos,
                max_authorize,
                node_proportion,
+               user_proportion,
                current_stake_percentage
         FROM tbl_node_info_on_chain
         WHERE node_rank = 49;
