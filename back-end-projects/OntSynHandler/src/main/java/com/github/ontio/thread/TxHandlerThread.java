@@ -206,7 +206,7 @@ public class TxHandlerThread {
                             for (int j = 0; j < notifyArray.size(); j++) {
                                 JSONObject subNotifyObj = (JSONObject) notifyArray.get(j);
                                 String subContractAddress = subNotifyObj.getString("ContractAddress");
-                                Object subObject = notifyObj.get("States");
+                                Object subObject = subNotifyObj.get("States");
                                 JSONArray subStateArray = (JSONArray) subObject;
                                 if (ConstantParam.INVOKE_DEPLOY_CONTRACT_ACTION.equals(subStateArray.getString(0))) {
                                     handleDeployContractTxByInvoke(blockTime, confirmFlag, payer, subContractAddress);
