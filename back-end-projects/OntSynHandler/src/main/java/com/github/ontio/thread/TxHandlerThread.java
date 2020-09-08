@@ -201,7 +201,7 @@ public class TxHandlerThread {
                         handleOep4TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
                                 gasConsumed, i + 1, confirmFlag, (JSONObject) ConstantParam.OEP4MAP.get(contractAddress), contractAddress, payer, calledContractHash);
 
-                    } else if (paramsConfig.UNISWAP_EXCHANGE_CONTRACTHASH.contains(contractAddress)) {
+                    } else if (paramsConfig.UNISWAP_FACTORY_CONTRACTHASH.contains(contractAddress)) {
                         if (!insertInvokeDeploy) {
                             for (int j = 0; j < notifyArray.size(); j++) {
                                 JSONObject subNotifyObj = (JSONObject) notifyArray.get(j);
