@@ -130,5 +130,7 @@ public final class ConstantParam {
 
     public static final String AUTH_CONTRACTHASH = "24a15c6aed092dfaa711c4974caf1e9d307bf4b5";
 
+    public static final String INVOKE_DEPLOY_CONTRACT_ACTION = "7365747570";
+
 
 }
