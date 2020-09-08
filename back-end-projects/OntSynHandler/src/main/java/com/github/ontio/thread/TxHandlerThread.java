@@ -33,6 +33,7 @@ import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.OntIdEventDesEnum;
 import com.github.ontio.model.common.TransactionTypeEnum;
 import com.github.ontio.model.dao.*;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -118,6 +119,7 @@ public class TxHandlerThread {
     public void handleOneTx(JSONObject txJson, int blockHeight, int blockTime, int indexInBlock) throws Exception {
 
         Boolean isOntidTx = false;
+        Boolean insertInvokeDeploy = false;
         int txType = txJson.getInteger("TxType");
         String txHash = txJson.getString("Hash");
         String payer = txJson.getString("Payer");
@@ -199,6 +201,22 @@ public class TxHandlerThread {
                         handleOep4TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
                                 gasConsumed, i + 1, confirmFlag, (JSONObject) ConstantParam.OEP4MAP.get(contractAddress), contractAddress, payer, calledContractHash);
 
+                    } else if (paramsConfig.UNISWAP_EXCHANGE_CONTRACTHASH.contains(contractAddress)) {
+                        if (!insertInvokeDeploy) {
+                            for (int j = 0; j < notifyArray.size(); j++) {
+                                JSONObject subNotifyObj = (JSONObject) notifyArray.get(j);
+                                String subContractAddress = subNotifyObj.getString("ContractAddress");
+                                Object subObject = notifyObj.get("States");
+                                JSONArray subStateArray = (JSONArray) subObject;
+                                if (ConstantParam.INVOKE_DEPLOY_CONTRACT_ACTION.equals(subStateArray.getString(0))) {
+                                    handleDeployContractTxByInvoke(blockTime, confirmFlag, payer, subContractAddress);
+                                    break;
+                                }
+                            }
+                            insertInvokeDeploy = true;
+                        }
+                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
                     } else {
                         //other transaction
                         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
@@ -218,6 +236,20 @@ public class TxHandlerThread {
             log.error("handleOneTx error...", e);
             e.printStackTrace();
             throw e;
+        }
+    }
+
+    private void handleDeployContractTxByInvoke(int blockTime, int confirmFlag, String payer, String contractAddress) throws Exception {
+        JSONObject contractObj = commonService.getContractInfoByContractAddress(contractAddress);
+        //部署成功的合约才记录
+        if (confirmFlag == 1) {
+            Contract contract = Contract.builder()
+                    .contractHash(contractAddress)
+                    .build();
+            Integer count = contractMapper.selectCount(contract);
+            if (count.equals(0)) {
+                insertContractInfo(contractAddress, blockTime, contractObj, payer);
+            }
         }
     }
 

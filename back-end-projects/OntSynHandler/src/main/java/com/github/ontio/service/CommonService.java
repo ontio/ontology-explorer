@@ -476,6 +476,43 @@ public class CommonService {
     }
 
     /**
+     * 根据合约地址获取链上合约信息
+     *
+     * @param contractHash
+     * @return
+     * @throws Exception
+     */
+    public JSONObject getContractInfoByContractAddress(String contractHash) throws Exception {
+
+        JSONObject contractObj = new JSONObject();
+        contractObj.put("Name", "");
+        contractObj.put("Description", "");
+        int tryTime = 1;
+        while (true) {
+            try {
+                JSONObject contractInfo = (JSONObject) ConstantParam.ONT_SDKSERVICE.getConnect().getContract(contractHash);
+                //根据code转成合约hash
+                return contractInfo;
+            } catch (ConnectorException ex) {
+                log.error("getContractInfoByTxHash error, try again...restful: {}, error:", ConstantParam.MASTERNODE_RESTFULURL, ex);
+                if (tryTime % paramsConfig.NODE_INTERRUPTTIME_MAX == 0) {
+                    switchNode();
+                    tryTime++;
+                    continue;
+                } else {
+                    tryTime++;
+                    Thread.sleep(1000);
+                    continue;
+                }
+            } catch (Exception ex) {
+                log.error("getContractInfoByTxHash thread can't work,error {} ", ex);
+                break;
+            }
+        }
+        return contractObj;
+    }
+
+    /**
      * 根据oep8的tokenId获取总量
      *
      * @param tokenId
