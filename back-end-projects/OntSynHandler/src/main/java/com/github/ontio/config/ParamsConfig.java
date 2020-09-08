@@ -111,4 +111,7 @@ public class ParamsConfig {
     @Value("${reSync.enabled:true}")
     public boolean reSyncEnabled = true;
 
+    @Value("${uniswap.exchange.contractHash}")
+    public String UNISWAP_EXCHANGE_CONTRACTHASH;
+
 }
