@@ -949,7 +949,7 @@ public class TxHandlerThread {
     }
 
     private BigDecimal BigDecimalFromNeoVmData(String value) {
-        return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(value)).longValue());
+        return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(value)).toString());
     }
 
     /**
