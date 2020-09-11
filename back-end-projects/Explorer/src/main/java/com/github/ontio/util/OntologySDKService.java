@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -184,7 +185,7 @@ public class OntologySDKService {
 
 
     /**
-     * get neovm OEP4 balance
+     * get wasmvm OEP4 balance
      *
      * @param address
      * @return
@@ -197,15 +198,17 @@ public class OntologySDKService {
             InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractHash, "balanceOf", params, Address.decodeBase58(address), 500, 25000000);
             JSONObject result = (JSONObject) ontSdk.getRestful().sendRawTransactionPreExec(tx.toHexString());
             log.info("getWasmvmOep4AssetBalance result:{}", result);
-            long longValue = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result.getString("Result"))).longValue();
-            BigDecimal decimal;
-            if (longValue < 0) {
-                double v = Math.pow(2, 64) + longValue;
-                decimal = new BigDecimal(v);
-            } else {
-                decimal = new BigDecimal(longValue);
-            }
-            return decimal.stripTrailingZeros().toPlainString();
+            BigInteger bigInteger = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result.getString("Result")));
+            return bigInteger.toString();
+//            long longValue = bigInteger.longValue();
+//            BigDecimal decimal;
+//            if (longValue < 0) {
+//                double v = Math.pow(2, 64) + longValue;
+//                decimal = new BigDecimal(v);
+//            } else {
+//                decimal = new BigDecimal(longValue);
+//            }
+//            return decimal.stripTrailingZeros().toPlainString();
         } catch (Exception e) {
             log.error("getNeovmOep4AssetBalance error...", e);
             return "0";
