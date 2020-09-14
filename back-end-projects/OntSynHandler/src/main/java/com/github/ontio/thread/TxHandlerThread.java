@@ -900,7 +900,13 @@ public class TxHandlerThread {
             }
 
             try {
-                toAddress = Address.parse((String) stateArray.get(2)).toBase58();
+                String tempTo = (String) stateArray.get(2);
+                if ("00".equals(tempTo)) {
+                    toAddress = fromAddress;
+                    fromAddress = Address.parse(Helper.reverse(contractHash)).toBase58();
+                } else {
+                    toAddress = Address.parse(tempTo).toBase58();
+                }
                 eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             } catch (Exception e) {
                 log.warn("Parsing OEP-4 transfer event failed in transaction {}", txHash);
