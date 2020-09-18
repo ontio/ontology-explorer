@@ -879,6 +879,8 @@ public class TxHandlerThread {
         String toAddress = "";
         BigDecimal eventAmount = new BigDecimal("0");
         Boolean isTransfer = Boolean.FALSE;
+        String txAction = EventTypeEnum.Transfer.des();
+        Integer eventType = EventTypeEnum.Transfer.type();
 
         if (stateArray.size() != 4) {
             log.warn("Invalid OEP-4 event in transaction {}", txHash);
@@ -890,7 +892,12 @@ public class TxHandlerThread {
             return;
         }
 
-        String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        String action;
+        try {
+            action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        } catch (Exception e) {
+            action = (String) stateArray.get(0);
+        }
 
         if (action.equalsIgnoreCase("transfer")) {
             try {
@@ -937,7 +944,7 @@ public class TxHandlerThread {
         Integer decimals = oep4Obj.getInteger("decimals");
         BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, decimals)), decimals, RoundingMode.HALF_DOWN);
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
-                blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);
+                blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
 
         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
