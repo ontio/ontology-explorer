@@ -911,8 +911,30 @@ public class TxHandlerThread {
             } catch (Exception e) {
                 toAddress = (String) stateArray.get(2);
             }
-            eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+            String amountStr = (String) stateArray.get(3);
+            log.info("++++++++++++++++++++++amountStr:{}",amountStr);
+            log.info("++++++++++++++++++++++contractHash:{}",contractHash);
+            eventAmount = BigDecimalFromNeoVmData(amountStr);
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
+            isTransfer = Boolean.TRUE;
+        }
+
+        if (action.equalsIgnoreCase("approval")) {
+            txAction = EventTypeEnum.Approval.des();
+            eventType = EventTypeEnum.Approval.type();
+            try {
+                fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
+            } catch (Exception e) {
+                fromAddress = (String) stateArray.get(1);
+            }
+
+            try {
+                toAddress = Address.parse((String) stateArray.get(2)).toBase58();
+            } catch (Exception e) {
+                toAddress = (String) stateArray.get(2);
+            }
+            eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+            log.info("Parsing OEP4 approval event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
             isTransfer = Boolean.TRUE;
         }
 
