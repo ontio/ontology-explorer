@@ -911,10 +911,7 @@ public class TxHandlerThread {
             } catch (Exception e) {
                 toAddress = (String) stateArray.get(2);
             }
-            String amountStr = (String) stateArray.get(3);
-            log.info("++++++++++++++++++++++amountStr:{}",amountStr);
-            log.info("++++++++++++++++++++++contractHash:{}",contractHash);
-            eventAmount = BigDecimalFromNeoVmData(amountStr);
+            eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
             isTransfer = Boolean.TRUE;
         }
@@ -978,7 +975,13 @@ public class TxHandlerThread {
     }
 
     private BigDecimal BigDecimalFromNeoVmData(String value) {
-        return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(value)).toString());
+        try {
+            byte[] bytes = Helper.hexToBytes(value);
+            return new BigDecimal(Helper.BigIntFromNeoBytes(bytes).toString());
+        } catch (Exception e) {
+            return new BigDecimal(value);
+        }
+
     }
 
     /**
