@@ -13,7 +13,8 @@ public enum EventTypeEnum {
     Transfer("transfer", 3),
     Ontid("ontid-", 4),
     Claimrecord("claimRecord-", 5),
-    Auth("auth", 6);
+    Auth("auth", 6),
+    Approval("approval", 7);
 
 
     private String des;
