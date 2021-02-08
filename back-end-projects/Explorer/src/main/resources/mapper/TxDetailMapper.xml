@@ -82,7 +82,7 @@
         select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description, contract_hash as contractHash
         from tbl_tx_detail
         where tx_hash = #{txHash}
-        and event_type in (2,3)
+        and event_type in (2,3,7)
     </select>
 
     <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
