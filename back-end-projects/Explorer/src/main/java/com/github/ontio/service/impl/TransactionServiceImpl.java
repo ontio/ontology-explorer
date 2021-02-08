@@ -64,7 +64,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Autowired
     public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper,
-            OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper) {
+                                  OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper) {
         this.txDetailMapper = txDetailMapper;
         this.currentMapper = currentMapper;
         this.ontidTxDetailMapper = ontidTxDetailMapper;
@@ -143,7 +143,7 @@ public class TransactionServiceImpl implements ITransactionService {
         JSONObject detailObj = new JSONObject();
         int eventType = txDetailDto.getEventType();
         //transfer or authentication tx，get transfer detail
-        if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType) {
+        if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType || EventTypeEnum.Approval.getType() == eventType) {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
 
