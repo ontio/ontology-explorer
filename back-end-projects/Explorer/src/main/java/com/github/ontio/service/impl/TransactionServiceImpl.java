@@ -143,11 +143,9 @@ public class TransactionServiceImpl implements ITransactionService {
         JSONObject detailObj = new JSONObject();
         int eventType = txDetailDto.getEventType();
         //transfer or authentication tx，get transfer detail
-        log.info("queryTxDetailByHash eventType:{}", eventType);
         if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType || EventTypeEnum.Approval.getType() == eventType) {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-            log.info("txDetailDtos size:{}", txDetailDtos.size());
             txDetailDtos.forEach(item -> {
                 //ONG转换好精度给前端
                 String assetName = item.getAssetName();
