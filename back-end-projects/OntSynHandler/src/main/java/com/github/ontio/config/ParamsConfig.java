@@ -114,4 +114,6 @@ public class ParamsConfig {
     @Value("${uniswap.factory.contractHash}")
     public String UNISWAP_FACTORY_CONTRACTHASH;
 
+    @Value("${cancel.approve.contract}")
+    public String CANCEL_APPROVE_CONTRACT;
 }

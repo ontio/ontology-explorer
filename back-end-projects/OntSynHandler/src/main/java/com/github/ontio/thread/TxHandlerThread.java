@@ -196,11 +196,11 @@ public class TxHandlerThread {
                         handleOep5TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
                                 gasConsumed, i + 1, confirmFlag, contractAddress, ConstantParam.OEP5MAP.get(contractAddress), payer, calledContractHash);
 
-                    } else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress)) {
+                    } else if (ConstantParam.OEP4CONTRACTS.contains(contractAddress) && !paramsConfig.CANCEL_APPROVE_CONTRACT.equals(calledContractHash)) {
+                        // wing 取消approve交易不解析
                         //OEP4交易
                         handleOep4TransferTxn(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock,
                                 gasConsumed, i + 1, confirmFlag, (JSONObject) ConstantParam.OEP4MAP.get(contractAddress), contractAddress, payer, calledContractHash);
-
                     } else if (paramsConfig.UNISWAP_FACTORY_CONTRACTHASH.contains(contractAddress)) {
                         if (!insertInvokeDeploy) {
                             for (int j = 0; j < notifyArray.size(); j++) {
