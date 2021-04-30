@@ -533,11 +533,19 @@ public class NodesServiceImpl implements INodesService {
         initSDK();
         int preConsensusCount = sdk.getPreConsensusCount();
         Long initPos = dto.getInitPos();
+        Long totalPos = dto.getTotalPos();
+        Long currentStakeLong = initPos + totalPos;
         Integer nodeType = dto.getNodeType();
-        String nodeProportionStr = dto.getNodeProportion();
-        String proportion = nodeProportionStr.replace("%", "");
-        BigDecimal nodeProportion = new BigDecimal(proportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
-        if (initPos < 0 || BigDecimal.ZERO.compareTo(nodeProportion) == 1 || new BigDecimal(1).compareTo(nodeProportion) == -1) {
+        String initPosNodeProportionStr = dto.getInitPosNodeProportion();
+        String initPosProportion = initPosNodeProportionStr.replace("%", "");
+        BigDecimal initPosNodeProportion = new BigDecimal(initPosProportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        if (initPos < 0 || BigDecimal.ZERO.compareTo(initPosNodeProportion) == 1 || new BigDecimal(1).compareTo(initPosNodeProportion) == -1) {
+            throw new ExplorerException(ErrorInfo.PARAM_ERROR);
+        }
+        String totalPosNodeProportionStr = dto.getTotalPosNodeProportion();
+        String totalPosProportion = totalPosNodeProportionStr.replace("%", "");
+        BigDecimal totalPosNodeProportion = new BigDecimal(totalPosProportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        if (totalPos < 0 || BigDecimal.ZERO.compareTo(totalPosNodeProportion) == 1 || new BigDecimal(1).compareTo(totalPosNodeProportion) == -1) {
             throw new ExplorerException(ErrorInfo.PARAM_ERROR);
         }
         List<NodeInfoOnChain> nodeInfoOnChains = nodeInfoOnChainMapper.selectAll();
@@ -550,14 +558,14 @@ public class NodesServiceImpl implements INodesService {
         NodeInfoOnChain newNode = new NodeInfoOnChain();
         newNode.setPublicKey(CALCULATION_NODE);
         newNode.setInitPos(initPos);
-        newNode.setTotalPos(0L);
-        if (initPos > theLastConsensusNodeStake) {
+        newNode.setTotalPos(totalPos);
+        if (currentStakeLong > theLastConsensusNodeStake) {
             nodeType = 2;
         } else {
             nodeType = 1;
         }
         newNode.setStatus(nodeType);
-        newNode.setCurrentStake(initPos);
+        newNode.setCurrentStake(currentStakeLong);
         nodeInfoOnChains.add(newNode);
         nodeInfoOnChains.sort((v1, v2) -> Long.compare(v2.getInitPos() + v2.getTotalPos(), v1.getInitPos() + v1.getTotalPos()));
 
@@ -627,8 +635,11 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal finalCommission = BigDecimal.ZERO;
         BigDecimal foundationInspire = BigDecimal.ZERO;
 
-        BigDecimal currentStake = new BigDecimal(initPos);
+        BigDecimal currentStake = new BigDecimal(currentStakeLong);
         BigDecimal nodeStake = new BigDecimal(initPos);
+        BigDecimal userStake = new BigDecimal(totalPos);
+        BigDecimal nodeStakePercent = nodeStake.divide(currentStake, 4, BigDecimal.ROUND_DOWN);
+        BigDecimal userStakePercent = BigDecimal.ONE.subtract(nodeStakePercent);
 
         if (nodeType.equals(2)) {
             BigDecimal consensusInspire = consensusInspireMap.get(CALCULATION_NODE);
@@ -641,25 +652,40 @@ public class NodesServiceImpl implements INodesService {
             finalCommission = getReleaseAndCommissionOng(currentStake, commission, candidateTotalStake);
         }
 
-        if (nodeIndex < 49) {
+        int now = (int) (System.currentTimeMillis() / 1000);
+        if (nodeIndex < 49 && now < ConstantParam.UTC_20210701) {
             foundationInspire = first.multiply(currentStake).multiply(new BigDecimal(1).add(second));
         }
-        BigDecimal finalNodeReleaseOng = finalReleaseOng.multiply(nodeProportion);
-        BigDecimal finalNodeCommission = finalCommission.multiply(nodeProportion);
+        BigDecimal nodeIncentivePercent = nodeStakePercent.multiply(initPosNodeProportion).add(userStakePercent.multiply(totalPosNodeProportion));
+        BigDecimal finalNodeReleaseOng = finalReleaseOng.multiply(nodeIncentivePercent);
+        BigDecimal finalNodeCommission = finalCommission.multiply(nodeIncentivePercent);
+        BigDecimal finalUserReleaseOng = finalReleaseOng.subtract(finalNodeReleaseOng);
+        BigDecimal finalUserCommission = finalCommission.subtract(finalNodeCommission);
 
         BigDecimal nodeStakeUsd = nodeStake.multiply(ont);
         BigDecimal nodeReleaseUsd = finalNodeReleaseOng.multiply(ong);
         BigDecimal nodeCommissionUsd = finalNodeCommission.multiply(ong);
         BigDecimal nodeFoundationUsd = foundationInspire.multiply(ong);
 
+        BigDecimal userStakeUsd = userStake.multiply(ont);
+        BigDecimal userReleaseUsd = finalUserReleaseOng.multiply(ong);
+        BigDecimal userCommissionUsd = finalUserCommission.multiply(ong);
 
         nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
         nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
         nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
 
+        nodeInspire.setUserReleasedOngIncentive(finalUserReleaseOng.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
+        nodeInspire.setUserGasFeeIncentive(finalUserCommission.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
+        nodeInspire.setUserFoundationBonusIncentive(BigDecimal.ZERO.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
+
         nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleaseUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
         nodeInspire.setNodeGasFeeIncentiveRate(nodeCommissionUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
         nodeInspire.setNodeFoundationBonusIncentiveRate(nodeFoundationUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+
+        nodeInspire.setUserReleasedOngIncentiveRate(userReleaseUsd.divide(userStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setUserGasFeeIncentiveRate(userCommissionUsd.divide(userStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+        nodeInspire.setUserFoundationBonusIncentiveRate(BigDecimal.ZERO.divide(userStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
 
         return nodeInspire;
     }
@@ -834,7 +860,8 @@ public class NodesServiceImpl implements INodesService {
             finalReleaseOng = getReleaseAndCommissionOng(currentStake, RELEASE_ONG, candidateTotalStake);
             finalCommission = getReleaseAndCommissionOng(currentStake, commission, candidateTotalStake);
         }
-        if (foundationNodes.contains(publicKey)) {
+        int now = (int) (System.currentTimeMillis() / 1000);
+        if (foundationNodes.contains(publicKey) && now < ConstantParam.UTC_20210701) {
             BigDecimal fp = new BigDecimal(calculationNode.getInitPos());
             BigDecimal siSubFp = currentStake.subtract(fp);
             // 用户收益
