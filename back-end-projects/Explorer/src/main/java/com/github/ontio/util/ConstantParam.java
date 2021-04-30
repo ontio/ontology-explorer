@@ -194,4 +194,6 @@ public class ConstantParam {
     public static final Integer NODE_VERIFIED = 1;
 
     public static final Integer CANDIDATE_NODE = 1;
+
+    public static final Integer UTC_20210701 = 1625097600;
 }

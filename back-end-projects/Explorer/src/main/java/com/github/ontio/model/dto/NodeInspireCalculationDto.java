@@ -9,7 +9,11 @@ public class NodeInspireCalculationDto {
 
     private Long initPos;
 
-    private String nodeProportion;
+    private String initPosNodeProportion;
+
+    private Long totalPos;
+
+    private String totalPosNodeProportion;
 
     private Integer nodeType;
 }
