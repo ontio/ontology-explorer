@@ -642,7 +642,7 @@ public class NodesServiceImpl implements INodesService {
         }
 
         int now = (int) (System.currentTimeMillis() / 1000);
-        if (nodeIndex < 49 && now < ConstantParam.UTC_20210701) {
+        if (nodeIndex < 49 && now < ConstantParam.UTC_20210801) {
             foundationInspire = first.multiply(currentStake).multiply(new BigDecimal(1).add(second));
         }
         BigDecimal finalNodeReleaseOng = finalReleaseOng.multiply(nodeProportion);
@@ -836,7 +836,7 @@ public class NodesServiceImpl implements INodesService {
             finalCommission = getReleaseAndCommissionOng(currentStake, commission, candidateTotalStake);
         }
         int now = (int) (System.currentTimeMillis() / 1000);
-        if (foundationNodes.contains(publicKey) && now < ConstantParam.UTC_20210701) {
+        if (foundationNodes.contains(publicKey) && now < ConstantParam.UTC_20210801) {
             BigDecimal fp = new BigDecimal(calculationNode.getInitPos());
             BigDecimal siSubFp = currentStake.subtract(fp);
             // 用户收益
