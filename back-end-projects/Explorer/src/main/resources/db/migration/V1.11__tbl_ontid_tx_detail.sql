@@ -21,7 +21,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `tbl_ontid_tx_detail`;
 CREATE TABLE `tbl_ontid_tx_detail` (
     `id`           INT(11)        NOT NULL AUTO_INCREMENT,
-    `tx_hash`      VARCHAR(64)    NOT NULL DEFAULT '' COMMENT '交易hash',
+    `tx_hash`      VARCHAR(66)    NOT NULL DEFAULT '' COMMENT '交易hash',
     `tx_type`      INT(11)        NOT NULL COMMENT '区块链交易类型，208：部署合约交易 209：调用合约交易',
     `ontid`        VARCHAR(255)   NOT NULL DEFAULT '' COMMENT 'ONT ID',
     `tx_time`      INT(11)        NOT NULL COMMENT '交易时间戳',
