@@ -38,11 +38,6 @@ public final class ConstantParam {
     public static String MASTERNODE_RESTFULURL = "";
 
 
-    /**
-     * 20336 新链的 RPC - url
-     */
-
-    public static String TESTNODE_RPCURL = "";
 
     /**
      * 主节点在列表中的序列号
