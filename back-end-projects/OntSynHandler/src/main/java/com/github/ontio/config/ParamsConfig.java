@@ -32,6 +32,10 @@ public class ParamsConfig {
     @Value("${masternode.restful.url}")
     public String MASTERNODE_RESTFUL_URL;
 
+    @Value("${testnode.rpc.url}")
+    public String TESTNODE_RPC_URL;
+
+
     /**
      * the amount of the ontology blockchain nodes in properties
      */

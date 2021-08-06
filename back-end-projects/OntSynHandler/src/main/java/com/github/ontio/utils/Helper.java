@@ -20,6 +20,8 @@
 package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.common.Address;
+import com.github.ontio.sdk.exception.SDKException;
 
 public class Helper {
 
@@ -64,5 +66,18 @@ public class Helper {
         return new Exception("").getStackTrace()[1].getMethodName();
     }
 
+    public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
+        Address address = Address.decodeBase58(ontAddr);
+        String reverse = com.github.ontio.common.Helper.reverse(address.toHexString());
+        return "0x" + reverse;
+    }
+
+    public static String EthAddrToOntAddr(String ethAddr) {
+        if (ethAddr.startsWith("0x")) {
+            ethAddr = ethAddr.substring(2);
+        }
+        Address parse = Address.parse(ethAddr);
+        return parse.toBase58();
+    }
 
 }

@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
 @Slf4j
 @Component("BlockHandlerThread")
 @Scope("prototype")
@@ -67,8 +66,9 @@ public class BlockHandlerThread extends Thread {
         try {
             // 等待30秒，等待OEP合约信息刷新
             TimeUnit.SECONDS.sleep(30);
-            
-            ConstantParam.MASTERNODE_RESTFULURL = paramsConfig.MASTERNODE_RESTFUL_URL;
+
+//            ConstantParam.MASTERNODE_RESTFULURL = paramsConfig.MASTERNODE_RESTFUL_URL;
+            ConstantParam.TESTNODE_RPCURL = paramsConfig.TESTNODE_RPC_URL;
             //初始化node列表
             initNodeRestfulList();
             //初始化sdk object
@@ -138,7 +138,8 @@ public class BlockHandlerThread extends Thread {
      */
     private void initSdkService() {
         OntSdk sdkService = OntSdk.getInstance();
-        sdkService.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
+//        sdkService.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
+        sdkService.setRpc(ConstantParam.TESTNODE_RPCURL);
         ConstantParam.ONT_SDKSERVICE = sdkService;
     }
 

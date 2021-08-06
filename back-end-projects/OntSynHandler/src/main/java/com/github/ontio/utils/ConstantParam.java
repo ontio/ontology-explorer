@@ -37,6 +37,13 @@ public final class ConstantParam {
      */
     public static String MASTERNODE_RESTFULURL = "";
 
+
+    /**
+     * 20336 新链的 RPC - url
+     */
+
+    public static String TESTNODE_RPCURL = "";
+
     /**
      * 主节点在列表中的序列号
      */
@@ -106,6 +113,15 @@ public final class ConstantParam {
 
     public static Set<String> OEP8CONTRACTS = new HashSet<>();
 
+    // todo Add Map & String
+
+    public static Map<String, JSONObject> ERC20MAP = new HashMap<>();
+
+    public static Set<String> ERC20CONTRACTS = new HashSet<>();
+
+    public static Map<String, JSONObject> ERC721MAP = new HashMap<>();
+
+    public static Set<String> ERC721CONTRACTS = new HashSet<>();
 
 
     public static final String ASSET_NAME_ONT = "ont";
@@ -120,6 +136,20 @@ public final class ConstantParam {
 
     public static final String IS_OEP8TX = "is_oep8tx";
 
+
+    // todo ERC20
+    public static final String IS_ERC20TX = "is_erc20tx";
+    public static final String IS_ERC721TX = "is_erc721tx";
+
+    public static final String DEPLOY_EVM_CODE = "0x";
+
+
+    public static final String TRANSFER_TX = "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+    public static final String Approval_TX = "8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925";
+
+    public static final String ONG_CONTRACT_ADDRESS = "0200000000000000000000000000000000000000";
+
+
     public static final String TXPAYLOAD_CODE_FLAG = "67";
 
     public static final String ONG_CONTRACTHASH = "08b6dcfed2aace9190a44ae34a320e42c04b46ac";
@@ -131,6 +161,9 @@ public final class ConstantParam {
     public static final String AUTH_CONTRACTHASH = "24a15c6aed092dfaa711c4974caf1e9d307bf4b5";
 
     public static final String INVOKE_DEPLOY_CONTRACT_ACTION = "7365747570";
+
+
+
 
 
 }

@@ -7,28 +7,9 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.payload.DeployCode;
-import com.github.ontio.mapper.BlockMapper;
-import com.github.ontio.mapper.ContractMapper;
-import com.github.ontio.mapper.CurrentMapper;
-import com.github.ontio.mapper.Oep4TxDetailMapper;
-import com.github.ontio.mapper.Oep5DragonMapper;
-import com.github.ontio.mapper.Oep5TxDetailMapper;
-import com.github.ontio.mapper.Oep8TxDetailMapper;
-import com.github.ontio.mapper.OntidTxDetailMapper;
-import com.github.ontio.mapper.TxDetailDailyMapper;
-import com.github.ontio.mapper.TxDetailIndexMapper;
-import com.github.ontio.mapper.TxDetailMapper;
-import com.github.ontio.mapper.TxEventLogMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.BatchBlockDto;
-import com.github.ontio.model.dao.Current;
-import com.github.ontio.model.dao.Oep4TxDetail;
-import com.github.ontio.model.dao.Oep5Dragon;
-import com.github.ontio.model.dao.Oep5TxDetail;
-import com.github.ontio.model.dao.Oep8TxDetail;
-import com.github.ontio.model.dao.OntidTxDetail;
-import com.github.ontio.model.dao.TxDetail;
-import com.github.ontio.model.dao.TxDetailDaily;
-import com.github.ontio.model.dao.TxEventLog;
+import com.github.ontio.model.dao.*;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +44,13 @@ public class CommonService {
     private final TxDetailDailyMapper txDetailDailyMapper;
     private final TxDetailIndexMapper txDetailIndexMapper;
 
+    private final Erc20TxDetailMapper erc20TxDetailMapper;
+    private final Erc721TxDetailMapper erc721TxDetailMapper;
+
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
                          Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
-                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
+                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, Erc20TxDetailMapper erc20TxDetailMapper, Erc721TxDetailMapper erc721TxDetailMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.currentMapper = currentMapper;
@@ -77,6 +61,8 @@ public class CommonService {
         this.txEventLogMapper = txEventLogMapper;
         this.blockMapper = blockMapper;
         this.oep5DragonMapper = oep5DragonMapper;
+        this.erc20TxDetailMapper = erc20TxDetailMapper;
+        this.erc721TxDetailMapper = erc721TxDetailMapper;
         this.contractMapper = contractMapper;
         this.txDetailDailyMapper = txDetailDailyMapper;
         this.txDetailIndexMapper = txDetailIndexMapper;
@@ -205,6 +191,23 @@ public class CommonService {
                 oep8TxDetailMapper.batchInsert(batchBlockDto.getOep8TxDetails());
             }
         }
+
+        // 插入 tbl_erc20_tx_detail 表中
+        if (batchBlockDto.getErc20TxDetails().size() > 0) {
+            int count = batchBlockDto.getErc20TxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<Erc20TxDetail> list = batchBlockDto.getErc20TxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        erc20TxDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                erc20TxDetailMapper.batchInsert(batchBlockDto.getErc20TxDetails());
+            }
+        }
+        // 插入 tbl_erc721_tx_detail 表中
+
         //插入tbl_contract表
         if (batchBlockDto.getContracts().size() > 0) {
             contractMapper.batchInsert(batchBlockDto.getContracts());
@@ -227,6 +230,7 @@ public class CommonService {
         currentMapper.update(current);
     }
 
+    // 从 batchBlockDto中拿出 暂存的数据  批量插入 表中
 
     /**
      * switch to another node and initialize ONT_SDKSERVICE object
@@ -238,6 +242,7 @@ public class CommonService {
             ConstantParam.MASTERNODE_INDEX = 0;
         }
         ConstantParam.MASTERNODE_RESTFULURL = ConstantParam.NODE_RESTFULURLLIST.get(ConstantParam.MASTERNODE_INDEX);
+
         log.warn("####switch node restfulurl to {}####", ConstantParam.MASTERNODE_RESTFULURL);
 
         OntSdk wm = OntSdk.getInstance();
@@ -324,7 +329,7 @@ public class CommonService {
         int tryTime = 1;
         while (true) {
             try {
-                //无交易返回空字符串，有交易返回JSONArray
+                //无交易返回空字符串， null -> ""   有交易返回JSONArray  [{},{}, {}] 关于交易的Array
                 Object object = ConstantParam.ONT_SDKSERVICE.getConnect().getSmartCodeEvent(height);
                 if (object instanceof JSONArray) {
                     txEventLogArray = (JSONArray) object;

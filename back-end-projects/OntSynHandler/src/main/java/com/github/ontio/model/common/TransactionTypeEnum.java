@@ -39,7 +39,12 @@ public enum TransactionTypeEnum {
     /**
      * wasmvm InvokeCodeTransaction
      */
-    WASMVM_INVOKECODE(210);
+    WASMVM_INVOKECODE(210),
+
+    /**
+     * EVM  InvokeCodeTransaction
+     */
+    EVM_INVOKECODE(211);
 
 
     private int type;
