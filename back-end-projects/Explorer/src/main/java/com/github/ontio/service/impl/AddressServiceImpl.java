@@ -5,15 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Expiry;
+import com.github.ontio.common.Address;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.AddressDailyAggregationMapper;
-import com.github.ontio.mapper.Oep4Mapper;
-import com.github.ontio.mapper.Oep5Mapper;
-import com.github.ontio.mapper.Oep8Mapper;
-import com.github.ontio.mapper.RankingMapper;
-import com.github.ontio.mapper.TxDetailMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.Erc20;
 import com.github.ontio.model.dao.Oep4;
 import com.github.ontio.model.dao.Oep5;
 import com.github.ontio.model.dao.Oep8;
@@ -26,16 +23,13 @@ import com.github.ontio.model.dto.aggregation.AddressBalanceAggregationsDto;
 import com.github.ontio.model.dto.aggregation.ExtremeBalanceDto;
 import com.github.ontio.model.dto.ranking.AddressRankingDto;
 import com.github.ontio.service.IAddressService;
-import com.github.ontio.util.ConstantParam;
-import com.github.ontio.util.ErrorInfo;
-import com.github.ontio.util.Helper;
-import com.github.ontio.util.JacksonUtil;
-import com.github.ontio.util.OntologySDKService;
+import com.github.ontio.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.Web3j;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -62,19 +56,25 @@ public class AddressServiceImpl implements IAddressService {
     private final Oep4Mapper oep4Mapper;
     private final Oep8Mapper oep8Mapper;
     private final Oep5Mapper oep5Mapper;
+
+    private final Erc20Mapper erc20Mapper;
+
+
     private final TxDetailMapper txDetailMapper;
     private final ParamsConfig paramsConfig;
     private final CommonService commonService;
     private final AddressDailyAggregationMapper addressDailyAggregationMapper;
     private final RankingMapper rankingMapper;
 
+
     @Autowired
-    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, TxDetailMapper txDetailMapper,
+    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Erc20Mapper erc20Mapper, TxDetailMapper txDetailMapper,
                               ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
                               RankingMapper rankingMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
+        this.erc20Mapper = erc20Mapper;
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.commonService = commonService;
@@ -83,6 +83,11 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     private OntologySDKService sdk;
+
+
+    @Autowired
+    private Web3jSdkUtil web3jSdkUtil;
+
 
     private synchronized void initSDK() {
         if (sdk == null) {
@@ -144,6 +149,10 @@ public class AddressServiceImpl implements IAddressService {
                     break;
                 case ConstantParam.ASSET_TYPE_NATIVE_OEP4:
                     balanceList = getNativeAndOep4BalanceOld(address);
+                    break;
+                case ConstantParam.ASSET_TYPE_ERC20:
+                    balanceList = getErc20BalanceOld(address, "");
+                    break;
                 default:
                     break;
             }
@@ -151,6 +160,24 @@ public class AddressServiceImpl implements IAddressService {
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
     }
+
+
+    @Override
+    public ResponseBean queryEVMAddressBalance(String address, String tokenType) {
+        List<BalanceDto> balanceList = new ArrayList<>();
+        switch (tokenType.toLowerCase()) {
+            case ConstantParam.ASSET_TYPE_ERC20:
+                balanceList = getErc20BalanceOld(address, "");
+                break;
+            case ConstantParam.ASSET_TYPE_NATIVE:
+                balanceList = getEvmOngBalance(address);
+                break;
+            default:
+                break;
+        }
+        return  new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), balanceList);
+    }
+
 
     @Override
     public ResponseBean queryAddressBalanceByAssetName(String address, String assetName) {
@@ -518,6 +545,7 @@ public class AddressServiceImpl implements IAddressService {
         if (Helper.isNotEmptyAndNull(assetName)) {
             oep4Temp.setSymbol(assetName);
         }
+        // 去oep4 表中查询所有的 oep4 合约hash
         List<Oep4> oep4s = oep4Mapper.select(oep4Temp);
         for (Oep4 oep4 :
                 oep4s) {
@@ -571,6 +599,51 @@ public class AddressServiceImpl implements IAddressService {
                 .assetType(ConstantParam.ASSET_TYPE_OEP4)
                 .balance(balance)
                 .contractHash(oep4.getContractHash())
+                .build();
+        balanceList.add(balanceDto);
+        return balanceList;
+    }
+
+
+    private List<BalanceDto> getErc20BalanceOld(String address, String assetName) {
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+
+        Erc20 erc20Temp = new Erc20();
+        erc20Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+//        if (Helper.isNotEmptyAndNull(assetName)) {
+//            erc20Temp.setSymbol(assetName);
+//        }
+        // 查到库中所有 通过执行的合约
+        List<Erc20> erc20s = erc20Mapper.select(erc20Temp);
+        for (Erc20 erc20 : erc20s) {
+            BigDecimal balance = new BigDecimal("0");
+            String contractHash = erc20.getContractHash();
+            balance = web3jSdkUtil.queryErc20Balance(address, erc20.getContractHash()).divide(BigDecimal.valueOf(Math.pow(10, erc20.getDecimals())));
+            if (balance.compareTo(ConstantParam.ZERO) == 0) {
+                continue;
+            }
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName(erc20.getSymbol())
+                    .assetType(ConstantParam.ASSET_TYPE_ERC20)
+                    .balance(balance)
+                    .contractHash(contractHash)
+                    .build();
+
+            balanceList.add(balanceDto);
+        }
+        return balanceList;
+    }
+
+    private List<BalanceDto> getEvmOngBalance(String address) {
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        Map<String, Object> balanceMap = sdk.getEVMONGAssetBalance(address);
+        BalanceDto balanceDto = BalanceDto.builder()
+                .assetName(ConstantParam.ONG)
+                .assetType(ConstantParam.ASSET_TYPE_NATIVE)
+                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
@@ -1246,12 +1319,20 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) {
         String tokenContractHash = paramsConfig.getContractHash(token);
+        if (address.startsWith("0x")){
+            address = Helper.EthAddrToOntAddr(address);
+        }
         List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregations(address, tokenContractHash,
                 from, to);
+
+        String finalAddress = address;
         ExtremeBalanceDto max = extremeBalances.get(address + tokenContractHash + "max",
-                key -> addressDailyAggregationMapper.findMaxBalance(address, tokenContractHash));
+                key -> addressDailyAggregationMapper.findMaxBalance(finalAddress, tokenContractHash));
+
+
+        String finalAddress1 = address;
         ExtremeBalanceDto min = extremeBalances.get(address + token + "min",
-                key -> addressDailyAggregationMapper.findMinBalance(address, tokenContractHash));
+                key -> addressDailyAggregationMapper.findMinBalance(finalAddress1, tokenContractHash));
         AddressBalanceAggregationsDto result = new AddressBalanceAggregationsDto(max, min, aggregations);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
@@ -1272,6 +1353,7 @@ public class AddressServiceImpl implements IAddressService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rankingMap);
     }
 
+    // 查询所有交易的接口
     @Override
     public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
         PageResponseBean pageResponse;
@@ -1286,7 +1368,7 @@ public class AddressServiceImpl implements IAddressService {
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
     }
-
+        // 查询一个地址的所有转账信息
     @Override
     public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize) {
         tokenType = tokenType.toLowerCase();
@@ -1296,8 +1378,13 @@ public class AddressServiceImpl implements IAddressService {
             pageResponse = new PageResponseBean(Collections.emptyList(), 0);
         } else {
             List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
-            List<String> assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType)
-                    : null;
+            List<String> assetNames = null;
+            if ("oep4".equalsIgnoreCase(tokenType)){
+                assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType): null;
+            }else if ("orc20".equalsIgnoreCase(tokenType)){
+                assetNames = "orc20".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType): null;
+            }
+
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
                     tokenType, start, pageSize);

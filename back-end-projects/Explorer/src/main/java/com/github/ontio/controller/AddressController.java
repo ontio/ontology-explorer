@@ -48,14 +48,18 @@ public class AddressController {
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get address balance")
     @GetMapping(value = "/{address}/{token_type}/balances")
-    public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address " +
+    public ResponseBean queryAddressBalance(@PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address " +
             "format") String address,
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all|native-oep4|NATIVE-OEP4", message =
-                    "Incorrect token type") String tokenType) {
+                                            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all|native-oep4|NATIVE-OEP4|orc20|ORC20", message =
+                                                    "Incorrect token type") String tokenType) {
 
         log.info("####{}.{} begin...address:{},token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
-
-        ResponseBean rs = addressService.queryAddressBalance(address, tokenType);
+        ResponseBean rs = null;
+        if (address.startsWith("0x")) {
+            rs = addressService.queryEVMAddressBalance(address, tokenType);
+        } else {
+            rs = addressService.queryAddressBalance(address, tokenType);
+        }
         return rs;
     }
 
@@ -65,10 +69,10 @@ public class AddressController {
     @GetMapping(value = "/{address}/balances")
     public ResponseBean queryAddressBalanceByAssetName(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect " +
             "address format") String address,
-            @RequestParam(value = "asset_name", required = false) String assetName,
-            @RequestParam(value = "contract_hash", required = false) @Length(min = 40, max = 40, message = "Incorrect contract " +
-                    "hash") String contractHash,
-            @RequestParam(value = "channel", required = false) String channel) {
+                                                       @RequestParam(value = "asset_name", required = false) String assetName,
+                                                       @RequestParam(value = "contract_hash", required = false) @Length(min = 40, max = 40, message = "Incorrect contract " +
+                                                               "hash") String contractHash,
+                                                       @RequestParam(value = "channel", required = false) String channel) {
 
         log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
 
@@ -89,12 +93,12 @@ public class AddressController {
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(begin_time+end_time) or " +
             "(page_number+page_size)")
     @GetMapping(value = "/{address}/transactions")
-    public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect " +
+    public ResponseBean queryAddressTransferTxsByPage(@PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect " +
             "address format") String address,
-            @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
-            @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
-            @RequestParam(name = "begin_time", required = false) Long beginTime,
-            @RequestParam(name = "end_time", required = false) Long endTime) {
+                                                      @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
+                                                      @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
+                                                      @RequestParam(name = "begin_time", required = false) Long beginTime,
+                                                      @RequestParam(name = "end_time", required = false) Long endTime) {
 
         log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
@@ -116,15 +120,15 @@ public class AddressController {
     @ApiOperation(value = "Get address transfer transaction list by params+assetName", notes = "(begin_time+end_time) or " +
             "(page_number+page_size) or (end_time+page_size)")
     @GetMapping(value = "/{address}/{asset_name}/transactions")
-    public ResponseBean queryAddressTransferTxsByPageAndAssetName(@PathVariable("address") @Length(min = 34, max = 34, message =
+    public ResponseBean queryAddressTransferTxsByPageAndAssetName(@PathVariable("address") @Length(min = 34, max = 42, message =
             "error address format") String address,
-            @PathVariable("asset_name") String assetName,
-            @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
-            @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
-            @RequestParam(name = "begin_time", required = false) Long beginTime,
-            @RequestParam(name = "end_time", required = false) Long endTime,
-            @RequestParam(name = "channel", required = false) String channel,
-            @RequestParam(name = "address_type", required = false) @Pattern(regexp = "fromAddress|toAddress") String addressType) {
+                                                                  @PathVariable("asset_name") String assetName,
+                                                                  @RequestParam(name = "page_size", required = false) @Min(1) @Max(20) Integer pageSize,
+                                                                  @RequestParam(name = "page_number", required = false) @Min(1) Integer pageNumber,
+                                                                  @RequestParam(name = "begin_time", required = false) Long beginTime,
+                                                                  @RequestParam(name = "end_time", required = false) Long endTime,
+                                                                  @RequestParam(name = "channel", required = false) String channel,
+                                                                  @RequestParam(name = "address_type", required = false) @Pattern(regexp = "fromAddress|toAddress") String addressType) {
 
         log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
@@ -158,7 +162,7 @@ public class AddressController {
     @ApiOperation(value = "Get address daily aggregations by ont/ong token")
     @GetMapping(value = "/{address}/daily")
     public ResponseBean queryDailyAggregation(
-            @PathVariable("address") @Length(min = 34, max = 40, message = "Incorrect address format") String address,
+            @PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address format") String address,
             @RequestParam(value = "token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
@@ -172,8 +176,8 @@ public class AddressController {
     @ApiOperation(value = "Get address daily aggregations by specific token type")
     @GetMapping(value = "/{address}/{token_type}/daily")
     public ResponseBean queryDailyAggregationOfTokenType(
-            @PathVariable("address") @Length(min = 34, max = 40, message = "Incorrect address format") String address,
-            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4|native|NATIVE", message = "Incorrect token type") String tokenType,
+            @PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address format") String address,
+            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4|native|NATIVE|orc20|ORC20", message = "Incorrect token type") String tokenType,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) {
@@ -198,7 +202,7 @@ public class AddressController {
     @ApiOperation(value = "Get address transfer transaction list by params", notes = "(page_number+page_size)")
     @GetMapping(value = "/{address}/txs")
     public ResponseBean queryAddressTransferTxsWithTotal(
-            @PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+            @PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address format") String address,
             @RequestParam(name = "asset_name", required = false) String assetName,
             @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
             @RequestParam(name = "page_number") @Min(1) Integer pageNumber
@@ -212,8 +216,8 @@ public class AddressController {
     @ApiOperation(value = "Get address transfer transaction list of token type by params", notes = "(page_number+page_size)")
     @GetMapping(value = "/{address}/{token_type}/txs")
     public ResponseBean queryAddressTransferTxsOfTokenType(
-            @PathVariable("address") @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8", message = "Incorrect token type") String tokenType,
+            @PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address format") String address,
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20", message = "Incorrect token type") String tokenType,
             @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
             @RequestParam(name = "page_number") @Min(1) Integer pageNumber
     ) {

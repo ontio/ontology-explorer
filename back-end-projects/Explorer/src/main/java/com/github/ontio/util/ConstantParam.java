@@ -98,6 +98,10 @@ public class ConstantParam {
 
     public static final String ASSET_TYPE_OEP8 = "oep8";
 
+    public static final String ASSET_TYPE_ERC20 = "orc20";
+
+    public static final String ASSET_TYPE_ONG = "ong";
+
     public static final String ASSET_TYPE_ALL = "all";
 
     public static final String ASSET_TYPE_NATIVE_OEP4 = "native-oep4";
@@ -113,6 +117,8 @@ public class ConstantParam {
     public static final String CONTRACT_TYPE_OEP5 = "oep5";
 
     public static final String CONTRACT_TYPE_OEP8 = "oep8";
+
+    public static final String CONTRACT_TYPE_ERC20 = "oep8";
 
     public static final String CONTRACT_TYPE_OTHER = "other";
 

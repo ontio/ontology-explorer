@@ -4,6 +4,7 @@ import com.github.ontio.model.common.ContractType;
 import com.github.ontio.model.dto.ContractDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
@@ -25,5 +26,7 @@ public interface ContractMapper extends Mapper<ContractDto> {
     List<Map> selectDappstoreDapp();
 
     ContractType findContractType(String contractHash);
+
+    Integer selectIfHashExists(String contractHash);
 
 }

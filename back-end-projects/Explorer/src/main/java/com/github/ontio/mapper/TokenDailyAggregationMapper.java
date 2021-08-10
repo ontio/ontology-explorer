@@ -14,5 +14,6 @@ public interface TokenDailyAggregationMapper extends Mapper<TokenDailyAggregatio
 
 	List<TokenAggregationDto> findAggregations(@Param("contractHash") String contractHash, @Param("from") Date from,
 			@Param("to") Date to);
-	
+	List<TokenAggregationDto> findEVMAggregations(@Param("contractHash") String contractHash, @Param("from") Date from,
+											   @Param("to") Date to);
 }

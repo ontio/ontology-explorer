@@ -9,6 +9,8 @@ public interface IAddressService {
 
     ResponseBean queryAddressBalance(String address, String tokenType);
 
+    ResponseBean queryEVMAddressBalance(String address , String tokenType );
+
     ResponseBean queryAddressBalanceByAssetName(String address, String assetName);
 
     ResponseBean queryAddressBalanceByContractHash(String address, String contractHash);

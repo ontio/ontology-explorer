@@ -19,33 +19,35 @@
 
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.ontio.OntSdk;
 import com.github.ontio.mapper.ContractMapper;
 import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.mapper.OntidTxDetailMapper;
 import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.mapper.TxEventLogMapper;
-import com.github.ontio.model.common.ContractType;
-import com.github.ontio.model.common.EventTypeEnum;
-import com.github.ontio.model.common.PageResponseBean;
-import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.common.TxTypeEnum;
+import com.github.ontio.model.common.*;
 import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.OntidTxDetailDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import com.github.ontio.model.dto.TxEventLogDto;
 import com.github.ontio.model.dto.TxEventLogTxTypeDto;
+import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.service.IContractService;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.Helper;
+import com.github.ontio.util.Web3jSdkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,14 +63,18 @@ public class TransactionServiceImpl implements ITransactionService {
     private final OntidTxDetailMapper ontidTxDetailMapper;
     private final TxEventLogMapper txEventLogMapper;
     private LoadingCache<String, ContractType> contractTypes;
+    private final ContractMapper contractMapper;
+    private final Web3jSdkUtil web3jSdkUtil;
 
     @Autowired
     public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper,
-                                  OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper) {
+                                  OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper, ContractMapper contractMapper, Web3jSdkUtil web3jSdkUtil) {
         this.txDetailMapper = txDetailMapper;
         this.currentMapper = currentMapper;
         this.ontidTxDetailMapper = ontidTxDetailMapper;
         this.txEventLogMapper = txEventLogMapper;
+        this.contractMapper = contractMapper;
+        this.web3jSdkUtil = web3jSdkUtil;
     }
 
 
@@ -90,6 +96,7 @@ public class TransactionServiceImpl implements ITransactionService {
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
 
         List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByPage(start, pageSize);
+
         List<TxEventLogTxTypeDto> result = null;
         if (txEventLogDtos != null) {
             result = txEventLogDtos.stream().map(this::convertTxEventLog).collect(Collectors.toList());
@@ -132,6 +139,8 @@ public class TransactionServiceImpl implements ITransactionService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
     }
 
+
+    // 传入tx_hash  query tx_detail
     @Override
     public ResponseBean queryTxDetailByHash(String txHash) {
 
@@ -144,12 +153,17 @@ public class TransactionServiceImpl implements ITransactionService {
         int eventType = txDetailDto.getEventType();
         //transfer or authentication tx，get transfer detail
         if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType || EventTypeEnum.Approval.getType() == eventType) {
-
-            List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
+            String txHashReverse = "";
+            if (txHash.startsWith("0x")) {
+                txHashReverse = com.github.ontio.common.Helper.reverse(txHash.substring(2));
+            } else {
+                txHashReverse = "0x" + com.github.ontio.common.Helper.reverse(txHash);
+            }
+            List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash, txHashReverse);
             txDetailDtos.forEach(item -> {
                 //ONG转换好精度给前端
                 String assetName = item.getAssetName();
-                if (ConstantParam.ONG.equals(assetName)) {
+                if (ConstantParam.ONG.equals(assetName) && !item.getFromAddress().startsWith("0x")) {
                     item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
                 }
             });
@@ -176,6 +190,62 @@ public class TransactionServiceImpl implements ITransactionService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetailDto);
     }
 
+    @Override
+    public ResponseBean queryInputDataByHash(String txHash) throws IOException, ConnectorException {
+        String txPayload = "";
+        if (txHash.startsWith("0x")) {
+            txPayload = web3jSdkUtil.queryPayloadByTxHash(txHash);
+        } else {
+            OntSdk ontSdk = OntSdk.getInstance();
+            String ont_rpcUrl = "http://172.168.3.73:20336";
+            ontSdk.setRpc(ont_rpcUrl);
+            Object txJson = ontSdk.getConnect().getTransactionJson(txHash);
+            JSONObject object = JSONObject.parseObject(JSON.toJSONString(txJson));
+            txPayload = object.getJSONObject("Payload").getString("Code");
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txPayload);
+    }
+
+
+    private TxDetailDto queryTxDetailByTxHash(String txHash) {
+        TxDetailDto txDetailDto = txDetailMapper.selectTxByHash(txHash);
+        JSONObject detailObj = new JSONObject();
+        String txHashReverse = "";
+        if (txHash.startsWith("0x")) {
+            txHashReverse = com.github.ontio.common.Helper.reverse(txHash.substring(2));
+        } else {
+            txHashReverse = "0x" + com.github.ontio.common.Helper.reverse(txHash);
+        }
+
+        List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash, txHashReverse);
+
+        txDetailDtos.forEach(
+                item -> {
+                    String toAddress = item.getToAddress();
+                    int toAddrLen = toAddress.length();
+                    item.setIs_contract_hash(false);
+                    if (toAddrLen == 40 || toAddrLen == 42) {
+                        Integer integer = contractMapper.selectIfHashExists(toAddress);
+                        if (1 == integer) {
+                            item.setIs_contract_hash(true);
+                        }
+                    }
+                }
+        );
+        txDetailDtos.forEach(item -> {
+            //ONG转换好精度给前端
+            String assetName = item.getAssetName();
+            if (ConstantParam.ONG.equals(assetName) && !item.getFromAddress().startsWith("0x")) {
+                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
+            }
+        });
+        detailObj.put("transfers", txDetailDtos);
+        txDetailDto.setDetail(detailObj);
+        return txDetailDto;
+    }
+
+
     private TxEventLogTxTypeDto convertTxEventLog(TxEventLog eventLog) {
         TxEventLogTxTypeDto dto = new TxEventLogTxTypeDto();
         dto.setTxHash(eventLog.getTxHash());
@@ -184,13 +254,34 @@ public class TransactionServiceImpl implements ITransactionService {
         dto.setBlockIndex(eventLog.getBlockIndex());
         dto.setConfirmFlag(eventLog.getConfirmFlag());
         dto.setFee(eventLog.getFee());
+        // 查询合约进行合约类型的转化
         dto.setTxType(determineTxType(eventLog));
+        dto.setVmType(determineVMType(eventLog));
+        JSONObject detail = queryTxDetailByTxHash(eventLog.getTxHash()).getDetail();
+        dto.setDetail(detail);
         return dto;
     }
 
+
+    private VmTypeEnum determineVMType(TxEventLog eventLog) {
+        VmTypeEnum vmType = null;
+        if (eventLog.getTxType() == 208 || "0x".equals(eventLog.getCalledContractHash())) {
+            vmType = VmTypeEnum.DEPLOYMENT_CODE;
+        } else if (eventLog.getTxType().equals(209)) {
+            vmType = VmTypeEnum.INVOKE_NEOVM;
+        } else if (eventLog.getTxType().equals(210)) {
+            vmType = VmTypeEnum.INVOKE_WASMVM;
+        } else if (eventLog.getTxType().equals(211)) {
+            vmType = VmTypeEnum.INVOKE_EVM;
+        }
+        return vmType;
+    }
+
+
     private TxTypeEnum determineTxType(TxEventLog eventLog) {
         TxTypeEnum txType = null;
-        if (eventLog.getTxType() == 208) {
+        // EVM depolyment
+        if (eventLog.getTxType() == 208 || "0x".equals(eventLog.getCalledContractHash())) {
             txType = TxTypeEnum.CONTRACT_DEPLOYMENT;
         } else {
             String calledContractHash = eventLog.getCalledContractHash();
@@ -210,10 +301,13 @@ public class TransactionServiceImpl implements ITransactionService {
                     txType = TxTypeEnum.OEP5;
                 } else if (contractType.isOep8()) {
                     txType = TxTypeEnum.OEP8;
+                } else if (contractType.isErc20()) {
+                    txType = TxTypeEnum.ERC20;
                 } else {
                     txType = TxTypeEnum.CONTRACT_CALL;
                 }
             }
+            // todo 进行新的合约类型的判断 else  211类型
         }
         return txType;
     }

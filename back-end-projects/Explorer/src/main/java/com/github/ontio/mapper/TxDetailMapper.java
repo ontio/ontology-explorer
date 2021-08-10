@@ -15,7 +15,7 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     TxDetailDto selectTxByHash(@Param("txHash") String txHash);
 
-    List<TxDetailDto> selectTransferTxDetailByHash(@Param("txHash") String txHash);
+    List<TxDetailDto> selectTransferTxDetailByHash(@Param("txHash") String txHash , @Param("txHashReverse") String txHashReverse );
 
     Integer selectLatestOntTransferTxTime(@Param("address") String address);
 

@@ -22,4 +22,8 @@ public class ContractType implements Serializable {
 
 	private boolean oep8;
 
+	private boolean erc20;
+
+//	private boolean erc721;
+
 }

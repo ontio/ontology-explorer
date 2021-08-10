@@ -37,6 +37,7 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -47,6 +48,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -165,6 +167,25 @@ public class OntologySDKService {
         }
         return balanceMap;
     }
+
+
+    /**
+     * EVM 类型 查询以太坊地址的账户内的ong余额
+     */
+
+    public Map getEVMONGAssetBalance(String address){
+        Map<String, Object> balanceMap = new HashMap<>();
+        String ontAddr = com.github.ontio.util.Helper.EthAddrToOntAddr(address);
+        OntSdk ontSdk = getOntSdk();
+        try {
+            balanceMap = (Map) ontSdk.getConnect().getBalance(ontAddr);
+        } catch (Exception e) {
+            log.error("getEVMONGAssetBalance error...", e);
+            balanceMap.put("ong", "0");
+        }
+        return balanceMap;
+    }
+
 
     /**
      * get neovm OEP4 balance

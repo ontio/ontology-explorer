@@ -21,6 +21,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.Helper;
 import io.swagger.annotations.ApiOperation;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.io.IOException;
 
 /**
  * @author zhouq
@@ -53,7 +55,10 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-
+    // todo 三个接口,
+    //  1.查询 最新的交易列表
+    // 2. 分页查询
+    // 3. tx 细节信息
     @ApiOperation(value = "Get latest transaction list")
     @GetMapping(value = "/latest-transactions")
     public ResponseBean queryLatestTxs(@RequestParam("count") @Max(50) @Min(1) int count) {
@@ -102,7 +107,7 @@ public class TransactionController {
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get transaction detail by txhash")
     @GetMapping(value = "/transactions/{tx_hash}")
-    public ResponseBean queryTxnByHash(@PathVariable("tx_hash") @Length(min = 64, max = 64, message = "Incorrect transaction hash") String txHash) {
+    public ResponseBean queryTxnByHash(@PathVariable("tx_hash") @Length(min = 64, max = 66, message = "Incorrect transaction hash") String txHash) {
 
         log.info("###{}.{} begin...txHash:{}", CLASS_NAME, Helper.currentMethod(), txHash);
 
@@ -110,5 +115,11 @@ public class TransactionController {
         return rs;
     }
 
+
+    @GetMapping(value = "/transactions/inputdata/{tx_hash}")
+    public ResponseBean queryInputDataByTxHash(@PathVariable("tx_hash") @Length(min = 64, max = 66) String txHash) throws IOException, ConnectorException {
+        ResponseBean rs = transactionService.queryInputDataByHash(txHash);
+        return rs;
+    }
 
 }

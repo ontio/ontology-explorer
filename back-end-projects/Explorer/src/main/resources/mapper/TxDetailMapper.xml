@@ -81,7 +81,7 @@
     <select id="selectTransferTxDetailByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
         select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description, contract_hash as contractHash
         from tbl_tx_detail
-        where tx_hash = #{txHash}
+        where (tx_hash = #{txHash} or tx_hash = #{txHashReverse})
         and event_type in (2,3,7)
     </select>
 
@@ -402,6 +402,9 @@
             <when test="tokenType == 'oep5'">
                 FROM tbl_oep5 o
             </when>
+            <when test="tokenType == 'orc20'">
+                FROM tbl_erc20 o
+            </when>
             <otherwise>
                 FROM tbl_oep8 o
             </otherwise>
@@ -419,6 +422,9 @@
             <when test="tokenType == 'oep5'">
                 FROM tbl_oep5 o
             </when>
+            <when test="tokenType == 'orc20'">
+                FROM tbl_erc20 o
+            </when>
             <otherwise>
                 FROM tbl_oep8 o
             </otherwise>
@@ -435,6 +441,9 @@
             </when>
             <when test="tokenType == 'oep5'">
                 FROM tbl_oep5_tx_detail d
+            </when>
+            <when test="tokenType == 'orc20'">
+                FROM tbl_erc20_tx_detail d
             </when>
             <otherwise>
                 FROM tbl_oep8_tx_detail d

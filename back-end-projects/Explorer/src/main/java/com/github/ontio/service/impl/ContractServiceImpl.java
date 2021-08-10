@@ -21,17 +21,10 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.ContractDailyAggregationMapper;
-import com.github.ontio.mapper.ContractDailySummaryMapper;
-import com.github.ontio.mapper.ContractMapper;
-import com.github.ontio.mapper.NodeInfoOffChainMapper;
-import com.github.ontio.mapper.NodeInfoOnChainMapper;
-import com.github.ontio.mapper.Oep4TxDetailMapper;
-import com.github.ontio.mapper.Oep5TxDetailMapper;
-import com.github.ontio.mapper.Oep8TxDetailMapper;
-import com.github.ontio.mapper.TxEventLogMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.Erc20TxDetail;
 import com.github.ontio.model.dao.NodeInfoOffChain;
 import com.github.ontio.model.dao.NodeInfoOnChain;
 import com.github.ontio.model.dto.ContractDto;
@@ -71,6 +64,9 @@ public class ContractServiceImpl implements IContractService {
     private final Oep4TxDetailMapper oep4TxDetailMapper;
     private final Oep5TxDetailMapper oep5TxDetailMapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
+
+    private final Erc20TxDetailMapper erc20TxDetailMapper;
+
     private final TxEventLogMapper txEventLogMapper;
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
@@ -79,14 +75,16 @@ public class ContractServiceImpl implements IContractService {
 
     @Autowired
     public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper,
-            Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
-            ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper,
-            ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper,
-            ContractDailyAggregationMapper contractDailyAggregationMapper) {
+                               Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, Erc20TxDetailMapper erc20TxDetailMapper, TxEventLogMapper txEventLogMapper,
+                               ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper,
+                               ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper,
+                               ContractDailyAggregationMapper contractDailyAggregationMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.erc20TxDetailMapper = erc20TxDetailMapper;
+
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
@@ -159,6 +157,14 @@ public class ContractServiceImpl implements IContractService {
                 count = oep8TxDetailMapper.selectCountByCalledContracthashAndTokenName(contractHash, "");
                 pageResponseBean = new PageResponseBean(txDetailDtos, count);
                 break;
+
+            //todo erc20类型合约tx 的查询
+            case ConstantParam.ASSET_TYPE_ERC20:
+                List<Erc20TxDetail> erc20TxDetails = erc20TxDetailMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
+                count = erc20TxDetailMapper.selectCountByCalledContracthash(contractHash);
+                pageResponseBean = new PageResponseBean(erc20TxDetails, count);
+                break;
+
             case ConstantParam.CONTRACT_TYPE_OTHER:
                 List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
                 count = txEventLogMapper.selectCountByCalledContracthash(contractHash);
@@ -625,6 +631,16 @@ public class ContractServiceImpl implements IContractService {
         List<ContractAggregationDto> aggregations = contractDailyAggregationMapper.findAggregationsForToken(contractHash,
                 tokenContractHash, from, to);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
+    }
+
+    @Override
+    public ResponseBean checkIfExistsHash(String contractHash) {
+
+        Integer integer = contractMapper.selectIfHashExists(contractHash);
+        if (0 == integer) {
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), false);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
     }
 
 

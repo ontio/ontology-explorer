@@ -42,7 +42,7 @@ public class TokenController {
     @ApiOperation(value = "Get token list by token type")
     @GetMapping(value = "/{token_type}")
     public ResponseBean queryTokensByPage(
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8", message = "Incorrect token type") String tokenType,
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20", message = "Incorrect token type") String tokenType,
             @RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
             @RequestParam("page_number") @Min(1) Integer pageNumber,
             @RequestParam(name = "sort", required = false) List<String> sorts
@@ -57,8 +57,8 @@ public class TokenController {
 
     @ApiOperation(value = "Get token detail by token type and contracthash")
     @GetMapping(value = "/{token_type}/{contract_hash}")
-    public ResponseBean queryTokenDetail(@PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8", message = "Incorrect token type") String tokenType,
-                                         @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash) {
+    public ResponseBean queryTokenDetail(@PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20", message = "Incorrect token type") String tokenType,
+                                         @PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash) {
 
         log.info("###{}.{} begin...token_type:{}，contract_hash:{}", CLASS_NAME, Helper.currentMethod(), tokenType, contractHash);
 
@@ -85,8 +85,8 @@ public class TokenController {
     @ApiOperation(value = "Get token daily aggregations for specific token type")
     @GetMapping(value = "/{token_type}/{contract_hash}/daily")
     public ResponseBean queryDailyAggregation(
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4", message = "Incorrect token type") String tokenType,
-            @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|orc20|ORC20", message = "Incorrect token type") String tokenType,
+            @PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) {
@@ -122,7 +122,7 @@ public class TokenController {
 
     @ApiOperation(value = "Get oep logos")
     @GetMapping(value = "/logos")
-    public ResponseBean queryOepLogos(@RequestParam("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+    public ResponseBean queryOepLogos(@RequestParam("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash,
                                       @RequestParam("page_size") @Min(1) @Max(50) int pageSize,
                                       @RequestParam("page_number") @Min(1) int pageNumber) {
         log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());

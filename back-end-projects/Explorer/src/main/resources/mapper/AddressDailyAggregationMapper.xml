@@ -132,6 +132,9 @@
             <when test="token_type == 'oep5'">
                 INNER JOIN tbl_oep5 o ON o.contract_hash = aggr.token_contract_hash AND o.audit_flag = 1
             </when>
+            <when test="token_type == 'orc20'">
+                INNER JOIN tbl_erc20 o ON o.contract_hash = aggr.token_contract_hash AND o.audit_flag = 1
+            </when>
             <otherwise>
                 INNER JOIN (SELECT DISTINCT contract_hash FROM tbl_oep8 WHERE audit_flag = 1) o
                 ON o.contract_hash = aggr.token_contract_hash

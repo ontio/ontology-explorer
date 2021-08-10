@@ -55,6 +55,8 @@ public class ParamsConfig {
      */
     public static final String VIRTUAL_CONTRACT_OEP4 = "$$OEP4$$";
 
+    public static final String VIRTUAL_CONTRACT_ERC20 = "$$ALL$$";
+
     private static final Collection<String> VIRTUAL_CONTRACTS;
 
     static {
@@ -136,6 +138,8 @@ public class ParamsConfig {
                 return VIRTUAL_CONTRACT_OEP4;
             case "all":
                 return VIRTUAL_CONTRACT_ALL;
+            case "orc20":
+                return VIRTUAL_CONTRACT_ERC20;
             default:
                 throw new IllegalArgumentException("unsupported token: " + token);
         }
@@ -170,4 +174,9 @@ public class ParamsConfig {
     public String FOUNDATION_NODES;
     @Value("${foundation.addresses}")
     public String FOUNDATION_ADDRESSES;
+
+    @Value("${eth.web3j.url}")
+    public String ETH_WEB3J_URL;
+
+
 }
