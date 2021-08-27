@@ -19,53 +19,18 @@
 
 package com.github.ontio.service;
 
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.model.common.ResponseBean;
 
 public interface IBlockService {
 
-    /**
-     * query block
-     *
-     * @return
-     */
-    Result queryBlockList(int amount);
+    ResponseBean queryLatestBlocks(int amount);
 
-    /**
-     * query block by page
-     *
-     * @return
-     */
-    Result queryBlockList(int pageSize, int pageNumber);
+    ResponseBean queryBlocksByPage(int pageSize, int pageNumber);
 
-    /**
-     * query block by height
-     *
-     * @return
-     */
-    Result queryBlockByHeight(int height);
+    ResponseBean queryBlockByHeight(int height);
 
+    ResponseBean queryBlockByHash(String hash);
 
-    /**
-     * query block by blockhash
-     *
-     * @return
-     */
-    Result queryBlockByHash(String hash);
+    ResponseBean queryBlockGenerateTime(int amount);
 
-    /**
-     * query block generatetime
-     *
-     * @param amount
-     * @return
-     */
-    Result queryBlockGenerateTime(int amount);
-
-
-    /**
-     * Block number in two weeks
-     *
-     * @param time
-     * @return
-     */
-    Result blockCountInTwoWeeks(int time);
 }

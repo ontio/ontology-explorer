@@ -20,38 +20,10 @@
 package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.paramBean.Result;
+import com.github.ontio.common.Address;
+import com.github.ontio.sdk.exception.SDKException;
 
-import java.math.BigInteger;
-
-/**
- * @author zhouq
- * @date 2018/2/27
- */
 public class Helper {
-
-    private static final String SEPARATOR = "\\|\\|";
-
-    private static final BigInteger TWO_64 = BigInteger.ONE.shiftLeft(64);
-
-
-    /**
-     * @param action
-     * @param error
-     * @param desc
-     * @param version
-     * @param rs
-     * @return
-     */
-    public static Result result(String action, long error, String desc, String version, Object rs) {
-        Result rr = new Result();
-        rr.Error = error;
-        rr.Action = action;
-        rr.Desc = desc;
-        rr.Version = version;
-        rr.Result = rs;
-        return rr;
-    }
 
     /**
      * check param whether is null or ''
@@ -71,6 +43,10 @@ public class Helper {
         return true;
     }
 
+    public static Boolean isNotEmptyOrNull(Object... params) {
+        return !isEmptyOrNull(params);
+    }
+
     /**
      * judge whether the string is in json format.
      *
@@ -78,10 +54,10 @@ public class Helper {
      * @return
      */
     public static Boolean isJSONStr(String str) {
-        try{
+        try {
             JSONObject obj = JSONObject.parseObject(str);
             return true;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -90,14 +66,18 @@ public class Helper {
         return new Exception("").getStackTrace()[1].getMethodName();
     }
 
-
-    public static String asUnsignedDecimalString(long l) {
-        BigInteger b = BigInteger.valueOf(l);
-        if (b.signum() < 0) {
-            b = b.add(TWO_64);
-        }
-        return b.toString();
+    public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
+        Address address = Address.decodeBase58(ontAddr);
+        String reverse = com.github.ontio.common.Helper.reverse(address.toHexString());
+        return ConstantParam.EVM_ADDRESS_PREFIX + reverse;
     }
 
+    public static String EthAddrToOntAddr(String ethAddr) {
+        if (ethAddr.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            ethAddr = ethAddr.substring(2);
+        }
+        Address parse = Address.parse(ethAddr);
+        return parse.toBase58();
+    }
 
 }

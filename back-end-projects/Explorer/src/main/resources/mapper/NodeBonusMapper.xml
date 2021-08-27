@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodeBonusMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodeBonus">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="public_key" jdbcType="VARCHAR" property="publicKey"/>
+        <id column="unix_time" jdbcType="BIGINT" property="unixTime"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="bonus" jdbcType="DOUBLE" property="bonus"/>
+    </resultMap>
+
+    <cache type="com.github.ontio.config.RedisCache">
+        <property name="eviction" value="LRU"/>
+        <property name="size" value="1024"/>
+        <property name="readOnly" value="false"/>
+    </cache>
+
+    <select id="selectNodeCount" resultType="java.lang.Integer" useCache="true">
+        SELECT COUNT(DISTINCT public_key)
+        FROM tbl_node_bonus;
+    </select>
+
+    <select id="selectLatestNodeBonusList" parameterType="java.lang.Integer"
+            resultType="com.github.ontio.model.dao.NodeBonus" useCache="true">
+        SELECT public_key as publicKey, unix_time as unixTime, address, name, bonus
+        FROM tbl_node_bonus
+        ORDER BY unix_time DESC
+        LIMIT #{nodeCount};
+    </select>
+
+    <select id="selectLatestNodeBonusByPublicKey" parameterType="java.lang.String"
+            resultType="com.github.ontio.model.dao.NodeBonus" useCache="true">
+        SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
+        FROM tbl_node_bonus
+        WHERE public_key = #{publicKey}
+        ORDER BY unix_time DESC
+        LIMIT 1;
+    </select>
+
+    <select id="selectLatestNodeBonusByAddress" parameterType="java.lang.String"
+            resultType="com.github.ontio.model.dao.NodeBonus" useCache="true">
+        SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
+        FROM tbl_node_bonus
+        WHERE address = #{address}
+        ORDER BY unix_time DESC
+        LIMIT 1;
+    </select>
+
+    <select id="searchLatestNodeBonusListByName" parameterType="java.lang.String" resultType="com.github.ontio.model.dao.NodeBonus"
+            useCache="true">
+        SELECT public_key AS publicKey, unix_time AS unixTime, address, name, bonus
+        FROM tbl_node_bonus
+        WHERE name LIKE concat('%', #{name}, '%')
+        ORDER BY unix_time DESC;
+    </select>
+
+</mapper>

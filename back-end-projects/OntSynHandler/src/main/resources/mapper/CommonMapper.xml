@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.CommonMapper">
+
+    <insert id="saveGovernanceInfos">
+        INSERT INTO tbl_governance_info
+        (
+        peer_pub_key,
+        address,
+        consensus_pos,
+        candidate_pos,
+        new_pos,
+        withdraw_consensus_pos,
+        withdraw_candidate_pos,
+        withdraw_unfreeze_pos
+        )
+        VALUES
+        <foreach collection="list" item="info" separator=",">
+            (
+            #{info.peerPubKey},
+            #{info.address},
+            #{info.consensusPos},
+            #{info.candidatePos},
+            #{info.newPos},
+            #{info.withdrawConsensusPos},
+            #{info.withdrawCandidatePos},
+            #{info.withdrawUnfreezePos}
+            )
+        </foreach>
+    </insert>
+    
+    <delete id="removeGovernanceInfos">
+        DELETE FROM tbl_governance_info
+    </delete>
+
+</mapper>

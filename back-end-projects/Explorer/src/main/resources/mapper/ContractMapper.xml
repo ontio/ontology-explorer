@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.ContractMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Contract">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="contract_hash" jdbcType="VARCHAR" property="contractHash"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="create_time" jdbcType="INTEGER" property="createTime"/>
+        <result column="update_time" jdbcType="INTEGER" property="updateTime"/>
+        <result column="audit_flag" jdbcType="INTEGER" property="auditFlag"/>
+        <result column="contact_info" jdbcType="VARCHAR" property="contactInfo"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="logo" jdbcType="VARCHAR" property="logo"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="address_count" jdbcType="INTEGER" property="addressCount"/>
+        <result column="tx_count" jdbcType="INTEGER" property="txCount"/>
+        <result column="ont_sum" jdbcType="DECIMAL" property="ontSum"/>
+        <result column="ong_sum" jdbcType="DECIMAL" property="ongSum"/>
+        <result column="token_sum" jdbcType="VARCHAR" property="tokenSum"/>
+        <result column="category" jdbcType="VARCHAR" property="category"/>
+        <result column="dapp_name" jdbcType="VARCHAR" property="dappName"/>
+        <result column="dappstore_flag" jdbcType="INTEGER" property="dappstoreFlag"/>
+        <result column="total_reward" jdbcType="DECIMAL" property="totalReward"/>
+        <result column="lastweek_reward" jdbcType="DECIMAL" property="lastweekReward"/>
+        <result column="channel" jdbcType="VARCHAR" property="channel"/>
+        <result column="abi" jdbcType="LONGVARCHAR" property="abi"/>
+        <result column="code" jdbcType="LONGVARCHAR" property="code"/>
+        <result column="source_code" jdbcType="LONGVARCHAR" property="sourceCode"/>
+        <result column="compiler_type" jdbcType="VARCHAR" property="compilerType"/>
+        <result column="compiler_version" jdbcType="VARCHAR" property="compilerVersion"/>
+        <result column="vm_type" jdbcType="VARCHAR" property="vmType"/>
+        <result column="vm_version" jdbcType="VARCHAR" property="vmVersion"/>
+    </resultMap>
+
+
+    <cache type="com.github.ontio.config.RedisCache">
+        <property name="eviction" value="LRU"/>
+        <property name="size" value="1024"/>
+        <property name="readOnly" value="false"/>
+    </cache>
+
+    <sql id="basicColumns">
+        contract_hash as contractHash,
+    name as name,
+    create_time as createTime,
+    update_time as updateTime,
+    contact_info as contactInfo,
+    description as description,
+    type as type,
+    logo as logo,
+    creator as creator,
+    address_count as addressCount,
+    tx_count as txCount,
+    ont_sum as ontSum,
+    ong_sum as ongSum,
+    token_sum as tokenSum,
+    category as category,
+    dapp_name as dappName,
+    compiler_type as compilerType,
+    compiler_version as compilerVersion,
+    vm_type as vmType,
+    vm_version as vmVersion
+    </sql>
+
+
+    <sql id="detailColumns">
+        contract_hash as contractHash,
+    name as name,
+    create_time as createTime,
+    update_time as updateTime,
+    contact_info as contactInfo,
+    description as description,
+    type as type,
+    logo as logo,
+    creator as creator,
+    address_count as addressCount,
+    tx_count as txCount,
+    ont_sum as ontSum,
+    ong_sum as ongSum,
+    token_sum as tokenSum,
+    category as category,
+    dapp_name as dappName,
+    abi as abi,
+    code as code,
+    source_code as sourceCode,
+    compiler_type as compilerType,
+    compiler_version as compilerVersion,
+    vm_type as vmType,
+    vm_version as vmVersion
+    </sql>
+
+
+    <select id="selectApprovedContract" resultType="com.github.ontio.model.dto.ContractDto">
+        select
+        <include refid="basicColumns"/>
+        from tbl_contract
+        where audit_flag = 1
+        order by create_time desc
+        limit #{startIndex}, #{pageSize}
+    </select>
+
+
+    <select id="selectApprovedContractCount" resultType="java.lang.Integer">
+        select count(1)
+        from tbl_contract
+        where audit_flag = 1
+    </select>
+
+    <select id="selectContractDetail" resultType="com.github.ontio.model.dto.ContractDto">
+        select
+        <include refid="detailColumns"/>
+        from tbl_contract
+        where contract_hash = #{contractHash}
+    </select>
+
+    <select id="selectContractHashByDappName" parameterType="java.util.List" resultType="java.util.Map">
+        select contract_hash as contractHash, dapp_name as dappName
+        from tbl_contract
+        where dappstore_flag = 1
+        <if test="dappNameList.size() > 0">
+            and dapp_name in
+            <foreach collection="dappNameList" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by dapp_name,create_time asc
+    </select>
+
+    <select id="selectHashByDappName" parameterType="java.util.Map" resultType="java.lang.String">
+        select contract_hash
+        from tbl_contract
+        where dapp_name in
+        <foreach close=")" collection="dappNameList" index="index" item="item" open="(" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="selectDappstoreDapp" resultType="java.util.Map">
+        SELECT contract_hash,
+               logo,
+               description,
+               category,
+               create_time,
+               dapp_name,
+               total_reward,
+               lastweek_reward
+        FROM tbl_contract
+        WHERE dappstore_flag = 1
+    </select>
+
+    <select id="findContractType" resultType="com.github.ontio.model.common.ContractType">
+        SELECT c.contract_hash,
+               if(oep4.contract_hash IS NULL, FALSE, TRUE)  AS oep4,
+               if(oep5.contract_hash IS NULL, FALSE, TRUE)  AS oep5,
+               if(oep8.contract_hash IS NULL, FALSE, TRUE)  AS oep8,
+               if(orc20.contract_hash IS NULL, FALSE, TRUE) AS orc20
+        FROM tbl_contract c
+                 LEFT OUTER JOIN tbl_oep4 oep4 ON oep4.contract_hash = c.contract_hash
+                 LEFT OUTER JOIN tbl_oep5 oep5 ON oep5.contract_hash = c.contract_hash
+                 LEFT OUTER JOIN tbl_oep8 oep8 ON oep8.contract_hash = c.contract_hash
+                 LEFT OUTER JOIN tbl_orc20 orc20 ON orc20.contract_hash = c.contract_hash
+        WHERE c.contract_hash = #{contractHash}
+        LIMIT 1
+    </select>
+
+
+    <select id="selectIfHashExists" resultType="Integer">
+        SELECT COUNT(*)
+        FROM tbl_contract
+        WHERE contract_hash = #{contractHash}
+    </select>
+
+</mapper>

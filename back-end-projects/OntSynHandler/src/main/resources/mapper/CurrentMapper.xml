@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.CurrentMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Current">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="ontid_count" jdbcType="INTEGER" property="ontidCount" />
+    <result column="ontid_tx_count" jdbcType="INTEGER" property="ontidTxCount" />
+  </resultMap>
+
+
+  <update id="update" parameterType="com.github.ontio.model.dao.Current">
+    update tbl_current
+    set block_height = #{blockHeight},
+    tx_count = #{txCount},
+    ontid_count = #{ontidCount},
+    ontid_tx_count = #{ontidTxCount}
+  </update>
+
+  <select id="selectBlockHeight" resultType="java.lang.Integer">
+    select block_height
+    from tbl_current
+  </select>
+
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.Oep5Mapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Oep5">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="total_supply" jdbcType="DECIMAL" property="totalSupply" />
+    <result column="symbol" jdbcType="VARCHAR" property="symbol" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="audit_flag" jdbcType="BIT" property="auditFlag" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="vm_category" jdbcType="VARCHAR" property="vmCategory" />
+  </resultMap>
+
+  <cache type="com.github.ontio.config.RedisCache">
+    <property name="eviction" value="LRU" />
+    <property name="size" value="1024" />
+    <property name="readOnly" value="false" />
+  </cache>
+
+
+  <select id="selectOep5Tokens" resultType="com.github.ontio.model.dto.Oep5DetailDto">
+    SELECT
+      a.contract_hash AS contractHash,
+      a.name AS name,
+      a.creator AS creator,
+      a.description as description,
+      a.logo as logo,
+      a.create_time as createTime,
+      a.update_time as updateTime,
+    a.contact_info as contactInfo,
+    a.address_count as addressCount,
+    a.tx_count as txCount,
+    b.total_supply as totalSupply,
+    b.symbol as symbol,
+    b.vm_category as vmCategory
+    FROM tbl_contract a, tbl_oep5 b
+    where a.contract_hash = b.contract_hash
+    and a.audit_flag = 1
+    and b.audit_flag = 1
+    <trim prefix="order by" prefixOverrides=",">
+      <if test="ascending != null">
+        <foreach collection="ascending" item="sort">
+          , a.${sort}
+        </foreach>
+      </if>
+      <if test="descending != null">
+        <foreach collection="descending" item="sort">
+          , a.${sort} desc
+        </foreach>
+      </if>
+    </trim>
+  </select>
+
+  <select id="selectOep5TokenDetail" resultType="com.github.ontio.model.dto.Oep5DetailDto">
+    SELECT
+      a.contract_hash AS contractHash,
+      a.name AS name,
+      a.abi as abi,
+      a.code as code,
+      a.source_code as sourceCode,
+      a.category as category,
+      a.creator AS creator,
+      a.description as description,
+      a.logo as logo,
+      a.create_time as createTime,
+      a.update_time as updateTime,
+      a.contact_info as contactInfo,
+      a.type as type,
+      a.ong_sum as ongSum,
+      a.ont_sum as ontSum,
+      a.token_sum as tokenSum,
+      a.address_count as addressCount,
+      a.tx_count as txCount,
+      b.total_supply as totalSupply,
+      b.symbol as symbol,
+      b.vm_category as vmCategory
+    FROM tbl_contract a, tbl_oep5 b
+    where a.contract_hash = b.contract_hash
+    and a.audit_flag = 1
+    and b.audit_flag = 1
+	and b.contract_hash = #{contractHash}
+  </select>
+
+
+</mapper>

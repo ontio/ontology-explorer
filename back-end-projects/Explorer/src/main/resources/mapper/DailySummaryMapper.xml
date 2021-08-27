@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.DailySummaryMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.DailySummary">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="time" jdbcType="INTEGER" property="time" />
+    <result column="block_count" jdbcType="INTEGER" property="blockCount" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="active_ontid_count" jdbcType="INTEGER" property="activeOntidCount" />
+    <result column="new_ontid_count" jdbcType="INTEGER" property="newOntidCount" />
+    <result column="ont_sum" jdbcType="DECIMAL" property="ontSum" />
+    <result column="ong_sum" jdbcType="DECIMAL" property="ongSum" />
+    <result column="active_address_count" jdbcType="INTEGER" property="activeAddressCount" />
+    <result column="new_address_count" jdbcType="INTEGER" property="newAddressCount" />
+  </resultMap>
+
+  <sql id="basicColumns">
+    time as time,
+    block_count as blockCount,
+    tx_count as txCount,
+    active_ontid_count as activeOntidCount,
+    new_ontid_count as newOntidCount,
+    ont_sum as ontSum,
+    ong_sum as ongSum,
+    active_address_count as activeAddressCount,
+    new_address_count as newAddressCount
+  </sql>
+
+
+  <select id="selectSummaryByTime" resultType="com.github.ontio.model.dto.DailySummaryDto">
+    select <include refid="basicColumns"/>
+    from tbl_daily_summary
+    where time &gt;= #{startTime}
+    and <![CDATA[ time <= #{endTime} ]]>
+    order by time
+  </select>
+
+  <select id="selectAddrAndOntIdTotal" resultType="java.util.Map">
+    select SUM(new_address_count) as addressTotal, SUM(new_ontid_count) as ontidTotal
+    from tbl_daily_summary
+    where <![CDATA[ time <= #{startTime} ]]>
+  </select>
+
+</mapper>

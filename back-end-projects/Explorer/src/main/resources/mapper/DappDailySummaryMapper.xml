@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.DappDailySummaryMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.DappDailySummary">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="tx_count" jdbcType="INTEGER" property="txCount" />
+    <result column="ont_sum" jdbcType="DECIMAL" property="ontSum" />
+    <result column="ong_sum" jdbcType="DECIMAL" property="ongSum" />
+    <result column="active_address_count" jdbcType="INTEGER" property="activeAddressCount" />
+    <result column="new_address_count" jdbcType="INTEGER" property="newAddressCount" />
+    <result column="dapp_name" jdbcType="VARCHAR" property="dappName" />
+  </resultMap>
+
+
+</mapper>
