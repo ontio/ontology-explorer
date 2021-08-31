@@ -20,6 +20,7 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     List<TxDetailDto> selectTransferTxDetailByHash(@Param("txHash") String txHash);
 
+    List<TxDetailDto> selectTransferTxDetailByHash2(@Param("txHash") String txHash);
 
     Integer selectLatestOntTransferTxTime(@Param("address") String address);
 

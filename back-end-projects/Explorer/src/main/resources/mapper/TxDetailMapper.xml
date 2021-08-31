@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.TxDetailMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxDetail">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
-    <id column="tx_index" jdbcType="INTEGER" property="txIndex" />
-    <result column="tx_type" jdbcType="INTEGER" property="txType" />
-    <result column="tx_time" jdbcType="INTEGER" property="txTime" />
-    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
-    <result column="amount" jdbcType="DECIMAL" property="amount" />
-    <result column="fee" jdbcType="DECIMAL" property="fee" />
-    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
-    <result column="from_address" jdbcType="VARCHAR" property="fromAddress" />
-    <result column="to_address" jdbcType="VARCHAR" property="toAddress" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
-    <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
-    <result column="event_type" jdbcType="INTEGER" property="eventType" />
-    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
-    <result column="payer" jdbcType="VARCHAR" property="payer" />
-    <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxDetail">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
+        <id column="tx_index" jdbcType="INTEGER" property="txIndex" />
+        <result column="tx_type" jdbcType="INTEGER" property="txType" />
+        <result column="tx_time" jdbcType="INTEGER" property="txTime" />
+        <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
+        <result column="amount" jdbcType="DECIMAL" property="amount" />
+        <result column="fee" jdbcType="DECIMAL" property="fee" />
+        <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
+        <result column="from_address" jdbcType="VARCHAR" property="fromAddress" />
+        <result column="to_address" jdbcType="VARCHAR" property="toAddress" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
+        <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
+        <result column="event_type" jdbcType="INTEGER" property="eventType" />
+        <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+        <result column="payer" jdbcType="VARCHAR" property="payer" />
+        <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
+    </resultMap>
 
     <cache type="com.github.ontio.config.RedisCache">
         <property name="eviction" value="LRU" />
@@ -94,6 +94,14 @@
         from tbl_tx_detail
         where tx_hash = #{txHash}
         and event_type in (2,3,7)
+    </select>
+
+
+
+    <select id="selectTransferTxDetailByHash2" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
+        select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description, contract_hash as contractHash
+        from tbl_tx_detail
+        where tx_hash = #{txHash}
     </select>
 
     <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">

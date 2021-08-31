@@ -156,7 +156,8 @@ public class TransactionServiceImpl implements ITransactionService {
         if (Helper.isEmptyOrNull(txEventLog)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
-        TxDetailDto txDetailDtoTemp = queryTXDetail(txEventLog);
+        String code = determineTxType(txEventLog).getCode();
+        TxDetailDto txDetailDtoTemp = queryTXDetail(txEventLog, code);
         TxDetailDto txDetailDto = TxDetailDto.builder().build();
 
         List<TxDetailDto> txDetailDtosMany = txDetailMapper.selectTxsByHash(txHash);
@@ -259,6 +260,20 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
 
+    private List<TxDetailDto> queryTxDetailByTxHash3(String txHash) {
+        // 没有approval 类型的
+        List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash2(txHash);
+        txDetailDtos.forEach(item -> {
+            //ONG转换好精度给前端
+            String assetName = item.getAssetName();
+            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
+            }
+        });
+        return txDetailDtos;
+    }
+
+
     private List<TxDetailDto> queryAllTxDetailByTxHash(String txHash) {
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
 
@@ -272,18 +287,36 @@ public class TransactionServiceImpl implements ITransactionService {
         return txDetailDtos;
     }
 
-    private TxDetailDto queryTXDetail(TxEventLog eventLog) {
+    private TxDetailDto queryTXDetail(TxEventLog eventLog, String code) {
         String calledContractHash = eventLog.getCalledContractHash();
         TxDetailDto txDetailDto = TxDetailDto.builder().build();
         //208 ont deploy  0x evm deploy contract
         if ("".equals(calledContractHash) && eventLog.getTxType() == 208 || ("0x".equals(calledContractHash) && eventLog.getTxType() == 211)) {
             // native ontology transfer
         } else if (ConstantParam.NATIVE_CONTRACT_HASH.equals(calledContractHash)) {
-            // 拿出转账的from&to地址,查到的只有ong/ont转账的消息
-            List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash2(eventLog.getTxHash());
-            String fromAddress = txDetailDtos.get(0).getFromAddress();
-            String toAddress = txDetailDtos.get(0).getToAddress();
-            txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(toAddress).isContractHash(false).build();
+            // ontid的逻辑
+            if (eventLog.getOntidTxFlag() && eventLog.getConfirmFlag() == 1) {
+                List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash3(eventLog.getTxHash());
+                if (txDetailDtos.size() != 0) {
+                    String fromAddress = txDetailDtos.get(0).getFromAddress();
+                    String toAddress = txDetailDtos.get(0).getToAddress();
+                    txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(toAddress).isContractHash(false).build();
+                }
+            } else if (code.equals("07") || code.equals("08")) {
+                List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash3(eventLog.getTxHash());
+                String fromAddress = "";
+                String toAddress = "";
+                if (txDetailDtos.size() == 2) {
+                    fromAddress = txDetailDtos.get(1).getFromAddress();
+                    toAddress = txDetailDtos.get(1).getToAddress();
+                } else if (txDetailDtos.size() == 1) {
+                    fromAddress = txDetailDtos.get(0).getFromAddress();
+                    toAddress = txDetailDtos.get(0).getToAddress();
+                }
+                txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(toAddress).isContractHash(false).build();
+            } else {
+                txDetailDto = TxDetailDto.builder().fromAddress("").toAddress("").isContractHash(false).build();
+            }
         } else {
             List<TxDetailDto> txDetailDtos = queryAllTxDetailByTxHash(eventLog.getTxHash());
             int length = txDetailDtos.size();
@@ -314,6 +347,8 @@ public class TransactionServiceImpl implements ITransactionService {
                 String fromAddress = txDetailDtos.get(0).getFromAddress();
                 String toAddress = txDetailDtos.get(0).getToAddress();
                 txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(toAddress).isContractHash(false).build();
+            } else if (length == 0) {
+                txDetailDto = TxDetailDto.builder().fromAddress("").toAddress("").isContractHash(false).build();
             } else {
                 // token bridge
                 TxDetailDto txDetailDto1 = TxDetailDto.builder().build();
@@ -356,10 +391,12 @@ public class TransactionServiceImpl implements ITransactionService {
         dto.setBlockIndex(eventLog.getBlockIndex());
         dto.setConfirmFlag(eventLog.getConfirmFlag());
         dto.setFee(eventLog.getFee());
-        dto.setTxType(determineTxType(eventLog));
+        TxTypeEnum txTypeEnum = determineTxType(eventLog);
+        dto.setTxType(txTypeEnum);
+        String code = txTypeEnum.getCode();
         dto.setVmType(determineVMType(eventLog));
-        TxDetailDto txDetailDto = queryTXDetail(eventLog);
-
+        // 查询到,和code一起进行逻辑判断
+        TxDetailDto txDetailDto = queryTXDetail(eventLog, code);
         JSONObject detail = new JSONObject();
         detail.put("transfers", txDetailDto);
         dto.setDetail(detail);
@@ -396,6 +433,8 @@ public class TransactionServiceImpl implements ITransactionService {
                     txType = TxTypeEnum.ONT_TRANSFER;
                 } else if (eventLog.getEventLog().contains("0200000000000000000000000000000000000000")) {
                     txType = TxTypeEnum.ONG_TRANSFER;
+                } else {
+                    txType = TxTypeEnum.CONTRACT_CALL;
                 }
             } else {
                 ContractType contractType = contractTypes.get(calledContractHash);
@@ -407,6 +446,8 @@ public class TransactionServiceImpl implements ITransactionService {
                     txType = TxTypeEnum.OEP8;
                 } else if (contractType.isOrc20()) {
                     txType = TxTypeEnum.ORC20;
+                } else if (contractType.isOrc721()) {
+                    txType = TxTypeEnum.ORC721;
                 } else if (eventLog.getCalledContractHash().equals(ConstantParam.CONTRACTHASH_ONG)) {
                     txType = TxTypeEnum.ONG_TRANSFER;
                 } else {
