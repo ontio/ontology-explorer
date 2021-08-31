@@ -102,6 +102,7 @@
         select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description, contract_hash as contractHash
         from tbl_tx_detail
         where tx_hash = #{txHash}
+        order by tx_index
     </select>
 
     <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">

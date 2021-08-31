@@ -307,8 +307,8 @@ public class TransactionServiceImpl implements ITransactionService {
                 String fromAddress = "";
                 String toAddress = "";
                 if (txDetailDtos.size() == 2) {
-                    fromAddress = txDetailDtos.get(1).getFromAddress();
-                    toAddress = txDetailDtos.get(1).getToAddress();
+                    fromAddress = txDetailDtos.get(0).getFromAddress();
+                    toAddress = txDetailDtos.get(0).getToAddress();
                 } else if (txDetailDtos.size() == 1) {
                     fromAddress = txDetailDtos.get(0).getFromAddress();
                     toAddress = txDetailDtos.get(0).getToAddress();
