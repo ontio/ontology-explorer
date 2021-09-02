@@ -20,6 +20,8 @@
 package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.common.Address;
+import com.github.ontio.sdk.exception.SDKException;
 
 public class Helper {
 
@@ -41,7 +43,7 @@ public class Helper {
         return true;
     }
 
-    public static Boolean isNotEmptyOrNull(Object... params){
+    public static Boolean isNotEmptyOrNull(Object... params) {
         return !isEmptyOrNull(params);
     }
 
@@ -52,10 +54,10 @@ public class Helper {
      * @return
      */
     public static Boolean isJSONStr(String str) {
-        try{
+        try {
             JSONObject obj = JSONObject.parseObject(str);
             return true;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -64,5 +66,18 @@ public class Helper {
         return new Exception("").getStackTrace()[1].getMethodName();
     }
 
+    public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
+        Address address = Address.decodeBase58(ontAddr);
+        String reverse = com.github.ontio.common.Helper.reverse(address.toHexString());
+        return ConstantParam.EVM_ADDRESS_PREFIX + reverse;
+    }
+
+    public static String EthAddrToOntAddr(String ethAddr) {
+        if (ethAddr.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            ethAddr = ethAddr.substring(2);
+        }
+        Address parse = Address.parse(ethAddr);
+        return parse.toBase58();
+    }
 
 }

@@ -1,16 +1,14 @@
 package com.github.ontio.model.dao;
 
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
-@Table(name = "tbl_tx_detail")
-@NoArgsConstructor
-public class TxDetail {
+@Table(name = "tbl_orc20_tx_detail")
+public class Orc20TxDetail {
     /**
      * 交易hash
      */
@@ -26,7 +24,7 @@ public class TxDetail {
     private Integer txIndex;
 
     /**
-     * 区块链交易类型，208：部署合约交易 209：调用合约交易
+     * 区块链交易类型，211 部署/ 调用ORC20 类型的合约
      */
     @Column(name = "tx_type")
     private Integer txType;
@@ -49,7 +47,7 @@ public class TxDetail {
     private BigDecimal amount;
 
     /**
-     * 交易手续费
+     * 交易手续费 gasConsumed
      */
     private BigDecimal fee;
 
@@ -112,7 +110,7 @@ public class TxDetail {
     private String calledContractHash;
 
     @Builder
-    public TxDetail(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash) {
+    public Orc20TxDetail(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash) {
         this.txHash = txHash;
         this.txIndex = txIndex;
         this.txType = txType;
@@ -131,150 +129,6 @@ public class TxDetail {
         this.payer = payer;
         this.calledContractHash = calledContractHash;
     }
-
-    public static TxDetailDaily toTxDetailDaily(TxDetail txDetail) {
-        TxDetailDaily txDetailDaily = TxDetailDaily.builder()
-                .txHash(txDetail.getTxHash())
-                .txType(txDetail.getTxType())
-                .txTime(txDetail.getTxTime())
-                .txIndex(txDetail.getTxIndex())
-                .amount(txDetail.getAmount())
-                .fee(txDetail.getFee())
-                .fromAddress(txDetail.getFromAddress())
-                .toAddress(txDetail.getToAddress())
-                .assetName(txDetail.getAssetName())
-                .blockHeight(txDetail.getBlockHeight())
-                .blockIndex(txDetail.getBlockIndex())
-                .confirmFlag(txDetail.getConfirmFlag())
-                .contractHash(txDetail.getContractHash())
-                .payer(txDetail.getPayer())
-                .calledContractHash(txDetail.getCalledContractHash())
-                .description(txDetail.getDescription())
-                .eventType(txDetail.getEventType())
-                .build();
-        return txDetailDaily;
-    }
-
-    public static Oep4TxDetail toOep4TxDetail(TxDetail txDetail) {
-        Oep4TxDetail oep4TxDetail = Oep4TxDetail.builder()
-                .txHash(txDetail.getTxHash())
-                .txType(txDetail.getTxType())
-                .txTime(txDetail.getTxTime())
-                .txIndex(txDetail.getTxIndex())
-                .amount(txDetail.getAmount())
-                .fee(txDetail.getFee())
-                .fromAddress(txDetail.getFromAddress())
-                .toAddress(txDetail.getToAddress())
-                .assetName(txDetail.getAssetName())
-                .blockHeight(txDetail.getBlockHeight())
-                .blockIndex(txDetail.getBlockIndex())
-                .confirmFlag(txDetail.getConfirmFlag())
-                .contractHash(txDetail.getContractHash())
-                .payer(txDetail.getPayer())
-                .calledContractHash(txDetail.getCalledContractHash())
-                .description(txDetail.getDescription())
-                .eventType(txDetail.getEventType())
-                .build();
-        return oep4TxDetail;
-    }
-
-    public static Oep5TxDetail toOep5TxDetail(TxDetail txDetail) {
-        Oep5TxDetail oep5TxDetail = Oep5TxDetail.builder()
-                .txHash(txDetail.getTxHash())
-                .txType(txDetail.getTxType())
-                .txTime(txDetail.getTxTime())
-                .txIndex(txDetail.getTxIndex())
-                .amount(txDetail.getAmount())
-                .fee(txDetail.getFee())
-                .fromAddress(txDetail.getFromAddress())
-                .toAddress(txDetail.getToAddress())
-                .assetName(txDetail.getAssetName())
-                .blockHeight(txDetail.getBlockHeight())
-                .blockIndex(txDetail.getBlockIndex())
-                .confirmFlag(txDetail.getConfirmFlag())
-                .contractHash(txDetail.getContractHash())
-                .payer(txDetail.getPayer())
-                .calledContractHash(txDetail.getCalledContractHash())
-                .description(txDetail.getDescription())
-                .eventType(txDetail.getEventType())
-                .build();
-        return oep5TxDetail;
-    }
-
-    public static Oep8TxDetail toOep8TxDetail(TxDetail txDetail) {
-        Oep8TxDetail oep8TxDetail = Oep8TxDetail.builder()
-                .txHash(txDetail.getTxHash())
-                .txType(txDetail.getTxType())
-                .txTime(txDetail.getTxTime())
-                .txIndex(txDetail.getTxIndex())
-                .amount(txDetail.getAmount())
-                .fee(txDetail.getFee())
-                .fromAddress(txDetail.getFromAddress())
-                .toAddress(txDetail.getToAddress())
-                .assetName(txDetail.getAssetName())
-                .blockHeight(txDetail.getBlockHeight())
-                .blockIndex(txDetail.getBlockIndex())
-                .confirmFlag(txDetail.getConfirmFlag())
-                .contractHash(txDetail.getContractHash())
-                .payer(txDetail.getPayer())
-                .calledContractHash(txDetail.getCalledContractHash())
-                .description(txDetail.getDescription())
-                .eventType(txDetail.getEventType())
-                .build();
-        return oep8TxDetail;
-    }
-
-
-    public static Orc20TxDetail toOrc20TxDetail(TxDetail txDetail) {
-        Orc20TxDetail orc20TxDetail = Orc20TxDetail.builder()
-                .txHash(txDetail.getTxHash())
-                .txType(txDetail.getTxType())
-                .txTime(txDetail.getTxTime())
-                .txIndex(txDetail.getTxIndex())
-                .amount(txDetail.getAmount())
-                .fee(txDetail.getFee())
-                .fromAddress(txDetail.getFromAddress())
-                .toAddress(txDetail.getToAddress())
-                .assetName(txDetail.getAssetName())
-                .blockHeight(txDetail.getBlockHeight())
-                .blockIndex(txDetail.getBlockIndex())
-                .confirmFlag(txDetail.getConfirmFlag())
-                .contractHash(txDetail.getContractHash())
-                .payer(txDetail.getPayer())
-                .calledContractHash(txDetail.getCalledContractHash())
-                .description(txDetail.getDescription())
-                .eventType(txDetail.getEventType())
-                .build();
-        return orc20TxDetail;
-    }
-
-    public static Orc721TxDetail toOrc721TxDetail(TxDetail txDetail, BigDecimal tokenId) {
-        Orc721TxDetail orc721TxDetail = Orc721TxDetail.builder()
-                .txHash(txDetail.getTxHash())
-                .txType(txDetail.getTxType())
-                .txTime(txDetail.getTxTime())
-                .txIndex(txDetail.getTxIndex())
-                .tokenId(tokenId)
-                .amount(txDetail.getAmount())
-                .fee(txDetail.getFee())
-                .fromAddress(txDetail.getFromAddress())
-                .toAddress(txDetail.getToAddress())
-                .assetName(txDetail.getAssetName())
-                .blockHeight(txDetail.getBlockHeight())
-                .blockIndex(txDetail.getBlockIndex())
-                .confirmFlag(txDetail.getConfirmFlag())
-                .contractHash(txDetail.getContractHash())
-                .payer(txDetail.getPayer())
-                .calledContractHash(txDetail.getCalledContractHash())
-                .description(txDetail.getDescription())
-                .eventType(txDetail.getEventType())
-                .build();
-        return orc721TxDetail;
-    }
-
-
-
-
 
     /**
      * 获取交易hash

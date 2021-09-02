@@ -116,4 +116,7 @@ public class ParamsConfig {
 
     @Value("${cancel.approve.contract}")
     public String CANCEL_APPROVE_CONTRACT;
+
+    @Value("${eth.web3j.url}")
+    public String ETH_WEB3J_URL;
 }

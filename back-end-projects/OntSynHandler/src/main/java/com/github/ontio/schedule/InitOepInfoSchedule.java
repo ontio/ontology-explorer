@@ -1,14 +1,10 @@
 package com.github.ontio.schedule;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.mapper.Oep4Mapper;
-import com.github.ontio.mapper.Oep5Mapper;
-import com.github.ontio.mapper.Oep8Mapper;
-import com.github.ontio.model.dao.Oep4;
-import com.github.ontio.model.dao.Oep5;
-import com.github.ontio.model.dao.Oep8;
+import com.github.ontio.common.Helper;
+import com.github.ontio.mapper.*;
+import com.github.ontio.model.dao.*;
 import com.github.ontio.utils.ConstantParam;
-import com.github.ontio.utils.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -33,11 +29,18 @@ public class InitOepInfoSchedule {
     private final Oep5Mapper oep5Mapper;
     private final Oep8Mapper oep8Mapper;
 
+    private final Orc20Mapper orc20Mapper;
+
+    private final Orc721Mapper orc721Mapper;
+
+
     @Autowired
-    public InitOepInfoSchedule(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper) {
+    public InitOepInfoSchedule(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
+        this.orc20Mapper = orc20Mapper;
+        this.orc721Mapper = orc721Mapper;
     }
 
 
@@ -46,7 +49,7 @@ public class InitOepInfoSchedule {
      */
     @Scheduled(initialDelay = 1 * 10, fixedDelay = 5 * 60 * 1000)
     public void initOepInfo() {
-        log.info("####{}.{} begin....", CLASS_NAME, Helper.currentMethod());
+        log.info("####{}.{} begin....", CLASS_NAME, com.github.ontio.utils.Helper.currentMethod());
         List<Oep4> oep4s = oep4Mapper.selectApprovedRecords();
         oep4s.forEach(item -> {
             JSONObject obj = new JSONObject();
@@ -55,6 +58,7 @@ public class InitOepInfoSchedule {
             ConstantParam.OEP4MAP.put(item.getContractHash(), obj);
             ConstantParam.OEP4CONTRACTS.add(item.getContractHash());
         });
+
 
         List<Oep5> oep5s = oep5Mapper.selectApprovedRecords();
         oep5s.forEach(item -> {
@@ -73,6 +77,32 @@ public class InitOepInfoSchedule {
             ConstantParam.OEP8MAP.put((String) item.getContractHash() + "-" + (String) item.getTokenId(), obj);
             ConstantParam.OEP8CONTRACTS.add((String) item.getContractHash());
         });
+
+        List<Orc20> orc20s = orc20Mapper.selectApprovedRecords();
+        orc20s.forEach(item -> {
+            JSONObject obj = new JSONObject();
+            obj.put("name", item.getName());
+            obj.put("decimals", item.getDecimals());
+
+            // 拿到数据库中的 "正的值" 现在使用反序的方式来进行判断
+            String contractAddress = Helper.reverse(item.getContractHash().substring(2)).toLowerCase();
+            ConstantParam.ORC20MAP.put(contractAddress, obj);
+            ConstantParam.ORC20CONTRACTS.add(contractAddress);
+        });
+
+
+        List<Orc721> orc721s = orc721Mapper.selectApprovedRecords();
+        orc721s.forEach(item -> {
+            JSONObject obj = new JSONObject();
+            obj.put("name", item.getName());
+
+            //拿到数据库中的"正的值",现在使用反序的方式来进行判断
+            String contractAddress = Helper.reverse(item.getContractHash().substring(2)).toLowerCase();
+            ConstantParam.ORC721MAP.put(contractAddress, obj);
+            ConstantParam.ORC721CONTRACTS.add(contractAddress);
+        });
+
+
     }
 
 

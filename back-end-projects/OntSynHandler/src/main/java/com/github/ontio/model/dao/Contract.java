@@ -66,7 +66,7 @@ public class Contract {
     private String creator;
 
     /**
-     * 该合约的总的地址数 
+     * 该合约的总的地址数
      */
     @Column(name = "address_count")
     private Integer addressCount;
@@ -350,18 +350,18 @@ public class Contract {
     }
 
     /**
-     * 获取该合约的总的地址数 
+     * 获取该合约的总的地址数
      *
-     * @return address_count - 该合约的总的地址数 
+     * @return address_count - 该合约的总的地址数
      */
     public Integer getAddressCount() {
         return addressCount;
     }
 
     /**
-     * 设置该合约的总的地址数 
+     * 设置该合约的总的地址数
      *
-     * @param addressCount 该合约的总的地址数 
+     * @param addressCount 该合约的总的地址数
      */
     public void setAddressCount(Integer addressCount) {
         this.addressCount = addressCount;

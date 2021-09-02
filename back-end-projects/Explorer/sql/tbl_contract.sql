@@ -47,3 +47,17 @@ CREATE TABLE `tbl_contract`
 
 
 alter table tbl_contract add COLUMN channel varchar(255) not null DEFAULT 'syn-service' comment '提交渠道';
+
+
+-- baice update
+
+ALTER TABLE tbl_contract ADD COLUMN `compiler_type` VARCHAR(255) DEFAULT '' COMMENT '编译器类型';
+ALTER TABLE tbl_contract ADD COLUMN `compiler_version` VARCHAR(255) DEFAULT '' COMMENT '编译器版本';
+ALTER TABLE tbl_contract ADD COLUMN `vm_type` VARCHAR(255) DEFAULT '' COMMENT '虚拟机类型';
+ALTER TABLE tbl_contract ADD COLUMN `vm_version` VARCHAR(255) DEFAULT '' COMMENT '虚拟机类型';
+
+
+
+
+
+

@@ -37,6 +37,8 @@ public final class ConstantParam {
      */
     public static String MASTERNODE_RESTFULURL = "";
 
+
+
     /**
      * 主节点在列表中的序列号
      */
@@ -106,6 +108,13 @@ public final class ConstantParam {
 
     public static Set<String> OEP8CONTRACTS = new HashSet<>();
 
+    public static Map<String, JSONObject> ORC20MAP = new HashMap<>();
+
+    public static Set<String> ORC20CONTRACTS = new HashSet<>();
+
+    public static Map<String, JSONObject> ORC721MAP = new HashMap<>();
+
+    public static Set<String> ORC721CONTRACTS = new HashSet<>();
 
 
     public static final String ASSET_NAME_ONT = "ont";
@@ -120,6 +129,16 @@ public final class ConstantParam {
 
     public static final String IS_OEP8TX = "is_oep8tx";
 
+    public static final String IS_ORC20TX = "is_orc20tx";
+    public static final String IS_ORC721TX = "is_erc721tx";
+
+
+    public static final String TRANSFER_TX = "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+    public static final String Approval_TX = "8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925";
+
+    public static final String ONG_CONTRACT_ADDRESS = "0200000000000000000000000000000000000000";
+
+
     public static final String TXPAYLOAD_CODE_FLAG = "67";
 
     public static final String ONG_CONTRACTHASH = "08b6dcfed2aace9190a44ae34a320e42c04b46ac";
@@ -132,5 +151,8 @@ public final class ConstantParam {
 
     public static final String INVOKE_DEPLOY_CONTRACT_ACTION = "7365747570";
 
+    public static final String EVM_ADDRESS_PREFIX = "0x";
+
+    public static final BigDecimal MAX_APPROVAL_AMOUNT = new BigDecimal("99999999999999999999");
 
 }

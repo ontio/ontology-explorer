@@ -1,0 +1,7 @@
+/target/
+/config/
+.idea
+*.iml
+logs
+test
+wallet.json
