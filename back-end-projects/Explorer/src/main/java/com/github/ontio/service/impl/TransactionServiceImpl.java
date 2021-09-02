@@ -329,6 +329,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 if (eventLog.getCalledContractHash().equals(ConstantParam.CONTRACTHASH_ONG)) {
                     txDetailDto1.setIsContractHash(false);
                     txDetailDto1.setTagName(" Only ong consume ");
+                    txDetailDto1.setToAddress(txDetailDtos.get(0).getToAddress());
                 } else {
                     txDetailDto1.setIsContractHash(true);
                     String name = "";
