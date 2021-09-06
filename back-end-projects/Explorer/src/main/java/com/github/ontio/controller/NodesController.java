@@ -350,4 +350,20 @@ public class NodesController {
         InspireResultDto response = nodesService.calculationUserIncentives(dto);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
+
+    @ApiOperation(value = "get all node cycle history ")
+    @GetMapping(value = "/node-cycle-data/all")
+    public ResponseBean getNodeCycleHistoryData() {
+        List<NodeCycle> response = nodesService.getNodeCycleData();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
+    }
+
+
+    @ApiOperation(value = "get all node cycle history by Node Public key")
+    @GetMapping(value = "/node-cycle-data")
+    public ResponseBean getNodeCycleHistoryDataByPubKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        List<NodeCycle> response = nodesService.getNodeCycleByPubKey(publicKey);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
+    }
+
 }

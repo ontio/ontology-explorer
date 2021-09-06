@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodeCycleMapper">
+
+    <sql id="basicColumns">
+        `public_key`  as publicKey,
+        address as address,
+        `name` as name,
+        `status` as status,
+        `node_type` as nodeType,
+        `node_proportion_t` as nodeProportionT,
+        `user_proportion_t` as userProportionT,
+        `node_proportion_t2` as nodeProportionT2,
+        `user_proportion_t2` as userProportionT2,
+        `bonus_ong` as bonusOng,
+        `node_stake_ont` as nodeStakeONT,
+        `user_stake_ont` as userStakeONT,
+        `cycle` as cycle
+    </sql>
+
+    <select id="selectAllCycleData" resultType="com.github.ontio.model.dao.NodeCycle">
+        SELECT
+        <include refid="basicColumns"></include>
+        FROM tbl_node_cycle_data
+        ORDER BY cycle DESC , bonus_ong DESC
+    </select>
+
+
+    <select id="selectCycleByPubKey" resultType="com.github.ontio.model.dao.NodeCycle">
+        SELECT
+        <include refid="basicColumns"></include>
+        FROM tbl_node_cycle_data
+        WHERE public_key = #{publicKey}
+        ORDER BY cycle DESC , bonus_ong DESC
+    </select>
+
+</mapper>

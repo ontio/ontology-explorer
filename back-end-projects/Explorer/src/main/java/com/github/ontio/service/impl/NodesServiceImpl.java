@@ -90,6 +90,8 @@ public class NodesServiceImpl implements INodesService {
 
     private final InspireCalculationParamsMapper inspireCalculationParamsMapper;
 
+    private final NodeCycleMapper nodeCycleMapper;
+
     @Autowired
     public NodesServiceImpl(ParamsConfig paramsConfig,
                             NodeBonusMapper nodeBonusMapper,
@@ -103,7 +105,8 @@ public class NodesServiceImpl implements INodesService {
                             NodeOverviewHistoryMapper nodeOverviewHistoryMapper,
                             NodeInspireMapper nodeInspireMapper,
                             TokenServiceImpl tokenService,
-                            InspireCalculationParamsMapper inspireCalculationParamsMapper
+                            InspireCalculationParamsMapper inspireCalculationParamsMapper,
+                            NodeCycleMapper nodeCycleMapper
     ) {
         this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
@@ -118,6 +121,7 @@ public class NodesServiceImpl implements INodesService {
         this.nodeInspireMapper = nodeInspireMapper;
         this.tokenService = tokenService;
         this.inspireCalculationParamsMapper = inspireCalculationParamsMapper;
+        this.nodeCycleMapper = nodeCycleMapper;
     }
 
     private OntologySDKService sdk;
@@ -936,4 +940,16 @@ public class NodesServiceImpl implements INodesService {
     private BigDecimal getReleaseAndCommissionOng(BigDecimal value, BigDecimal ong, BigDecimal totalConsensusInspire) {
         return new BigDecimal(0.5).multiply(ong).multiply(value).divide(totalConsensusInspire, 12, BigDecimal.ROUND_HALF_UP);
     }
+
+    @Override
+    public List<NodeCycle> getNodeCycleData() {
+        return nodeCycleMapper.selectAllCycleData();
+    }
+
+    @Override
+    public List<NodeCycle> getNodeCycleByPubKey(String publicKey) {
+        return nodeCycleMapper.selectCycleByPubKey(publicKey);
+    }
+
+
 }

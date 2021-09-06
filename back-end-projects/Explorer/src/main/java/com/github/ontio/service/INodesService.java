@@ -94,4 +94,9 @@ public interface INodesService {
 
     InspireResultDto calculationUserIncentives(UserInspireCalculationDto dto) throws SDKException;
 
+    List<NodeCycle> getNodeCycleData();
+
+    List<NodeCycle> getNodeCycleByPubKey(String publicKey);
+
+
 }
