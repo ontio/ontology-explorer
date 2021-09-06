@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table(name = "tbl_node_cycle")
 public class NodeCycle {
 
