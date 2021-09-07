@@ -1393,24 +1393,25 @@ public class AddressServiceImpl implements IAddressService {
     public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize) {
         tokenType = tokenType.toLowerCase();
         PageResponseBean pageResponse;
-        Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
-        if (txCount == null || txCount == 0) {
-            pageResponse = new PageResponseBean(Collections.emptyList(), 0);
-        } else {
-            List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
-            List<String> assetNames = null;
-            if ("oep4".equalsIgnoreCase(tokenType)) {
-                assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
-            } else if ("orc20".equalsIgnoreCase(tokenType)) {
-                assetNames = "orc20".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
-            }
-
-            int start = Math.max(pageSize * (pageNumber - 1), 0);
-            List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
-                    tokenType, start, pageSize);
-            transferTxDtos = formatTransferTxDtos(transferTxDtos);
-            pageResponse = new PageResponseBean(transferTxDtos, txCount);
+//        Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
+//        if (txCount == null || txCount == 0) {
+//            pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+//        } else {
+        List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
+        List<String> assetNames = null;
+        if ("oep4".equalsIgnoreCase(tokenType)) {
+            assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
+        } else if ("orc20".equalsIgnoreCase(tokenType)) {
+            assetNames = "orc20".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
         }
+
+        int start = Math.max(pageSize * (pageNumber - 1), 0);
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes2(address, contractHashes, assetNames,
+                tokenType, start, pageSize);
+        Integer count = txDetailMapper.selectTransferTxsOfHashesCount(address, tokenType);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        pageResponse = new PageResponseBean(transferTxDtos, count);
+//        }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
     }
 
