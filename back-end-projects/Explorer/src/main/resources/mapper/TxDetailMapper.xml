@@ -139,6 +139,43 @@
         ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 
+    <select id="selectTransferTxsByPage2" resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT
+        tx_hash as txHash,
+        tx_type as txType,
+        tx_time as txTime,
+        block_height as blockHeight,
+        confirm_flag as confirmFlag,
+        block_index as blockIndex,
+        fee as fee,
+        description as description,
+        event_type as eventType
+        FROM tbl_tx_detail d
+        WHERE (d.from_address = #{address}
+        OR d.to_address = #{address})
+        <if test="assetName != '' and assetName != null">
+            AND d.asset_name = #{assetName}
+        </if>
+        AND d.event_type IN (2, 3)
+        GROUP BY tx_hash
+        ORDER BY block_height DESC, tx_hash, tx_index
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="selectTransferTxsCount" resultType="Integer">
+        SELECT
+        COUNT(1)
+        FROM (
+        SELECT tx_hash FROM tbl_tx_detail d
+        WHERE (d.from_address = #{address}
+        OR d.to_address = #{address})
+        <if test="assetName != '' and assetName != null">
+            AND d.asset_name = #{assetName}
+        </if>
+        AND d.event_type IN (2, 3)
+        GROUP BY tx_hash) t
+    </select>
+
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT
         <include refid="transferTxDetailColumns"/>

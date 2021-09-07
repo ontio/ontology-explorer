@@ -1375,15 +1375,16 @@ public class AddressServiceImpl implements IAddressService {
     @Override
     public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
         PageResponseBean pageResponse;
-        Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
-        if (txCount == null || txCount == 0) {
-            pageResponse = new PageResponseBean(Collections.emptyList(), 0);
-        } else {
-            int start = Math.max(pageSize * (pageNumber - 1), 0);
-            List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
-            transferTxDtos = formatTransferTxDtos(transferTxDtos);
-            pageResponse = new PageResponseBean(transferTxDtos, txCount);
-        }
+//        Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
+//        if (txCount == null || txCount == 0) {
+//            pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+//        } else {
+        int start = Math.max(pageSize * (pageNumber - 1), 0);
+        List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage2(address, assetName, start, pageSize);
+        Integer count = txDetailMapper.selectTransferTxsCount(address, assetName);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        pageResponse = new PageResponseBean(transferTxDtos, count);
+//        }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
     }
 
