@@ -942,13 +942,20 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public List<NodeCycle> getNodeCycleData() {
-        return nodeCycleMapper.selectAllCycleData();
+    public PageResponseBean getNodeCycleData(Integer pageNum, Integer pageSize) {
+        int start = Math.max(pageSize * (pageNum - 1), 0);
+        int count = nodeCycleMapper.selectNodeCycleCount();
+        List<NodeCycle> result = nodeCycleMapper.selectAllCycleData(start, pageSize);
+        return new PageResponseBean(result, count);
     }
 
     @Override
-    public List<NodeCycle> getNodeCycleByPubKey(String publicKey) {
-        return nodeCycleMapper.selectCycleByPubKey(publicKey);
+    public PageResponseBean getNodeCycleByPubKey(String publicKey, Integer pageNum, Integer pageSize) {
+        int start = Math.max(pageSize * (pageNum - 1), 0);
+        int count = nodeCycleMapper.selectNodeCycleCountByPublicKey(publicKey);
+        List<NodeCycle> result = nodeCycleMapper.selectCycleByPubKey(publicKey, start, pageSize);
+        return new PageResponseBean(result, count);
+
     }
 
 

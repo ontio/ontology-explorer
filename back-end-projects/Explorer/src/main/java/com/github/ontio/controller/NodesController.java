@@ -353,16 +353,19 @@ public class NodesController {
 
     @ApiOperation(value = "get all node cycle history ")
     @GetMapping(value = "/node-cycle-data/all")
-    public ResponseBean getNodeCycleHistoryData() {
-        List<NodeCycle> response = nodesService.getNodeCycleData();
+    public ResponseBean getNodeCycleHistoryData(@RequestParam(value = "page_number") @Min(value = 1, message = "Invalid page number") Integer pageNum,
+                                                @RequestParam(value = "page_size") @Min(value = 1, message = "Invalid page size") @Max(value = 50, message = "Invalid page size") Integer pageSize) {
+        PageResponseBean response = nodesService.getNodeCycleData(pageNum, pageSize);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
 
     @ApiOperation(value = "get all node cycle history by Node Public key")
     @GetMapping(value = "/node-cycle-data")
-    public ResponseBean getNodeCycleHistoryDataByPubKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
-        List<NodeCycle> response = nodesService.getNodeCycleByPubKey(publicKey);
+    public ResponseBean getNodeCycleHistoryDataByPubKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey,
+                                                        @RequestParam(value = "page_number") @Min(value = 1, message = "Invalid page number") Integer pageNum,
+                                                        @RequestParam(value = "page_size") @Min(value = 1, message = "Invalid page size") @Max(value = 50, message = "Invalid page size") Integer pageSize) {
+        PageResponseBean response = nodesService.getNodeCycleByPubKey(publicKey, pageNum, pageSize);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 

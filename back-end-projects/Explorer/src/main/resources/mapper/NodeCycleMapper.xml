@@ -23,6 +23,7 @@
         <include refid="basicColumns"></include>
         FROM tbl_node_cycle_data
         ORDER BY cycle DESC , bonus_ong DESC
+        limit #{start}, #{size}
     </select>
 
 
@@ -32,6 +33,19 @@
         FROM tbl_node_cycle_data
         WHERE public_key = #{publicKey}
         ORDER BY cycle DESC , bonus_ong DESC
+        limit #{start}, #{size}
+    </select>
+
+
+    <select id="selectNodeCycleCount" resultType="Integer">
+        SELECT count(1)
+        FROM tbl_node_cycle_data
+    </select>
+
+    <select id="selectNodeCycleCountByPublicKey" resultType="Integer">
+        SELECT count(1)
+        FROM tbl_node_cycle_data
+        where public_key = #{publicKey}
     </select>
 
 </mapper>
