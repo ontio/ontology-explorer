@@ -3,21 +3,11 @@ package com.github.ontio.service.impl;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.Oep4Mapper;
-import com.github.ontio.mapper.Oep5Mapper;
-import com.github.ontio.mapper.Oep8Mapper;
-import com.github.ontio.mapper.Oep8TxDetailMapper;
-import com.github.ontio.mapper.OepLogoMapper;
-import com.github.ontio.mapper.RankingMapper;
-import com.github.ontio.mapper.TokenDailyAggregationMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.OepLogo;
-import com.github.ontio.model.dto.Oep4DetailDto;
-import com.github.ontio.model.dto.Oep5DetailDto;
-import com.github.ontio.model.dto.Oep8DetailDto;
-import com.github.ontio.model.dto.TokenPriceDto;
-import com.github.ontio.model.dto.TxDetailDto;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.model.dto.ranking.TokenRankingDto;
 import com.github.ontio.service.ITokenService;
 import com.github.ontio.util.ConstantParam;
@@ -56,6 +46,9 @@ public class TokenServiceImpl implements ITokenService {
     private final Oep4Mapper oep4Mapper;
     private final Oep5Mapper oep5Mapper;
     private final Oep8Mapper oep8Mapper;
+
+    private final Orc20Mapper orc20Mapper;
+    private final Orc721Mapper orc721Mapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
     private final TokenDailyAggregationMapper tokenDailyAggregationMapper;
     private final RankingMapper rankingMapper;
@@ -64,11 +57,13 @@ public class TokenServiceImpl implements ITokenService {
 
     @Autowired
     public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
-            Oep8TxDetailMapper oep8TxDetailMapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
-            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper) {
+                            Oep8TxDetailMapper oep8TxDetailMapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
+                            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
+        this.orc20Mapper = orc20Mapper;
+        this.orc721Mapper = orc721Mapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
         this.tokenDailyAggregationMapper = tokenDailyAggregationMapper;
         this.rankingMapper = rankingMapper;
@@ -122,6 +117,20 @@ public class TokenServiceImpl implements ITokenService {
 
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(oep8DetailDtos);
+                break;
+            case ConstantParam.ASSET_TYPE_ORC20:
+                PageHelper.startPage(pageNumber, pageSize);
+                List<Orc20DetailDto> orc20DetailDtos = orc20Mapper.selectOrc20Tokens(ascending, descending);
+                total = ((Long) ((Page) orc20DetailDtos).getTotal()).intValue();
+                pageResponseBean.setTotal(total);
+                pageResponseBean.setRecords(orc20DetailDtos);
+                break;
+            case ConstantParam.ASSET_TYPE_ORC721:
+                PageHelper.startPage(pageNumber, pageSize);
+                List<Orc721DetailDto> orc721DetailDtos = orc721Mapper.selectOrc721Tokens(ascending, descending);
+                total = ((Long) ((Page) orc721DetailDtos).getTotal()).intValue();
+                pageResponseBean.setTotal(total);
+                pageResponseBean.setRecords(orc721DetailDtos);
                 break;
         }
 
@@ -182,6 +191,15 @@ public class TokenServiceImpl implements ITokenService {
                 }
                 obj = oep8DetailDto;
                 break;
+            case ConstantParam.ASSET_TYPE_ORC20:
+                Orc20DetailDto orc20DetailDto = orc20Mapper.selectOrc20TokenDetail(contractHash);
+                obj = orc20DetailDto;
+                break;
+            case ConstantParam.ASSET_TYPE_ORC721:
+                Orc721DetailDto orc721DetailDto = orc721Mapper.selectOrc721TokenDetail(contractHash);
+                obj = orc721DetailDto;
+                break;
+
         }
         if (Helper.isEmptyOrNull(obj)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
@@ -208,6 +226,8 @@ public class TokenServiceImpl implements ITokenService {
         Object result = null;
         if (ConstantParam.ASSET_TYPE_OEP4.equalsIgnoreCase(tokenType)) {
             result = tokenDailyAggregationMapper.findAggregations(contractHash, from, to);
+        } else if (ConstantParam.ASSET_TYPE_ORC20.equalsIgnoreCase(tokenType)) {
+            result = tokenDailyAggregationMapper.findEVMAggregations(contractHash, from, to);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }

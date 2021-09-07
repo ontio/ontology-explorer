@@ -1,8 +1,10 @@
 package com.github.ontio.model.dto;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.ontio.model.common.TxTypeEnum;
+import com.github.ontio.model.common.VmTypeEnum;
 import com.github.ontio.util.TxAmountSerializer;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,5 +55,14 @@ public class TxEventLogTxTypeDto implements Serializable {
 	 * 交易类型
 	 */
 	private TxTypeEnum txType;
+
+	/**
+	 * 交易使用虚拟机类型
+	 */
+	private VmTypeEnum vmType;
+
+
+	private JSONObject detail;
+
 	
 }

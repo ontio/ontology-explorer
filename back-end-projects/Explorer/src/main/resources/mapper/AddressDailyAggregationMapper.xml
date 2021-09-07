@@ -85,6 +85,8 @@
         LIMIT 1
     </select>
 
+
+
     <select id="findMinBalance" resultType="com.github.ontio.model.dto.aggregation.ExtremeBalanceDto">
         SELECT d.date, min_balance AS balance
         FROM tbl_address_daily_aggregation a
@@ -131,6 +133,12 @@
             </when>
             <when test="token_type == 'oep5'">
                 INNER JOIN tbl_oep5 o ON o.contract_hash = aggr.token_contract_hash AND o.audit_flag = 1
+            </when>
+            <when test="token_type == 'orc20'">
+                INNER JOIN tbl_orc20 o ON o.contract_hash = aggr.token_contract_hash AND o.audit_flag = 1
+            </when>
+            <when test="token_type == 'orc721'">
+                INNER JOIN tbl_orc721 o ON o.contract_hash = aggr.token_contract_hash AND o.audit_flag = 1
             </when>
             <otherwise>
                 INNER JOIN (SELECT DISTINCT contract_hash FROM tbl_oep8 WHERE audit_flag = 1) o

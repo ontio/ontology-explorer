@@ -1,6 +1,7 @@
 package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.Date;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.List;
 public interface IAddressService {
 
     ResponseBean queryAddressBalance(String address, String tokenType);
+
+    ResponseBean queryEVMAddressBalance(String address, String tokenType);
 
     ResponseBean queryAddressBalanceByAssetName(String address, String assetName);
 
@@ -22,9 +25,9 @@ public interface IAddressService {
     ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime, String addressType);
 
     ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize,
-            String addressType);
+                                                    String addressType);
 
-    ResponseBean queryDailyAggregation(String address, String token, Date from, Date to);
+    ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) throws SDKException;
 
     ResponseBean queryDailyAggregationOfTokenType(String address, String tokenType, Date from, Date to);
 

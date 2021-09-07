@@ -13,6 +13,7 @@ import java.util.List;
 public interface TokenDailyAggregationMapper extends Mapper<TokenDailyAggregation> {
 
 	List<TokenAggregationDto> findAggregations(@Param("contractHash") String contractHash, @Param("from") Date from,
-			@Param("to") Date to);
-	
+                                               @Param("to") Date to);
+	List<TokenAggregationDto> findEVMAggregations(@Param("contractHash") String contractHash, @Param("from") Date from,
+                                                  @Param("to") Date to);
 }

@@ -18,7 +18,7 @@ public interface CoinMarketCapApi {
 
 	@GET("/v1/cryptocurrency/quotes/latest")
 	Call<CoinMarketCapResponse<Map<String, CoinMarketCapQuotes>>> getCoinMarketCapQuotes(@Query("id") String id,
-			@Query("convert") String convert);
+                                                                                         @Query("convert") String convert);
 
 	default CoinMarketCapQuotes getQuotes(String token, String fiat) throws IOException {
 		String id;

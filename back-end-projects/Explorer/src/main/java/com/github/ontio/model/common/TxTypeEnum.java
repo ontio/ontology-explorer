@@ -9,17 +9,20 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public enum TxTypeEnum {
-	CONTRACT_DEPLOYMENT("01"),
-	OEP4("02"),
-	OEP5("03"),
-	OEP8("04"),
-	CONTRACT_CALL("05"),
-	ONT_ID("06"),
-	ONT_TRANSFER("07"),
-	ONG_TRANSFER("08");
-	
-	@Getter
-	@JsonValue
-	private final String code;
-	
+    CONTRACT_DEPLOYMENT("01"),
+    OEP4("02"),
+    OEP5("03"),
+    OEP8("04"),
+    CONTRACT_CALL("05"),
+    ONT_ID("06"),
+    ONT_TRANSFER("07"),
+    ONG_TRANSFER("08"),
+    ORC20("09"),
+    ORC721("10")
+    ;
+
+    @Getter
+    @JsonValue
+    private final String code;
+
 }

@@ -21,19 +21,13 @@ package com.github.ontio.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
-import com.github.ontio.mapper.ContractDailyAggregationMapper;
-import com.github.ontio.mapper.ContractDailySummaryMapper;
-import com.github.ontio.mapper.ContractMapper;
-import com.github.ontio.mapper.NodeInfoOffChainMapper;
-import com.github.ontio.mapper.NodeInfoOnChainMapper;
-import com.github.ontio.mapper.Oep4TxDetailMapper;
-import com.github.ontio.mapper.Oep5TxDetailMapper;
-import com.github.ontio.mapper.Oep8TxDetailMapper;
-import com.github.ontio.mapper.TxEventLogMapper;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.Orc20TxDetail;
 import com.github.ontio.model.dao.NodeInfoOffChain;
 import com.github.ontio.model.dao.NodeInfoOnChain;
+import com.github.ontio.model.dao.Orc721TxDetail;
 import com.github.ontio.model.dto.ContractDto;
 import com.github.ontio.model.dto.NodeInfoOffChainDto;
 import com.github.ontio.model.dto.Oep5TxDetailDto;
@@ -71,6 +65,10 @@ public class ContractServiceImpl implements IContractService {
     private final Oep4TxDetailMapper oep4TxDetailMapper;
     private final Oep5TxDetailMapper oep5TxDetailMapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
+
+    private final Orc20TxDetailMapper orc20TxDetailMapper;
+    private final Orc721TxDetailMapper orc721TxDetailMapper;
+
     private final TxEventLogMapper txEventLogMapper;
     private final ParamsConfig paramsConfig;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
@@ -79,14 +77,16 @@ public class ContractServiceImpl implements IContractService {
 
     @Autowired
     public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper,
-            Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
-            ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper,
-            ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper,
-            ContractDailyAggregationMapper contractDailyAggregationMapper) {
+                               Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, Orc20TxDetailMapper orc20TxDetailMapper, Orc721TxDetailMapper orc721TxDetailMapper, TxEventLogMapper txEventLogMapper,
+                               ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper,
+                               ContractDailySummaryMapper contractDailySummaryMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper,
+                               ContractDailyAggregationMapper contractDailyAggregationMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
+        this.orc20TxDetailMapper = orc20TxDetailMapper;
+        this.orc721TxDetailMapper  = orc721TxDetailMapper;
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
@@ -158,6 +158,17 @@ public class ContractServiceImpl implements IContractService {
                 txDetailDtos = oep8TxDetailMapper.selectTxsByCalledContractHashAndTokenName(contractHash, "", start, pageSize);
                 count = oep8TxDetailMapper.selectCountByCalledContracthashAndTokenName(contractHash, "");
                 pageResponseBean = new PageResponseBean(txDetailDtos, count);
+                break;
+
+            case ConstantParam.CONTRACT_TYPE_ORC20:
+                List<Orc20TxDetail> orc20TxDetails = orc20TxDetailMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
+                count = orc20TxDetailMapper.selectCountByCalledContracthash(contractHash);
+                pageResponseBean = new PageResponseBean(orc20TxDetails, count);
+                break;
+            case ConstantParam.CONTRACT_TYPE_ORC721:
+                List<Orc721TxDetail> orc721TxDetails = orc721TxDetailMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
+                count  = orc721TxDetailMapper.selectCountByCalledContracthash(contractHash);
+                pageResponseBean = new PageResponseBean(orc721TxDetails, count);
                 break;
             case ConstantParam.CONTRACT_TYPE_OTHER:
                 List<TxEventLogDto> txEventLogDtos = txEventLogMapper.selectTxsByCalledContractHash(contractHash, start, pageSize);
@@ -625,6 +636,16 @@ public class ContractServiceImpl implements IContractService {
         List<ContractAggregationDto> aggregations = contractDailyAggregationMapper.findAggregationsForToken(contractHash,
                 tokenContractHash, from, to);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), aggregations);
+    }
+
+    @Override
+    public ResponseBean checkIfExistsHash(String contractHash) {
+
+        Integer integer = contractMapper.selectIfHashExists(contractHash);
+        if (0 == integer) {
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), false);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
     }
 
 

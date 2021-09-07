@@ -19,9 +19,11 @@
 
 package com.github.ontio.util;
 
+import com.github.ontio.common.Address;
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.sdk.exception.SDKException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -269,6 +271,20 @@ public class Helper {
         out.close();
         File file = new File(path);
         return file;
+    }
+
+    public static String EthAddrToOntAddr(String ethAddr) {
+        if (ethAddr.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            ethAddr = ethAddr.substring(2);
+        }
+        Address parse = Address.parse(ethAddr);
+        return parse.toBase58();
+    }
+
+    public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
+        Address address = Address.decodeBase58(ontAddr);
+        String reverse = com.github.ontio.common.Helper.reverse(address.toHexString());
+        return ConstantParam.EVM_ADDRESS_PREFIX + reverse;
     }
 
 }

@@ -14,14 +14,16 @@ import java.util.List;
 public interface AddressDailyAggregationMapper extends Mapper<AddressDailyAggregation> {
 
 	List<AddressAggregationDto> findAggregations(@Param("address") String address,
-			@Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
+                                                 @Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
 
 	List<AddressAggregationDto> findAggregationsForToken(@Param("address") String address,
-			@Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
+                                                         @Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
 
 	ExtremeBalanceDto findMaxBalance(@Param("address") String address, @Param("tokenContractHash") String tokenContractHash);
 
+
 	ExtremeBalanceDto findMinBalance(@Param("address") String address, @Param("tokenContractHash") String tokenContractHash);
+
 
 	Integer countAddressTotalTx(@Param("address") String address, @Param("asset_name") String assetName);
 

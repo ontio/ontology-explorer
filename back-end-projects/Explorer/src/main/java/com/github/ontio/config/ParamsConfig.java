@@ -55,11 +55,13 @@ public class ParamsConfig {
      */
     public static final String VIRTUAL_CONTRACT_OEP4 = "$$OEP4$$";
 
+    public static final String VIRTUAL_CONTRACT_ORC20 = "$$ORC20$$";
+
     private static final Collection<String> VIRTUAL_CONTRACTS;
 
     static {
         Set<String> virtualContracts = new HashSet<>(Arrays.asList(VIRTUAL_CONTRACT_ALL, VIRTUAL_CONTRACT_NATIVE,
-                VIRTUAL_CONTRACT_OEP4));
+                VIRTUAL_CONTRACT_OEP4, VIRTUAL_CONTRACT_ORC20));
         VIRTUAL_CONTRACTS = Collections.unmodifiableSet(virtualContracts);
     }
 
@@ -136,6 +138,8 @@ public class ParamsConfig {
                 return VIRTUAL_CONTRACT_OEP4;
             case "all":
                 return VIRTUAL_CONTRACT_ALL;
+            case "orc20":
+                return VIRTUAL_CONTRACT_ORC20;
             default:
                 throw new IllegalArgumentException("unsupported token: " + token);
         }
@@ -170,4 +174,12 @@ public class ParamsConfig {
     public String FOUNDATION_NODES;
     @Value("${foundation.addresses}")
     public String FOUNDATION_ADDRESSES;
+
+    @Value("${eth.web3j.url}")
+    public String ETH_WEB3J_URL;
+
+
+    @Value("${token.bridge.contract}")
+    public String TOKEN_BRIDGE_CONTRACT;
+
 }

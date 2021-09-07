@@ -20,6 +20,9 @@
 package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.network.exception.ConnectorException;
+
+import java.io.IOException;
 
 /**
  * @author zhouq
@@ -63,5 +66,7 @@ public interface ITransactionService {
      */
     ResponseBean queryTxDetailByHash(String txHash);
 
+
+    ResponseBean queryInputDataByHash(String txHash) throws IOException, ConnectorException;
 
 }

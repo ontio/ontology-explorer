@@ -13,9 +13,9 @@ import java.util.List;
 public interface ContractDailyAggregationMapper extends Mapper<ContractDailyAggregation> {
 
 	List<ContractAggregationDto> findAggregations(@Param("contractHash") String contractHash,
-			@Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
+                                                  @Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
 
 	List<ContractAggregationDto> findAggregationsForToken(@Param("contractHash") String contractHash,
-			@Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
+                                                          @Param("tokenContractHash") String tokenContractHash, @Param("from") Date from, @Param("to") Date to);
 	
 }

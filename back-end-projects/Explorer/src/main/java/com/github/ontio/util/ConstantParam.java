@@ -20,9 +20,7 @@
 package com.github.ontio.util;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author zhouq
@@ -98,6 +96,12 @@ public class ConstantParam {
 
     public static final String ASSET_TYPE_OEP8 = "oep8";
 
+    public static final String ASSET_TYPE_ORC20 = "orc20";
+
+    public static final String ASSET_TYPE_ORC721 = "orc721";
+
+    public static final String ASSET_TYPE_ONG = "ong";
+
     public static final String ASSET_TYPE_ALL = "all";
 
     public static final String ASSET_TYPE_NATIVE_OEP4 = "native-oep4";
@@ -113,6 +117,10 @@ public class ConstantParam {
     public static final String CONTRACT_TYPE_OEP5 = "oep5";
 
     public static final String CONTRACT_TYPE_OEP8 = "oep8";
+
+    public static final String CONTRACT_TYPE_ORC20 = "orc20";
+
+    public static final String CONTRACT_TYPE_ORC721 = "orc721";
 
     public static final String CONTRACT_TYPE_OTHER = "other";
 
@@ -196,4 +204,10 @@ public class ConstantParam {
     public static final Integer CANDIDATE_NODE = 1;
 
     public static final Integer UTC_20210801 = 1627776000;
+
+    public static final String EVM_ADDRESS_PREFIX = "0x";
+
+    public static final String NATIVE_CONTRACT_HASH = "792e4e61746976652e496e766f6b65";
+
+    public static final Map<String, String> CONTRACT_TAG = new HashMap<>();
 }

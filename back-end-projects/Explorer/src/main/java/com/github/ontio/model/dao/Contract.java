@@ -154,6 +154,33 @@ public class Contract {
      */
     private String channel;
 
+
+    /**
+     * 合约的编译器类型
+     * compiler_type
+     */
+    private String compilerType;
+
+
+
+    /**
+     * 合约的编译器版本
+     * compiler_version
+     */
+    private String compilerVersion;
+
+    /**
+     * 合约所使用的虚拟机类型
+     */
+    private String vmType;
+
+    /**
+     * 合约所使用的虚拟机版本
+     */
+    private String vmVersion;
+
+
+
     /**
      * 获取合约hash值
      *
@@ -558,6 +585,39 @@ public class Contract {
     public String getSourceCode() {
         return sourceCode;
     }
+
+    public String getCompilerType() {
+        return compilerType;
+    }
+
+    public void setCompilerType(String compilerType) {
+        this.compilerType = compilerType;
+    }
+
+    public String getVmType() {
+        return vmType;
+    }
+
+    public void setVmType(String vmType) {
+        this.vmType = vmType;
+    }
+
+    public String getCompilerVersion() {
+        return compilerVersion;
+    }
+
+    public void setCompilerVersion(String compilerVersion) {
+        this.compilerVersion = compilerVersion;
+    }
+
+    public String getVmVersion() {
+        return vmVersion;
+    }
+
+    public void setVmVersion(String vmVersion) {
+        this.vmVersion = vmVersion;
+    }
+
 
     /**
      * 设置合约源码

@@ -38,4 +38,26 @@
         AND b.audit_flag = 1
     </select>
 
+    <select id="findEVMAggregations" resultType="com.github.ontio.model.dto.aggregation.TokenAggregationDto">
+        SELECT d.date,
+        a.tx_count,
+        a.tx_amount,
+        a.deposit_address_count AS deposit_addr,
+        a.withdraw_address_count AS withdraw_addr,
+        a.tx_address_count AS tx_addr
+        FROM tbl_token_daily_aggregation a
+        INNER JOIN tbl_date d ON d.id = a.date_id
+        INNER JOIN tbl_orc20 b ON b.contract_hash = a.token_contract_hash
+        WHERE a.token_contract_hash = #{contractHash}
+        AND a.date_id &gt; 0
+        <if test="from != null">
+            AND d.date &gt;= #{from}
+        </if>
+        <if test="to != null">
+            AND d.date &lt;= #{to}
+        </if>
+        AND b.audit_flag = 1
+    </select>
+
+
 </mapper>

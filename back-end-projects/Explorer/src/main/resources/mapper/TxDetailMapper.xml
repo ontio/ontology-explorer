@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.TxDetailMapper">
-  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxDetail">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
-    <id column="tx_index" jdbcType="INTEGER" property="txIndex" />
-    <result column="tx_type" jdbcType="INTEGER" property="txType" />
-    <result column="tx_time" jdbcType="INTEGER" property="txTime" />
-    <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
-    <result column="amount" jdbcType="DECIMAL" property="amount" />
-    <result column="fee" jdbcType="DECIMAL" property="fee" />
-    <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
-    <result column="from_address" jdbcType="VARCHAR" property="fromAddress" />
-    <result column="to_address" jdbcType="VARCHAR" property="toAddress" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
-    <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
-    <result column="event_type" jdbcType="INTEGER" property="eventType" />
-    <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
-    <result column="payer" jdbcType="VARCHAR" property="payer" />
-    <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TxDetail">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
+        <id column="tx_index" jdbcType="INTEGER" property="txIndex" />
+        <result column="tx_type" jdbcType="INTEGER" property="txType" />
+        <result column="tx_time" jdbcType="INTEGER" property="txTime" />
+        <result column="block_height" jdbcType="INTEGER" property="blockHeight" />
+        <result column="amount" jdbcType="DECIMAL" property="amount" />
+        <result column="fee" jdbcType="DECIMAL" property="fee" />
+        <result column="asset_name" jdbcType="VARCHAR" property="assetName" />
+        <result column="from_address" jdbcType="VARCHAR" property="fromAddress" />
+        <result column="to_address" jdbcType="VARCHAR" property="toAddress" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
+        <result column="confirm_flag" jdbcType="INTEGER" property="confirmFlag" />
+        <result column="event_type" jdbcType="INTEGER" property="eventType" />
+        <result column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+        <result column="payer" jdbcType="VARCHAR" property="payer" />
+        <result column="called_contract_hash" jdbcType="VARCHAR" property="calledContractHash" />
+    </resultMap>
 
     <cache type="com.github.ontio.config.RedisCache">
         <property name="eviction" value="LRU" />
@@ -71,18 +71,38 @@
 
 
     <select id="selectTxByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
-        select <include refid="txDetailColumns" />
+        select
+        <include refid="txDetailColumns"/>
         from tbl_tx_detail
         where tx_hash = #{txHash}
         order by tx_index
         limit 1
     </select>
 
+    <select id="selectTxsByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
+        select
+        <include refid="txDetailColumns"/>
+        from tbl_tx_detail
+        where tx_hash = #{txHash}
+        order by tx_index
+        limit 3
+    </select>
+
+
     <select id="selectTransferTxDetailByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
         select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description, contract_hash as contractHash
         from tbl_tx_detail
         where tx_hash = #{txHash}
-        and event_type in (2,3)
+        and event_type in (2,3,7)
+    </select>
+
+
+
+    <select id="selectTransferTxDetailByHash2" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
+        select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description, contract_hash as contractHash
+        from tbl_tx_detail
+        where tx_hash = #{txHash}
+        order by tx_index
     </select>
 
     <select id="selectLatestOntTransferTxTime" parameterType="java.lang.String" resultType="java.lang.Integer" useCache="false">
@@ -110,8 +130,8 @@
         ORDER BY desc_block_height, tx_hash, tx_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
-        WHERE d.from_address = #{address}
-        OR d.to_address = #{address}
+        WHERE (d.from_address = #{address}
+        OR d.to_address = #{address})
         <if test="assetName != '' and assetName != null">
             AND d.asset_name = #{assetName}
         </if>
@@ -143,7 +163,8 @@
         SELECT *
         FROM
         (
-        SELECT <include refid="transferTxDetailColumns" />
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE from_address = #{address}
         <if test="assetName != '' and assetName != null">
@@ -151,7 +172,8 @@
         </if>
         AND event_type = 3
         UNION ALL
-        SELECT <include refid="transferTxDetailColumns" />
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE to_address = #{address}
         <if test="assetName != '' and assetName != null">
@@ -167,7 +189,8 @@
 
     <!--use for ONTO-->
     <select id="selectTransferTxsByTimeInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT <include refid="transferTxDetailColumns" />
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE from_address = #{address}
         <if test="assetName != '' and assetName != null">
@@ -200,21 +223,23 @@
         SELECT *
         FROM
         (
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type = 3
-            UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
-            <if test="assetName != '' and assetName != null">
-                and asset_name = #{assetName}
-            </if>
-            AND event_type = 3
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
+        UNION ALL
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        <if test="assetName != '' and assetName != null">
+            and asset_name = #{assetName}
+        </if>
+        AND event_type = 3
         ) a
         where <![CDATA[ a.txTime < #{endTime} ]]>
         ORDER BY a.txTime DESC
@@ -223,7 +248,8 @@
 
     <!--use for ONTO-->
     <select id="selectTransferTxsByTimeAndPageInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT <include refid="transferTxDetailColumns" />
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE from_address = #{address}
         <if test="assetName != '' and assetName != null">
@@ -237,7 +263,8 @@
 
     <!--use for ONTO-->
     <select id="selectTransferTxsByTimeAndPageInToAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT <include refid="transferTxDetailColumns" />
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE to_address = #{address}
         <if test="assetName != '' and assetName != null">
@@ -255,17 +282,19 @@
         SELECT *
         FROM
         (
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            and asset_name like #{assetName}
-            AND event_type = 3
-            UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
-            and asset_name like #{assetName}
-            AND event_type = 3
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
+        UNION ALL
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
         ) a
         where a.txTime &gt;= #{startTime}
         and <![CDATA[ a.txTime <= #{endTime} ]]>
@@ -274,7 +303,8 @@
 
     <!--use for ONTO-->
     <select id="selectDragonTransferTxsByTimeInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT <include refid="transferTxDetailColumns" />
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE from_address = #{address}
         and asset_name like #{assetName}
@@ -287,7 +317,8 @@
 
     <!--use for ONTO-->
     <select id="selectDragonTransferTxsByTimeInToAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT <include refid="transferTxDetailColumns" />
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE to_address = #{address}
         and asset_name like #{assetName}
@@ -303,17 +334,19 @@
         SELECT *
         FROM
         (
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE from_address = #{address}
-            and asset_name like #{assetName}
-            AND event_type = 3
-            UNION ALL
-            SELECT <include refid="transferTxDetailColumns" />
-            FROM tbl_tx_detail
-            WHERE to_address = #{address}
-            and asset_name like #{assetName}
-            AND event_type = 3
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail
+        WHERE from_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
+        UNION ALL
+        SELECT
+        <include refid="transferTxDetailColumns"/>
+        FROM tbl_tx_detail
+        WHERE to_address = #{address}
+        and asset_name like #{assetName}
+        AND event_type = 3
         ) a
         where <![CDATA[ a.txTime < #{endTime} ]]>
         ORDER BY a.txTime DESC
@@ -321,8 +354,10 @@
     </select>
 
     <!--use for ONTO-->
-    <select id="selectDragonTransferTxsByTimeAndPageInFromAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT <include refid="transferTxDetailColumns" />
+    <select id="selectDragonTransferTxsByTimeAndPageInFromAddr4Onto"
+            resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE from_address = #{address}
         and asset_name like #{assetName}
@@ -333,8 +368,10 @@
     </select>
 
     <!--use for ONTO-->
-    <select id="selectDragonTransferTxsByTimeAndPageInToAddr4Onto" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT <include refid="transferTxDetailColumns" />
+    <select id="selectDragonTransferTxsByTimeAndPageInToAddr4Onto"
+            resultType="com.github.ontio.model.dto.TransferTxDto">
+        SELECT
+        <include refid="transferTxDetailColumns"/>
         FROM tbl_tx_detail
         WHERE to_address = #{address}
         and asset_name like #{assetName}
@@ -402,6 +439,12 @@
             <when test="tokenType == 'oep5'">
                 FROM tbl_oep5 o
             </when>
+            <when test="tokenType == 'orc20'">
+                FROM tbl_orc20 o
+            </when>
+            <when test="tokenType == 'orc721'">
+                FROM tbl_orc721 o
+            </when>
             <otherwise>
                 FROM tbl_oep8 o
             </otherwise>
@@ -419,6 +462,9 @@
             <when test="tokenType == 'oep5'">
                 FROM tbl_oep5 o
             </when>
+            <when test="tokenType == 'orc20'">
+                FROM tbl_orc20 o
+            </when>
             <otherwise>
                 FROM tbl_oep8 o
             </otherwise>
@@ -435,6 +481,12 @@
             </when>
             <when test="tokenType == 'oep5'">
                 FROM tbl_oep5_tx_detail d
+            </when>
+            <when test="tokenType == 'orc20'">
+                FROM tbl_orc20_tx_detail d
+            </when>
+            <when test="tokenType == 'orc721'">
+                FROM tbl_orc721_tx_detail d
             </when>
             <otherwise>
                 FROM tbl_oep8_tx_detail d
@@ -465,8 +517,8 @@
         ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
-        WHERE d.from_address = #{address}
-        OR d.to_address = #{address}
+        WHERE ( d.from_address = #{address}
+        OR d.to_address = #{address} )
         AND d.event_type IN (2, 3)
         ORDER BY block_height DESC, tx_hash, tx_index
     </select>

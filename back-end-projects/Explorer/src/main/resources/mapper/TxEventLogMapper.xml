@@ -41,6 +41,25 @@
     and <![CDATA[ tx_time <= #{endTime} ]]>
   </select>
 
+
+  <select id="selectTxLogByHash"  resultType="com.github.ontio.model.dto.TxEventLogDto">
+    select
+      tx_hash AS txHash,
+      tx_type AS txType,
+      tx_time AS txTime,
+      block_height AS blockHeight,
+      confirm_flag AS confirmFlag,
+      block_index AS blockIndex,
+      fee AS fee,
+      event_log AS eventLog,
+      ontid_tx_flag AS ontidTxFlag,
+      called_contract_hash AS calledContractHash
+    from tbl_tx_eventlog
+    where tx_hash = #{txHash}
+    limit 1
+  </select>
+
+
   <select id="selectTxsByPage" parameterType="java.lang.Integer" resultType="com.github.ontio.model.dto.TxEventLogDto">
     SELECT tx_hash AS txHash,
       tx_type AS txType,

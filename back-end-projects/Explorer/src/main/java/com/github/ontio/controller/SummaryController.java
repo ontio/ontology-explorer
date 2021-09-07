@@ -48,7 +48,7 @@ public class SummaryController {
     @ApiOperation(value = "Get blockchain daily summary information")
     @GetMapping(value = "/v2/summary/blockchain/daily")
     public ResponseBean getBlockChainSummary(@RequestParam("start_time") Long startTime,
-                                        @RequestParam("end_time") Long endTime) {
+                                             @RequestParam("end_time") Long endTime) {
 
         log.info("####{}.{} begin...start_time:{},end_time:{}", CLASS_NAME, Helper.currentMethod(), startTime, endTime);
 

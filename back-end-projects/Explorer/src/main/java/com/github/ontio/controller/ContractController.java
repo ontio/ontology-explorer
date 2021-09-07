@@ -68,18 +68,19 @@ public class ContractController {
 
     @ApiOperation("Get contract detail by contract hash")
     @GetMapping(value = "/{contract_hash}")
-    public ResponseBean queryContractDetail(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash) {
+    public ResponseBean queryContractDetail(@PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash) {
 
         log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
 
         return contractService.queryContractDetail(contractHash);
     }
 
+
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get contract transaction list by contracthash")
     @GetMapping(value = "/{contract_type}/{contract_hash}/transactions")
-    public ResponseBean queryContractTxsByPage(@PathVariable("contract_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|other|OTHER", message = "Incorrect contract type") String contractType,
-                                               @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+    public ResponseBean queryContractTxsByPage(@PathVariable("contract_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20|orc721|ORC721|other|OTHER", message = "Incorrect contract type") String contractType,
+                                               @PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash,
                                                @RequestParam("page_number") @Min(1) Integer pageNumber,
                                                @RequestParam("page_size") @Max(20) @Min(1) Integer pageSize) {
 
@@ -91,7 +92,7 @@ public class ContractController {
     @RequestLimit(count = 120)
     @ApiOperation(value = "Get contract transaction list by contracthash(no contract_type param)")
     @GetMapping(value = "/{contract_hash}/transactions")
-    public ResponseBean queryContractTxsByPage(@PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+    public ResponseBean queryContractTxsByPage(@PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash,
                                                @RequestParam("page_number") @Min(1) Integer pageNumber,
                                                @RequestParam("page_size") @Max(20) @Min(1) Integer pageSize) {
 
@@ -163,7 +164,7 @@ public class ContractController {
     @ApiOperation(value = "Get contract daily aggregations by ont/ong token")
     @GetMapping(value = "/{contract_hash}/daily")
     public ResponseBean queryDailyAggregation(
-            @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
+            @PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash,
             @RequestParam(value = "token") @Pattern(regexp = "ont|ONT|ong|ONG", message = "Incorrect token") String token,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
@@ -177,8 +178,8 @@ public class ContractController {
     @ApiOperation(value = "Get address daily aggregations by specific token type")
     @GetMapping(value = "/{contract_hash}/{token_type}/daily")
     public ResponseBean queryDailyAggregationOfTokenType(
-            @PathVariable("contract_hash") @Length(min = 40, max = 40, message = "Incorrect contract hash") String contractHash,
-            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4|native|NATIVE", message = "Incorrect token type") String tokenType,
+            @PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash,
+            @PathVariable(value = "token_type") @Pattern(regexp = "oep4|OEP4|native|NATIVE|orc20|ORC20", message = "Incorrect token type") String tokenType,
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) {
@@ -186,5 +187,13 @@ public class ContractController {
 
         return contractService.queryDailyAggregationOfTokenType(contractHash, tokenType, from, to);
     }
+
+    @ApiOperation(value = "Get address daily aggregations by specific token type")
+    @GetMapping(value = "/checkIfExist/{contract_hash}")
+    public ResponseBean checkIfExistContract(@PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash){
+        log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
+        return contractService.checkIfExistsHash(contractHash);
+    }
+
 
 }
