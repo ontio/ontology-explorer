@@ -90,6 +90,8 @@ public class NodesServiceImpl implements INodesService {
 
     private final InspireCalculationParamsMapper inspireCalculationParamsMapper;
 
+    private final NodeCycleMapper nodeCycleMapper;
+
     @Autowired
     public NodesServiceImpl(ParamsConfig paramsConfig,
                             NodeBonusMapper nodeBonusMapper,
@@ -103,7 +105,8 @@ public class NodesServiceImpl implements INodesService {
                             NodeOverviewHistoryMapper nodeOverviewHistoryMapper,
                             NodeInspireMapper nodeInspireMapper,
                             TokenServiceImpl tokenService,
-                            InspireCalculationParamsMapper inspireCalculationParamsMapper
+                            InspireCalculationParamsMapper inspireCalculationParamsMapper,
+                            NodeCycleMapper nodeCycleMapper
     ) {
         this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
@@ -118,6 +121,7 @@ public class NodesServiceImpl implements INodesService {
         this.nodeInspireMapper = nodeInspireMapper;
         this.tokenService = tokenService;
         this.inspireCalculationParamsMapper = inspireCalculationParamsMapper;
+        this.nodeCycleMapper = nodeCycleMapper;
     }
 
     private OntologySDKService sdk;
@@ -936,4 +940,23 @@ public class NodesServiceImpl implements INodesService {
     private BigDecimal getReleaseAndCommissionOng(BigDecimal value, BigDecimal ong, BigDecimal totalConsensusInspire) {
         return new BigDecimal(0.5).multiply(ong).multiply(value).divide(totalConsensusInspire, 12, BigDecimal.ROUND_HALF_UP);
     }
+
+    @Override
+    public PageResponseBean getNodeCycleData(Integer pageNum, Integer pageSize) {
+        int start = Math.max(pageSize * (pageNum - 1), 0);
+        int count = nodeCycleMapper.selectNodeCycleCount();
+        List<NodeCycle> result = nodeCycleMapper.selectAllCycleData(start, pageSize);
+        return new PageResponseBean(result, count);
+    }
+
+    @Override
+    public PageResponseBean getNodeCycleByPubKey(String publicKey, Integer pageNum, Integer pageSize) {
+        int start = Math.max(pageSize * (pageNum - 1), 0);
+        int count = nodeCycleMapper.selectNodeCycleCountByPublicKey(publicKey);
+        List<NodeCycle> result = nodeCycleMapper.selectCycleByPubKey(publicKey, start, pageSize);
+        return new PageResponseBean(result, count);
+
+    }
+
+
 }

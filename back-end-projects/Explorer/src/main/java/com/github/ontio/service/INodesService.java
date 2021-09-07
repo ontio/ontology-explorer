@@ -94,4 +94,9 @@ public interface INodesService {
 
     InspireResultDto calculationUserIncentives(UserInspireCalculationDto dto) throws SDKException;
 
+    PageResponseBean getNodeCycleData(Integer pageNum, Integer pageSize);
+
+    PageResponseBean getNodeCycleByPubKey(String publicKey, Integer pageNum, Integer pageSize);
+
+
 }
