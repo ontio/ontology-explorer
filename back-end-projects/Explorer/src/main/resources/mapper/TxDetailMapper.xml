@@ -148,8 +148,12 @@
         confirm_flag as confirmFlag,
         block_index as blockIndex,
         fee as fee,
-        description as description,
-        event_type as eventType
+        asset_name as assetName,
+        amount as amount,
+        to_address as toAddress,
+        from_address as fromAddress,
+        tx_index as txIndex,
+        contract_hash as contractHash
         FROM tbl_tx_detail d
         WHERE (d.from_address = #{address}
         OR d.to_address = #{address})
