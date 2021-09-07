@@ -1139,8 +1139,10 @@ public class AddressServiceImpl implements IAddressService {
             BigDecimal ong01 =
                     new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(latestOntTransferTxTime)).multiply(new BigDecimal(5));
             BigDecimal ong02 =
-                    new BigDecimal(now).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(paramsConfig.ONG_SECOND_GENERATE);
-            totalOng = ong01.add(ong02);
+                    new BigDecimal(1593388800).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(BigDecimal.valueOf(4));
+            BigDecimal ong03 =
+                    new BigDecimal(paramsConfig.TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(1593388800)).multiply(paramsConfig.ONG_SECOND_GENERATE);
+            totalOng = ong01.add(ong02).add(ong03);
         } else if (latestOntTransferTxTime < paramsConfig.TIMESTAMP_20200707000000_UTC) {
             if (now < paramsConfig.TIMESTAMP_20200707000000_UTC) {
                 if (latestOntTransferTxTime < 1593388800) {
