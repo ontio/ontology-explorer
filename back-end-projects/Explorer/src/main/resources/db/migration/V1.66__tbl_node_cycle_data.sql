@@ -12,6 +12,7 @@ CREATE TABLE `tbl_node_cycle_data` (
        `user_proportion_t` VARCHAR(64) NOT NULL COMMENT 't周期用户质押部分分配比例',
        `node_proportion_t2` VARCHAR(64) NOT NULL COMMENT 't2周期手续费分配比例',
        `user_proportion_t2` VARCHAR(64) NOT NULL COMMENT 't2周期用户质押部分分配比例',
+       `max_authorize` INT(11) NOT NULL DEFAULT 0 COMMENT '用户质押数额上限',
        `bonus_ong` DECIMAL(40, 9) NOT NULL COMMENT 'ong激励, 9位精度',
        `node_stake_ont` INT(11) NOT NULL COMMENT '节点实际质押的ONT数量',
        `user_stake_ont` INT(11) NOT NULL COMMENT '用户实际质押的ONT数量',
