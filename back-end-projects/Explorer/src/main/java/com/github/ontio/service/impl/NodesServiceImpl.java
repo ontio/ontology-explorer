@@ -141,6 +141,15 @@ public class NodesServiceImpl implements INodesService {
         }
     }
 
+    public long getLeftTimeToNextRound() {
+        try {
+            return nodeOverviewMapper.selectLeftTimeToNxtRnd();
+        } catch (Exception e) {
+            log.warn("Getting  left time to  next round failed: {}", e.getMessage());
+            return -1;
+        }
+    }
+
     private Map<String, NodeRankChange> getNodeRankChange() {
         List<NodeRankChange> nodeRankChangeList = nodeRankChangeMapper.selectAll();
         Map<String, NodeRankChange> nodeRankChangeMap = new HashMap<>();
