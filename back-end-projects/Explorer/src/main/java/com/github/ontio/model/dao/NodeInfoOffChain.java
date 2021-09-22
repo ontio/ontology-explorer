@@ -60,6 +60,52 @@ public class NodeInfoOffChain {
 
     private Integer verification;
 
+    @Column(name = "contact_info_verified")
+    private Integer contactInfoVerified;
+
+    @Column(name = "fee_sharing_ratio")
+    private Integer feeSharingRatio;
+
+    @Column(name = "ontology_harbinger")
+    private Integer ontologyHarbinger;
+
+    public Integer getContactInfoVerified() {
+        return contactInfoVerified;
+    }
+
+    public void setContactInfoVerified(Integer contactInfoVerified) {
+        this.contactInfoVerified = contactInfoVerified;
+    }
+
+    public Integer getFeeSharingRatio() {
+        return feeSharingRatio;
+    }
+
+    public void setFeeSharingRatio(Integer feeSharingRatio) {
+        this.feeSharingRatio = feeSharingRatio;
+    }
+
+    public Integer getOntologyHarbinger() {
+        return ontologyHarbinger;
+    }
+
+    public void setOntologyHarbinger(Integer ontologyHarbinger) {
+        this.ontologyHarbinger = ontologyHarbinger;
+    }
+
+    public Integer getOldNode() {
+        return oldNode;
+    }
+
+    public void setOldNode(Integer oldNode) {
+        this.oldNode = oldNode;
+    }
+
+    @Column(name = "old_node")
+    private Integer oldNode;
+
+
+
     /**
      * @return public_key
      */

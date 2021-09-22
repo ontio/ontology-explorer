@@ -9,4 +9,6 @@ public interface NodeOverviewMapper extends Mapper<NodeOverview> {
 
     Long selectBlkCountToNxtRnd();
 
+    Long selectLeftTimeToNxtRnd();
+
 }
