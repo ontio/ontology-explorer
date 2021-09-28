@@ -3,12 +3,14 @@ package com.github.ontio.model.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.NodeInfoOffChain;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Table(name = "tbl_node_info_off_chain")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class NodeInfoOffChainDto extends NodeInfoOffChain {
 
     @Builder
