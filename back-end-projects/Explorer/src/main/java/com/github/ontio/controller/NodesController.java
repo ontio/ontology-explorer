@@ -52,13 +52,15 @@ public class NodesController {
     @GetMapping(value = "/block-count-to-next-round")
     public ResponseBean getBlkCountToNxtRnd() {
         long blkCountToNxtRnd = nodesService.getBlkCountToNxtRnd();
+        long leftTime2NextRound = nodesService.getLeftTimeToNextRound();
         long maxStakingChangeCount = configService.getMaxStakingChangeCount();
-        if (blkCountToNxtRnd < 0 || maxStakingChangeCount <= 0) {
+        if (blkCountToNxtRnd < 0 || leftTime2NextRound < 0 || maxStakingChangeCount <= 0) {
             return new ResponseBean(ErrorInfo.INNER_ERROR.code(), ErrorInfo.INNER_ERROR.desc(), "");
         }
         JSONObject result = new JSONObject();
         result.put("count_to_next_round", blkCountToNxtRnd);
         result.put("max_staking_change_count", maxStakingChangeCount);
+        result.put("left_time_to_next_round", leftTime2NextRound);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 

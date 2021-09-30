@@ -139,47 +139,6 @@
         ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 
-    <select id="selectTransferTxsByPage2" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT
-        tx_hash as txHash,
-        tx_type as txType,
-        tx_time as txTime,
-        block_height as blockHeight,
-        confirm_flag as confirmFlag,
-        block_index as blockIndex,
-        fee as fee,
-        asset_name as assetName,
-        amount as amount,
-        to_address as toAddress,
-        from_address as fromAddress,
-        tx_index as txIndex,
-        contract_hash as contractHash
-        FROM tbl_tx_detail d
-        WHERE (d.from_address = #{address}
-        OR d.to_address = #{address})
-        <if test="assetName != '' and assetName != null">
-            AND d.asset_name = #{assetName}
-        </if>
-        AND d.event_type IN (2, 3)
-        GROUP BY tx_hash
-        ORDER BY block_height DESC, tx_hash, tx_index
-        LIMIT #{startIndex}, #{pageSize}
-    </select>
-
-    <select id="selectTransferTxsCount" resultType="Integer">
-        SELECT
-        COUNT(1)
-        FROM (
-        SELECT tx_hash FROM tbl_tx_detail d
-        WHERE (d.from_address = #{address}
-        OR d.to_address = #{address})
-        <if test="assetName != '' and assetName != null">
-            AND d.asset_name = #{assetName}
-        </if>
-        AND d.event_type IN (2, 3)
-        GROUP BY tx_hash) t
-    </select>
-
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT
         <include refid="transferTxDetailColumns"/>
@@ -562,63 +521,6 @@
         OR d.to_address = #{address} )
         AND d.event_type IN (2, 3)
         ORDER BY block_height DESC, tx_hash, tx_index
-    </select>
-
-    <select id="selectTransferTxsOfHashes2" resultType="com.github.ontio.model.dto.TransferTxDto">
-        SELECT
-        <include refid="transferTxDetailColumns"/>
-        <choose>
-            <when test="tokenType == 'oep4'">
-                FROM tbl_oep4_tx_detail d
-            </when>
-            <when test="tokenType == 'oep5'">
-                FROM tbl_oep5_tx_detail d
-            </when>
-            <when test="tokenType == 'orc20'">
-                FROM tbl_orc20_tx_detail d
-            </when>
-            <when test="tokenType == 'orc721'">
-                FROM tbl_orc721_tx_detail d
-            </when>
-            <otherwise>
-                FROM tbl_oep8_tx_detail d
-            </otherwise>
-        </choose>
-        WHERE ( d.from_address = #{address}
-        OR d.to_address = #{address} )
-        AND d.event_type IN (2, 3)
-        GROUP BY tx_hash
-        ORDER BY block_height DESC, tx_hash, tx_index
-        LIMIT #{startIndex}, #{pageSize}
-    </select>
-
-    <select id="selectTransferTxsOfHashesCount" resultType="Integer">
-        SELECT
-        COUNT(1)
-        FROM (
-        SELECT
-        tx_hash
-        <choose>
-            <when test="tokenType == 'oep4'">
-                FROM tbl_oep4_tx_detail d
-            </when>
-            <when test="tokenType == 'oep5'">
-                FROM tbl_oep5_tx_detail d
-            </when>
-            <when test="tokenType == 'orc20'">
-                FROM tbl_orc20_tx_detail d
-            </when>
-            <when test="tokenType == 'orc721'">
-                FROM tbl_orc721_tx_detail d
-            </when>
-            <otherwise>
-                FROM tbl_oep8_tx_detail d
-            </otherwise>
-        </choose>
-        WHERE ( d.from_address = #{address}
-        OR d.to_address = #{address} )
-        AND d.event_type IN (2, 3)
-        GROUP BY tx_hash) t
     </select>
 
 </mapper>

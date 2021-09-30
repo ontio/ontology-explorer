@@ -26,10 +26,6 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     List<TransferTxDto> selectTransferTxsByPage(@Param("address") String address, @Param("assetName") String assetName, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
-    List<TransferTxDto> selectTransferTxsByPage2(@Param("address") String address, @Param("assetName") String assetName, @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
-
-    Integer selectTransferTxsCount(@Param("address") String address, @Param("assetName") String assetName);
-
     List<TransferTxDto> selectTransferTxsByTime(@Param("address") String address, @Param("assetName") String assetName, @Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
 
@@ -77,9 +73,4 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
                                                   @Param("assetNames") List<String> assetNames, @Param("tokenType") String tokenType,
                                                   @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
-    List<TransferTxDto> selectTransferTxsOfHashes2(@Param("address") String address, @Param("hashes") List<String> contractHashes,
-                                                   @Param("assetNames") List<String> assetNames, @Param("tokenType") String tokenType,
-                                                   @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
-
-    Integer selectTransferTxsOfHashesCount(@Param("address") String address, @Param("tokenType") String tokenType);
 }
