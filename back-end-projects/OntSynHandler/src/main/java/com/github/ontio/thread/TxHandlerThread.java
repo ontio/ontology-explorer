@@ -168,6 +168,7 @@ public class TxHandlerThread {
 
             //eventstate 1:success 0:failed
             int confirmFlag = eventLogObj.getInteger("State");
+            // gasConsumed精度还是9
             BigDecimal gasConsumed = new BigDecimal(eventLogObj.getLongValue("GasConsumed")).divide(ConstantParam.ONG_DECIMAL);
 
 
@@ -551,7 +552,8 @@ public class TxHandlerThread {
                                         int blockHeight, int blockTime, int indexInBlock, String contractAddress,
                                         BigDecimal gasConsumed, int indexInTx, int notifyListSize, int confirmFlag,
                                         String payer, String calledContractHash) throws Exception {
-        if (stateList.size() < 3) {
+        int stateSize = stateList.size();
+        if (stateSize < 3) {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
 
@@ -562,11 +564,6 @@ public class TxHandlerThread {
 
         int eventType = EventTypeEnum.Transfer.type();
         String assetName = "";
-        if (paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
-            assetName = ConstantParam.ASSET_NAME_ONT;
-        } else if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
-            assetName = ConstantParam.ASSET_NAME_ONG;
-        }
 
         String action = (String) stateList.get(0);
         //手续费不为0的情况下，notifylist的最后一个一定是收取手续费event
@@ -578,6 +575,28 @@ public class TxHandlerThread {
         String fromAddress = (String) stateList.get(1);
         String toAddress = (String) stateList.get(2);
         BigDecimal amount = new BigDecimal((stateList.get(3)).toString());
+        if (stateSize < 5) {
+            // 旧精度event
+            if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONG;
+                amount = amount.divide(ConstantParam.ONG_DECIMAL);
+            } else if (paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONT;
+            }
+        } else {
+            // 新精度event
+            BigDecimal extra = new BigDecimal((stateList.get(4)).toString());
+            if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONG;
+                amount = amount.divide(ConstantParam.ONG_DECIMAL);
+                BigDecimal extraDecimal = extra.divide(ConstantParam.NEW_ONG_DECIMAL);
+                amount = amount.add(extraDecimal);
+            } else if (paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONT;
+                BigDecimal extraDecimal = extra.divide(ConstantParam.NEW_ONT_DECIMAL);
+                amount = amount.add(extraDecimal);
+            }
+        }
         log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
@@ -648,8 +667,8 @@ public class TxHandlerThread {
         BigInteger amountValue = (BigInteger) result.get(2).getValue();
         String action = EventTypeEnum.Transfer.des();
         int eventType = EventTypeEnum.Transfer.type();
-        // 当前库中存储的是EVM类型的ong 消耗,处理精度之前的
-        BigDecimal amount = new BigDecimal(amountValue);
+        // 处理好精度
+        BigDecimal amount = new BigDecimal(amountValue).divide(ConstantParam.NEW_ONG_DECIMAL);
 
         log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
         txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);

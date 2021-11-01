@@ -191,15 +191,13 @@ public class TxReSyncThread {
     private void handleNativeTransferTx(JSONArray stateList, int txType, String txHash, int blockHeight, int blockTime,
                                         int indexInBlock, String contractAddress, BigDecimal gasConsumed, int indexInTx, int notifyListSize, int confirmFlag,
                                         String payer, String calledContractHash) throws Exception {
-        if (stateList.size() < 3) {
+        int stateSize = stateList.size();
+        if (stateSize < 3) {
             return;
         }
 
         int eventType = EventTypeEnum.Transfer.type();
         String assetName = "";
-        if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
-            assetName = ConstantParam.ASSET_NAME_ONG;
-        }
 
         String action = (String) stateList.get(0);
         //手续费不为0的情况下，notifylist的最后一个一定是收取手续费event
@@ -211,6 +209,28 @@ public class TxReSyncThread {
         String fromAddress = (String) stateList.get(1);
         String toAddress = (String) stateList.get(2);
         BigDecimal amount = new BigDecimal((stateList.get(3)).toString());
+        if (stateSize < 5) {
+            // 旧精度event
+            if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONG;
+                amount = amount.divide(ConstantParam.ONG_DECIMAL);
+            } else if (paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONT;
+            }
+        } else {
+            // 新精度event
+            BigDecimal extra = new BigDecimal((stateList.get(4)).toString());
+            if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONG;
+                amount = amount.divide(ConstantParam.ONG_DECIMAL);
+                BigDecimal extraDecimal = extra.divide(ConstantParam.NEW_ONG_DECIMAL);
+                amount = amount.add(extraDecimal);
+            } else if (paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
+                assetName = ConstantParam.ASSET_NAME_ONT;
+                BigDecimal extraDecimal = extra.divide(ConstantParam.NEW_ONT_DECIMAL);
+                amount = amount.add(extraDecimal);
+            }
+        }
         log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
@@ -520,7 +540,7 @@ public class TxReSyncThread {
      * @param fromAddress
      * @param toAddress
      * @param assetName
-     * @param account
+     * @param amount
      * @param txType
      * @param txHash
      * @param blockHeight
@@ -535,7 +555,7 @@ public class TxReSyncThread {
      * @param payer
      * @return
      */
-    private TxDetail generateTransaction(String fromAddress, String toAddress, String assetName, BigDecimal account, int txType,
+    private TxDetail generateTransaction(String fromAddress, String toAddress, String assetName, BigDecimal amount, int txType,
                                          String txHash, int blockHeight, int blockTime, int indexInBlock, int confirmFlag,
                                          String action, BigDecimal gasConsumed, int indexInTx, int eventType, String contractAddress,
                                          String payer, String calledContractHash) {
@@ -553,7 +573,7 @@ public class TxReSyncThread {
                 .payer(payer)
                 .calledContractHash(calledContractHash)
                 .contractHash(contractAddress)
-                .amount(account)
+                .amount(amount)
                 .assetName(assetName)
                 .fromAddress(fromAddress)
                 .toAddress(toAddress)
