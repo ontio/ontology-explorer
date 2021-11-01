@@ -8,7 +8,7 @@ CREATE TABLE tbl_contract_daily_aggregation (
     deposit_address_count  INT            NOT NULL DEFAULT 0 COMMENT '去重入金交易地址数量',
     withdraw_address_count INT            NOT NULL DEFAULT 0 COMMENT '去重出金交易地址数量',
     tx_address_count       INT            NOT NULL DEFAULT 0 COMMENT '去重交易地址数量',
-    fee_amount             DECIMAL(40, 9) NOT NULL DEFAULT 0 COMMENT '消耗手续费总额',
+    fee_amount             DECIMAL(40, 20) NOT NULL DEFAULT 0 COMMENT '消耗手续费总额',
     contract_count         INT            NOT NULL DEFAULT 0 COMMENT '调用合约数量，只适用于虚拟Token统计',
     is_virtual             BOOLEAN        NOT NULL DEFAULT FALSE COMMENT '是否为虚拟Token统计',
     update_time            TIMESTAMP      NOT NULL DEFAULT now() ON UPDATE now(),

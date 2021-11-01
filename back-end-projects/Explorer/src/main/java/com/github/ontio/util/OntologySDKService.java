@@ -159,6 +159,7 @@ public class OntologySDKService {
         Map<String, Object> balanceMap = new HashMap<>();
         try {
             OntSdk ontSdk = getOntSdk();
+            // todo v2
             balanceMap = (Map) ontSdk.getConnect().getBalance(address);
         } catch (Exception e) {
             log.error("getNativeAssetBalance error...", e);
@@ -178,6 +179,7 @@ public class OntologySDKService {
         String ontAddr = com.github.ontio.util.Helper.EthAddrToOntAddr(address);
         OntSdk ontSdk = getOntSdk();
         try {
+            // todo v2
             balanceMap = (Map) ontSdk.getConnect().getBalance(ontAddr);
         } catch (Exception e) {
             log.error("getEVMONGAssetBalance error...", e);
@@ -282,7 +284,7 @@ public class OntologySDKService {
         OntSdk ontSdk = getOntSdk();
         try {
             String unboundOng = ontSdk.nativevm().ong().unboundOng(address);
-            return new BigDecimal(unboundOng).divide(ConstantParam.ONT_TOTAL).toPlainString();
+            return new BigDecimal(unboundOng).divide(ConstantParam.ONG_TOTAL).toPlainString();
         } catch (Exception e) {
             log.error("getUnBoundOng error...", e);
             e.printStackTrace();

@@ -316,10 +316,10 @@ public class ContractServiceImpl implements IContractService {
             //Integer txCount = txEventLogMapper.queryTxCountByParam(contractHashArray, startTime, endTime);
             //总手续费
             String totalFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
-                    totalFee.multiply(ConstantParam.ONG_TOTAL).stripTrailingZeros().toPlainString());
+                    totalFee.multiply(ConstantParam.NEW_ONG_DECIMAL).stripTrailingZeros().toPlainString());
             //激励手续费
             String rewardFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
-                    totalFee.multiply(ConstantParam.ONG_TOTAL).multiply(new BigDecimal(paramsConfig.DAPP_REWARD_PERCENTAGE).divide(new BigDecimal("100"))).stripTrailingZeros().toPlainString());
+                    totalFee.multiply(ConstantParam.NEW_ONG_DECIMAL).multiply(new BigDecimal(paramsConfig.DAPP_REWARD_PERCENTAGE).divide(new BigDecimal("100"))).stripTrailingZeros().toPlainString());
 
             //valueObject.put("tx_count", txCount);
             valueObject.put("total_fee", totalFeeStr);
@@ -388,10 +388,10 @@ public class ContractServiceImpl implements IContractService {
 
             //总手续费
             String totalFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
-                    totalFee.multiply(ConstantParam.ONG_TOTAL).stripTrailingZeros().toPlainString());
+                    totalFee.multiply(ConstantParam.NEW_ONG_DECIMAL).stripTrailingZeros().toPlainString());
             //激励手续费
             String rewardFeeStr = (totalFee == null ? ConstantParam.ZERO.stripTrailingZeros().toPlainString() :
-                    totalFee.multiply(ConstantParam.ONG_TOTAL).multiply(new BigDecimal(paramsConfig.NODE_REWARD_PERCENTAGE).divide(new BigDecimal("100"))).stripTrailingZeros().toPlainString());
+                    totalFee.multiply(ConstantParam.NEW_ONG_DECIMAL).multiply(new BigDecimal(paramsConfig.NODE_REWARD_PERCENTAGE).divide(new BigDecimal("100"))).stripTrailingZeros().toPlainString());
 
             Map<String, Object> map = new HashMap<>();
             map.put("dapp_name", dappName);

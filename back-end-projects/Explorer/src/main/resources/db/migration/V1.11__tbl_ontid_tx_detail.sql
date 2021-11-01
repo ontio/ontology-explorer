@@ -27,7 +27,7 @@ CREATE TABLE `tbl_ontid_tx_detail` (
     `tx_time`      INT(11)        NOT NULL COMMENT '交易时间戳',
     `block_height` INT(12)        NOT NULL COMMENT '区块高度',
     `description`  VARCHAR(255)   NOT NULL DEFAULT '' COMMENT 'ONT ID交易描述',
-    `fee`          DECIMAL(25, 9) NOT NULL COMMENT '交易手续费',
+    `fee`          DECIMAL(40, 20) NOT NULL COMMENT '交易手续费',
     PRIMARY KEY (`id`),
     KEY `idx_ontid`(`ontid`),
     KEY `idx_tx_hash`(`tx_hash`)

@@ -191,7 +191,7 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto4 = BalanceDto.builder()
                     .assetName(ConstantParam.ONT)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                     .contractHash(ConstantParam.CONTRACTHASH_ONT)
                     .build();
             balanceList.add(balanceDto4);
@@ -204,13 +204,13 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto1 = BalanceDto.builder()
                     .assetName(ConstantParam.ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                     .contractHash(ConstantParam.CONTRACTHASH_ONG)
                     .build();
             balanceList.add(balanceDto1);
 
             //waiting bound ONG
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            String waitBoundOng = calculateWaitingBoundOng(address, new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
             BalanceDto balanceDto2 = BalanceDto.builder()
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -275,7 +275,7 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto = BalanceDto.builder()
                     .assetName(ConstantParam.ONT)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                     .build();
             balanceList.add(balanceDto);
 
@@ -287,12 +287,12 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto1 = BalanceDto.builder()
                     .assetName(ConstantParam.ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                     .build();
             balanceList.add(balanceDto1);
 
             //waiting bound ONG
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            String waitBoundOng = calculateWaitingBoundOng(address, new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
             BalanceDto balanceDto2 = BalanceDto.builder()
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -344,7 +344,7 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto4 = BalanceDto.builder()
                     .assetName(ConstantParam.ONT)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                     .contractHash(ConstantParam.CONTRACTHASH_ONT)
                     .build();
             balanceList.add(balanceDto4);
@@ -357,13 +357,13 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto1 = BalanceDto.builder()
                     .assetName(ConstantParam.ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                     .contractHash(ConstantParam.CONTRACTHASH_ONG)
                     .build();
             balanceList.add(balanceDto1);
 
             //waiting bound ONG
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            String waitBoundOng = calculateWaitingBoundOng(address, new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
             BalanceDto balanceDto2 = BalanceDto.builder()
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -431,13 +431,13 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto1 = BalanceDto.builder()
                 .assetName(ConstantParam.ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                 .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto1);
 
         //waiting bound ONG
-        String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+        String waitBoundOng = calculateWaitingBoundOng(address, (new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL)));
         BalanceDto balanceDto2 = BalanceDto.builder()
                 .assetName(ConstantParam.WAITBOUND_ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -463,7 +463,7 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto4 = BalanceDto.builder()
                 .assetName(ConstantParam.ONT)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                 .contractHash(ConstantParam.CONTRACTHASH_ONT)
                 .build();
         balanceList.add(balanceDto4);
@@ -639,7 +639,7 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(ConstantParam.ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                 .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto);
@@ -1118,7 +1118,7 @@ public class AddressServiceImpl implements IAddressService {
      * @param ont
      * @return
      */
-    private String calculateWaitingBoundOng(String address, String ont) {
+    private String calculateWaitingBoundOng(String address, BigDecimal ont) {
 
         Integer latestOntTransferTxTime = null;
         //mysql 4.0.14+ bug
@@ -1171,7 +1171,7 @@ public class AddressServiceImpl implements IAddressService {
         } else {
             totalOng = BigDecimal.ZERO;
         }
-        BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
+        BigDecimal ong = totalOng.multiply(ont).divide(ConstantParam.ONT_TOTAL);
 
         return ong.toPlainString();
     }
@@ -1428,9 +1428,6 @@ public class AddressServiceImpl implements IAddressService {
             TransferTxDto transferTxDto = transferTxDtos.get(i);
             String assetName = transferTxDto.getAssetName();
             BigDecimal amount = transferTxDto.getAmount();
-            if (ConstantParam.ONG.equals(assetName)) {
-                amount = amount.divide(ConstantParam.ONG_TOTAL);
-            }
 
             String txHash = transferTxDto.getTxHash();
             log.info("txHash:{}", txHash);

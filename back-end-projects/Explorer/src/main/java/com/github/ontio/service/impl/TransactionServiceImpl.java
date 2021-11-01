@@ -180,13 +180,6 @@ public class TransactionServiceImpl implements ITransactionService {
         if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType || EventTypeEnum.Approval.getType() == eventType) {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-            txDetailDtos.forEach(item -> {
-                //ONG转换好精度给前端
-                String assetName = item.getAssetName();
-                if (ConstantParam.ONG.equals(assetName)) {
-                    item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-                }
-            });
             detailObj.put("transfers", txDetailDtos);
         } else if (EventTypeEnum.Ontid.getType() == eventType) {
             //ONTID交易获取ONTID动作详情
@@ -234,13 +227,6 @@ public class TransactionServiceImpl implements ITransactionService {
         JSONObject detailObj = new JSONObject();
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
 
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         detailObj.put("transfers", txDetailDtos);
         txDetailDto.setDetail(detailObj);
         return txDetailDto;
@@ -249,13 +235,6 @@ public class TransactionServiceImpl implements ITransactionService {
     private List<TxDetailDto> queryTxDetailByTxHash2(String txHash) {
         // 没有approval 类型的
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         return txDetailDtos;
     }
 
@@ -263,27 +242,12 @@ public class TransactionServiceImpl implements ITransactionService {
     private List<TxDetailDto> queryTxDetailByTxHash3(String txHash) {
         // 没有approval 类型的
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash2(txHash);
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         return txDetailDtos;
     }
 
 
     private List<TxDetailDto> queryAllTxDetailByTxHash(String txHash) {
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         return txDetailDtos;
     }
 

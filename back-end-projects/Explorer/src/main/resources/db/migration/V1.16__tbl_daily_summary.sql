@@ -23,8 +23,8 @@ CREATE TABLE `tbl_daily_summary` (
     `tx_count`             INT(11)        NOT NULL COMMENT '当天的交易数量',
     `active_ontid_count`   INT(11)        NOT NULL COMMENT '当天的活跃ONT ID数量',
     `new_ontid_count`      INT(11)        NOT NULL COMMENT '当天的新ONT ID数量',
-    `ont_sum`              DECIMAL(25, 9) NOT NULL COMMENT '当天的ont流通量',
-    `ong_sum`              DECIMAL(25, 9) NOT NULL COMMENT '当天的ong流通量',
+    `ont_sum`              DECIMAL(40, 20) NOT NULL COMMENT '当天的ont流通量',
+    `ong_sum`              DECIMAL(40, 20) NOT NULL COMMENT '当天的ong流通量',
     `active_address_count` INT(11)        NOT NULL COMMENT '当天的活跃地址数量',
     `new_address_count`    INT(11)        NOT NULL COMMENT '当天的新地址数量',
     UNIQUE KEY `idx_time`(`time`) USING BTREE

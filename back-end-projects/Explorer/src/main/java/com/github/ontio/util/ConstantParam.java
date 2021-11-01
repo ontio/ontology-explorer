@@ -62,7 +62,11 @@ public class ConstantParam {
 
     public static final BigDecimal ONT_TOTAL = new BigDecimal("1000000000");
 
-    public static final BigDecimal ONG_TOTAL = new BigDecimal("1000000000");
+    public static final BigDecimal ONG_TOTAL = ONT_TOTAL;
+
+    public static final BigDecimal NEW_ONT_DECIMAL = ONT_TOTAL;
+
+    public static final BigDecimal NEW_ONG_DECIMAL = new BigDecimal("1000000000000000000");
 
 
     public static final String GO_TOTALSUPPLY_URL = "/getAssetHolder";
