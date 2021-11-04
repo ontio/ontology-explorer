@@ -1,5 +1,5 @@
 /target/
-/config/
+#/config/
 .idea
 *.iml
 logs
