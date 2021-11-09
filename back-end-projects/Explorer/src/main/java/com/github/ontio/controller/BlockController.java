@@ -52,8 +52,6 @@ public class BlockController {
     @ApiOperation(value = "Get latest block list")
     @GetMapping(value = "/latest-blocks")
     public ResponseBean getLatestBlocks(@RequestParam("count") @Min(1) @Max(50) Integer count) {
-
-        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         return blockService.queryLatestBlocks(count);
     }
 
@@ -62,17 +60,12 @@ public class BlockController {
     @GetMapping(value = "/blocks")
     public ResponseBean getBlocksByPage(@RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
                                         @RequestParam("page_number") @Min(1) Integer pageNumber) {
-
-        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
         return blockService.queryBlocksByPage(pageSize, pageNumber);
     }
 
     @ApiOperation(value = "Get block detail by height or hash")
     @GetMapping(value = "/blocks/{param}")
     public ResponseBean getBlock(@PathVariable("param") String param) {
-
-        log.info("####{}.{} begin...param:{}",CLASS_NAME, Helper.currentMethod(),param);
-
         if (param.length() == 64) {
             return blockService.queryBlockByHash(param);
         }
@@ -87,9 +80,6 @@ public class BlockController {
     @ApiOperation(value = "Get generate block time")
     @GetMapping(value = "/blocks/generate-time")
     public ResponseBean queryBlockGenerateTime(@RequestParam("count") @Max(100) @Min(1) Integer count) {
-
-        log.info("####{}.{} begin...",CLASS_NAME, Helper.currentMethod());
-
         return blockService.queryBlockGenerateTime(count);
     }
 

@@ -54,7 +54,7 @@ public class AddressController {
                                             @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all|native-oep4|NATIVE-OEP4|orc20|ORC20|orc721|ORC721", message =
                                                     "Incorrect token type") String tokenType) {
 
-        log.info("####{}.{} begin...address:{},token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
+//        log.info("####{}.{} begin...address:{},token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
         ResponseBean rs = null;
         if (address.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
             rs = addressService.queryEVMAddressBalance(address, tokenType);
@@ -75,7 +75,7 @@ public class AddressController {
                                                                "hash") String contractHash,
                                                        @RequestParam(value = "channel", required = false) String channel) {
 
-        log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
+//        log.info("####{}.{} begin...address:{},assetName:{}", CLASS_NAME, Helper.currentMethod(), address, assetName);
 
         ResponseBean rs = new ResponseBean();
         if (Helper.isNotEmptyAndNull(channel) && ConstantParam.CHANNEL_ONTO.equals(channel)) {
@@ -101,7 +101,7 @@ public class AddressController {
                                                       @RequestParam(name = "begin_time", required = false) Long beginTime,
                                                       @RequestParam(name = "end_time", required = false) Long endTime) {
 
-        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+//        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         ResponseBean rs = new ResponseBean();
         if (Helper.isNotEmptyAndNull(pageNumber, pageSize)) {
@@ -131,7 +131,7 @@ public class AddressController {
                                                                   @RequestParam(name = "channel", required = false) String channel,
                                                                   @RequestParam(name = "address_type", required = false) @Pattern(regexp = "fromAddress|toAddress") String addressType) {
 
-        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+//        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         ResponseBean rs = new ResponseBean();
         //ONTO request
@@ -168,7 +168,7 @@ public class AddressController {
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) throws SDKException {
-        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+//        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         return addressService.queryDailyAggregation(address, token, from, to);
     }
@@ -182,7 +182,7 @@ public class AddressController {
             @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date from,
             @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Date to
     ) {
-        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+//        log.info("###{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         return addressService.queryDailyAggregationOfTokenType(address, tokenType, from, to);
     }
@@ -194,7 +194,7 @@ public class AddressController {
             @RequestParam(name = "ranking_id", required = false) List<Short> rankingIds,
             @RequestParam("duration") short duration
     ) {
-        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
+//        log.info("###{}.{} begin...", CLASS_NAME, Helper.currentMethod());
 
         return addressService.queryRankings(rankingIds, duration);
     }
@@ -208,7 +208,7 @@ public class AddressController {
             @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
             @RequestParam(name = "page_number") @Min(1) Integer pageNumber
     ) {
-        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
+//        log.info("####{}.{} begin...address:{}", CLASS_NAME, Helper.currentMethod(), address);
 
         return addressService.queryTransferTxsWithTotalByPage(address, assetName, pageNumber, pageSize);
     }
@@ -222,7 +222,7 @@ public class AddressController {
             @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
             @RequestParam(name = "page_number") @Min(1) Integer pageNumber
     ) {
-        log.info("####{}.{} begin...address:{};token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
+//        log.info("####{}.{} begin...address:{};token_type:{}", CLASS_NAME, Helper.currentMethod(), address, tokenType);
 
         return addressService.queryTransferTxsOfTokenTypeByPage(address, tokenType, pageNumber, pageSize);
     }
