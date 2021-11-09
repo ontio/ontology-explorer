@@ -40,7 +40,7 @@ public class RedisCache implements Cache {
 
     public RedisCache(final String id) {
 
-        log.info("##init ExplorerRedisCache, Cache id:{}##", id);
+//        log.info("##init ExplorerRedisCache, Cache id:{}##", id);
         if (id == null) {
             throw new IllegalArgumentException("Cache instances require an ID");
         }
@@ -49,13 +49,13 @@ public class RedisCache implements Cache {
 
     @Override
     public String getId() {
-        log.info("##{}.{} Id:{}", CLASS_NAME, Helper.currentMethod(), this.id);
+//        log.info("##{}.{} Id:{}", CLASS_NAME, Helper.currentMethod(), this.id);
         return this.id;
     }
 
     @Override
     public void putObject(Object key, Object value) {
-        log.info("##{}.{} key:{}, value:{}##", CLASS_NAME, Helper.currentMethod(), key, value);
+//        log.info("##{}.{} key:{}, value:{}##", CLASS_NAME, Helper.currentMethod(), key, value);
         if (Helper.isBelongRedisLongExpireMapper(key.toString())) {
             getRedisTemplate().opsForValue().set(key.toString(), value, getProperty(REDIS_LONG_EXPIRE_MINUTE, Integer.class), TimeUnit.MINUTES);
         } else if (Helper.isBelongRedisMediumExpireMapper(key.toString())) {
@@ -67,7 +67,7 @@ public class RedisCache implements Cache {
 
     @Override
     public Object getObject(Object key) {
-        log.info("##{}.{} key:{}##", CLASS_NAME, Helper.currentMethod(), key.toString());
+//        log.info("##{}.{} key:{}##", CLASS_NAME, Helper.currentMethod(), key.toString());
         try {
             if (key != null) {
                 return getRedisTemplate().opsForValue().get(key.toString());
@@ -92,7 +92,7 @@ public class RedisCache implements Cache {
 
     @Override
     public Object removeObject(Object key) {
-        log.info("##{}.{} key:{}##", CLASS_NAME, Helper.currentMethod(), key.toString());
+//        log.info("##{}.{} key:{}##", CLASS_NAME, Helper.currentMethod(), key.toString());
         try {
             if (key != null) {
                 getRedisTemplate().delete(key.toString());
@@ -104,7 +104,7 @@ public class RedisCache implements Cache {
 
     @Override
     public void clear() {
-        log.info("##{}.{} this.id:{}", CLASS_NAME, Helper.currentMethod(), this.id);
+//        log.info("##{}.{} this.id:{}", CLASS_NAME, Helper.currentMethod(), this.id);
         try {
             Set<String> keys = getRedisTemplate().keys("*:" + this.id + "*");
             if (!CollectionUtils.isEmpty(keys)) {
@@ -117,7 +117,7 @@ public class RedisCache implements Cache {
 
     @Override
     public int getSize() {
-        log.info("##{}.{}", CLASS_NAME, Helper.currentMethod());
+//        log.info("##{}.{}", CLASS_NAME, Helper.currentMethod());
         Long size = (Long) getRedisTemplate().execute(new RedisCallback<Long>() {
             @Override
             public Long doInRedis(RedisConnection connection) throws DataAccessException {
@@ -129,7 +129,7 @@ public class RedisCache implements Cache {
 
     @Override
     public ReadWriteLock getReadWriteLock() {
-        log.info("##get Redis Cache ReadWriteLock##");
+//        log.info("##get Redis Cache ReadWriteLock##");
         return this.readWriteLock;
     }
 
