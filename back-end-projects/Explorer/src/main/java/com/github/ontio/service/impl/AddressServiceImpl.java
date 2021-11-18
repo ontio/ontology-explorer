@@ -1132,7 +1132,7 @@ public class AddressServiceImpl implements IAddressService {
             return "0";
         }
         long now = System.currentTimeMillis() / 1000L;
-        log.info("calculateWaitingBoundOng latestOntTransferTxTime:{},now:{}", latestOntTransferTxTime, now);
+//        log.info("calculateWaitingBoundOng latestOntTransferTxTime:{},now:{}", latestOntTransferTxTime, now);
         BigDecimal totalOng = new BigDecimal("0");
         //before 20190630000000 UTC
         if (latestOntTransferTxTime < TIMESTAMP_20190630000000_UTC) {
@@ -1430,7 +1430,6 @@ public class AddressServiceImpl implements IAddressService {
             BigDecimal amount = transferTxDto.getAmount();
 
             String txHash = transferTxDto.getTxHash();
-            log.info("txHash:{}", txHash);
             if (txHash.equals(previousTxHash)) {
                 //自己给自己转账，sql会查询出两条记录.需要判断tx_index是否一样
                 if (previousTxIndex != transferTxDto.getTxIndex()) {
