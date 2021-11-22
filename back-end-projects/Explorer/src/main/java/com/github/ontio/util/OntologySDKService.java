@@ -156,17 +156,27 @@ public class OntologySDKService {
      * @return
      */
     public Map getNativeAssetBalance(String address) {
-        Map<String, Object> balanceMap = new HashMap<>();
         try {
-            OntSdk ontSdk = getOntSdk();
-            // todo v2
-            balanceMap = (Map) ontSdk.getConnect().getBalance(address);
+            String resp = HttpClientUtil.getRequest(String.format(ConstantParam.BALANCE_V2_URL, paramsConfig.MASTERNODE_RESTFUL_URL, address), Collections.emptyMap(), Collections.emptyMap());
+            JSONObject jsonObject = JSONObject.parseObject(resp);
+            Integer error = jsonObject.getInteger("Error");
+            if (error == 0) {
+                return jsonObject.getJSONObject("Result");
+            } else {
+                log.error("getNativeAssetBalance error...:{}", error);
+                Map<String, Object> balanceMap = new HashMap<>();
+                balanceMap.put("ong", "0");
+                balanceMap.put("ont", "0");
+                return balanceMap;
+            }
+//            balanceMap = (Map) ontSdk.getConnect().getBalance(address);
         } catch (Exception e) {
             log.error("getNativeAssetBalance error...", e);
+            Map<String, Object> balanceMap = new HashMap<>();
             balanceMap.put("ong", "0");
             balanceMap.put("ont", "0");
+            return balanceMap;
         }
-        return balanceMap;
     }
 
 
@@ -174,18 +184,16 @@ public class OntologySDKService {
      * EVM 类型 查询以太坊地址的账户内的ong余额
      */
 
-    public Map getEVMONGAssetBalance(String address){
-        Map<String, Object> balanceMap = new HashMap<>();
+    public String getOngBalanceByEvmAddress(String address) {
+        String balance = "0";
         String ontAddr = com.github.ontio.util.Helper.EthAddrToOntAddr(address);
-        OntSdk ontSdk = getOntSdk();
         try {
-            // todo v2
-            balanceMap = (Map) ontSdk.getConnect().getBalance(ontAddr);
+//            ontSdk.nativevm().ong().queryBalanceOf(ontAddr);
+            balance = queryBalanceOfOngV2(ontAddr);
         } catch (Exception e) {
             log.error("getEVMONGAssetBalance error...", e);
-            balanceMap.put("ong", "0");
         }
-        return balanceMap;
+        return balance;
     }
 
 
@@ -636,5 +644,20 @@ public class OntologySDKService {
             e.printStackTrace();
         }
         return new Object();
+    }
+
+    public String queryBalanceOfOngV2(String address) throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        if (!StringUtils.isEmpty(address)) {
+            List list = new ArrayList();
+            list.add(Address.decodeBase58(address));
+            byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+            Transaction tx = ontSdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontSdk.nativevm().ong().getContractAddress())), "balanceOfV2", arg, (String) null, 0L, 0L);
+            Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String res = ((JSONObject) obj).getString("Result");
+            return res != null && !res.equals("") ? new BigInteger(Helper.reverse(res), 16).toString() : "0";
+        } else {
+            throw new SDKException(ErrorCode.ParamErr("address should not be null"));
+        }
     }
 }

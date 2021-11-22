@@ -635,11 +635,11 @@ public class AddressServiceImpl implements IAddressService {
     private List<BalanceDto> getEvmOngBalance(String address) {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
-        Map<String, Object> balanceMap = sdk.getEVMONGAssetBalance(address);
+        String ongBalance = sdk.getOngBalanceByEvmAddress(address);
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(ConstantParam.ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
+                .balance((new BigDecimal(ongBalance).divide(ConstantParam.NEW_ONG_DECIMAL)))
                 .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto);

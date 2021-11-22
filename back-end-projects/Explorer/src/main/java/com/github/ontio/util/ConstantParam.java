@@ -214,4 +214,6 @@ public class ConstantParam {
     public static final String NATIVE_CONTRACT_HASH = "792e4e61746976652e496e766f6b65";
 
     public static final Map<String, String> CONTRACT_TAG = new HashMap<>();
+
+    public static final String BALANCE_V2_URL = "%s/api/v1/balancev2/%s";
 }
