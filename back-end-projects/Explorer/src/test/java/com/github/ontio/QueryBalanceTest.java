@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.InvokeWasmCode;
+import com.github.ontio.util.ConstantParam;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -30,7 +31,7 @@ public class QueryBalanceTest {
         ontSdk.setRestful(nodeUrl);
 
         List<Object> params = new ArrayList<>(Collections.singletonList(Address.decodeBase58(address)));
-        InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(oep4ContractHash, "balanceOf", params, Address.decodeBase58(address), 500, 20000);
+        InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(oep4ContractHash, ConstantParam.FUN_BALANCE_OF, params, Address.decodeBase58(address), 500, 20000);
         JSONObject result = (JSONObject) ontSdk.getRestful().sendRawTransactionPreExec(tx.toHexString());
         System.out.println(JSON.toJSONString(result));
         String resultStr = result.getString("Result");
