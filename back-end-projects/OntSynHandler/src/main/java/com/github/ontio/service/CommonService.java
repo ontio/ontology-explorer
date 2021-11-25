@@ -570,10 +570,8 @@ public class CommonService {
     }
 
     private void buildTxDetailIndex(int beginHeight, int endHeight) {
-        log.info("start txDetailIndexMapper.buildTxDetailIndex, beginHeight:{}, endHeight:{}", beginHeight, endHeight);
         txDetailIndexMapper.buildTxDetailIndexForFromAddress(beginHeight, endHeight, null);
         txDetailIndexMapper.buildTxDetailIndexForToAddress(beginHeight, endHeight, null);
-        log.info("end txDetailIndexMapper.buildTxDetailIndex, beginHeight:{}, endHeight:{}", beginHeight, endHeight);
     }
 
 }

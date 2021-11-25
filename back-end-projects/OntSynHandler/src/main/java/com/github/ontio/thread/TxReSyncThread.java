@@ -298,10 +298,11 @@ public class TxReSyncThread {
             return;
         }
 
-        String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        String action = (String) stateArray.get(0);
         String fromAddress = (String) stateArray.get(1);
         String toAddress = (String) stateArray.get(2);
         String tokenId = (String) stateArray.get(3);
+        String amount = (String) stateArray.get(4);
         JSONObject oep8Obj = (JSONObject) ConstantParam.OEP8MAP.get(contractAddress + "-" + tokenId);
         if ("00".equals(fromAddress) && stateSize == 2) {
             // mint方法即增加发行量方法, 区分标志：fromAddress为“00”，同时stateSize为2
@@ -321,15 +322,17 @@ public class TxReSyncThread {
             toAddress = Address.parse(toAddress).toBase58();
         }
 
-        BigDecimal eventAmount =
-                new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(4))).longValue());
-        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId,
-                eventAmount);
+        BigDecimal eventAmount;
+        if ("transfer".equalsIgnoreCase(action)) {
+            eventAmount = new BigDecimal(amount);
+        } else {
+            eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(amount)));
+            action = new String(Helper.hexToBytes(action));
+        }
+        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
 
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash,
-                blockHeight,
-                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(),
-                contractAddress, payer, calledContractHash);
+        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
+                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
 
         ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
@@ -357,7 +360,10 @@ public class TxReSyncThread {
                                        String contractAddress, JSONObject oep5Obj, String payer, String calledContractHash) throws Exception {
 
         Boolean isTransfer = Boolean.FALSE;
-        String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        String action = (String) stateArray.get(0);
+        if (!"transfer".equalsIgnoreCase(action)) {
+            action = new String(Helper.hexToBytes(action));
+        }
         //只解析birth和transfer合约方法
         if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
@@ -520,7 +526,7 @@ public class TxReSyncThread {
      * @param fromAddress
      * @param toAddress
      * @param assetName
-     * @param account
+     * @param amount
      * @param txType
      * @param txHash
      * @param blockHeight
@@ -535,7 +541,7 @@ public class TxReSyncThread {
      * @param payer
      * @return
      */
-    private TxDetail generateTransaction(String fromAddress, String toAddress, String assetName, BigDecimal account, int txType,
+    private TxDetail generateTransaction(String fromAddress, String toAddress, String assetName, BigDecimal amount, int txType,
                                          String txHash, int blockHeight, int blockTime, int indexInBlock, int confirmFlag,
                                          String action, BigDecimal gasConsumed, int indexInTx, int eventType, String contractAddress,
                                          String payer, String calledContractHash) {
@@ -553,7 +559,7 @@ public class TxReSyncThread {
                 .payer(payer)
                 .calledContractHash(calledContractHash)
                 .contractHash(contractAddress)
-                .amount(account)
+                .amount(amount)
                 .assetName(assetName)
                 .fromAddress(fromAddress)
                 .toAddress(toAddress)
