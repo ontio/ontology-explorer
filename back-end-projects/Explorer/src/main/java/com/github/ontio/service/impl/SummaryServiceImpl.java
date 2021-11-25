@@ -133,7 +133,7 @@ public class SummaryServiceImpl implements ISummaryService {
     @Override
     public ResponseBean getNativeTotalSupply() {
 
-        BigDecimal specialAddrOnt = new BigDecimal("0");
+        BigDecimal specialAddrOnt = BigDecimal.ZERO;
         for (String addr :
                 ConstantParam.SPECIALADDRLIST) {
             Map<String, String> map = ontologySDKService.getNativeAssetBalance(addr);

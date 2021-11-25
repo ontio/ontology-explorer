@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -664,32 +665,33 @@ public class AddressServiceImpl implements IAddressService {
             oep5Temp.setSymbol(assetName);
         }
         List<Oep5> oep5s = oep5Mapper.select(oep5Temp);
-        for (Oep5 oep5 :
-                oep5s) {
+        for (Oep5 oep5 : oep5s) {
             String contractHash = oep5.getContractHash();
-            BigDecimal balance = new BigDecimal(sdk.getOep5AssetBalance(address, contractHash));
+            String vmCategory = oep5.getVmCategory();
+            String oep5AssetName;
+            if (ConstantParam.CHANNEL_ONTO.equals(channel)) {
+                //ONTO return name
+                oep5AssetName = oep5.getName();
+            } else {
+                //other return symbol
+                oep5AssetName = oep5.getSymbol();
+            }
+            BigDecimal balance;
+            if (ConstantParam.VM_CATEGORY_NEOVM.equalsIgnoreCase(vmCategory)) {
+                balance = new BigDecimal(sdk.getOep5AssetBalance(address, contractHash));
+            } else {
+                balance = new BigDecimal(sdk.getWasmVmOep5Balance(address, contractHash));
+            }
             if (balance.compareTo(ConstantParam.ZERO) == 0) {
                 continue;
             }
-            if (ConstantParam.CHANNEL_ONTO.equals(channel)) {
-                //ONTO return name
-                BalanceDto balanceDto = BalanceDto.builder()
-                        .assetName(oep5.getName())
-                        .assetType(ConstantParam.ASSET_TYPE_OEP5)
-                        .balance(balance)
-                        .contractHash(oep5.getContractHash())
-                        .build();
-                balanceList.add(balanceDto);
-            } else {
-                //other return symbol
-                BalanceDto balanceDto = BalanceDto.builder()
-                        .assetName(oep5.getSymbol())
-                        .assetType(ConstantParam.ASSET_TYPE_OEP5)
-                        .balance(balance)
-                        .contractHash(oep5.getContractHash())
-                        .build();
-                balanceList.add(balanceDto);
-            }
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName(oep5AssetName)
+                    .assetType(ConstantParam.ASSET_TYPE_OEP5)
+                    .balance(balance)
+                    .contractHash(oep5.getContractHash())
+                    .build();
+            balanceList.add(balanceDto);
         }
         return balanceList;
     }
@@ -734,24 +736,41 @@ public class AddressServiceImpl implements IAddressService {
             assetName = assetName + "%";
         }
         List<Map<String, String>> oep8s = oep8Mapper.selectAuditPassedOep8(assetName);
-        for (Map<String, String> map :
-                oep8s) {
+        for (Map<String, String> map : oep8s) {
             String contractHash = map.get("contractHash");
             String symbol = map.get("symbol");
-
-            JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
+            String vmCategory = map.get("vmCategory");
             String[] symbolArray = symbol.split(",");
-            for (int i = 0; i < symbolArray.length; i++) {
-                if (Integer.parseInt((String) balanceArray.get(i)) == 0) {
-                    continue;
+            if (ConstantParam.VM_CATEGORY_NEOVM.equalsIgnoreCase(vmCategory)) {
+                JSONArray balanceArray = sdk.getOpe8AssetBalance(address, contractHash);
+                for (int i = 0; i < symbolArray.length; i++) {
+                    if (Integer.parseInt((String) balanceArray.get(i)) == 0) {
+                        continue;
+                    }
+                    BalanceDto balanceDto = BalanceDto.builder()
+                            .assetName(symbolArray[i])
+                            .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                            .balance(new BigDecimal((String) balanceArray.get(i)))
+                            .contractHash(contractHash)
+                            .build();
+                    balanceList.add(balanceDto);
                 }
-                BalanceDto balanceDto = BalanceDto.builder()
-                        .assetName(symbolArray[i])
-                        .assetType(ConstantParam.ASSET_TYPE_OEP8)
-                        .balance(new BigDecimal((String) balanceArray.get(i)))
-                        .contractHash(contractHash)
-                        .build();
-                balanceList.add(balanceDto);
+            } else {
+                JSONArray balanceArray = sdk.getWasmVmOep8Ids(address, contractHash);
+                if (balanceArray != null) {
+                    for (int i = 0; i < balanceArray.size(); i++) {
+                        BigInteger tokenId = balanceArray.getBigInteger(i);
+                        BigInteger amount = sdk.getWasmVmOep8TokenIdBalance(address, contractHash, tokenId);
+                        BalanceDto balanceDto = BalanceDto.builder()
+                                .assetName(symbolArray[tokenId.intValue() - 1])
+                                .assetType(ConstantParam.ASSET_TYPE_OEP8)
+                                .balance(new BigDecimal(amount))
+                                .contractHash(contractHash)
+                                .build();
+                        balanceList.add(balanceDto);
+                    }
+
+                }
             }
         }
         return balanceList;

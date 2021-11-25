@@ -635,4 +635,80 @@ public class OntologySDKService {
         }
         return new Object();
     }
+
+    public String queryBalanceOfOngV2(String address) throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        if (!StringUtils.isEmpty(address)) {
+            List list = new ArrayList();
+            list.add(Address.decodeBase58(address));
+            byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+            Transaction tx = ontSdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontSdk.nativevm().ong().getContractAddress())), "balanceOfV2", arg, (String) null, 0L, 0L);
+            Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String res = ((JSONObject) obj).getString("Result");
+            return res != null && !res.equals("") ? new BigInteger(Helper.reverse(res), 16).toString() : "0";
+        } else {
+            throw new SDKException(ErrorCode.ParamErr("address should not be null"));
+        }
+    }
+
+    public BigInteger getWasmVmOep5Balance(String address, String contractAddress) {
+        try {
+            OntSdk ontSdk = getOntSdk();
+            List<Object> params = new ArrayList<>();
+            Address base58Addr = Address.decodeBase58(address);
+            params.add(base58Addr);
+            InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractAddress, ConstantParam.FUN_BALANCE_OF, params, base58Addr, 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String result = jsonObject.getString("Result");
+            BigInteger amount = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result));
+            return amount;
+        } catch (Exception e) {
+            log.error("getWasmVmNftTokenIdBalance error...", e);
+        }
+        return null;
+    }
+
+    public JSONArray getWasmVmOep8Ids(String address, String contractAddress) {
+        try {
+            OntSdk ontSdk = getOntSdk();
+            List<Object> params = new ArrayList<>();
+            Address base58Addr = Address.decodeBase58(address);
+            params.add(base58Addr);
+            InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractAddress, ConstantParam.FUN_QUERY_TOKEN_IDS_BY_OWNER_ADDR, params, base58Addr, 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String result = jsonObject.getString("Result");
+            ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(result));
+            BinaryReader reader = new BinaryReader(bais);
+            byte size = reader.readByte();
+            JSONArray tokenArray = new JSONArray();
+            for (int i = 0; i < size; i++) {
+                BigInteger tokenId = Helper.BigIntFromNeoBytes(reader.readBytes(16));
+                tokenArray.add(tokenId);
+            }
+            reader.close();
+            bais.close();
+            return tokenArray;
+        } catch (Exception e) {
+            log.error("getWasmVmNftIds error...", e);
+        }
+        return null;
+    }
+
+    public BigInteger getWasmVmOep8TokenIdBalance(String address, String contractAddress, BigInteger tokenId) {
+        try {
+            OntSdk ontSdk = getOntSdk();
+            List<Object> params = new ArrayList<>();
+            Address base58Addr = Address.decodeBase58(address);
+            params.add(base58Addr);
+            params.add(tokenId);
+            InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractAddress, ConstantParam.FUN_BALANCE_OF, params, base58Addr, 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String result = jsonObject.getString("Result");
+            BigInteger amount = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result));
+            return amount;
+        } catch (Exception e) {
+            log.error("getWasmVmNftTokenIdBalance error...", e);
+        }
+        return null;
+    }
 }

@@ -139,7 +139,7 @@ public class Web3jSdkUtil {
 
     public BigDecimal queryOrc20Balance(String fromAddress, String contractAddress) {
         Web3j web3j = getWeb3jSingleton();
-        String methodName = "balanceOf";
+        String methodName = ConstantParam.FUN_BALANCE_OF;
         List<Type> inputParameters = new ArrayList<>();
         List<TypeReference<?>> outputParameters = new ArrayList<>();
         Address address = new Address(fromAddress);

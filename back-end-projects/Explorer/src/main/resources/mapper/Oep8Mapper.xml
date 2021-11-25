@@ -24,7 +24,11 @@
 
 
   <select id="selectAuditPassedOep8" resultType="java.util.Map">
-    select contract_hash as contractHash, GROUP_CONCAT(symbol) as symbol, GROUP_CONCAT(token_id) as tokenId
+    select
+	  contract_hash as contractHash,
+	  GROUP_CONCAT(symbol) as symbol,
+	  GROUP_CONCAT(token_id) as tokenId,
+	  vm_category as vmCategory
     from tbl_oep8
     where audit_flag = 1
     <if test="symbol != null and symbol != ''">
