@@ -32,7 +32,6 @@ public class ParamsConfig {
     @Value("${masternode.restful.url}")
     public String MASTERNODE_RESTFUL_URL;
 
-
     /**
      * the amount of the ontology blockchain nodes in properties
      */
@@ -114,6 +113,9 @@ public class ParamsConfig {
 
     @Value("${uniswap.factory.contractHash}")
     public String UNISWAP_FACTORY_CONTRACTHASH;
+
+    @Value("${cancel.approve.contract}")
+    public String CANCEL_APPROVE_CONTRACT;
 
     @Value("${eth.web3j.url}")
     public String ETH_WEB3J_URL;
