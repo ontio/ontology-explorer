@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
 @Slf4j
 @Component("BlockHandlerThread")
 @Scope("prototype")
@@ -81,6 +82,10 @@ public class BlockHandlerThread extends Thread {
                 int dbBlockHeight = currentMapper.selectBlockHeight();
                 log.info("######db blockheight:{}", dbBlockHeight);
 
+                if (dbBlockHeight >= 16205000) {
+                    Thread.sleep(24 * 60 * 60 * 1000);
+                    continue;
+                }
                 //wait for generating block
                 if (dbBlockHeight >= remoteBlockHieght) {
                     log.info("Waiting for block");
