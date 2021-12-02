@@ -82,10 +82,6 @@ public class BlockHandlerThread extends Thread {
                 int dbBlockHeight = currentMapper.selectBlockHeight();
                 log.info("######db blockheight:{}", dbBlockHeight);
 
-                if (dbBlockHeight >= 16205000) {
-                    Thread.sleep(24 * 60 * 60 * 1000);
-                    continue;
-                }
                 //wait for generating block
                 if (dbBlockHeight >= remoteBlockHieght) {
                     log.info("Waiting for block");
