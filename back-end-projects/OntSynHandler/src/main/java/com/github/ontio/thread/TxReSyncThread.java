@@ -307,7 +307,18 @@ public class TxReSyncThread {
     private void handleOep8TransferTx(JSONArray stateArray, int txType, String txHash, int blockHeight,
                                       int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx,
                                       int confirmFlag, String contractAddress, int stateSize, String payer, String calledContractHash) throws Exception {
-        if (stateArray.size() < 5) {
+        boolean wasmOep8;
+        String action = (String) stateArray.get(0);
+        try {
+            action = new String(Helper.hexToBytes(action));
+            wasmOep8 = false;
+        } catch (Exception e) {
+            log.warn("parse oep8 action error:{}", action);
+            wasmOep8 = true;
+        }
+        boolean needParse = EventTypeEnum.Transfer.des().equalsIgnoreCase(action) || EventTypeEnum.Approval.des().equalsIgnoreCase(action);
+
+        if (stateArray.size() < 5 || !needParse) {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, "", gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress
                     , payer, calledContractHash);
@@ -318,7 +329,6 @@ public class TxReSyncThread {
             return;
         }
 
-        String action = (String) stateArray.get(0);
         String fromAddress = (String) stateArray.get(1);
         String toAddress = (String) stateArray.get(2);
         String tokenId = (String) stateArray.get(3);
@@ -343,11 +353,10 @@ public class TxReSyncThread {
         }
 
         BigDecimal eventAmount;
-        if ("transfer".equalsIgnoreCase(action)) {
+        if (wasmOep8) {
             eventAmount = new BigDecimal(amount);
         } else {
             eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(amount)));
-            action = new String(Helper.hexToBytes(action));
         }
         log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
 
