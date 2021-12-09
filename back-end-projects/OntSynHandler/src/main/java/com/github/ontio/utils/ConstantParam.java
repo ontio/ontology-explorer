@@ -38,7 +38,6 @@ public final class ConstantParam {
     public static String MASTERNODE_RESTFULURL = "";
 
 
-
     /**
      * 主节点在列表中的序列号
      */
