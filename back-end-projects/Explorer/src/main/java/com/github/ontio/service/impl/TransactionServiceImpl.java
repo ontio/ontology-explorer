@@ -46,6 +46,7 @@ import org.web3j.abi.datatypes.Bool;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -156,7 +157,9 @@ public class TransactionServiceImpl implements ITransactionService {
         if (Helper.isEmptyOrNull(txEventLog)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
-        String code = determineTxType(txEventLog).getCode();
+        Map<String, Object> txTypeMap = determineTxType(txEventLog);
+        String code = ((TxTypeEnum) txTypeMap.get("txType")).getCode();
+        String calledContractHash = (String) txTypeMap.get("calledContractHash");
         TxDetailDto txDetailDtoTemp = queryTXDetail(txEventLog, code);
         TxDetailDto txDetailDto = TxDetailDto.builder().build();
 
@@ -200,7 +203,7 @@ public class TransactionServiceImpl implements ITransactionService {
         }
         txDetailDto.setDetail(detailObj);
         txDetailDto.setFromAddress(txDetailDtoTemp.getFromAddress());
-        txDetailDto.setToAddress(txDetailDtoTemp.getToAddress());
+        txDetailDto.setToAddress(calledContractHash);
         txDetailDto.setIsContractHash(txDetailDtoTemp.getIsContractHash());
         txDetailDto.setTagName(txDetailDtoTemp.getTagName());
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetailDto);
@@ -256,6 +259,12 @@ public class TransactionServiceImpl implements ITransactionService {
         TxDetailDto txDetailDto = TxDetailDto.builder().build();
         //208 ont deploy  0x evm deploy contract
         if ("".equals(calledContractHash) && eventLog.getTxType() == 208 || ("0x".equals(calledContractHash) && eventLog.getTxType() == 211)) {
+            List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash3(eventLog.getTxHash());
+            String fromAddress = "";
+            if (txDetailDtos.size() != 0) {
+                fromAddress = txDetailDtos.get(0).getPayer();
+            }
+            txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress("").isContractHash(false).build();
             // native ontology transfer
         } else if (ConstantParam.NATIVE_CONTRACT_HASH.equals(calledContractHash)) {
             // ontid的逻辑
@@ -266,7 +275,8 @@ public class TransactionServiceImpl implements ITransactionService {
                     String toAddress = txDetailDtos.get(0).getToAddress();
                     txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(toAddress).isContractHash(false).build();
                 }
-            } else if (code.equals("07") || code.equals("08")) {
+            } else if (TxTypeEnum.ONT_TRANSFER.getCode().equals(code) || TxTypeEnum.ONG_TRANSFER.getCode().equals(code)) {
+                //ONT_TRANSFER("07"),ONG_TRANSFER("08"),
                 List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash3(eventLog.getTxHash());
                 String fromAddress = "";
                 String toAddress = "";
@@ -356,7 +366,7 @@ public class TransactionServiceImpl implements ITransactionService {
         dto.setBlockIndex(eventLog.getBlockIndex());
         dto.setConfirmFlag(eventLog.getConfirmFlag());
         dto.setFee(eventLog.getFee());
-        TxTypeEnum txTypeEnum = determineTxType(eventLog);
+        TxTypeEnum txTypeEnum = (TxTypeEnum) determineTxType(eventLog).get("txType");
         dto.setTxType(txTypeEnum);
         String code = txTypeEnum.getCode();
         dto.setVmType(determineVMType(eventLog));
@@ -384,20 +394,24 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
 
-    private TxTypeEnum determineTxType(TxEventLog eventLog) {
+    private Map<String, Object> determineTxType(TxEventLog eventLog) {
+        Map<String, Object> map = new HashMap<>();
         TxTypeEnum txType = null;
+        String calledContractHash = eventLog.getCalledContractHash();
         // EVM depolyment
-        if (eventLog.getTxType() == 208 || ConstantParam.EVM_ADDRESS_PREFIX.equals(eventLog.getCalledContractHash())) {
+        if (eventLog.getTxType() == 208 || ConstantParam.EVM_ADDRESS_PREFIX.equals(calledContractHash)) {
             txType = TxTypeEnum.CONTRACT_DEPLOYMENT;
         } else {
-            String calledContractHash = eventLog.getCalledContractHash();
             if (NATIVE_CALLED_CONTRACT_HASH.equals(calledContractHash)) {
                 if (eventLog.getOntidTxFlag()) {
                     txType = TxTypeEnum.ONT_ID;
-                } else if (eventLog.getEventLog().contains("0100000000000000000000000000000000000000")) {
+                    calledContractHash = ConstantParam.CONTRACTHASH_ONTID;
+                } else if (eventLog.getEventLog().contains(ConstantParam.CONTRACTHASH_ONT)) {
                     txType = TxTypeEnum.ONT_TRANSFER;
-                } else if (eventLog.getEventLog().contains("0200000000000000000000000000000000000000")) {
+                    calledContractHash = ConstantParam.CONTRACTHASH_ONT;
+                } else if (eventLog.getEventLog().contains(ConstantParam.CONTRACTHASH_ONG)) {
                     txType = TxTypeEnum.ONG_TRANSFER;
+                    calledContractHash = ConstantParam.CONTRACTHASH_ONG;
                 } else {
                     txType = TxTypeEnum.CONTRACT_CALL;
                 }
@@ -413,14 +427,16 @@ public class TransactionServiceImpl implements ITransactionService {
                     txType = TxTypeEnum.ORC20;
                 } else if (contractType.isOrc721()) {
                     txType = TxTypeEnum.ORC721;
-                } else if (eventLog.getCalledContractHash().equals(ConstantParam.CONTRACTHASH_ONG)) {
+                } else if (calledContractHash.equals(ConstantParam.CONTRACTHASH_ONG)) {
                     txType = TxTypeEnum.ONG_TRANSFER;
                 } else {
                     txType = TxTypeEnum.CONTRACT_CALL;
                 }
             }
         }
-        return txType;
+        map.put("txType", txType);
+        map.put("calledContractHash", calledContractHash);
+        return map;
     }
 
     @Autowired

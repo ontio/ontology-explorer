@@ -204,10 +204,18 @@ public class OntologySDKService {
      * @return
      */
     public String getNeovmOep4AssetBalance(String address, String contractHash) {
-        OntSdk ontSdk = getOep4OntSdk(contractHash);
+        OntSdk ontSdk = getOntSdk();
         try {
-            String balance = ontSdk.neovm().oep4().queryBalanceOf(address);
-            return balance;
+            List<Object> argsList = new ArrayList<>();
+            argsList.add(Address.decodeBase58(address));
+            List<Object> paramList = new ArrayList<>();
+            paramList.add("balanceOf".getBytes());
+            paramList.add(argsList);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, address, 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String rs = jsonObject.getString("Result");
+            return Helper.BigIntFromNeoBytes(Helper.hexToBytes(rs)).toString();
         } catch (Exception e) {
             log.error("getNeovmOep4AssetBalance error...", e);
             return "0";
@@ -241,7 +249,7 @@ public class OntologySDKService {
 //            }
 //            return decimal.stripTrailingZeros().toPlainString();
         } catch (Exception e) {
-            log.error("getNeovmOep4AssetBalance error...", e);
+            log.error("getWasmvmOep4AssetBalance error...", e);
             return "0";
         }
     }
@@ -254,10 +262,18 @@ public class OntologySDKService {
      * @return
      */
     public String getOep5AssetBalance(String address, String contractAddr) {
-        OntSdk ontSdk = getOep5OntSdk(contractAddr);
+        OntSdk ontSdk = getOntSdk();
         try {
-            String balance = ontSdk.neovm().oep5().queryBalanceOf(address);
-            return balance;
+            List<Object> argsList = new ArrayList<>();
+            argsList.add(Address.decodeBase58(address));
+            List<Object> paramList = new ArrayList<>();
+            paramList.add("balanceOf".getBytes());
+            paramList.add(argsList);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddr), null, params, address, 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String rs = jsonObject.getString("Result");
+            return Helper.BigIntFromNeoBytes(Helper.hexToBytes(rs)).toString();
         } catch (Exception e) {
             log.error("getOep5AssetBalance error...", e);
             return "0";
