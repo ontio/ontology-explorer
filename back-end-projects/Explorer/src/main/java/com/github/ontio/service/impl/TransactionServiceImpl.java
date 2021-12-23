@@ -204,7 +204,7 @@ public class TransactionServiceImpl implements ITransactionService {
         txDetailDto.setDetail(detailObj);
         txDetailDto.setFromAddress(txDetailDtoTemp.getFromAddress());
         txDetailDto.setToAddress(calledContractHash);
-        txDetailDto.setIsContractHash(txDetailDtoTemp.getIsContractHash());
+        txDetailDto.setIsContractHash(true);
         txDetailDto.setTagName(txDetailDtoTemp.getTagName());
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetailDto);
     }
@@ -215,12 +215,8 @@ public class TransactionServiceImpl implements ITransactionService {
         if (txHash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
             txPayload = web3jSdkUtil.queryPayloadByTxHash(txHash);
         } else {
-            initSDK();
-            Object txJson = sdk.getTxJson(txHash);
-            JSONObject payload = JSONObject.parseObject(txJson.toString()).getJSONObject("Payload");
-            txPayload = payload.getString("Code");
+            txPayload = sdk.getTxPayload(txHash);
         }
-
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txPayload);
     }
 
@@ -401,6 +397,7 @@ public class TransactionServiceImpl implements ITransactionService {
         // EVM depolyment
         if (eventLog.getTxType() == 208 || ConstantParam.EVM_ADDRESS_PREFIX.equals(calledContractHash)) {
             txType = TxTypeEnum.CONTRACT_DEPLOYMENT;
+            calledContractHash = "";
         } else {
             if (NATIVE_CALLED_CONTRACT_HASH.equals(calledContractHash)) {
                 if (eventLog.getOntidTxFlag()) {

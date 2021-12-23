@@ -209,7 +209,7 @@ public class OntologySDKService {
             List<Object> argsList = new ArrayList<>();
             argsList.add(Address.decodeBase58(address));
             List<Object> paramList = new ArrayList<>();
-            paramList.add("balanceOf".getBytes());
+            paramList.add(ConstantParam.FUN_BALANCE_OF.getBytes());
             paramList.add(argsList);
             byte[] params = BuildParams.createCodeParamsScript(paramList);
             Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, address, 20000, 2500);
@@ -267,7 +267,7 @@ public class OntologySDKService {
             List<Object> argsList = new ArrayList<>();
             argsList.add(Address.decodeBase58(address));
             List<Object> paramList = new ArrayList<>();
-            paramList.add("balanceOf".getBytes());
+            paramList.add(ConstantParam.FUN_BALANCE_OF.getBytes());
             paramList.add(argsList);
             byte[] params = BuildParams.createCodeParamsScript(paramList);
             Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddr), null, params, address, 20000, 2500);
@@ -736,5 +736,30 @@ public class OntologySDKService {
             log.error("getWasmVmNftTokenIdBalance error...", e);
         }
         return null;
+    }
+
+    /**
+     * 获取交易payload
+     *
+     * @param txHash
+     * @return
+     */
+    public String getTxPayload(String txHash) {
+        try {
+            String resp = HttpClientUtil.getRequest(String.format(ConstantParam.GET_TRANSACTION_URL, paramsConfig.MASTERNODE_RESTFUL_URL, txHash), Collections.emptyMap(), Collections.emptyMap());
+            JSONObject jsonObject = JSONObject.parseObject(resp);
+            Integer error = jsonObject.getInteger("Error");
+            if (error == 0) {
+                JSONObject result = jsonObject.getJSONObject("Result");
+                JSONObject payload = result.getJSONObject("Payload");
+                return payload.getString("Code");
+            } else {
+                log.error("getTxPayload error...:{}", error);
+                return "";
+            }
+        } catch (Exception e) {
+            log.error("getTxPayload error...", e);
+            return "";
+        }
     }
 }
