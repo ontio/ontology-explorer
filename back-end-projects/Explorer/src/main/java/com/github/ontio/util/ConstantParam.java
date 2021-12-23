@@ -215,6 +215,8 @@ public class ConstantParam {
 
     public static final String BALANCE_V2_URL = "%s/api/v1/balancev2/%s";
 
+    public static final String GET_TRANSACTION_URL = "%s/api/v1/transaction/%s";
+
     public static final String FUN_QUERY_TOKEN_IDS_BY_OWNER_ADDR = "queryTokenIDsByOwnerAddr";
 
     public static final String FUN_BALANCE_OF = "balanceOf";
