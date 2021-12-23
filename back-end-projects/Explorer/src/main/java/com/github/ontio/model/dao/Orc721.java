@@ -1,8 +1,6 @@
 package com.github.ontio.model.dao;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -55,17 +53,5 @@ public class Orc721 {
      */
     @Column(name = "update_time")
     private Date updateTime;
-
-    @Builder
-    public Orc721(String contractHash, String name, Long totalSupply, String symbol, Date createTime, Boolean auditFlag, Date updateTime) {
-        this.contractHash = contractHash;
-        this.name = name;
-        this.totalSupply = totalSupply;
-        this.symbol = symbol;
-        this.createTime = createTime;
-        this.auditFlag = auditFlag;
-        this.updateTime = updateTime;
-    }
-
 
 }
