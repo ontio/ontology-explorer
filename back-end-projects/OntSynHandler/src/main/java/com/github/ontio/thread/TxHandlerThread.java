@@ -156,6 +156,7 @@ public class TxHandlerThread {
         if (txType == 211) {
             String inputData = web3jSdkUtil.queryInputDataByTxHash(ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash));
             if (inputData.equalsIgnoreCase(ConstantParam.EVM_ADDRESS_PREFIX)) {
+                // ONG转账及部署合约inputData都是0x
                 calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
             }
         }
@@ -434,6 +435,7 @@ public class TxHandlerThread {
     }
 
     private void handleEVMDeployContractTx(JSONObject txJson, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, BigDecimal gasConsumed, String payer, String calledContractHash) throws Exception {
+        payer = com.github.ontio.utils.Helper.ontAddrToEthAddr(payer);
         String txHash = txJson.getString("Hash");
         int txType = txJson.getInteger("TxType");
         JSONObject eventLogObj = txJson.getJSONObject("EventLog");
@@ -496,7 +498,7 @@ public class TxHandlerThread {
      * @param contractObj
      * @param player
      */
-    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String player) {
+    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String payer) {
         //在该批区块中可能出现多个部署合约交易， 但部署的是同一个合约
         if (!ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST.contains(contractHash)) {
             Contract contract = Contract.builder()
@@ -508,7 +510,7 @@ public class TxHandlerThread {
                     .sourceCode("")
                     .createTime(blockTime)
                     .updateTime(blockTime)
-                    .creator(player)
+                    .creator(payer)
                     .txCount(0)
                     .addressCount(0)
                     .ongSum(ConstantParam.ZERO)

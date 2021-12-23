@@ -194,10 +194,18 @@ public class OntologySDKService {
      * @return
      */
     public String getNeovmOep4AssetBalance(String address, String contractHash) {
-        OntSdk ontSdk = getOep4OntSdk(contractHash);
+        OntSdk ontSdk = getOntSdk();
         try {
-            String balance = ontSdk.neovm().oep4().queryBalanceOf(address);
-            return balance;
+            List<Object> argsList = new ArrayList<>();
+            argsList.add(Address.decodeBase58(address));
+            List<Object> paramList = new ArrayList<>();
+            paramList.add("balanceOf".getBytes());
+            paramList.add(argsList);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, address, 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String rs = jsonObject.getString("Result");
+            return Helper.BigIntFromNeoBytes(Helper.hexToBytes(rs)).toString();
         } catch (Exception e) {
             log.error("getNeovmOep4AssetBalance error...", e);
             return "0";
@@ -216,7 +224,7 @@ public class OntologySDKService {
             OntSdk ontSdk = getOntSdk();
 
             List<Object> params = new ArrayList<>(Collections.singletonList(Address.decodeBase58(address)));
-            InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractHash, "balanceOf", params, Address.decodeBase58(address), 500, 25000000);
+            InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractHash, ConstantParam.FUN_BALANCE_OF, params, Address.decodeBase58(address), 500, 25000000);
             JSONObject result = (JSONObject) ontSdk.getRestful().sendRawTransactionPreExec(tx.toHexString());
             log.info("getWasmvmOep4AssetBalance result:{}", result);
             BigInteger bigInteger = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result.getString("Result")));
@@ -231,7 +239,7 @@ public class OntologySDKService {
 //            }
 //            return decimal.stripTrailingZeros().toPlainString();
         } catch (Exception e) {
-            log.error("getNeovmOep4AssetBalance error...", e);
+            log.error("getWasmvmOep4AssetBalance error...", e);
             return "0";
         }
     }
@@ -244,10 +252,18 @@ public class OntologySDKService {
      * @return
      */
     public String getOep5AssetBalance(String address, String contractAddr) {
-        OntSdk ontSdk = getOep5OntSdk(contractAddr);
+        OntSdk ontSdk = getOntSdk();
         try {
-            String balance = ontSdk.neovm().oep5().queryBalanceOf(address);
-            return balance;
+            List<Object> argsList = new ArrayList<>();
+            argsList.add(Address.decodeBase58(address));
+            List<Object> paramList = new ArrayList<>();
+            paramList.add("balanceOf".getBytes());
+            paramList.add(argsList);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddr), null, params, address, 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String rs = jsonObject.getString("Result");
+            return Helper.BigIntFromNeoBytes(Helper.hexToBytes(rs)).toString();
         } catch (Exception e) {
             log.error("getOep5AssetBalance error...", e);
             return "0";
