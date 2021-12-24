@@ -67,9 +67,15 @@ public class Helper {
     }
 
     public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
-        Address address = Address.decodeBase58(ontAddr);
-        String hexAddress = com.github.ontio.common.Helper.toHexString(address.toArray());
-        return ConstantParam.EVM_ADDRESS_PREFIX + hexAddress;
+        String payer = "";
+        try {
+            Address address = Address.decodeBase58(ontAddr);
+            String hexAddress = com.github.ontio.common.Helper.toHexString(address.toArray());
+            payer = ConstantParam.EVM_ADDRESS_PREFIX + hexAddress;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return payer;
     }
 
     public static String EthAddrToOntAddr(String ethAddr) {
