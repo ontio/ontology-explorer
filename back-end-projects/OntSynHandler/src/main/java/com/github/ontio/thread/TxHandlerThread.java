@@ -34,7 +34,6 @@ import com.github.ontio.model.common.EventTypeEnum;
 import com.github.ontio.model.common.OntIdEventDesEnum;
 import com.github.ontio.model.common.TransactionTypeEnum;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -154,6 +153,7 @@ public class TxHandlerThread {
 
         // 解决evm类型的ong转账,calledContractHash为转出地址的问题
         if (txType == 211) {
+            payer = com.github.ontio.utils.Helper.ontAddrToEthAddr(payer);
             String inputData = web3jSdkUtil.queryInputDataByTxHash(ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash));
             if (inputData.equalsIgnoreCase(ConstantParam.EVM_ADDRESS_PREFIX)) {
                 // ONG转账及部署合约inputData都是0x
@@ -435,7 +435,6 @@ public class TxHandlerThread {
     }
 
     private void handleEVMDeployContractTx(JSONObject txJson, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, BigDecimal gasConsumed, String payer, String calledContractHash) throws Exception {
-        payer = com.github.ontio.utils.Helper.ontAddrToEthAddr(payer);
         String txHash = txJson.getString("Hash");
         int txType = txJson.getInteger("TxType");
         JSONObject eventLogObj = txJson.getJSONObject("EventLog");

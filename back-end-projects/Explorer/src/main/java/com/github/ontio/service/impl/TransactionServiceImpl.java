@@ -19,31 +19,22 @@
 
 package com.github.ontio.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.github.ontio.OntSdk;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.*;
-import com.github.ontio.model.dao.TxDetail;
 import com.github.ontio.model.dao.TxEventLog;
-import com.github.ontio.model.dto.CurrentDto;
-import com.github.ontio.model.dto.OntidTxDetailDto;
-import com.github.ontio.model.dto.TxDetailDto;
-import com.github.ontio.model.dto.TxEventLogDto;
-import com.github.ontio.model.dto.TxEventLogTxTypeDto;
-import com.github.ontio.network.exception.ConnectorException;
-import com.github.ontio.service.IContractService;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.service.ITransactionService;
 import com.github.ontio.util.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.web3j.abi.datatypes.Bool;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -159,9 +150,8 @@ public class TransactionServiceImpl implements ITransactionService {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
         Map<String, Object> txTypeMap = determineTxType(txEventLog);
-        String code = ((TxTypeEnum) txTypeMap.get("txType")).getCode();
         String calledContractHash = (String) txTypeMap.get("calledContractHash");
-        TxDetailDto txDetailDtoTemp = queryTXDetail(txEventLog, calledContractHash, code);
+        TxDetailDto txDetailDtoTemp = queryTXDetail(txEventLog, calledContractHash);
         TxDetailDto txDetailDto = TxDetailDto.builder().build();
 
         List<TxDetailDto> txDetailDtosMany = txDetailMapper.selectTxsByHash(txHash);
@@ -212,7 +202,7 @@ public class TransactionServiceImpl implements ITransactionService {
 
         txDetailDto.setDetail(detailObj);
         txDetailDto.setFromAddress(txDetailDtoTemp.getFromAddress());
-        txDetailDto.setToAddress(calledContractHash);
+        txDetailDto.setToAddress(txDetailDtoTemp.getToAddress());
         txDetailDto.setIsContractHash(txDetailDtoTemp.getIsContractHash());
         txDetailDto.setTagName(txDetailDtoTemp.getTagName());
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txDetailDto);
@@ -289,51 +279,68 @@ public class TransactionServiceImpl implements ITransactionService {
         return txDetailDtos;
     }
 
-    private TxDetailDto queryTXDetail(TxEventLog eventLog, String contractHash, String code) {
+    private TxDetailDto queryTXDetail(TxEventLog eventLog, String contractHash) {
         String name = ConstantParam.CONTRACT_TAG.get(contractHash.toLowerCase());
         String calledContractHash = eventLog.getCalledContractHash();
+        String payer = getTransactionPayerByEventLog(eventLog);
+        if (StringUtils.isEmpty(payer)) {
+            payer = txDetailMapper.selectPayerByHash(eventLog.getTxHash());
+        }
+        String fromAddress = "";
+        String toAddress = "";
+        boolean isContractHash;
         TxDetailDto txDetailDto = TxDetailDto.builder().build();
         //208 ont deploy  0x evm deploy contract
         if ("".equals(calledContractHash) && eventLog.getTxType() == 208 || (ConstantParam.EVM_ADDRESS_PREFIX.equals(calledContractHash) && eventLog.getTxType() == 211)) {
-            List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash3(eventLog.getTxHash());
-            String fromAddress = "";
-            if (txDetailDtos.size() != 0) {
-                fromAddress = txDetailDtos.get(0).getPayer();
-            }
-            txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress("").isContractHash(false).build();
+            fromAddress = payer;
+            isContractHash = false;
         } else if (ConstantParam.CONTRACTHASH_ONG.equals(calledContractHash) && eventLog.getTxType() == 211) {
             // evm ONG转账
             List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash3(eventLog.getTxHash());
-            String fromAddress = "";
-            String toAddress = "";
             if (txDetailDtos.size() != 0) {
                 TxDetailDto txDetail = txDetailDtos.get(0);
                 fromAddress = txDetail.getFromAddress();
                 toAddress = txDetail.getToAddress();
             }
-            txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(toAddress).isContractHash(false).tagName(name).build();
+            isContractHash = false;
         } else if (ConstantParam.NATIVE_CONTRACT_HASH.equals(calledContractHash)) {
-            List<TxDetailDto> txDetailDtos = queryTxDetailByTxHash3(eventLog.getTxHash());
-            if (txDetailDtos.size() != 0) {
-                TxDetailDto txDetail = txDetailDtos.get(0);
-                String fromAddress = txDetail.getFromAddress();
-                if (StringUtils.isEmpty(fromAddress)) {
-                    fromAddress = txDetail.getPayer();
-                }
-                txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(contractHash).isContractHash(true).tagName(name).build();
-            }
+            fromAddress = payer;
+            toAddress = contractHash;
+            isContractHash = true;
         } else {
-            List<TxDetailDto> txDetailDtos = queryAllTxDetailByTxHash(eventLog.getTxHash());
-            int length = txDetailDtos.size();
-            if (length != 0) {
-                // 只有一笔ong手续费消耗/ 调用合约的
-                String fromAddress = txDetailDtos.get(0).getFromAddress();
-                txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(contractHash).isContractHash(true).tagName(name).build();
-            } else {
-                txDetailDto = TxDetailDto.builder().fromAddress("").toAddress("").isContractHash(false).build();
-            }
+            fromAddress = payer;
+            toAddress = contractHash;
+            isContractHash = true;
         }
+
+        txDetailDto = TxDetailDto.builder().fromAddress(fromAddress).toAddress(toAddress).isContractHash(isContractHash).tagName(name).build();
         return txDetailDto;
+    }
+
+    private String getTransactionPayerByEventLog(TxEventLog eventLog) {
+        String payer = null;
+        try {
+            String eventStr = eventLog.getEventLog();
+            JSONObject event = JSONObject.parseObject(eventStr);
+            JSONArray notify = event.getJSONArray("Notify");
+            if (!CollectionUtils.isEmpty(notify)) {
+                int size = notify.size();
+                JSONObject lastNotify = notify.getJSONObject(size - 1);
+                String contractAddress = lastNotify.getString("ContractAddress");
+                if (ConstantParam.CONTRACTHASH_ONG.equals(contractAddress)) {
+                    Object states = lastNotify.get("States");
+                    if (states instanceof String && ((String) states).startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+                        payer = ConstantParam.EVM_ADDRESS_PREFIX + ((String) states).substring(138, 178);
+                    } else if (states instanceof JSONArray) {
+                        JSONArray statesArray = (JSONArray) states;
+                        payer = statesArray.getString(1);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("getTransactionPayerByEventLog error", e);
+        }
+        return payer;
     }
 
     // 查询到所有的tx_datail 表
@@ -350,10 +357,9 @@ public class TransactionServiceImpl implements ITransactionService {
         dto.setConfirmFlag(eventLog.getConfirmFlag());
         dto.setFee(eventLog.getFee());
         dto.setTxType(txTypeEnum);
-        String code = txTypeEnum.getCode();
         dto.setVmType(determineVMType(eventLog));
         // 查询到,和code一起进行逻辑判断
-        TxDetailDto txDetailDto = queryTXDetail(eventLog, calledContractHash, code);
+        TxDetailDto txDetailDto = queryTXDetail(eventLog, calledContractHash);
         JSONObject detail = new JSONObject();
         detail.put("transfers", txDetailDto);
         dto.setDetail(detail);
