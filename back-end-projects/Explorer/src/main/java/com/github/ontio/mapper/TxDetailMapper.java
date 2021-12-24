@@ -1,6 +1,5 @@
 package com.github.ontio.mapper;
 
-import com.github.ontio.model.dao.TxDetail;
 import com.github.ontio.model.dto.TransferTxDto;
 import com.github.ontio.model.dto.TxDetailDto;
 import org.apache.ibatis.annotations.Param;
@@ -73,4 +72,5 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
                                                   @Param("assetNames") List<String> assetNames, @Param("tokenType") String tokenType,
                                                   @Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize);
 
+    String selectPayerByHash(@Param("txHash") String txHash);
 }

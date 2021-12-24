@@ -523,4 +523,9 @@
         ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 
+    <select id="selectPayerByHash" resultType="String">
+        SELECT payer FROM tbl_tx_detail
+        where tx_hash = #{txHash}
+        LIMIT 1
+    </select>
 </mapper>
