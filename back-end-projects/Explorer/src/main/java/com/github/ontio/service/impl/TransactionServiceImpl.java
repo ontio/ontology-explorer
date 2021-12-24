@@ -267,10 +267,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 toAddress = txDetail.getToAddress();
             }
             isContractHash = false;
-        } else if (ConstantParam.NATIVE_CONTRACT_HASH.equals(calledContractHash)) {
-            fromAddress = payer;
-            toAddress = contractHash;
-            isContractHash = true;
+            name = null;
         } else {
             fromAddress = payer;
             toAddress = contractHash;
