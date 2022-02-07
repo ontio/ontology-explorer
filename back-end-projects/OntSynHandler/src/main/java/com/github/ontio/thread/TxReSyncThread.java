@@ -535,7 +535,7 @@ public class TxReSyncThread {
 
         String assetName = oep4Obj.getString("symbol");
         Integer decimals = oep4Obj.getInteger("decimals");
-        BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, decimals)), decimals, RoundingMode.HALF_DOWN);
+        BigDecimal amount = eventAmount.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx,
                 EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);

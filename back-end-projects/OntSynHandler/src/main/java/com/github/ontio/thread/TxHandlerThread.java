@@ -496,7 +496,6 @@ public class TxHandlerThread {
      * @param contractHash
      * @param blockTime
      * @param contractObj
-     * @param player
      */
     private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String payer) {
         //在该批区块中可能出现多个部署合约交易， 但部署的是同一个合约
@@ -1167,7 +1166,7 @@ public class TxHandlerThread {
 
         String assetName = oep4Obj.getString("symbol");
         Integer decimals = oep4Obj.getInteger("decimals");
-        BigDecimal amount = eventAmount.divide(new BigDecimal(Math.pow(10, decimals)), decimals, RoundingMode.HALF_DOWN);
+        BigDecimal amount = eventAmount.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
         if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
             amount = ConstantParam.MAX_APPROVAL_AMOUNT;
         }
@@ -1214,7 +1213,7 @@ public class TxHandlerThread {
             String fromAddress = "";
             String toAddress = "";
             String txAction = "";
-            BigDecimal amountValue = new BigDecimal(0);
+            BigDecimal amountValue = BigDecimal.ZERO;
             int eventType = 0;
 
             if (ConstantParam.TRANSFER_TX.equals(topicList.get(0))) {
@@ -1237,10 +1236,12 @@ public class TxHandlerThread {
                 txAction = EventTypeEnum.Approval.des();
                 eventType = EventTypeEnum.Approval.type();
             }
-
+            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amountValue) <= 0) {
+                amountValue = ConstantParam.MAX_APPROVAL_AMOUNT;
+            }
             String assetName = orc20Obj.getString("name");
             Integer decimals = orc20Obj.getInteger("decimals");
-            BigDecimal amount = amountValue.divide(new BigDecimal(Math.pow(10, decimals)));
+            BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
 
             contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
             if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
