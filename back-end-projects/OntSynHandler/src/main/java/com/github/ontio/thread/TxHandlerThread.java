@@ -689,7 +689,7 @@ public class TxHandlerThread {
         if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC20TX)) {
             ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
         } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC721TX)) {
-            ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, BigDecimal.ZERO));
+            ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, ConstantParam.EMPTY));
         }
     }
 
@@ -1310,8 +1310,8 @@ public class TxHandlerThread {
             String fromAddress = "";
             String toAddress = "";
             String txAction = "";
-            BigDecimal amount = new BigDecimal(0);
-            BigDecimal tokenId = new BigDecimal(0);
+            BigDecimal amount = BigDecimal.ZERO;
+            String tokenId = ConstantParam.EMPTY;
             int eventType = 0;
 
             if (ConstantParam.TRANSFER_TX.equals(topicList.get(0))) {
@@ -1320,8 +1320,8 @@ public class TxHandlerThread {
                 List<Type> result = handleEVMOrc721Results(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
-                amount = new BigDecimal(1);
-                tokenId = new BigDecimal(result.get(2).getValue().toString());
+                amount = BigDecimal.ONE;
+                tokenId = result.get(2).getValue().toString();
                 txAction = EventTypeEnum.Transfer.des();
                 eventType = EventTypeEnum.Transfer.type();
             } else if (ConstantParam.Approval_TX.equals(topicList.get(0))) {
@@ -1330,8 +1330,8 @@ public class TxHandlerThread {
                 List<Type> result = handleEVMOrc721Results(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
-                amount = new BigDecimal(1);
-                tokenId = new BigDecimal(result.get(2).getValue().toString());
+                amount = BigDecimal.ONE;
+                tokenId = result.get(2).getValue().toString();
                 txAction = EventTypeEnum.Approval.des();
                 eventType = EventTypeEnum.Approval.type();
             }
@@ -1463,7 +1463,7 @@ public class TxHandlerThread {
         } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC20TX)) {
             ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
         } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC721TX)) {
-            ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, BigDecimal.ZERO));
+            ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, ConstantParam.EMPTY));
         }
 
     }
