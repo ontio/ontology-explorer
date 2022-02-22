@@ -1225,7 +1225,7 @@ public class TxHandlerThread {
             if (ConstantParam.TRANSFER_TX.equals(topicList.get(0))) {
                 // Transfer TX
                 String parseData = topicList.get(1) + topicList.get(2) + data;
-                List<Type> result = handleEVMResults(parseData);
+                List<Type> result = handleOrc20Results(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
                 amountValue = new BigDecimal(result.get(2).getValue().toString());
@@ -1235,7 +1235,7 @@ public class TxHandlerThread {
             } else if (ConstantParam.Approval_TX.equals(topicList.get(0))) {
                 // Approval TX
                 String parseData = topicList.get(1) + topicList.get(2) + data;
-                List<Type> result = handleEVMResults(parseData);
+                List<Type> result = handleOrc20Results(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
                 amountValue = new BigDecimal(result.get(2).getValue().toString());
@@ -1266,7 +1266,7 @@ public class TxHandlerThread {
     }
 
 
-    public List<Type> handleEVMResults(String parseData) {
+    public List<Type> handleOrc20Results(String parseData) {
         TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
         };
         TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
