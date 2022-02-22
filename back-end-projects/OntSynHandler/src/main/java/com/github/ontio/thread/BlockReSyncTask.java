@@ -46,120 +46,124 @@ import java.util.stream.Collectors;
 @Component
 public class BlockReSyncTask {
 
-	private final String CLASS_NAME = this.getClass().getSimpleName();
+    private final String CLASS_NAME = this.getClass().getSimpleName();
 
-	private final ParamsConfig paramsConfig;
-	private final BlockReSyncService blockReSyncService;
-	private final ReSyncService reSyncService;
-	private final ContractMapper contractMapper;
-	private final TxDetailMapper txDetailMapper;
-	private final CommonService commonService;
+    private final ParamsConfig paramsConfig;
+    private final BlockReSyncService blockReSyncService;
+    private final ReSyncService reSyncService;
+    private final ContractMapper contractMapper;
+    private final TxDetailMapper txDetailMapper;
+    private final CommonService commonService;
 
-	@Autowired
-	public BlockReSyncTask(ParamsConfig paramsConfig, BlockReSyncService blockReSyncService, ReSyncService reSyncService,
-			ContractMapper contractMapper, TxDetailMapper txDetailMapper, CommonService commonService) {
-		this.paramsConfig = paramsConfig;
-		this.blockReSyncService = blockReSyncService;
-		this.reSyncService = reSyncService;
-		this.contractMapper = contractMapper;
-		this.txDetailMapper = txDetailMapper;
-		this.commonService = commonService;
-	}
+    @Autowired
+    public BlockReSyncTask(ParamsConfig paramsConfig, BlockReSyncService blockReSyncService, ReSyncService reSyncService,
+                           ContractMapper contractMapper, TxDetailMapper txDetailMapper, CommonService commonService) {
+        this.paramsConfig = paramsConfig;
+        this.blockReSyncService = blockReSyncService;
+        this.reSyncService = reSyncService;
+        this.contractMapper = contractMapper;
+        this.txDetailMapper = txDetailMapper;
+        this.commonService = commonService;
+    }
 
-	@Scheduled(initialDelay = 1000 * 30, fixedRate = 1000 * 60 * 10)
-	public void reSyncContracts() {
-		if (paramsConfig.reSyncEnabled) {
-			log.info("Starting block re-sync");
-			try {
-				List<Contract> contracts = findContractsForReSync();
-				if (contracts.isEmpty()) {
-					log.info("no contracts need re-sync");
-				}
-				for (Contract contract : contracts) {
-					reSyncContract(contract);
-				}
-			} catch (Exception e) {
-				log.error("exception when re-syncing contracts", e);
-			}
-		}
-	}
+    @Scheduled(initialDelay = 1000 * 30, fixedRate = 1000 * 60 * 10)
+    public void reSyncContracts() {
+        if (paramsConfig.reSyncEnabled) {
+            log.info("Starting block re-sync");
+            try {
+                List<Contract> contracts = findContractsForReSync();
+                if (contracts.isEmpty()) {
+                    log.info("no contracts need re-sync");
+                }
+                for (Contract contract : contracts) {
+                    reSyncContract(contract);
+                }
+            } catch (Exception e) {
+                log.error("exception when re-syncing contracts", e);
+            }
+        }
+    }
 
-	private void reSyncContract(Contract contract) throws Exception {
-		TimeUnit.SECONDS.sleep(30); // waiting for normal block syncing to avoid stale state
-		String contractHash = contract.getContractHash();
-		Integer fromBlock = contract.getReSyncFromBlock();
-		if (fromBlock == null || fromBlock == 0) {
-			fromBlock = txDetailMapper.findMissingFromBlock(contractHash);
-		}
-		Integer toBlock = contract.getReSyncToBlock();
-		if (toBlock == null || toBlock == 0) {
-			Integer firstBlock = txDetailMapper.findFirstTransferBlock(contractHash);
-			toBlock = txDetailMapper.findMissingToBlock(contractHash, firstBlock);
-		}
-		
-		if (fromBlock == null || toBlock == null) {
-			log.info("contract {} has been fully synced", contractHash);
-			contract.setReSyncFromBlock(0);
-			contract.setReSyncToBlock(0);
-			contract.setReSyncStatus(3);
-			contractMapper.updateByPrimaryKeySelective(contract);
-			return;
-		}
-		contract.setReSyncFromBlock(fromBlock);
-		contract.setReSyncToBlock(toBlock);
-		contractMapper.updateByPrimaryKeySelective(contract);
+    private void reSyncContract(Contract contract) throws Exception {
+        TimeUnit.SECONDS.sleep(30); // waiting for normal block syncing to avoid stale state
+        String contractHash = contract.getContractHash();
+        Integer fromBlock = contract.getReSyncFromBlock();
+        if (fromBlock == null || fromBlock == 0) {
+            fromBlock = txDetailMapper.findMissingFromBlock(contractHash);
+        }
+        Integer toBlock = contract.getReSyncToBlock();
+        if (toBlock == null || toBlock == 0) {
+            Integer firstBlock = txDetailMapper.findFirstTransferBlock(contractHash);
+            toBlock = txDetailMapper.findMissingToBlock(contractHash, firstBlock);
+        }
 
-		log.info("start re-sync contract {} from {} to {}", contractHash, fromBlock, toBlock);
+        if (fromBlock == null || toBlock == null) {
+            log.info("contract {} has been fully synced", contractHash);
+            contract.setReSyncFromBlock(0);
+            contract.setReSyncToBlock(0);
+            contract.setReSyncStatus(3);
+            contractMapper.updateByPrimaryKeySelective(contract);
+            return;
+        }
+        contract.setReSyncFromBlock(fromBlock);
+        contract.setReSyncToBlock(toBlock);
+        contractMapper.updateByPrimaryKeySelective(contract);
 
-		for (int beginHeight = fromBlock; beginHeight <= toBlock; beginHeight += paramsConfig.BATCHINSERT_BLOCK_COUNT) {
-			batchHandleBlockAndInsertDb(beginHeight, Math.min(beginHeight + paramsConfig.BATCHINSERT_BLOCK_COUNT - 1, toBlock),
-					contractHash);
-		}
-		contract.setReSyncStatus(2);
-		contractMapper.updateByPrimaryKeySelective(contract);
-	}
+        log.info("start re-sync contract {} from {} to {}", contractHash, fromBlock, toBlock);
 
-	private List<Contract> findContractsForReSync() {
-		Example example = new Example(Contract.class);
-		example.and()
-				.andEqualTo("auditFlag", 1)
-				.andEqualTo("reSyncStatus", 1);
-		List<Contract> contracts = contractMapper.selectByExample(example);
-		return contracts.stream().filter(contract -> {
-			String hash = contract.getContractHash();
-			return ConstantParam.OEP4CONTRACTS.contains(hash) || ConstantParam.OEP5CONTRACTS.contains(hash) || ConstantParam.OEP8CONTRACTS.contains(hash);
-		}).collect(Collectors.toList());
-	}
-	
-	/**
-	 * 批量处理区块和插入DB
-	 */
-	private void batchHandleBlockAndInsertDb(int beginHeight, int endHeight, String contractHash) throws Exception {
-		long beginTime = System.currentTimeMillis();
-		//handle blocks and transactions
-		for (int tHeight = beginHeight; tHeight <= endHeight; tHeight++) {
-			JSONObject blockJson = commonService.getBlockJsonByHeight(tHeight);
-			JSONArray txEventLogArray = commonService.getTxEventLogsByHeight(tHeight);
-			blockReSyncService.handleOneBlock(blockJson, txEventLogArray, contractHash);
-		}
-		long endTime1 = System.currentTimeMillis();
-		log.info("batch re-sync {} block from {} use time:{},txCount:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight,
-				(endTime1 - beginTime), ReSyncConstantParam.BATCHBLOCK_TX_COUNT);
-		reSyncService.batchInsertDb(beginHeight, endHeight, ReSyncConstantParam.BATCHBLOCKDTO, contractHash);
-		long endTime2 = System.currentTimeMillis();
-		log.info("batch re-sync {} block from {} insert to db use time:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight,
-				(endTime2 - endTime1));
-		initConstantParam();
-	}
+        for (int beginHeight = fromBlock; beginHeight <= toBlock; beginHeight += paramsConfig.BATCHINSERT_BLOCK_COUNT) {
+            batchHandleBlockAndInsertDb(beginHeight, Math.min(beginHeight + paramsConfig.BATCHINSERT_BLOCK_COUNT - 1, toBlock),
+                    contractHash);
+        }
+        contract.setReSyncStatus(2);
+        contractMapper.updateByPrimaryKeySelective(contract);
+    }
 
-	/**
-	 * 重新初始化全局参数
-	 */
-	private void initConstantParam() {
-		ReSyncConstantParam.BATCHBLOCKDTO = new BatchBlockDto();
-		ReSyncConstantParam.BATCHBLOCK_TX_COUNT = 0;
-		ReSyncConstantParam.BATCHBLOCK_ONTID_COUNT = 0;
-		ReSyncConstantParam.BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
-	}
+    private List<Contract> findContractsForReSync() {
+        Example example = new Example(Contract.class);
+        example.and()
+                .andEqualTo("auditFlag", 1)
+                .andEqualTo("reSyncStatus", 1);
+        List<Contract> contracts = contractMapper.selectByExample(example);
+        return contracts.stream().filter(contract -> {
+            String hash = contract.getContractHash();
+            return ConstantParam.OEP4CONTRACTS.contains(hash) ||
+                    ConstantParam.OEP5CONTRACTS.contains(hash) ||
+                    ConstantParam.OEP8CONTRACTS.contains(hash) ||
+                    ConstantParam.ORC20CONTRACTS.contains(hash) ||
+                    ConstantParam.ORC721CONTRACTS.contains(hash);
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 批量处理区块和插入DB
+     */
+    private void batchHandleBlockAndInsertDb(int beginHeight, int endHeight, String contractHash) throws Exception {
+        long beginTime = System.currentTimeMillis();
+        //handle blocks and transactions
+        for (int tHeight = beginHeight; tHeight <= endHeight; tHeight++) {
+            JSONObject blockJson = commonService.getBlockJsonByHeight(tHeight);
+            JSONArray txEventLogArray = commonService.getTxEventLogsByHeight(tHeight);
+            blockReSyncService.handleOneBlock(blockJson, txEventLogArray, contractHash);
+        }
+        long endTime1 = System.currentTimeMillis();
+        log.info("batch re-sync {} block from {} use time:{},txCount:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight,
+                (endTime1 - beginTime), ReSyncConstantParam.BATCHBLOCK_TX_COUNT);
+        reSyncService.batchInsertDb(beginHeight, endHeight, ReSyncConstantParam.BATCHBLOCKDTO, contractHash);
+        long endTime2 = System.currentTimeMillis();
+        log.info("batch re-sync {} block from {} insert to db use time:{}", paramsConfig.BATCHINSERT_BLOCK_COUNT, beginHeight,
+                (endTime2 - endTime1));
+        initConstantParam();
+    }
+
+    /**
+     * 重新初始化全局参数
+     */
+    private void initConstantParam() {
+        ReSyncConstantParam.BATCHBLOCKDTO = new BatchBlockDto();
+        ReSyncConstantParam.BATCHBLOCK_TX_COUNT = 0;
+        ReSyncConstantParam.BATCHBLOCK_ONTID_COUNT = 0;
+        ReSyncConstantParam.BATCHBLOCK_CONTRACTHASH_LIST = new ArrayList<>();
+    }
 
 }

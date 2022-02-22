@@ -685,6 +685,12 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
 
+        // ORC交易的手续费入对应的子表
+        if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC20TX)) {
+            ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
+        } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC721TX)) {
+            ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, BigDecimal.ZERO));
+        }
     }
 
 
@@ -1341,7 +1347,6 @@ public class TxHandlerThread {
 
             ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
             ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-
             ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, tokenId));
         } catch (IOException e) {
             log.error("handle orc721 tx error ");
@@ -1458,7 +1463,7 @@ public class TxHandlerThread {
         } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC20TX)) {
             ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
         } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC721TX)) {
-//            ConstantParam.BATCHBLOCKDTO.getErc721TxDetails().add(TxDetail.toErc721TxDetail(txDetail));
+            ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, BigDecimal.ZERO));
         }
 
     }
