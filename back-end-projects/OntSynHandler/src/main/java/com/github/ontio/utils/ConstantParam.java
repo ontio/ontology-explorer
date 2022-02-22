@@ -89,6 +89,10 @@ public final class ConstantParam {
 
     public static final BigDecimal ONG_DECIMAL = new BigDecimal("1000000000");
 
+    public static final BigDecimal NEW_ONT_DECIMAL = ONG_DECIMAL;
+
+    public static final BigDecimal NEW_ONG_DECIMAL = new BigDecimal("1000000000000000000");
+
     //ontid operation description separator
     public static final String ONTID_SEPARATOR = "||";
 
