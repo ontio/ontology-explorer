@@ -43,14 +43,15 @@ public class CommonService {
     private final ContractMapper contractMapper;
     private final TxDetailDailyMapper txDetailDailyMapper;
     private final TxDetailIndexMapper txDetailIndexMapper;
-
     private final Orc20TxDetailMapper orc20TxDetailMapper;
     private final Orc721TxDetailMapper orc721TxDetailMapper;
+    private final Orc1155TxDetailMapper orc1155TxDetailMapper;
 
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
                          Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
-                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, Orc20TxDetailMapper orc20TxDetailMapper, Orc721TxDetailMapper orc721TxDetailMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
+                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, Orc20TxDetailMapper orc20TxDetailMapper, Orc721TxDetailMapper orc721TxDetailMapper,
+                         Orc1155TxDetailMapper orc1155TxDetailMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.currentMapper = currentMapper;
@@ -63,6 +64,7 @@ public class CommonService {
         this.oep5DragonMapper = oep5DragonMapper;
         this.orc20TxDetailMapper = orc20TxDetailMapper;
         this.orc721TxDetailMapper = orc721TxDetailMapper;
+        this.orc1155TxDetailMapper = orc1155TxDetailMapper;
         this.contractMapper = contractMapper;
         this.txDetailDailyMapper = txDetailDailyMapper;
         this.txDetailIndexMapper = txDetailIndexMapper;
@@ -207,7 +209,7 @@ public class CommonService {
             }
         }
 
-        // 插入 tbl_erc721_tx_detail 表中
+        // 插入 tbl_orc721_tx_detail 表中
         if (batchBlockDto.getOrc721TxDetails().size() > 0) {
             int count = batchBlockDto.getOrc721TxDetails().size();
             if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
@@ -222,6 +224,20 @@ public class CommonService {
             }
         }
 
+        // 插入 tbl_orc1155_tx_detail 表中
+        if (batchBlockDto.getOrc1155TxDetails().size() > 0) {
+            int count = batchBlockDto.getOrc1155TxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<Orc1155TxDetail> list = batchBlockDto.getOrc1155TxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        orc1155TxDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                orc1155TxDetailMapper.batchInsert(batchBlockDto.getOrc1155TxDetails());
+            }
+        }
 
         //插入tbl_contract表
         if (batchBlockDto.getContracts().size() > 0) {

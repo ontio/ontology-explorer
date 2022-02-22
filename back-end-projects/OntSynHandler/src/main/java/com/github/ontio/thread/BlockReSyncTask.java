@@ -131,7 +131,8 @@ public class BlockReSyncTask {
                     ConstantParam.OEP5CONTRACTS.contains(hash) ||
                     ConstantParam.OEP8CONTRACTS.contains(hash) ||
                     ConstantParam.ORC20CONTRACTS.contains(hash) ||
-                    ConstantParam.ORC721CONTRACTS.contains(hash);
+                    ConstantParam.ORC721CONTRACTS.contains(hash) ||
+                    ConstantParam.ORC1155CONTRACTS.contains(hash);
         }).collect(Collectors.toList());
     }
 

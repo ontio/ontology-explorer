@@ -272,6 +272,29 @@ public class TxDetail {
         return orc721TxDetail;
     }
 
+    public static Orc1155TxDetail toOrc1155TxDetail(TxDetail txDetail, String tokenId) {
+        Orc1155TxDetail orc1155TxDetail = Orc1155TxDetail.builder()
+                .txHash(txDetail.getTxHash())
+                .txType(txDetail.getTxType())
+                .txTime(txDetail.getTxTime())
+                .txIndex(txDetail.getTxIndex())
+                .tokenId(tokenId)
+                .amount(txDetail.getAmount())
+                .fee(txDetail.getFee())
+                .fromAddress(txDetail.getFromAddress())
+                .toAddress(txDetail.getToAddress())
+                .assetName(txDetail.getAssetName())
+                .blockHeight(txDetail.getBlockHeight())
+                .blockIndex(txDetail.getBlockIndex())
+                .confirmFlag(txDetail.getConfirmFlag())
+                .contractHash(txDetail.getContractHash())
+                .payer(txDetail.getPayer())
+                .calledContractHash(txDetail.getCalledContractHash())
+                .description(txDetail.getDescription())
+                .eventType(txDetail.getEventType())
+                .build();
+        return orc1155TxDetail;
+    }
 
 
 

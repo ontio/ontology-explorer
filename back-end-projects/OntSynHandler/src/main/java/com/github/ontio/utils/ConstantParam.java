@@ -137,11 +137,20 @@ public final class ConstantParam {
     public static final String IS_OEP8TX = "is_oep8tx";
 
     public static final String IS_ORC20TX = "is_orc20tx";
-    public static final String IS_ORC721TX = "is_erc721tx";
+
+    public static final String IS_ORC721TX = "is_orc721tx";
+
+    public static final String IS_ORC1155TX = "is_orc1155tx";
 
 
     public static final String TRANSFER_TX = "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+
     public static final String Approval_TX = "8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925";
+
+    public static final String TRANSFER_SINGLE_TX = "c3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62";
+
+    // todo
+    public static final String TRANSFER_BATCH_TX = "c3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62";
 
     public static final String ONG_CONTRACT_ADDRESS = "0200000000000000000000000000000000000000";
 
