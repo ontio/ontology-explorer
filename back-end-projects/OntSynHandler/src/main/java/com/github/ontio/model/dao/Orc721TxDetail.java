@@ -115,10 +115,10 @@ public class Orc721TxDetail {
     /**
      * orc721 通证的id 标识
      */
-    private BigDecimal tokenId;
+    private String tokenId;
 
     @Builder
-    public Orc721TxDetail(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, BigDecimal tokenId, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash) {
+    public Orc721TxDetail(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, String tokenId, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash) {
         this.txHash = txHash;
         this.txIndex = txIndex;
         this.txType = txType;

@@ -83,9 +83,9 @@ public final class ConstantParam {
      */
     public static final String ADD = "add";
 
-    public static final BigDecimal ZERO = new BigDecimal("0");
+    public static final BigDecimal ZERO = BigDecimal.ZERO;
 
-    public static final BigDecimal ONE = new BigDecimal("1");
+    public static final BigDecimal ONE = BigDecimal.ONE;
 
     public static final BigDecimal ONG_DECIMAL = new BigDecimal("1000000000");
 
@@ -118,6 +118,10 @@ public final class ConstantParam {
     public static Map<String, JSONObject> ORC721MAP = new HashMap<>();
 
     public static Set<String> ORC721CONTRACTS = new HashSet<>();
+
+    public static Map<String, JSONObject> ORC1155MAP = new HashMap<>();
+
+    public static Set<String> ORC1155CONTRACTS = new HashSet<>();
 
 
     public static final String ASSET_NAME_ONT = "ont";
@@ -158,4 +162,5 @@ public final class ConstantParam {
 
     public static final BigDecimal MAX_APPROVAL_AMOUNT = new BigDecimal("99999999999999999999");
 
+    public static final String EMPTY = "";
 }

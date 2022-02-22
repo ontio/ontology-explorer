@@ -248,7 +248,7 @@ public class TxDetail {
         return orc20TxDetail;
     }
 
-    public static Orc721TxDetail toOrc721TxDetail(TxDetail txDetail, BigDecimal tokenId) {
+    public static Orc721TxDetail toOrc721TxDetail(TxDetail txDetail, String tokenId) {
         Orc721TxDetail orc721TxDetail = Orc721TxDetail.builder()
                 .txHash(txDetail.getTxHash())
                 .txType(txDetail.getTxType())
