@@ -141,7 +141,6 @@ public class TokenServiceImpl implements ITokenService {
                 orc1155DetailDtos.forEach(item -> {
                     formatOrc1155DetailDto(item);
                 });
-
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(orc1155DetailDtos);
                 break;

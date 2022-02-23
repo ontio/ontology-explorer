@@ -28,29 +28,8 @@
         <property name="readOnly" value="false"/>
     </cache>
 
-
-    <sql id="txAllColumns">
-        tx_hash as txHash,
-     tx_type as txType,
-    tx_time as txTime,
-    block_height as blockHeight,
-    amount as amount,
-    fee as fee,
-    asset_name as assetName,
-    from_address as fromAddress,
-    to_address as toAddress,
-    description as description,
-    block_index as blockIndex,
-    confirm_flag as confirmFlag,
-    event_type as eventType,
-    contract_hash as contractHash,
-    payer as payer,
-    called_contract_hash as calledContractHash,
-    token_id as tokenId
-    </sql>
-
     <sql id="txBasicColumns">
-        tx_hash as txHash,
+    tx_hash as txHash,
     tx_type as txType,
     tx_time as txTime,
     block_height as blockHeight,

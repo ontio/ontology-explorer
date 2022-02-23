@@ -162,19 +162,19 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_ORC20:
-                balanceList = getOrc20BalanceOld(address);
+                balanceList = getOrc20Balance(address);
                 break;
             case ConstantParam.ASSET_TYPE_ORC721:
                 balanceList = getOrc721Balance(address);
                 break;
             case ConstantParam.ASSET_TYPE_ORC1155:
-//                balanceList = getOrc1155Balance(address);
+                balanceList = getOrc1155Balance(address);
                 break;
             case ConstantParam.ASSET_TYPE_NATIVE:
                 balanceList = getEvmOngBalance(address);
                 break;
             case ConstantParam.ASSET_TYPE_ALL:
-//                balanceList = getAllEvmAssetBalance(address);
+                balanceList = getAllEvmAssetBalance(address);
                 break;
             default:
                 break;
@@ -609,7 +609,7 @@ public class AddressServiceImpl implements IAddressService {
     }
 
 
-    private List<BalanceDto> getOrc20BalanceOld(String address) {
+    private List<BalanceDto> getOrc20Balance(String address) {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
 
@@ -653,7 +653,6 @@ public class AddressServiceImpl implements IAddressService {
         List<Orc721> orc721s = orc721Mapper.select(orc721Temp);
         for (Orc721 orc721 : orc721s) {
             String contractHash = orc721.getContractHash();
-            String vmCategory = orc721.getVmCategory();
             String orc721AssetName = orc721.getSymbol();
             BigDecimal balance = web3jSdkUtil.queryOrc721Balance(address, contractHash);
 
@@ -667,6 +666,38 @@ public class AddressServiceImpl implements IAddressService {
                     .contractHash(contractHash)
                     .build();
             balanceList.add(balanceDto);
+        }
+        return balanceList;
+    }
+
+    /**
+     * 获取ORC1155余额
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOrc1155Balance(String address) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        //审核过的ORC1155余额
+        List<Map<String, String>> orc1155s = orc1155Mapper.selectAuditPassedOrc1155(null);
+        for (Map<String, String> map : orc1155s) {
+            String contractHash = map.get("contractHash");
+            String symbol = map.get("symbol");
+            String tokenId = map.get("tokenId");
+            String[] symbolArray = symbol.split(",");
+            String[] tokenIdArray = tokenId.split(",");
+            for (int i = 0; i < tokenIdArray.length; i++) {
+                BigDecimal balance = web3jSdkUtil.queryOrc1155Balance(address, contractHash, tokenIdArray[i]);
+                BalanceDto balanceDto = BalanceDto.builder()
+                        .assetName(symbolArray[i])
+                        .assetType(ConstantParam.ASSET_TYPE_ORC1155)
+                        .balance(balance)
+                        .contractHash(contractHash)
+                        .build();
+                balanceList.add(balanceDto);
+            }
         }
         return balanceList;
     }
@@ -685,6 +716,14 @@ public class AddressServiceImpl implements IAddressService {
         return balanceList;
     }
 
+    private List<BalanceDto> getAllEvmAssetBalance(String address) {
+        List<BalanceDto> balanceDtos = new ArrayList<>();
+        balanceDtos.addAll(getEvmOngBalance(address));
+        balanceDtos.addAll(getOrc20Balance(address));
+        balanceDtos.addAll(getOrc721Balance(address));
+        balanceDtos.addAll(getOrc1155Balance(address));
+        return balanceDtos;
+    }
 
     /**
      * 获取OEP5余额

@@ -128,6 +128,8 @@ public class ConstantParam {
 
     public static final String CONTRACT_TYPE_ORC721 = "orc721";
 
+    public static final String CONTRACT_TYPE_ORC1155 = "orc1155";
+
     public static final String CONTRACT_TYPE_OTHER = "other";
 
 

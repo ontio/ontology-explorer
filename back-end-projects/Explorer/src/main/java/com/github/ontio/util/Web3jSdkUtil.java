@@ -193,6 +193,23 @@ public class Web3jSdkUtil {
         return balance;
     }
 
+    public BigDecimal queryOrc1155Balance(String address, String contract, String tokenId) {
+        BigDecimal balance = BigDecimal.ZERO;
+        Web3j web3j = getWeb3jSingleton();
+        try {
+            List<Type> params = Arrays.asList(new Address(address), new Uint256(new BigInteger(tokenId)));
+            TypeReference<Uint256> reserve0 = new TypeReference<Uint256>() {
+            };
+            List<TypeReference<?>> outputParameters = Arrays.asList(reserve0);
+            List<Type> result = sendPreTransactionAndDecode(web3j, contract, ConstantParam.FUN_BALANCE_OF, address, params, outputParameters);
+            balance = new BigDecimal((BigInteger) result.get(0).getValue());
+        } catch (Exception e) {
+            web3j.shutdown();
+            log.error("queryOrc1155Balance error,address:{},contract:{},tokenId:{}....", address, contract, tokenId, e);
+        }
+        return balance;
+    }
+
     public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
         com.github.ontio.common.Address address = com.github.ontio.common.Address.decodeBase58(ontAddr);
         String reverse = Helper.reverse(address.toHexString());

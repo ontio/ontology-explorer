@@ -190,7 +190,7 @@ public class ContractController {
 
     @ApiOperation(value = "Get address daily aggregations by specific token type")
     @GetMapping(value = "/checkIfExist/{contract_hash}")
-    public ResponseBean checkIfExistContract(@PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash){
+    public ResponseBean checkIfExistContract(@PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash) {
         log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
         return contractService.checkIfExistsHash(contractHash);
     }
