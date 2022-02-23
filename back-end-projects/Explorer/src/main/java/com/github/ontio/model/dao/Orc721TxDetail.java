@@ -30,7 +30,6 @@ public class Orc721TxDetail {
     private Integer txType;
 
 
-
     /**
      * 交易时间戳
      */
@@ -137,16 +136,8 @@ public class Orc721TxDetail {
         this.tokenId = tokenId;
     }
 
-//      tx_hash as txHash,
-//    tx_type as txType,
-//    tx_time as txTime,
-//    block_height as blockHeight,
-//    confirm_flag as confirmFlag,
-//    block_index as blockIndex,
-
     public Orc721TxDetail() {
     }
-//    fee as fee
 
     @Builder
     public Orc721TxDetail(String txHash, Integer txType, Integer txTime, Integer blockHeight, Integer confirmFlag, Integer blockIndex, BigDecimal fee) {

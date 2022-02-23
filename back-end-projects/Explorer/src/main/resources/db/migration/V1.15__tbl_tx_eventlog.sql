@@ -26,7 +26,7 @@ CREATE TABLE `tbl_tx_eventlog` (
     `tx_time`              INT(11)        NOT NULL COMMENT '交易时间戳',
     `block_height`         INT(11)        NOT NULL COMMENT '区块高度',
     `block_index`          INT(11)        NOT NULL COMMENT '交易在区块里的索引',
-    `fee`                  DECIMAL(25, 9) NOT NULL COMMENT '交易手续费',
+    `fee`                  DECIMAL(40, 20) NOT NULL COMMENT '交易手续费',
     `confirm_flag`         INT(11)        NOT NULL COMMENT '交易落账标识  1：成功 0：失败',
     `event_log`            VARCHAR(5000)  NOT NULL COMMENT '交易的event log',
     `called_contract_hash` VARCHAR(255)   NOT NULL DEFAULT '' COMMENT '该交易真正调用的合约hash',

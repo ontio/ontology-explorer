@@ -26,7 +26,7 @@ CREATE TABLE `tbl_tx_detail_daily` (
     `tx_time`              INT(11)        NOT NULL COMMENT '交易时间戳',
     `block_height`         INT(11)        NOT NULL COMMENT '区块高度',
     `amount`               DECIMAL(40, 20) NOT NULL COMMENT '交易金额',
-    `fee`                  DECIMAL(25, 9) NOT NULL COMMENT '交易手续费',
+    `fee`                  DECIMAL(40, 20) NOT NULL COMMENT '交易手续费',
     `asset_name`           VARCHAR(64)    NOT NULL DEFAULT '' COMMENT '交易资产名',
     `from_address`         VARCHAR(255)   NOT NULL DEFAULT '' COMMENT '交易fromaddress',
     `to_address`           VARCHAR(255)   NOT NULL DEFAULT '' COMMENT '交易toaddress',

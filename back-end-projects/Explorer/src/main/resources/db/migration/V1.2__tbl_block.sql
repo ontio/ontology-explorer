@@ -23,7 +23,7 @@ CREATE TABLE `tbl_block` (
     `txs_root`       VARCHAR(64)  NOT NULL DEFAULT '' COMMENT '区块里交易的merklroot',
     `block_time`     INT(11)      NOT NULL COMMENT '区块时间戳',
     `consensus_data` VARCHAR(64)  NOT NULL DEFAULT '' COMMENT '区块共识数据',
-    `bookkeepers`    VARCHAR(500) NOT NULL DEFAULT '' COMMENT '区块的bookkeepers',
+    `bookkeepers`    VARCHAR(1000) NOT NULL DEFAULT '' COMMENT '区块的bookkeepers',
     `tx_count`       INT(11)      NOT NULL COMMENT '区块里的交易数量',
     `block_size`     INT(11)      NOT NULL COMMENT '区块大小，单位b',
     UNIQUE KEY `idx_block_height`(`block_height`),
