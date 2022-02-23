@@ -14,6 +14,5 @@ public interface Orc721Mapper extends Mapper<Orc721> {
 
     List<Orc721DetailDto> selectOrc721Tokens(@Param("ascending") List<String> ascending, @Param("descending") List<String> descending);
 
-
     Orc721DetailDto selectOrc721TokenDetail(@Param("contractHash") String contractHash);
 }

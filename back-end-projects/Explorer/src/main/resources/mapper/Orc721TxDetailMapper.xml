@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.Orc721TxDetailMapper">
-
     <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Orc721TxDetail">
-        <!--
-          WARNING - @mbg.generated
-        -->
         <id column="tx_hash" jdbcType="VARCHAR" property="txHash"/>
         <id column="tx_index" jdbcType="INTEGER" property="txIndex"/>
         <result column="tx_type" jdbcType="INTEGER" property="txType"/>

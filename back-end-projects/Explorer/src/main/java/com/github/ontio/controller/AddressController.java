@@ -49,7 +49,7 @@ public class AddressController {
     @GetMapping(value = "/{address}/{token_type}/balances")
     public ResponseBean queryAddressBalance(
             @PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address format") String address,
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all|native-oep4|NATIVE-OEP4|orc20|ORC20|orc721|ORC721", message = "Incorrect token type") String tokenType) {
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|native|NATIVE|ALL|all|native-oep4|NATIVE-OEP4|orc20|ORC20|orc721|ORC721|orc1155|ORC1155", message = "Incorrect token type") String tokenType) {
         ResponseBean rs;
         if (address.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
             rs = addressService.queryEVMAddressBalance(address, tokenType);

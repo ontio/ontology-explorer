@@ -17,6 +17,7 @@ import org.web3j.crypto.RawTransaction;
 import org.web3j.crypto.Sign;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.Response;
 import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.*;
 import org.web3j.protocol.http.HttpService;
@@ -137,33 +138,60 @@ public class Web3jSdkUtil {
         return input;
     }
 
-    public BigDecimal queryOrc20Balance(String fromAddress, String contractAddress) {
-        Web3j web3j = getWeb3jSingleton();
-        String methodName = ConstantParam.FUN_BALANCE_OF;
-        List<Type> inputParameters = new ArrayList<>();
-        List<TypeReference<?>> outputParameters = new ArrayList<>();
-        Address address = new Address(fromAddress);
-        inputParameters.add(address);
-
-        TypeReference<Uint256> typeReference = new TypeReference<Uint256>() {
-        };
-        outputParameters.add(typeReference);
-        Function function = new Function(methodName, inputParameters, outputParameters);
-        String data = FunctionEncoder.encode(function);
-        Transaction transaction = Transaction.createEthCallTransaction(fromAddress, contractAddress, data);
-        EthCall ethCall;
-        BigDecimal bigDecimal = BigDecimal.ZERO;
+    public List<Type> sendPreTransactionAndDecode(Web3j web3j, String contract, String name, String address, List<Type> params,
+                                                  List<TypeReference<?>> outputParameters) throws Exception {
         try {
-            ethCall = web3j.ethCall(transaction, DefaultBlockParameterName.LATEST).send();
-            List<Type> results = FunctionReturnDecoder.decode(ethCall.getValue(), function.getOutputParameters());
-
-            bigDecimal = new BigDecimal(results.get(0).getValue().toString());
-        } catch (IOException e) {
-            log.error("address:{} get orc20 balance error:{}", fromAddress, e);
+            Function function = new Function(name, params, outputParameters);
+            String transactionData = FunctionEncoder.encode(function);
+            Transaction ethCallTransaction = Transaction.createEthCallTransaction(address, contract, transactionData);
+            EthCall ethCall = web3j.ethCall(ethCallTransaction, DefaultBlockParameterName.LATEST).send();
+            web3j.shutdown();
+            Response.Error error = ethCall.getError();
+            if (error != null) {
+                String errorMessage = error.getMessage();
+                log.error("error when invoke contract:{},name:{},error:{}", contract, name, errorMessage);
+            }
+            List<Type> result = FunctionReturnDecoder.decode(ethCall.getValue(), function.getOutputParameters());
+            return result;
+        } catch (Exception e) {
+            web3j.shutdown();
+            throw e;
         }
-        return bigDecimal;
     }
 
+    public BigDecimal queryOrc20Balance(String address, String contract) {
+        BigDecimal balance = BigDecimal.ZERO;
+        Web3j web3j = getWeb3jSingleton();
+        try {
+            List<Type> params = Arrays.asList(new Address(address));
+            TypeReference<Uint256> reserve0 = new TypeReference<Uint256>() {
+            };
+            List<TypeReference<?>> outputParameters = Arrays.asList(reserve0);
+            List<Type> result = sendPreTransactionAndDecode(web3j, contract, ConstantParam.FUN_BALANCE_OF, address, params, outputParameters);
+            balance = new BigDecimal((BigInteger) result.get(0).getValue());
+        } catch (Exception e) {
+            web3j.shutdown();
+            log.error("queryOrc20Balance error,address:{},contract:{}....", address, contract, e);
+        }
+        return balance;
+    }
+
+    public BigDecimal queryOrc721Balance(String address, String contract) {
+        BigDecimal balance = BigDecimal.ZERO;
+        Web3j web3j = getWeb3jSingleton();
+        try {
+            List<Type> params = Arrays.asList(new Address(address));
+            TypeReference<Uint256> reserve0 = new TypeReference<Uint256>() {
+            };
+            List<TypeReference<?>> outputParameters = Arrays.asList(reserve0);
+            List<Type> result = sendPreTransactionAndDecode(web3j, contract, ConstantParam.FUN_BALANCE_OF, address, params, outputParameters);
+            balance = new BigDecimal((BigInteger) result.get(0).getValue());
+        } catch (Exception e) {
+            web3j.shutdown();
+            log.error("queryOrc721Balance error,address:{},contract:{}....", address, contract, e);
+        }
+        return balance;
+    }
 
     public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
         com.github.ontio.common.Address address = com.github.ontio.common.Address.decodeBase58(ontAddr);

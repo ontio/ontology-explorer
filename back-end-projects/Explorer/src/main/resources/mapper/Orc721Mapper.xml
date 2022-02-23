@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.Orc721Mapper">
-
-
     <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Orc721">
-        <!--
-          WARNING - @mbg.generated
-        -->
         <id column="contract_hash" jdbcType="VARCHAR" property="contractHash"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="total_supply" jdbcType="DECIMAL" property="totalSupply"/>

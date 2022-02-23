@@ -9,10 +9,7 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dao.Orc20;
-import com.github.ontio.model.dao.Oep4;
-import com.github.ontio.model.dao.Oep5;
-import com.github.ontio.model.dao.Oep8;
+import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.BalanceDto;
 import com.github.ontio.model.dto.QueryBatchBalanceDto;
 import com.github.ontio.model.dto.TransferTxDetailDto;
@@ -56,10 +53,9 @@ public class AddressServiceImpl implements IAddressService {
     private final Oep4Mapper oep4Mapper;
     private final Oep8Mapper oep8Mapper;
     private final Oep5Mapper oep5Mapper;
-
     private final Orc20Mapper orc20Mapper;
-
-
+    private final Orc721Mapper orc721Mapper;
+    private final Orc1155Mapper orc1155Mapper;
     private final TxDetailMapper txDetailMapper;
     private final ParamsConfig paramsConfig;
     private final CommonService commonService;
@@ -68,13 +64,15 @@ public class AddressServiceImpl implements IAddressService {
 
 
     @Autowired
-    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, TxDetailMapper txDetailMapper,
-                              ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
+    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper,
+                              TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
                               RankingMapper rankingMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
         this.orc20Mapper = orc20Mapper;
+        this.orc721Mapper = orc721Mapper;
+        this.orc1155Mapper = orc1155Mapper;
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.commonService = commonService;
@@ -150,9 +148,6 @@ public class AddressServiceImpl implements IAddressService {
                 case ConstantParam.ASSET_TYPE_NATIVE_OEP4:
                     balanceList = getNativeAndOep4BalanceOld(address);
                     break;
-                case ConstantParam.ASSET_TYPE_ORC20:
-                    balanceList = getOrc20BalanceOld(address, "");
-                    break;
                 default:
                     break;
             }
@@ -167,10 +162,19 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_ORC20:
-                balanceList = getOrc20BalanceOld(address, "");
+                balanceList = getOrc20BalanceOld(address);
+                break;
+            case ConstantParam.ASSET_TYPE_ORC721:
+                balanceList = getOrc721Balance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_ORC1155:
+//                balanceList = getOrc1155Balance(address);
                 break;
             case ConstantParam.ASSET_TYPE_NATIVE:
                 balanceList = getEvmOngBalance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_ALL:
+//                balanceList = getAllEvmAssetBalance(address);
                 break;
             default:
                 break;
@@ -605,7 +609,7 @@ public class AddressServiceImpl implements IAddressService {
     }
 
 
-    private List<BalanceDto> getOrc20BalanceOld(String address, String assetName) {
+    private List<BalanceDto> getOrc20BalanceOld(String address) {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
 
@@ -628,6 +632,40 @@ public class AddressServiceImpl implements IAddressService {
                     .contractHash(contractHash)
                     .build();
 
+            balanceList.add(balanceDto);
+        }
+        return balanceList;
+    }
+
+    /**
+     * 获取ORC721余额
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOrc721Balance(String address) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        //审核过的ORC721余额
+        Orc721 orc721Temp = new Orc721();
+        orc721Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        List<Orc721> orc721s = orc721Mapper.select(orc721Temp);
+        for (Orc721 orc721 : orc721s) {
+            String contractHash = orc721.getContractHash();
+            String vmCategory = orc721.getVmCategory();
+            String orc721AssetName = orc721.getSymbol();
+            BigDecimal balance = web3jSdkUtil.queryOrc721Balance(address, contractHash);
+
+            if (ConstantParam.ZERO.compareTo(balance) == 0) {
+                continue;
+            }
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName(orc721AssetName)
+                    .assetType(ConstantParam.ASSET_TYPE_ORC721)
+                    .balance(balance)
+                    .contractHash(contractHash)
+                    .build();
             balanceList.add(balanceDto);
         }
         return balanceList;

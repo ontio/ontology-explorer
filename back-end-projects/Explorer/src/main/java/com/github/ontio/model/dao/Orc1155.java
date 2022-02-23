@@ -1,17 +1,15 @@
 package com.github.ontio.model.dao;
 
-import lombok.*;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
-@Table(name = "tbl_orc721")
+@Table(name = "tbl_orc1155")
 @Data
-@ToString
-public class Orc721 {
-
+public class Orc1155 {
     /**
      * 合约hash值
      */
@@ -19,20 +17,26 @@ public class Orc721 {
     @Column(name = "contract_hash")
     private String contractHash;
 
+    /**
+     * ORC1155的token id
+     */
+    @Id
+    @Column(name = "token_id")
+    private String tokenId;
 
     /**
-     * ORC721代币名称
+     * ORC1155代币名称
      */
     private String name;
 
     /**
-     * ORC721 代币总量
+     * ORC1155代币总量
      */
     @Column(name = "total_supply")
     private Long totalSupply;
 
     /**
-     * ORC20 代币符号
+     * ORC1155代币符号
      */
     private String symbol;
 
@@ -54,7 +58,9 @@ public class Orc721 {
     @Column(name = "update_time")
     private Date updateTime;
 
+    /**
+     * 更新时间，yyyy-MM-dd
+     */
     @Column(name = "vm_category")
     private String vmCategory;
-
 }

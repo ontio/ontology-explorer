@@ -46,9 +46,9 @@ public class TokenServiceImpl implements ITokenService {
     private final Oep4Mapper oep4Mapper;
     private final Oep5Mapper oep5Mapper;
     private final Oep8Mapper oep8Mapper;
-
     private final Orc20Mapper orc20Mapper;
     private final Orc721Mapper orc721Mapper;
+    private final Orc1155Mapper orc1155Mapper;
     private final Oep8TxDetailMapper oep8TxDetailMapper;
     private final TokenDailyAggregationMapper tokenDailyAggregationMapper;
     private final RankingMapper rankingMapper;
@@ -57,13 +57,14 @@ public class TokenServiceImpl implements ITokenService {
 
     @Autowired
     public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
-                            Oep8TxDetailMapper oep8TxDetailMapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
+                            Oep8TxDetailMapper oep8TxDetailMapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
                             RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
         this.orc20Mapper = orc20Mapper;
         this.orc721Mapper = orc721Mapper;
+        this.orc1155Mapper = orc1155Mapper;
         this.oep8TxDetailMapper = oep8TxDetailMapper;
         this.tokenDailyAggregationMapper = tokenDailyAggregationMapper;
         this.rankingMapper = rankingMapper;
@@ -132,6 +133,18 @@ public class TokenServiceImpl implements ITokenService {
                 pageResponseBean.setTotal(total);
                 pageResponseBean.setRecords(orc721DetailDtos);
                 break;
+            case ConstantParam.ASSET_TYPE_ORC1155:
+                PageHelper.startPage(pageNumber, pageSize);
+                List<Orc1155DetailDto> orc1155DetailDtos = orc1155Mapper.selectOrc1155Tokens(ascending, descending);
+                total = ((Long) ((Page) orc1155DetailDtos).getTotal()).intValue();
+                //OEP8同一个合约hash有多种token，需要根据tokenId分类
+                orc1155DetailDtos.forEach(item -> {
+                    formatOrc1155DetailDto(item);
+                });
+
+                pageResponseBean.setTotal(total);
+                pageResponseBean.setRecords(orc1155DetailDtos);
+                break;
         }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponseBean);
@@ -169,6 +182,37 @@ public class TokenServiceImpl implements ITokenService {
         return oep8DetailDto;
     }
 
+    /**
+     * 根据tokenid格式化orc1155 token信息
+     *
+     * @param orc1155DetailDto
+     * @return
+     */
+    private Orc1155DetailDto formatOrc1155DetailDto(Orc1155DetailDto orc1155DetailDto) {
+
+        Map tokenIdMap = new HashMap();
+        Map totalSupplyMap = new HashMap();
+        Map symbolMap = new HashMap();
+        Map tokenNameMap = new HashMap();
+
+        String[] tokenIds = ((String) orc1155DetailDto.getTokenId()).split(",");
+        String[] totalSupplys = ((String) orc1155DetailDto.getTotalSupply()).split(",");
+        String[] symbols = ((String) orc1155DetailDto.getSymbol()).split(",");
+        String[] tokenNames = ((String) orc1155DetailDto.getTokenName()).split(",");
+
+        for (int i = 0; i < tokenIds.length; i++) {
+            tokenIdMap.put(tokenIds[i], tokenIds[i]);
+            totalSupplyMap.put(tokenIds[i], totalSupplys[i]);
+            symbolMap.put(tokenIds[i], symbols[i]);
+            tokenNameMap.put(tokenIds[i], tokenNames[i]);
+        }
+        orc1155DetailDto.setTotalSupply(totalSupplyMap);
+        orc1155DetailDto.setSymbol(symbolMap);
+        orc1155DetailDto.setTokenName(tokenNameMap);
+        orc1155DetailDto.setTokenId(tokenIdMap);
+
+        return orc1155DetailDto;
+    }
 
     @Override
     public ResponseBean queryTokenDetail(String tokenType, String contractHash) {
@@ -199,7 +243,13 @@ public class TokenServiceImpl implements ITokenService {
                 Orc721DetailDto orc721DetailDto = orc721Mapper.selectOrc721TokenDetail(contractHash);
                 obj = orc721DetailDto;
                 break;
-
+            case ConstantParam.ASSET_TYPE_ORC1155:
+                Orc1155DetailDto orc1155DetailDto = orc1155Mapper.selectOrc1155TokenDetail(contractHash);
+                if (Helper.isNotEmptyAndNull(orc1155DetailDto)) {
+                    formatOrc1155DetailDto(orc1155DetailDto);
+                }
+                obj = orc1155DetailDto;
+                break;
         }
         if (Helper.isEmptyOrNull(obj)) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);

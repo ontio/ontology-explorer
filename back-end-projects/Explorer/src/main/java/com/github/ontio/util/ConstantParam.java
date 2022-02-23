@@ -104,6 +104,8 @@ public class ConstantParam {
 
     public static final String ASSET_TYPE_ORC721 = "orc721";
 
+    public static final String ASSET_TYPE_ORC1155 = "orc1155";
+
     public static final String ASSET_TYPE_ONG = "ong";
 
     public static final String ASSET_TYPE_ALL = "all";
