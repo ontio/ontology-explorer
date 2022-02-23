@@ -828,12 +828,12 @@ public class TxReSyncThread {
                 txAction = EventTypeEnum.Approval.des();
                 eventType = EventTypeEnum.Approval.type();
             }
-            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amountValue) <= 0) {
-                amountValue = ConstantParam.MAX_APPROVAL_AMOUNT;
-            }
             String assetName = orc20Obj.getString("name");
             Integer decimals = orc20Obj.getInteger("decimals");
             BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
+            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+            }
 
             contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
             // wasm合约可以调用evm合约，所以对应的txHash需要判断
