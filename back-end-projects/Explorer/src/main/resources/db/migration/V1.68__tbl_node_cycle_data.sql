@@ -1,0 +1,1 @@
+ALTER TABLE tbl_node_cycle_data CONVERT TO CHARACTER SET utf8mb4;
