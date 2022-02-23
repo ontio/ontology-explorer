@@ -58,4 +58,9 @@ public class Orc1155 {
     @Column(name = "update_time")
     private Date updateTime;
 
+    /**
+     * 更新时间，yyyy-MM-dd
+     */
+    @Column(name = "vm_category")
+    private String vmCategory;
 }

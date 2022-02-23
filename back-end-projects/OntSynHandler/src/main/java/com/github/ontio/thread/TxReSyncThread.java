@@ -798,12 +798,8 @@ public class TxReSyncThread {
                 topicList.add(topic);
             }
 
-            String data = ConstantParam.EMPTY;
-            byte dataLength = reader.readByte();
-            if (dataLength != 0) {
-                byte[] dataBytes = reader.readBytes(dataLength);
-                data = Helper.toHexString(dataBytes);
-            }
+            byte[] dataBytes = reader.readVarBytes();
+            String data = Helper.toHexString(dataBytes);
 
 
             String fromAddress = ConstantParam.EMPTY;
