@@ -108,8 +108,10 @@ public class InitOepInfoSchedule {
             JSONObject obj = new JSONObject();
             obj.put("symbol", item.getSymbol());
             obj.put("name", item.getName());
-            ConstantParam.ORC1155MAP.put(item.getContractHash() + "-" + item.getTokenId(), obj);
-            ConstantParam.ORC1155CONTRACTS.add(item.getContractHash());
+            //拿到数据库中的"正的值",现在使用反序的方式来进行判断
+            String contractAddress = Helper.reverse(item.getContractHash().substring(2)).toLowerCase();
+            ConstantParam.ORC1155MAP.put(contractAddress + "-" + item.getTokenId(), obj);
+            ConstantParam.ORC1155CONTRACTS.add(contractAddress);
         });
 
     }
