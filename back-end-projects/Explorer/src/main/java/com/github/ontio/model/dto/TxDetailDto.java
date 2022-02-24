@@ -7,7 +7,6 @@ import com.github.ontio.model.dao.TxDetail;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.web3j.abi.datatypes.Bool;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -26,14 +25,17 @@ public class TxDetailDto extends TxDetail {
 
     private String tagName;
 
+    private String assetType;
+
 
     @Builder
-    public TxDetailDto(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash, JSONObject detail, VmTypeEnum vmType, Boolean isContractHash, String tagName) {
+    public TxDetailDto(String txHash, Integer txIndex, Integer txType, Integer txTime, Integer blockHeight, BigDecimal amount, BigDecimal fee, String assetName, String fromAddress, String toAddress, String description, Integer blockIndex, Integer confirmFlag, Integer eventType, String contractHash, String payer, String calledContractHash, JSONObject detail, VmTypeEnum vmType, Boolean isContractHash, String tagName, String assetType) {
         super(txHash, txIndex, txType, txTime, blockHeight, amount, fee, assetName, fromAddress, toAddress, description, blockIndex, confirmFlag, eventType, contractHash, payer, calledContractHash);
         this.detail = detail;
         this.vmType = vmType;
         this.isContractHash = isContractHash;
-        this.tagName = tagName ;
+        this.tagName = tagName;
+        this.assetType = assetType;
     }
 
 

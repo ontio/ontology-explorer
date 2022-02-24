@@ -37,7 +37,6 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -48,7 +47,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -188,8 +186,9 @@ public class OntologySDKService {
         String balance = "0";
         String ontAddr = com.github.ontio.util.Helper.EthAddrToOntAddr(address);
         try {
-//            ontSdk.nativevm().ong().queryBalanceOf(ontAddr);
-            balance = queryBalanceOfOngV2(ontAddr);
+            OntSdk ontSdk = getOntSdk();
+            BigInteger balanceOf = ontSdk.nativevm().ongV2().queryBalanceOf(ontAddr);
+            balance = balanceOf.toString();
         } catch (Exception e) {
             log.error("getEVMONGAssetBalance error...", e);
         }

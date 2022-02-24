@@ -22,6 +22,11 @@ public class Oep8 {
     private String tokenId;
 
     /**
+     * OEP8集合名称
+     */
+    private String collection;
+
+    /**
      * OEP8代币名称
      */
     private String name;
@@ -95,6 +100,14 @@ public class Oep8 {
      */
     public void setTokenId(String tokenId) {
         this.tokenId = tokenId == null ? null : tokenId.trim();
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
     }
 
     /**

@@ -4,6 +4,7 @@
     <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Orc1155">
         <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
         <id column="token_id" jdbcType="VARCHAR" property="tokenId" />
+        <result column="collection" jdbcType="VARCHAR" property="collection" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="total_supply" jdbcType="DECIMAL" property="totalSupply" />
         <result column="symbol" jdbcType="VARCHAR" property="symbol" />

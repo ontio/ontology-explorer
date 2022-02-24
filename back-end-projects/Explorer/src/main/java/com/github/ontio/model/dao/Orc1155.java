@@ -25,6 +25,11 @@ public class Orc1155 {
     private String tokenId;
 
     /**
+     * ORC1155集合名称
+     */
+    private String collection;
+
+    /**
      * ORC1155代币名称
      */
     private String name;

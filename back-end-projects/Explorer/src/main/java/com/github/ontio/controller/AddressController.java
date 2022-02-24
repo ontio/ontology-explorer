@@ -192,7 +192,7 @@ public class AddressController {
     @GetMapping(value = "/{address}/{token_type}/txs")
     public ResponseBean queryAddressTransferTxsOfTokenType(
             @PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address format") String address,
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20|orc721|ORC721", message = "Incorrect token type") String tokenType,
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20|orc721|ORC721|orc1155|ORC1155", message = "Incorrect token type") String tokenType,
             @RequestParam(name = "page_size") @Min(1) @Max(20) Integer pageSize,
             @RequestParam(name = "page_number") @Min(1) Integer pageNumber) {
         return addressService.queryTransferTxsOfTokenTypeByPage(address, tokenType, pageNumber, pageSize);

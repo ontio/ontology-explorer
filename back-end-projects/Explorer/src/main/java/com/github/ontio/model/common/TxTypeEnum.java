@@ -18,7 +18,8 @@ public enum TxTypeEnum {
     ONT_TRANSFER("07"),
     ONG_TRANSFER("08"),
     ORC20("09"),
-    ORC721("10")
+    ORC721("10"),
+    ORC1155("11")
     ;
 
     @Getter

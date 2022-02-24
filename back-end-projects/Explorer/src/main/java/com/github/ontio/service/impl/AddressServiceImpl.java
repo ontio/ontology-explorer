@@ -1528,6 +1528,7 @@ public class AddressServiceImpl implements IAddressService {
             TransferTxDto transferTxDto = transferTxDtos.get(i);
             String assetName = transferTxDto.getAssetName();
             BigDecimal amount = transferTxDto.getAmount();
+            String assetType = transferTxDto.getAssetType();
 
             String txHash = transferTxDto.getTxHash();
             if (txHash.equals(previousTxHash)) {
@@ -1538,8 +1539,9 @@ public class AddressServiceImpl implements IAddressService {
                             .amount(amount)
                             .fromAddress(transferTxDto.getFromAddress())
                             .toAddress(transferTxDto.getToAddress())
-                            .assetName(transferTxDto.getAssetName())
+                            .assetName(assetName)
                             .contractHash(transferTxDto.getContractHash())
+                            .assetType(assetType)
                             .build();
 
                     List<TransferTxDetailDto> transferTxnList =
@@ -1555,8 +1557,9 @@ public class AddressServiceImpl implements IAddressService {
                         .amount(amount)
                         .fromAddress(transferTxDto.getFromAddress())
                         .toAddress(transferTxDto.getToAddress())
-                        .assetName(transferTxDto.getAssetName())
+                        .assetName(assetName)
                         .contractHash(transferTxDto.getContractHash())
+                        .assetType(assetType)
                         .build();
                 List<TransferTxDetailDto> transferTxnList = new ArrayList<>();
                 transferTxnList.add(transferTxDetailDto);

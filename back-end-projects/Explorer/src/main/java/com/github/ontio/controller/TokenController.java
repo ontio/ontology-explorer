@@ -42,7 +42,7 @@ public class TokenController {
     @ApiOperation(value = "Get token list by token type")
     @GetMapping(value = "/{token_type}")
     public ResponseBean queryTokensByPage(
-            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20|orc721|ORC721", message = "Incorrect token type") String tokenType,
+            @PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20|orc721|ORC721|orc1155|ORC1155", message = "Incorrect token type") String tokenType,
             @RequestParam("page_size") @Min(1) @Max(20) Integer pageSize,
             @RequestParam("page_number") @Min(1) Integer pageNumber,
             @RequestParam(name = "sort", required = false) List<String> sorts
@@ -57,7 +57,7 @@ public class TokenController {
 
     @ApiOperation(value = "Get token detail by token type and contracthash")
     @GetMapping(value = "/{token_type}/{contract_hash}")
-    public ResponseBean queryTokenDetail(@PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20|orc721|ORC721", message = "Incorrect token type") String tokenType,
+    public ResponseBean queryTokenDetail(@PathVariable("token_type") @Pattern(regexp = "oep4|OEP4|oep5|OEP5|oep8|OEP8|orc20|ORC20|orc721|ORC721|orc1155|ORC1155", message = "Incorrect token type") String tokenType,
                                          @PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash) {
 
         log.info("###{}.{} begin...token_type:{}，contract_hash:{}", CLASS_NAME, Helper.currentMethod(), tokenType, contractHash);

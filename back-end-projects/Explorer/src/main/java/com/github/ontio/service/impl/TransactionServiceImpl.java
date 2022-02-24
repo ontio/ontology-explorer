@@ -367,20 +367,26 @@ public class TransactionServiceImpl implements ITransactionService {
                 }
             } else {
                 ContractType contractType = contractTypes.get(calledContractHash);
-                if (contractType.isOep4()) {
-                    txType = TxTypeEnum.OEP4;
-                } else if (contractType.isOep5()) {
-                    txType = TxTypeEnum.OEP5;
-                } else if (contractType.isOep8()) {
-                    txType = TxTypeEnum.OEP8;
-                } else if (contractType.isOrc20()) {
-                    txType = TxTypeEnum.ORC20;
-                } else if (contractType.isOrc721()) {
-                    txType = TxTypeEnum.ORC721;
-                } else if (calledContractHash.equals(ConstantParam.CONTRACTHASH_ONG)) {
-                    txType = TxTypeEnum.ONG_TRANSFER;
-                } else {
+                if (contractType == null) {
                     txType = TxTypeEnum.CONTRACT_CALL;
+                } else {
+                    if (contractType.isOep4()) {
+                        txType = TxTypeEnum.OEP4;
+                    } else if (contractType.isOep5()) {
+                        txType = TxTypeEnum.OEP5;
+                    } else if (contractType.isOep8()) {
+                        txType = TxTypeEnum.OEP8;
+                    } else if (contractType.isOrc20()) {
+                        txType = TxTypeEnum.ORC20;
+                    } else if (contractType.isOrc721()) {
+                        txType = TxTypeEnum.ORC721;
+                    } else if (contractType.isOrc1155()) {
+                        txType = TxTypeEnum.ORC1155;
+                    } else if (calledContractHash.equals(ConstantParam.CONTRACTHASH_ONG)) {
+                        txType = TxTypeEnum.ONG_TRANSFER;
+                    } else {
+                        txType = TxTypeEnum.CONTRACT_CALL;
+                    }
                 }
             }
         }
@@ -393,7 +399,7 @@ public class TransactionServiceImpl implements ITransactionService {
     public void setContractMapper(ContractMapper contractMapper) {
         this.contractTypes = Caffeine.newBuilder()
                 .maximumSize(4096)
-                .expireAfterWrite(Duration.ofHours(1))
+                .expireAfterWrite(Duration.ofDays(1))
                 .build(contractHash -> {
                     ContractType contractType = contractMapper.findContractType(contractHash);
                     return contractType == null ? ContractType.NULL : contractType;

@@ -5,6 +5,7 @@ import com.github.ontio.model.dao.TxDetail;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.Transient;
 import java.util.List;
 
 @Data
@@ -12,6 +13,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransferTxDto extends TxDetail {
 
-    List<TransferTxDetailDto> transfers;
+    @Transient
+    private String assetType;
+
+    private List<TransferTxDetailDto> transfers;
 
 }
