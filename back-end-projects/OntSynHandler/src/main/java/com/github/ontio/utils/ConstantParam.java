@@ -22,6 +22,10 @@ package com.github.ontio.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.model.common.BatchBlockDto;
+import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.DynamicArray;
+import org.web3j.abi.datatypes.generated.Uint256;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -171,4 +175,14 @@ public final class ConstantParam {
     public static final BigDecimal MAX_APPROVAL_AMOUNT = new BigDecimal("99999999999999999999");
 
     public static final String EMPTY = "";
+
+    /**
+     * evm TypeReference
+     */
+    public static TypeReference<Address> TYPE_REFERENCE_ADDRESS = new TypeReference<Address>() {
+    };
+    public static TypeReference<Uint256> TYPE_REFERENCE_UINT256 = new TypeReference<Uint256>() {
+    };
+    public static TypeReference<DynamicArray<Uint256>> TYPE_REFERENCE_UINT256_ARRAY = new TypeReference<DynamicArray<Uint256>>() {
+    };
 }

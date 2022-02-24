@@ -21,6 +21,7 @@ package com.github.ontio.thread;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.ContractMapper;
 import com.github.ontio.mapper.TxDetailMapper;
@@ -35,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.web3j.utils.Numeric;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
@@ -127,6 +129,9 @@ public class BlockReSyncTask {
         List<Contract> contracts = contractMapper.selectByExample(example);
         return contracts.stream().filter(contract -> {
             String hash = contract.getContractHash();
+            if (hash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+                hash = Helper.reverse(Numeric.cleanHexPrefix(hash));
+            }
             return ConstantParam.OEP4CONTRACTS.contains(hash) ||
                     ConstantParam.OEP5CONTRACTS.contains(hash) ||
                     ConstantParam.OEP8CONTRACTS.contains(hash) ||

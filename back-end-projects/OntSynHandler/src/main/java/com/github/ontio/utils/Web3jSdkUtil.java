@@ -12,7 +12,6 @@ import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
-import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.RawTransaction;
 import org.web3j.crypto.Sign;
 import org.web3j.protocol.Web3j;
@@ -145,9 +144,7 @@ public class Web3jSdkUtil {
         Address address = new Address(fromAddress);
         inputParameters.add(address);
 
-        TypeReference<Uint256> typeReference = new TypeReference<Uint256>() {
-        };
-        outputParameters.add(typeReference);
+        outputParameters.add(ConstantParam.TYPE_REFERENCE_UINT256);
         Function function = new Function(methodName, inputParameters, outputParameters);
         String data = FunctionEncoder.encode(function);
         Transaction transaction = Transaction.createEthCallTransaction(fromAddress, contractAddress, data);

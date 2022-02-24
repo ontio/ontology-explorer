@@ -49,7 +49,6 @@ import org.springframework.util.StringUtils;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.Utils;
-import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.RawTransaction;
@@ -655,14 +654,8 @@ public class TxHandlerThread {
         String data = Helper.toHexString(dataBytes);
 
         String decodeData = topicList.get(1) + topicList.get(2) + data;
-        TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<Uint256> amount1 = new TypeReference<Uint256>() {
-        };
 
-        List<TypeReference<?>> outputParameters = Arrays.asList(from, to, amount1);
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         List<Type> result = FunctionReturnDecoder.decode(decodeData, convert);
@@ -1269,14 +1262,7 @@ public class TxHandlerThread {
 
 
     public List<Type> handleOrc20Results(String parseData) {
-        TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<Uint256> amount = new TypeReference<Uint256>() {
-        };
-
-        List<TypeReference<?>> outputParameters = Arrays.asList(from, to, amount);
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         return FunctionReturnDecoder.decode(parseData, convert);
@@ -1351,14 +1337,7 @@ public class TxHandlerThread {
     }
 
     public List<Type> handleOrc721Results(String parseData) {
-        TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<Uint256> tokenId = new TypeReference<Uint256>() {
-        };
-
-        List<TypeReference<?>> outputParameters = Arrays.asList(from, to, tokenId);
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         return FunctionReturnDecoder.decode(parseData, convert);
@@ -1450,28 +1429,14 @@ public class TxHandlerThread {
     }
 
     public List<Type> handleOrc1155Results(String parseData) {
-        TypeReference<org.web3j.abi.datatypes.Address> operator = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<Uint256> tokenId = new TypeReference<Uint256>() {
-        };
-        TypeReference<Uint256> value = new TypeReference<Uint256>() {
-        };
-
-        List<TypeReference<?>> outputParameters = Arrays.asList(operator, from, to, tokenId, value);
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         return FunctionReturnDecoder.decode(parseData, convert);
     }
 
     public List<Type> handleOrc1155BatchResults(String parseData) {
-        TypeReference<DynamicArray<Uint256>> uint256List = new TypeReference<DynamicArray<Uint256>>() {
-        };
-
-        List<TypeReference<?>> outputParameters = Arrays.asList(uint256List, uint256List);
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_UINT256_ARRAY, ConstantParam.TYPE_REFERENCE_UINT256_ARRAY);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         return FunctionReturnDecoder.decode(parseData, convert);
