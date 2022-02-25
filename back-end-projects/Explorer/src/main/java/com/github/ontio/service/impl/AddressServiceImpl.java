@@ -26,6 +26,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1277,7 +1278,7 @@ public class AddressServiceImpl implements IAddressService {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
-        transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
@@ -1304,7 +1305,7 @@ public class AddressServiceImpl implements IAddressService {
     public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
-        transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
@@ -1343,7 +1344,7 @@ public class AddressServiceImpl implements IAddressService {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeInToAddr4Onto(address, assetName, beginTime, endTime);
             }
         }
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos, null);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
@@ -1385,7 +1386,7 @@ public class AddressServiceImpl implements IAddressService {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPageInToAddr4Onto(address, assetName, endTime, pageSize);
             }
         }
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos, null);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
@@ -1480,7 +1481,7 @@ public class AddressServiceImpl implements IAddressService {
         } else {
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
-            transferTxDtos = formatTransferTxDtos(transferTxDtos);
+            transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
             pageResponse = new PageResponseBean(transferTxDtos, txCount);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
@@ -1498,16 +1499,14 @@ public class AddressServiceImpl implements IAddressService {
         } else {
             List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
             List<String> assetNames = null;
-            if ("oep4".equalsIgnoreCase(tokenType)) {
-                assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
-            } else if ("orc20".equalsIgnoreCase(tokenType)) {
-                assetNames = "orc20".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
+            if ("oep4".equalsIgnoreCase(tokenType) || "orc20".equalsIgnoreCase(tokenType)) {
+                assetNames = txDetailMapper.selectAssetNamesOfTokenType(tokenType);
             }
 
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
                     tokenType, start, pageSize);
-            transferTxDtos = formatTransferTxDtos(transferTxDtos);
+            transferTxDtos = formatTransferTxDtos(transferTxDtos, tokenType);
             pageResponse = new PageResponseBean(transferTxDtos, txCount);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
@@ -1518,7 +1517,7 @@ public class AddressServiceImpl implements IAddressService {
      *
      * @return
      */
-    private List<TransferTxDto> formatTransferTxDtos(List<TransferTxDto> transferTxDtos) {
+    private List<TransferTxDto> formatTransferTxDtos(List<TransferTxDto> transferTxDtos, String assetType) {
 
         List<TransferTxDto> formattedTransferTxs = new ArrayList<>();
 
@@ -1528,7 +1527,9 @@ public class AddressServiceImpl implements IAddressService {
             TransferTxDto transferTxDto = transferTxDtos.get(i);
             String assetName = transferTxDto.getAssetName();
             BigDecimal amount = transferTxDto.getAmount();
-            String assetType = transferTxDto.getAssetType();
+            if (StringUtils.isEmpty(assetType)) {
+                assetType = transferTxDto.getAssetType();
+            }
 
             String txHash = transferTxDto.getTxHash();
             if (txHash.equals(previousTxHash)) {
