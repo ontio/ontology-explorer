@@ -194,6 +194,22 @@ public class Web3jSdkUtil {
         return parse.toBase58();
     }
 
+    public String getCode(String address) {
+        String code = ConstantParam.EMPTY;
+        Web3j web3j = getWeb3jSingleton();
+        try {
+            EthGetCode ethGetCode = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).send();
+            Response.Error error = ethGetCode.getError();
+            if (error != null) {
+                String errorMessage = error.getMessage();
+                log.error("eth getCode error, address:{},error:{}", address, errorMessage);
+            }
+            code = ethGetCode.getCode();
+        } catch (IOException e) {
+            log.error("getCode error....", e);
+        }
+        return code;
+    }
 
     public String getOrcTokenSymbol(String contract) {
         String symbol = ConstantParam.EMPTY;

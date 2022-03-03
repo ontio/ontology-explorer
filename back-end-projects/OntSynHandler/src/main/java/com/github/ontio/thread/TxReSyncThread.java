@@ -320,9 +320,9 @@ public class TxReSyncThread {
             RawTransaction rawTransaction = TransactionDecoder.decode(code);
             calledContractHash = rawTransaction.getTo();
             // 解决evm类型的ong转账,calledContractHash为转出地址的问题
-            String inputData = web3jSdkUtil.queryInputDataByTxHash(txHash);
-            if (inputData.equalsIgnoreCase(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                // ONG转账及部署合约inputData都是0x
+            String contractCode = web3jSdkUtil.getCode(calledContractHash);
+            if (ConstantParam.EVM_ADDRESS_PREFIX.equalsIgnoreCase(contractCode)) {
+                // 用户地址code为0x
                 calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
             }
         }
@@ -444,10 +444,11 @@ public class TxReSyncThread {
                                        int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag,
                                        String contractAddress, JSONObject oep5Obj, String payer, String calledContractHash) throws Exception {
 
-        Boolean isTransfer = Boolean.FALSE;
-        String action = (String) stateArray.get(0);
-        if (!"transfer".equalsIgnoreCase(action)) {
-            action = new String(Helper.hexToBytes(action));
+        String action;
+        try {
+            action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        } catch (Exception e) {
+            action = (String) stateArray.get(0);
         }
         //只解析birth和transfer合约方法
         if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
@@ -490,7 +491,6 @@ public class TxReSyncThread {
             } else {
                 amount = ConstantParam.ONE;
                 dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
-                isTransfer = Boolean.TRUE;
             }
             assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
         } else {
@@ -512,7 +512,6 @@ public class TxReSyncThread {
                 //transfer方法，tokenid在位置3
                 assetName = oep5Obj.getString("symbol") + stateArray.get(3);
                 amount = ConstantParam.ONE;
-                isTransfer = Boolean.TRUE;
             }
         }
 
@@ -983,6 +982,7 @@ public class TxReSyncThread {
                 List<Uint256> values = (List<Uint256>) result.get(1).getValue();
                 txAction = EventTypeEnum.Transfer.des();
                 eventType = EventTypeEnum.Transfer.type();
+                int replaceIndexInTx = indexInTx;
                 for (int i = 0; i < tokenIds.size(); i++) {
                     tokenId = tokenIds.get(i).getValue().toString();
                     amount = new BigDecimal(values.get(i).getValue());
@@ -990,7 +990,10 @@ public class TxReSyncThread {
                     if (orc1155Obj != null) {
                         assetName = orc1155Obj.getString("name");
                     }
-                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx + 1000 + i, eventType, hexContractHash, payer, calledContractHash);
+                    if (i > 0) {
+                        replaceIndexInTx = indexInTx + 1000 + i;
+                    }
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, replaceIndexInTx, eventType, hexContractHash, payer, calledContractHash);
                     ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
                     ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
                     ReSyncConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, tokenId));

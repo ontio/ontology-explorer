@@ -7,17 +7,24 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.payload.DeployCode;
+import com.github.ontio.core.payload.InvokeWasmCode;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.BatchBlockDto;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -590,4 +597,67 @@ public class CommonService {
         txDetailIndexMapper.buildTxDetailIndexForToAddress(beginHeight, endHeight, null);
     }
 
+    public String getOepSymbol(Boolean isWasm, String contract, String tokenId) {
+        String symbol = ConstantParam.EMPTY;
+        try {
+            if (isWasm) {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                List<Object> invokeParams;
+                if (StringUtils.isEmpty(tokenId)) {
+                    invokeParams = Collections.emptyList();
+                } else {
+                    invokeParams = Collections.singletonList(new BigInteger(tokenId));
+                }
+                InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contract, ConstantParam.FUN_SYMBOL, invokeParams, Address.ZERO, 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                symbol = new String(Helper.hexToBytes(result));
+            } else {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                List<Object> paramList = new ArrayList<>();
+                paramList.add(ConstantParam.FUN_SYMBOL.getBytes());
+                List<Object> invokeParams;
+                if (StringUtils.isEmpty(tokenId)) {
+                    invokeParams = Collections.emptyList();
+                } else {
+                    invokeParams = Collections.singletonList(Helper.hexToBytes(tokenId));
+                }
+                paramList.add(invokeParams);
+                byte[] params = BuildParams.createCodeParamsScript(paramList);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contract), null, params, Address.ZERO.toBase58(), 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                symbol = new String(Helper.hexToBytes(result));
+            }
+        } catch (Exception e) {
+            log.error("getOep4Decimal error...{}", e.getMessage());
+        }
+        return symbol;
+    }
+
+    public Integer getOep4Decimals(Boolean isWasm, String contract) {
+        Integer decimals = null;
+        try {
+            if (isWasm) {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contract, ConstantParam.FUN_DECIMALS, Collections.emptyList(), Address.ZERO, 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                decimals = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result)).intValue();
+            } else {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                List<Object> paramList = new ArrayList<>();
+                paramList.add(ConstantParam.FUN_DECIMALS.getBytes());
+                paramList.add(Collections.emptyList());
+                byte[] params = BuildParams.createCodeParamsScript(paramList);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contract), null, params, Address.ZERO.toBase58(), 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                decimals = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result)).intValue();
+            }
+        } catch (Exception e) {
+            log.error("getOep4Decimal error...{}", e.getMessage());
+        }
+        return decimals;
+    }
 }

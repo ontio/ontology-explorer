@@ -135,7 +135,6 @@
 			<scope>runtime</scope>
 		</dependency>
 
-
 		<dependency>
 			<groupId>com.lmax</groupId>
 			<artifactId>disruptor</artifactId>
@@ -152,19 +151,35 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
 			<version>4.5</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.web3j</groupId>
 			<artifactId>core</artifactId>
-			<version>4.2.0</version>
+			<version>4.8.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.9.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>logging-interceptor</artifactId>
+			<version>4.9.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib</artifactId>
+			<version>1.4.10</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

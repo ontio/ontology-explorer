@@ -184,6 +184,9 @@ public final class ConstantParam {
 
     public static final String FUN_DECIMALS = "decimals";
 
+    public static final String NEOVM_TRANSFER_ACTION = "7472616e73666572";
+
+    public static final String NEOVM_APPROVAL_ACTION = "617070726f76616c";
     /**
      * evm TypeReference
      */
