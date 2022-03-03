@@ -1517,7 +1517,7 @@ public class AddressServiceImpl implements IAddressService {
      *
      * @return
      */
-    private List<TransferTxDto> formatTransferTxDtos(List<TransferTxDto> transferTxDtos, String assetType) {
+    private List<TransferTxDto> formatTransferTxDtos(List<TransferTxDto> transferTxDtos, String tokenType) {
 
         List<TransferTxDto> formattedTransferTxs = new ArrayList<>();
 
@@ -1527,8 +1527,11 @@ public class AddressServiceImpl implements IAddressService {
             TransferTxDto transferTxDto = transferTxDtos.get(i);
             String assetName = transferTxDto.getAssetName();
             BigDecimal amount = transferTxDto.getAmount();
-            if (StringUtils.isEmpty(assetType)) {
+            String assetType;
+            if (StringUtils.isEmpty(tokenType)) {
                 assetType = transferTxDto.getAssetType();
+            } else {
+                assetType = tokenType;
             }
 
             String txHash = transferTxDto.getTxHash();
