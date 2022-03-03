@@ -54,7 +54,7 @@ public class ConstantParam {
     public static final String OEP8_PUMPKIN_PREFIX = "pumpkin";
 
 
-    public static final BigDecimal ZERO = new BigDecimal("0");
+    public static final BigDecimal ZERO = BigDecimal.ZERO;
 
 
     public static final BigDecimal ONG_SECONDMAKE = new BigDecimal("5");

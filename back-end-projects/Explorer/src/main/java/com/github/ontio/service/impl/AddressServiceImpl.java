@@ -691,6 +691,9 @@ public class AddressServiceImpl implements IAddressService {
             String[] tokenIdArray = tokenId.split(",");
             for (int i = 0; i < tokenIdArray.length; i++) {
                 BigDecimal balance = web3jSdkUtil.queryOrc1155Balance(address, contractHash, tokenIdArray[i]);
+                if (ConstantParam.ZERO.compareTo(balance) == 0) {
+                    continue;
+                }
                 BalanceDto balanceDto = BalanceDto.builder()
                         .assetName(symbolArray[i])
                         .assetType(ConstantParam.ASSET_TYPE_ORC1155)
