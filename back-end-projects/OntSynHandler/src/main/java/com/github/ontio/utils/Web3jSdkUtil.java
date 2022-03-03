@@ -16,6 +16,7 @@ import org.web3j.crypto.RawTransaction;
 import org.web3j.crypto.Sign;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.Response;
 import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.*;
 import org.web3j.protocol.http.HttpService;
@@ -27,10 +28,7 @@ import org.web3j.utils.Numeric;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Slf4j
@@ -136,6 +134,26 @@ public class Web3jSdkUtil {
         return input;
     }
 
+    public List<Type> sendPreTransactionAndDecode(Web3j web3j, String contract, String name, String address, List<Type> params, List<TypeReference<?>> outputParameters) throws Exception {
+        try {
+            Function function = new Function(name, params, outputParameters);
+            String transactionData = FunctionEncoder.encode(function);
+            Transaction ethCallTransaction = Transaction.createEthCallTransaction(address, contract, transactionData);
+            EthCall ethCall = web3j.ethCall(ethCallTransaction, DefaultBlockParameterName.LATEST).send();
+            web3j.shutdown();
+            Response.Error error = ethCall.getError();
+            if (error != null) {
+                String errorMessage = error.getMessage();
+                log.error("error when invoke contract:{},name:{},error:{}", contract, name, errorMessage);
+            }
+            List<Type> result = FunctionReturnDecoder.decode(ethCall.getValue(), function.getOutputParameters());
+            return result;
+        } catch (Exception e) {
+            web3j.shutdown();
+            throw e;
+        }
+    }
+
     public BigDecimal queryOrc20Balance(String fromAddress, String contractAddress) {
         Web3j web3j = getWeb3jSingleton();
         String methodName = "balanceOf";
@@ -176,5 +194,33 @@ public class Web3jSdkUtil {
         return parse.toBase58();
     }
 
+
+    public String getOrcTokenSymbol(String contract) {
+        String symbol = ConstantParam.EMPTY;
+        Web3j web3j = getWeb3jSingleton();
+        try {
+            List<Type> params = Collections.emptyList();
+            List<TypeReference<?>> outputParameters = Collections.singletonList(ConstantParam.TYPE_REFERENCE_UTF8);
+            List<Type> result = sendPreTransactionAndDecode(web3j, contract, ConstantParam.FUN_SYMBOL, Address.DEFAULT.getValue(), params, outputParameters);
+            symbol = result.get(0).getValue().toString();
+        } catch (Exception e) {
+            log.error("getOrcTokenSymbol error....", e);
+        }
+        return symbol;
+    }
+
+    public Integer getOrc20Decimals(String contract) {
+        Integer decimals = null;
+        Web3j web3j = getWeb3jSingleton();
+        try {
+            List<Type> params = Collections.emptyList();
+            List<TypeReference<?>> outputParameters = Collections.singletonList(ConstantParam.TYPE_REFERENCE_UINT8);
+            List<Type> result = sendPreTransactionAndDecode(web3j, contract, ConstantParam.FUN_DECIMALS, Address.DEFAULT.getValue(), params, outputParameters);
+            decimals = ((BigInteger) result.get(0).getValue()).intValue();
+        } catch (Exception e) {
+            log.error("getOrcTokenSymbol error....", e);
+        }
+        return decimals;
+    }
 
 }

@@ -25,7 +25,9 @@ import com.github.ontio.model.common.BatchBlockDto;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.DynamicArray;
+import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Uint256;
+import org.web3j.abi.datatypes.generated.Uint8;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -176,6 +178,12 @@ public final class ConstantParam {
 
     public static final String EMPTY = "";
 
+    public static final String FUN_BALANCE_OF = "balanceOf";
+
+    public static final String FUN_SYMBOL = "symbol";
+
+    public static final String FUN_DECIMALS = "decimals";
+
     /**
      * evm TypeReference
      */
@@ -184,5 +192,9 @@ public final class ConstantParam {
     public static TypeReference<Uint256> TYPE_REFERENCE_UINT256 = new TypeReference<Uint256>() {
     };
     public static TypeReference<DynamicArray<Uint256>> TYPE_REFERENCE_UINT256_ARRAY = new TypeReference<DynamicArray<Uint256>>() {
+    };
+    public static TypeReference<Utf8String> TYPE_REFERENCE_UTF8 = new TypeReference<Utf8String>() {
+    };
+    public static TypeReference<Uint8> TYPE_REFERENCE_UINT8 = new TypeReference<Uint8>() {
     };
 }

@@ -41,6 +41,7 @@ import com.github.ontio.service.CommonService;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 import com.github.ontio.utils.ReSyncConstantParam;
+import com.github.ontio.utils.Web3jSdkUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -51,6 +52,8 @@ import org.web3j.abi.TypeReference;
 import org.web3j.abi.Utils;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.generated.Uint256;
+import org.web3j.crypto.RawTransaction;
+import org.web3j.crypto.TransactionDecoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -82,14 +85,17 @@ public class TxReSyncThread {
 
     private final Oep5Mapper oep5Mapper;
 
+    private final Web3jSdkUtil web3jSdkUtil;
+
     @Autowired
     public TxReSyncThread(ParamsConfig paramsConfig, ContractMapper contractMapper, CommonService commonService,
-                          Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper) {
+                          Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Web3jSdkUtil web3jSdkUtil) {
         this.paramsConfig = paramsConfig;
         this.contractMapper = contractMapper;
         this.commonService = commonService;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
+        this.web3jSdkUtil = web3jSdkUtil;
     }
 
     @Async
@@ -132,8 +138,17 @@ public class TxReSyncThread {
         int txType = txJson.getInteger("TxType");
         String txHash = txJson.getString("Hash");
         String payer = txJson.getString("Payer");
-        String code = txJson.getJSONObject("Payload").getString("Code");
-        String calledContractHash = parseCalledContractHash(code, txType);
+
+        String code;
+        if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
+            code = txJson.getString("Payload");
+            // wasm合约可以调用evm合约，所以对应的txHash需要判断
+            txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
+            payer = com.github.ontio.utils.Helper.ontAddrToEthAddr(payer);
+        } else {
+            code = txJson.getJSONObject("Payload").getString("Code");
+        }
+        String calledContractHash = parseCalledContractHash(code, txType, txHash);
         if (!contractHash.equals(calledContractHash)) {
             return;
         }
@@ -150,9 +165,9 @@ public class TxReSyncThread {
             JSONArray notifyArray = eventLogObj.getJSONArray("Notify");
             //no event transaction or deploy smart contract transaction
             if (notifyArray.size() != 0) {
-                JSONArray stateArray = null;
-                String evmStates = "";
                 for (int i = 0, len = notifyArray.size(); i < len; i++) {
+                    JSONArray stateArray = null;
+                    String evmStates = "";
                     JSONObject notifyObj = (JSONObject) notifyArray.get(i);
                     String contractAddress = notifyObj.getString("ContractAddress");
 
@@ -283,11 +298,10 @@ public class TxReSyncThread {
      * @param txType
      * @return
      */
-    private String parseCalledContractHash(String code, Integer txType) {
+    private String parseCalledContractHash(String code, Integer txType, String txHash) throws IOException {
 
         String calledContractHash = "";
         if (TransactionTypeEnum.NEOVM_INVOKECODE.type() == txType) {
-
             while (code.contains(ConstantParam.TXPAYLOAD_CODE_FLAG)) {
                 int index = code.indexOf(ConstantParam.TXPAYLOAD_CODE_FLAG);
                 code = code.substring(index + 2);
@@ -302,6 +316,15 @@ public class TxReSyncThread {
             }
         } else if (TransactionTypeEnum.WASMVM_INVOKECODE.type() == txType) {
             calledContractHash = Helper.reverse(code.substring(0, 40));
+        } else if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
+            RawTransaction rawTransaction = TransactionDecoder.decode(code);
+            calledContractHash = rawTransaction.getTo();
+            // 解决evm类型的ong转账,calledContractHash为转出地址的问题
+            String inputData = web3jSdkUtil.queryInputDataByTxHash(txHash);
+            if (inputData.equalsIgnoreCase(ConstantParam.EVM_ADDRESS_PREFIX)) {
+                // ONG转账及部署合约inputData都是0x
+                calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
+            }
         }
 
         //判断属于什么OEP类型交易
@@ -733,10 +756,7 @@ public class TxReSyncThread {
 
         String decodeData = topicList.get(1) + topicList.get(2) + data;
 
-        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256);
-        List<TypeReference<Type>> convert = Utils.convert(outputParameters);
-
-        List<Type> result = FunctionReturnDecoder.decode(decodeData, convert);
+        List<Type> result = handleEvmOrc20Orc721TransferResults(decodeData);
 
         String fromAddress = result.get(0).getValue().toString();
         String toAddress = result.get(1).getValue().toString();
@@ -747,8 +767,6 @@ public class TxReSyncThread {
         BigDecimal amount = new BigDecimal(amountValue).divide(ConstantParam.NEW_ONG_DECIMAL);
 
         log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
-        txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-        log.info("####tx hash{}####", txHash);
 
         if (gasConsumed.compareTo(ConstantParam.ZERO) != 0 && (indexInTx == notifyListSize)) {
             action = EventTypeEnum.Gasconsume.des();
@@ -800,20 +818,20 @@ public class TxReSyncThread {
             if (ConstantParam.TRANSFER_TX.equals(topicList.get(0))) {
                 // Transfer TX
                 String parseData = topicList.get(1) + topicList.get(2) + data;
-                List<Type> result = handleOrc20Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
-                amountValue = new BigDecimal(result.get(2).getValue().toString());
+                amountValue = new BigDecimal((BigInteger) result.get(2).getValue());
                 txAction = EventTypeEnum.Transfer.des();
                 eventType = EventTypeEnum.Transfer.type();
 
             } else if (ConstantParam.Approval_TX.equals(topicList.get(0))) {
                 // Approval TX
                 String parseData = topicList.get(1) + topicList.get(2) + data;
-                List<Type> result = handleOrc20Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
-                amountValue = new BigDecimal(result.get(2).getValue().toString());
+                amountValue = new BigDecimal((BigInteger) result.get(2).getValue());
                 txAction = EventTypeEnum.Approval.des();
                 eventType = EventTypeEnum.Approval.type();
             }
@@ -825,10 +843,6 @@ public class TxReSyncThread {
             }
 
             contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
-            // wasm合约可以调用evm合约，所以对应的txHash需要判断
-            if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
-                txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-            }
 
             TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
@@ -842,7 +856,7 @@ public class TxReSyncThread {
     }
 
 
-    public List<Type> handleOrc20Results(String parseData) {
+    public List<Type> handleEvmOrc20Orc721TransferResults(String parseData) {
         List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
@@ -878,7 +892,7 @@ public class TxReSyncThread {
             if (ConstantParam.TRANSFER_TX.equals(topicList.get(0))) {
                 // Transfer TX
                 String parseData = topicList.get(1) + topicList.get(2) + topicList.get(3);
-                List<Type> result = handleOrc721Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
                 amount = BigDecimal.ONE;
@@ -888,7 +902,7 @@ public class TxReSyncThread {
             } else if (ConstantParam.Approval_TX.equals(topicList.get(0))) {
                 // Approval TX
                 String parseData = topicList.get(1) + topicList.get(2) + topicList.get(3);
-                List<Type> result = handleOrc721Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
                 amount = BigDecimal.ONE;
@@ -900,10 +914,6 @@ public class TxReSyncThread {
             String assetName = orc721Obj.getString("name");
 
             contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
-            // wasm合约可以调用evm合约，所以对应的txHash需要判断
-            if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
-                txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-            }
 
             TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
 
@@ -914,13 +924,6 @@ public class TxReSyncThread {
             log.error("handle orc721 tx error ");
             e.printStackTrace();
         }
-    }
-
-    public List<Type> handleOrc721Results(String parseData) {
-        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256);
-        List<TypeReference<Type>> convert = Utils.convert(outputParameters);
-
-        return FunctionReturnDecoder.decode(parseData, convert);
     }
 
     private void handleOrc1155TransferTxn(String evmStates, int txType, String txHash, int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag, String contractHash, String payer, String calledContractHash) {
@@ -953,15 +956,11 @@ public class TxReSyncThread {
             int eventType = 0;
 
             String hexContractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
-            // wasm合约可以调用evm合约，所以对应的txHash需要判断
-            if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
-                txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-            }
 
             if (ConstantParam.TRANSFER_SINGLE_TX.equals(topicList.get(0))) {
                 // Transfer Single TX
                 String parseData = topicList.get(1) + topicList.get(2) + topicList.get(3) + data;
-                List<Type> result = handleOrc1155Results(parseData);
+                List<Type> result = handleOrc1155TransferResults(parseData);
                 fromAddress = result.get(1).getValue().toString();
                 toAddress = result.get(2).getValue().toString();
                 tokenId = result.get(3).getValue().toString();
@@ -979,7 +978,7 @@ public class TxReSyncThread {
             } else if (ConstantParam.TRANSFER_BATCH_TX.equals(topicList.get(0))) {
                 fromAddress = ConstantParam.EVM_ADDRESS_PREFIX + topicList.get(2).substring(24);
                 toAddress = ConstantParam.EVM_ADDRESS_PREFIX + topicList.get(3).substring(24);
-                List<Type> result = handleOrc1155BatchResults(data);
+                List<Type> result = handleOrc1155BatchTransferResults(data);
                 List<Uint256> tokenIds = (List<Uint256>) result.get(0).getValue();
                 List<Uint256> values = (List<Uint256>) result.get(1).getValue();
                 txAction = EventTypeEnum.Transfer.des();
@@ -991,7 +990,7 @@ public class TxReSyncThread {
                     if (orc1155Obj != null) {
                         assetName = orc1155Obj.getString("name");
                     }
-                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, hexContractHash, payer, calledContractHash);
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx + 1000 + i, eventType, hexContractHash, payer, calledContractHash);
                     ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
                     ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
                     ReSyncConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, tokenId));
@@ -1008,14 +1007,14 @@ public class TxReSyncThread {
         }
     }
 
-    public List<Type> handleOrc1155Results(String parseData) {
+    public List<Type> handleOrc1155TransferResults(String parseData) {
         List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         return FunctionReturnDecoder.decode(parseData, convert);
     }
 
-    public List<Type> handleOrc1155BatchResults(String parseData) {
+    public List<Type> handleOrc1155BatchTransferResults(String parseData) {
         List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_UINT256_ARRAY, ConstantParam.TYPE_REFERENCE_UINT256_ARRAY);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
