@@ -37,7 +37,6 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -48,7 +47,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -156,16 +154,27 @@ public class OntologySDKService {
      * @return
      */
     public Map getNativeAssetBalance(String address) {
-        Map<String, Object> balanceMap = new HashMap<>();
         try {
-            OntSdk ontSdk = getOntSdk();
-            balanceMap = (Map) ontSdk.getConnect().getBalance(address);
+            String resp = HttpClientUtil.getRequest(String.format(ConstantParam.BALANCE_V2_URL, paramsConfig.MASTERNODE_RESTFUL_URL, address), Collections.emptyMap(), Collections.emptyMap());
+            JSONObject jsonObject = JSONObject.parseObject(resp);
+            Integer error = jsonObject.getInteger("Error");
+            if (error == 0) {
+                return jsonObject.getJSONObject("Result");
+            } else {
+                log.error("getNativeAssetBalance error...:{}", error);
+                Map<String, Object> balanceMap = new HashMap<>();
+                balanceMap.put("ong", "0");
+                balanceMap.put("ont", "0");
+                return balanceMap;
+            }
+//            balanceMap = (Map) ontSdk.getConnect().getBalance(address);
         } catch (Exception e) {
             log.error("getNativeAssetBalance error...", e);
+            Map<String, Object> balanceMap = new HashMap<>();
             balanceMap.put("ong", "0");
             balanceMap.put("ont", "0");
+            return balanceMap;
         }
-        return balanceMap;
     }
 
 
@@ -173,17 +182,17 @@ public class OntologySDKService {
      * EVM 类型 查询以太坊地址的账户内的ong余额
      */
 
-    public Map getEVMONGAssetBalance(String address){
-        Map<String, Object> balanceMap = new HashMap<>();
+    public String getOngBalanceByEvmAddress(String address) {
+        String balance = "0";
         String ontAddr = com.github.ontio.util.Helper.EthAddrToOntAddr(address);
-        OntSdk ontSdk = getOntSdk();
         try {
-            balanceMap = (Map) ontSdk.getConnect().getBalance(ontAddr);
+            OntSdk ontSdk = getOntSdk();
+            BigInteger balanceOf = ontSdk.nativevm().ongV2().queryBalanceOf(ontAddr);
+            balance = balanceOf.toString();
         } catch (Exception e) {
             log.error("getEVMONGAssetBalance error...", e);
-            balanceMap.put("ong", "0");
         }
-        return balanceMap;
+        return balance;
     }
 
 
@@ -298,7 +307,7 @@ public class OntologySDKService {
         OntSdk ontSdk = getOntSdk();
         try {
             String unboundOng = ontSdk.nativevm().ong().unboundOng(address);
-            return new BigDecimal(unboundOng).divide(ConstantParam.ONT_TOTAL).toPlainString();
+            return new BigDecimal(unboundOng).divide(ConstantParam.ONG_TOTAL).toPlainString();
         } catch (Exception e) {
             log.error("getUnBoundOng error...", e);
             e.printStackTrace();

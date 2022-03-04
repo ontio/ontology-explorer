@@ -30,6 +30,8 @@ public class TransactionTagSchedule {
     private Orc20Mapper orc20Mapper;
     @Autowired
     private Orc721Mapper orc721Mapper;
+    @Autowired
+    private Orc1155Mapper orc1155Mapper;
 
     /**
      * 初始化所有 转入地址的信息   5 * 60 * 1000
@@ -61,7 +63,7 @@ public class TransactionTagSchedule {
         oep8.setAuditFlag(true);
         List<Oep8> oep8s = oep8Mapper.select(oep8);
         oep8s.forEach(item -> {
-            ConstantParam.CONTRACT_TAG.put(item.getContractHash().toLowerCase(), item.getName());
+            ConstantParam.CONTRACT_TAG.put(item.getContractHash().toLowerCase(), item.getCollection());
         });
 
         Orc20 orc20 = new Orc20();
@@ -76,6 +78,13 @@ public class TransactionTagSchedule {
         List<Orc721> orc721s = orc721Mapper.select(orc721);
         orc721s.forEach(item -> {
             ConstantParam.CONTRACT_TAG.put(item.getContractHash().toLowerCase(), item.getName());
+        });
+
+        Orc1155 orc1155 = new Orc1155();
+        orc1155.setAuditFlag(true);
+        List<Orc1155> orc1155s = orc1155Mapper.select(orc1155);
+        orc1155s.forEach(item -> {
+            ConstantParam.CONTRACT_TAG.put(item.getContractHash().toLowerCase(), item.getCollection());
         });
     }
 

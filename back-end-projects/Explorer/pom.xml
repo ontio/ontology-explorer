@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>com.github.ontio</groupId>
 			<artifactId>ontology-sdk-java</artifactId>
-			<version>1.10.7</version>
+			<version>1.10.8</version>
 		</dependency>
 
 

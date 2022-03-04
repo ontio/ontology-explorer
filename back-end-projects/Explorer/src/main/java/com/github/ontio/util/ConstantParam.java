@@ -54,7 +54,7 @@ public class ConstantParam {
     public static final String OEP8_PUMPKIN_PREFIX = "pumpkin";
 
 
-    public static final BigDecimal ZERO = new BigDecimal("0");
+    public static final BigDecimal ZERO = BigDecimal.ZERO;
 
 
     public static final BigDecimal ONG_SECONDMAKE = new BigDecimal("5");
@@ -62,7 +62,11 @@ public class ConstantParam {
 
     public static final BigDecimal ONT_TOTAL = new BigDecimal("1000000000");
 
-    public static final BigDecimal ONG_TOTAL = new BigDecimal("1000000000");
+    public static final BigDecimal ONG_TOTAL = ONT_TOTAL;
+
+    public static final BigDecimal NEW_ONT_DECIMAL = ONT_TOTAL;
+
+    public static final BigDecimal NEW_ONG_DECIMAL = new BigDecimal("1000000000000000000");
 
 
     public static final String GO_TOTALSUPPLY_URL = "/getAssetHolder";
@@ -100,6 +104,8 @@ public class ConstantParam {
 
     public static final String ASSET_TYPE_ORC721 = "orc721";
 
+    public static final String ASSET_TYPE_ORC1155 = "orc1155";
+
     public static final String ASSET_TYPE_ONG = "ong";
 
     public static final String ASSET_TYPE_ALL = "all";
@@ -121,6 +127,8 @@ public class ConstantParam {
     public static final String CONTRACT_TYPE_ORC20 = "orc20";
 
     public static final String CONTRACT_TYPE_ORC721 = "orc721";
+
+    public static final String CONTRACT_TYPE_ORC1155 = "orc1155";
 
     public static final String CONTRACT_TYPE_OTHER = "other";
 

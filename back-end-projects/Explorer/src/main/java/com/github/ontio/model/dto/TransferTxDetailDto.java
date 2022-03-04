@@ -26,13 +26,16 @@ public class TransferTxDetailDto {
 
     private String contractHash;
 
+    private String assetType;
+
 
     @Builder
-    public TransferTxDetailDto(BigDecimal amount, String fromAddress, String toAddress, String assetName, String contractHash) {
+    public TransferTxDetailDto(BigDecimal amount, String fromAddress, String toAddress, String assetName, String contractHash, String assetType) {
         this.amount = amount;
         this.fromAddress = fromAddress;
         this.toAddress = toAddress;
         this.assetName = assetName;
         this.contractHash = contractHash;
+        this.assetType = assetType;
     }
 }

@@ -158,13 +158,15 @@
                if(oep5.contract_hash IS NULL, FALSE, TRUE)  AS oep5,
                if(oep8.contract_hash IS NULL, FALSE, TRUE)  AS oep8,
                if(orc20.contract_hash IS NULL, FALSE, TRUE) AS orc20,
-               if(orc721.contract_hash IS NULL, FALSE, TRUE) AS orc721
+               if(orc721.contract_hash IS NULL, FALSE, TRUE) AS orc721,
+               if(orc1155.contract_hash IS NULL, FALSE, TRUE) AS orc1155
         FROM tbl_contract c
                  LEFT OUTER JOIN tbl_oep4 oep4 ON oep4.contract_hash = c.contract_hash
                  LEFT OUTER JOIN tbl_oep5 oep5 ON oep5.contract_hash = c.contract_hash
                  LEFT OUTER JOIN tbl_oep8 oep8 ON oep8.contract_hash = c.contract_hash
                  LEFT OUTER JOIN tbl_orc20 orc20 ON orc20.contract_hash = c.contract_hash
                  LEFT OUTER JOIN tbl_orc721 orc721 ON orc721.contract_hash = c.contract_hash
+                 LEFT OUTER JOIN tbl_orc1155 orc1155 ON orc1155.contract_hash = c.contract_hash
         WHERE c.contract_hash = #{contractHash}
         LIMIT 1
     </select>

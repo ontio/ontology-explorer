@@ -137,7 +137,7 @@ public class SummaryServiceImpl implements ISummaryService {
         for (String addr :
                 ConstantParam.SPECIALADDRLIST) {
             Map<String, String> map = ontologySDKService.getNativeAssetBalance(addr);
-            specialAddrOnt = specialAddrOnt.add(new BigDecimal(map.get("ont")));
+            specialAddrOnt = specialAddrOnt.add(new BigDecimal(map.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
         }
         BigDecimal ontTotalSupply = ConstantParam.ONT_TOTAL.subtract(specialAddrOnt);
 
@@ -154,26 +154,26 @@ public class SummaryServiceImpl implements ISummaryService {
             ongTotalSupply = ongTotalSupply.add(roundOngSupply);
         }
         Map<String, BigDecimal> rsMap = new HashMap<>();
-        rsMap.put("ong", ongTotalSupply);
-        rsMap.put("ont", ontTotalSupply);
+        rsMap.put(ConstantParam.ONG, ongTotalSupply);
+        rsMap.put(ConstantParam.ONT, ontTotalSupply);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), rsMap);
     }
 
     @Override
     public BigDecimal queryNativeTotalCirculatingSupply(String token) {
-        BigDecimal specialAddrOnt = new BigDecimal("0");
+        BigDecimal specialAddrOnt = BigDecimal.ZERO;
         for (String addr :
                 ConstantParam.SPECIALADDRLIST) {
             Map<String, String> map = ontologySDKService.getNativeAssetBalance(addr);
-            specialAddrOnt = specialAddrOnt.add(new BigDecimal(map.get("ont")));
+            specialAddrOnt = specialAddrOnt.add(new BigDecimal(map.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
         }
         BigDecimal ontTotalSupply = ConstantParam.ONT_TOTAL.subtract(specialAddrOnt);
 
-        if ("ont".equals(token.toLowerCase())) {
+        if (ConstantParam.ONT.equals(token.toLowerCase())) {
             return ontTotalSupply;
         }
 
-        if ("ong".equals(token.toLowerCase())) {
+        if (ConstantParam.ONG.equals(token.toLowerCase())) {
             BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(TIMESTAMP_20180630000000_UTC)).multiply(new BigDecimal(5));
             BigDecimal ong02 = new BigDecimal(TIMESTAMP_20200629000000_UTC).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(new BigDecimal(4));
             BigDecimal ong03 = new BigDecimal(TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(TIMESTAMP_20200629000000_UTC)).multiply(new BigDecimal(3));

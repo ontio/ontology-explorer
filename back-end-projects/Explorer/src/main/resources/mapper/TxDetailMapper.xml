@@ -90,10 +90,18 @@
 
 
     <select id="selectTransferTxDetailByHash" parameterType="java.lang.String" resultType="com.github.ontio.model.dto.TxDetailDto">
-        select to_address as toAddress, from_address as fromAddress, amount as amount, asset_name as assetName, description as description, contract_hash as contractHash
-        from tbl_tx_detail
-        where tx_hash = #{txHash}
-        and event_type in (2,3,7)
+        select
+        a.to_address as toAddress,
+        a.from_address as fromAddress,
+        a.amount as amount,
+        a.asset_name as assetName,
+        a.description as description,
+        a.contract_hash as contractHash,
+        b.type as assetType
+        from tbl_tx_detail a
+        left join tbl_contract b on a.contract_hash = b.contract_hash
+        where a.tx_hash = #{txHash}
+        and a.event_type in (2,3,7)
     </select>
 
 
@@ -117,7 +125,20 @@
 
     <select id="selectTransferTxsByPage" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT
-        <include refid="transferTxDetailColumns"/>
+        d.tx_hash as txHash,
+        d.tx_type as txType,
+        d.tx_time as txTime,
+        d.block_height as blockHeight,
+        d.confirm_flag as confirmFlag,
+        d.block_index as blockIndex,
+        d.fee as fee,
+        d.asset_name as assetName,
+        d.amount as amount,
+        d.to_address as toAddress,
+        d.from_address as fromAddress,
+        d.tx_index as txIndex,
+        d.contract_hash as contractHash,
+        c.type AS assetType
         FROM tbl_tx_detail d
         INNER JOIN
         (
@@ -130,6 +151,7 @@
         ORDER BY desc_block_height, tx_hash, tx_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
+        LEFT JOIN tbl_contract c ON d.contract_hash = c.contract_hash
         WHERE (d.from_address = #{address}
         OR d.to_address = #{address})
         <if test="assetName != '' and assetName != null">
@@ -445,6 +467,9 @@
             <when test="tokenType == 'orc721'">
                 FROM tbl_orc721 o
             </when>
+            <when test="tokenType == 'orc1155'">
+                FROM tbl_orc1155 o
+            </when>
             <otherwise>
                 FROM tbl_oep8 o
             </otherwise>
@@ -487,6 +512,9 @@
             </when>
             <when test="tokenType == 'orc721'">
                 FROM tbl_orc721_tx_detail d
+            </when>
+            <when test="tokenType == 'orc1155'">
+                FROM tbl_orc1155_tx_detail d
             </when>
             <otherwise>
                 FROM tbl_oep8_tx_detail d

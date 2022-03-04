@@ -174,13 +174,6 @@ public class TransactionServiceImpl implements ITransactionService {
         if (EventTypeEnum.Transfer.getType() == eventType || EventTypeEnum.Auth.getType() == eventType || EventTypeEnum.Approval.getType() == eventType) {
 
             List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-            txDetailDtos.forEach(item -> {
-                //ONG转换好精度给前端
-                String assetName = item.getAssetName();
-                if (ConstantParam.ONG.equals(assetName)) {
-                    item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-                }
-            });
             detailObj.put("transfers", txDetailDtos);
         } else if (EventTypeEnum.Ontid.getType() == eventType) {
             //ONTID交易获取ONTID动作详情
@@ -226,13 +219,6 @@ public class TransactionServiceImpl implements ITransactionService {
         JSONObject detailObj = new JSONObject();
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
 
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         detailObj.put("transfers", txDetailDtos);
         txDetailDto.setDetail(detailObj);
         return txDetailDto;
@@ -241,13 +227,6 @@ public class TransactionServiceImpl implements ITransactionService {
     private List<TxDetailDto> queryTxDetailByTxHash2(String txHash) {
         // 没有approval 类型的
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         return txDetailDtos;
     }
 
@@ -255,27 +234,12 @@ public class TransactionServiceImpl implements ITransactionService {
     private List<TxDetailDto> queryTxDetailByTxHash3(String txHash) {
         // 没有approval 类型的
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash2(txHash);
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         return txDetailDtos;
     }
 
 
     private List<TxDetailDto> queryAllTxDetailByTxHash(String txHash) {
         List<TxDetailDto> txDetailDtos = txDetailMapper.selectTransferTxDetailByHash(txHash);
-
-        txDetailDtos.forEach(item -> {
-            //ONG转换好精度给前端
-            String assetName = item.getAssetName();
-            if (ConstantParam.ONG.equals(assetName) && !item.getAssetName().startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                item.setAmount(item.getAmount().divide(ConstantParam.ONG_TOTAL));
-            }
-        });
         return txDetailDtos;
     }
 
@@ -403,20 +367,26 @@ public class TransactionServiceImpl implements ITransactionService {
                 }
             } else {
                 ContractType contractType = contractTypes.get(calledContractHash);
-                if (contractType.isOep4()) {
-                    txType = TxTypeEnum.OEP4;
-                } else if (contractType.isOep5()) {
-                    txType = TxTypeEnum.OEP5;
-                } else if (contractType.isOep8()) {
-                    txType = TxTypeEnum.OEP8;
-                } else if (contractType.isOrc20()) {
-                    txType = TxTypeEnum.ORC20;
-                } else if (contractType.isOrc721()) {
-                    txType = TxTypeEnum.ORC721;
-                } else if (calledContractHash.equals(ConstantParam.CONTRACTHASH_ONG)) {
-                    txType = TxTypeEnum.ONG_TRANSFER;
-                } else {
+                if (contractType == null) {
                     txType = TxTypeEnum.CONTRACT_CALL;
+                } else {
+                    if (contractType.isOep4()) {
+                        txType = TxTypeEnum.OEP4;
+                    } else if (contractType.isOep5()) {
+                        txType = TxTypeEnum.OEP5;
+                    } else if (contractType.isOep8()) {
+                        txType = TxTypeEnum.OEP8;
+                    } else if (contractType.isOrc20()) {
+                        txType = TxTypeEnum.ORC20;
+                    } else if (contractType.isOrc721()) {
+                        txType = TxTypeEnum.ORC721;
+                    } else if (contractType.isOrc1155()) {
+                        txType = TxTypeEnum.ORC1155;
+                    } else if (calledContractHash.equals(ConstantParam.CONTRACTHASH_ONG)) {
+                        txType = TxTypeEnum.ONG_TRANSFER;
+                    } else {
+                        txType = TxTypeEnum.CONTRACT_CALL;
+                    }
                 }
             }
         }
@@ -429,7 +399,7 @@ public class TransactionServiceImpl implements ITransactionService {
     public void setContractMapper(ContractMapper contractMapper) {
         this.contractTypes = Caffeine.newBuilder()
                 .maximumSize(4096)
-                .expireAfterWrite(Duration.ofHours(1))
+                .expireAfterWrite(Duration.ofDays(1))
                 .build(contractHash -> {
                     ContractType contractType = contractMapper.findContractType(contractHash);
                     return contractType == null ? ContractType.NULL : contractType;

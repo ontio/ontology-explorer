@@ -9,10 +9,7 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
-import com.github.ontio.model.dao.Orc20;
-import com.github.ontio.model.dao.Oep4;
-import com.github.ontio.model.dao.Oep5;
-import com.github.ontio.model.dao.Oep8;
+import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.BalanceDto;
 import com.github.ontio.model.dto.QueryBatchBalanceDto;
 import com.github.ontio.model.dto.TransferTxDetailDto;
@@ -29,6 +26,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -56,10 +54,9 @@ public class AddressServiceImpl implements IAddressService {
     private final Oep4Mapper oep4Mapper;
     private final Oep8Mapper oep8Mapper;
     private final Oep5Mapper oep5Mapper;
-
     private final Orc20Mapper orc20Mapper;
-
-
+    private final Orc721Mapper orc721Mapper;
+    private final Orc1155Mapper orc1155Mapper;
     private final TxDetailMapper txDetailMapper;
     private final ParamsConfig paramsConfig;
     private final CommonService commonService;
@@ -68,13 +65,15 @@ public class AddressServiceImpl implements IAddressService {
 
 
     @Autowired
-    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, TxDetailMapper txDetailMapper,
-                              ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
+    public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper,
+                              TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
                               RankingMapper rankingMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
         this.orc20Mapper = orc20Mapper;
+        this.orc721Mapper = orc721Mapper;
+        this.orc1155Mapper = orc1155Mapper;
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.commonService = commonService;
@@ -150,9 +149,6 @@ public class AddressServiceImpl implements IAddressService {
                 case ConstantParam.ASSET_TYPE_NATIVE_OEP4:
                     balanceList = getNativeAndOep4BalanceOld(address);
                     break;
-                case ConstantParam.ASSET_TYPE_ORC20:
-                    balanceList = getOrc20BalanceOld(address, "");
-                    break;
                 default:
                     break;
             }
@@ -167,10 +163,19 @@ public class AddressServiceImpl implements IAddressService {
         List<BalanceDto> balanceList = new ArrayList<>();
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_ORC20:
-                balanceList = getOrc20BalanceOld(address, "");
+                balanceList = getOrc20Balance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_ORC721:
+                balanceList = getOrc721Balance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_ORC1155:
+                balanceList = getOrc1155Balance(address);
                 break;
             case ConstantParam.ASSET_TYPE_NATIVE:
                 balanceList = getEvmOngBalance(address);
+                break;
+            case ConstantParam.ASSET_TYPE_ALL:
+                balanceList = getAllEvmAssetBalance(address);
                 break;
             default:
                 break;
@@ -192,7 +197,7 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto4 = BalanceDto.builder()
                     .assetName(ConstantParam.ONT)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                     .contractHash(ConstantParam.CONTRACTHASH_ONT)
                     .build();
             balanceList.add(balanceDto4);
@@ -205,13 +210,13 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto1 = BalanceDto.builder()
                     .assetName(ConstantParam.ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                     .contractHash(ConstantParam.CONTRACTHASH_ONG)
                     .build();
             balanceList.add(balanceDto1);
 
             //waiting bound ONG
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            String waitBoundOng = calculateWaitingBoundOng(address, new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
             BalanceDto balanceDto2 = BalanceDto.builder()
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -276,7 +281,7 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto = BalanceDto.builder()
                     .assetName(ConstantParam.ONT)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                     .build();
             balanceList.add(balanceDto);
 
@@ -288,12 +293,12 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto1 = BalanceDto.builder()
                     .assetName(ConstantParam.ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                     .build();
             balanceList.add(balanceDto1);
 
             //waiting bound ONG
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            String waitBoundOng = calculateWaitingBoundOng(address, new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
             BalanceDto balanceDto2 = BalanceDto.builder()
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -345,7 +350,7 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto4 = BalanceDto.builder()
                     .assetName(ConstantParam.ONT)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                    .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                     .contractHash(ConstantParam.CONTRACTHASH_ONT)
                     .build();
             balanceList.add(balanceDto4);
@@ -358,13 +363,13 @@ public class AddressServiceImpl implements IAddressService {
             BalanceDto balanceDto1 = BalanceDto.builder()
                     .assetName(ConstantParam.ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                    .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                     .contractHash(ConstantParam.CONTRACTHASH_ONG)
                     .build();
             balanceList.add(balanceDto1);
 
             //waiting bound ONG
-            String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+            String waitBoundOng = calculateWaitingBoundOng(address, new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL));
             BalanceDto balanceDto2 = BalanceDto.builder()
                     .assetName(ConstantParam.WAITBOUND_ONG)
                     .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -432,13 +437,13 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto1 = BalanceDto.builder()
                 .assetName(ConstantParam.ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.NEW_ONG_DECIMAL)))
                 .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto1);
 
         //waiting bound ONG
-        String waitBoundOng = calculateWaitingBoundOng(address, (String) balanceMap.get(ConstantParam.ONT));
+        String waitBoundOng = calculateWaitingBoundOng(address, (new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL)));
         BalanceDto balanceDto2 = BalanceDto.builder()
                 .assetName(ConstantParam.WAITBOUND_ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
@@ -464,7 +469,7 @@ public class AddressServiceImpl implements IAddressService {
         BalanceDto balanceDto4 = BalanceDto.builder()
                 .assetName(ConstantParam.ONT)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)))
+                .balance(new BigDecimal((String) balanceMap.get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL))
                 .contractHash(ConstantParam.CONTRACTHASH_ONT)
                 .build();
         balanceList.add(balanceDto4);
@@ -605,7 +610,7 @@ public class AddressServiceImpl implements IAddressService {
     }
 
 
-    private List<BalanceDto> getOrc20BalanceOld(String address, String assetName) {
+    private List<BalanceDto> getOrc20Balance(String address) {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
 
@@ -633,20 +638,96 @@ public class AddressServiceImpl implements IAddressService {
         return balanceList;
     }
 
+    /**
+     * 获取ORC721余额
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOrc721Balance(String address) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        //审核过的ORC721余额
+        Orc721 orc721Temp = new Orc721();
+        orc721Temp.setAuditFlag(ConstantParam.AUDIT_PASSED);
+        List<Orc721> orc721s = orc721Mapper.select(orc721Temp);
+        for (Orc721 orc721 : orc721s) {
+            String contractHash = orc721.getContractHash();
+            String orc721AssetName = orc721.getSymbol();
+            BigDecimal balance = web3jSdkUtil.queryOrc721Balance(address, contractHash);
+
+            if (ConstantParam.ZERO.compareTo(balance) == 0) {
+                continue;
+            }
+            BalanceDto balanceDto = BalanceDto.builder()
+                    .assetName(orc721AssetName)
+                    .assetType(ConstantParam.ASSET_TYPE_ORC721)
+                    .balance(balance)
+                    .contractHash(contractHash)
+                    .build();
+            balanceList.add(balanceDto);
+        }
+        return balanceList;
+    }
+
+    /**
+     * 获取ORC1155余额
+     *
+     * @param address
+     * @return
+     */
+    private List<BalanceDto> getOrc1155Balance(String address) {
+
+        List<BalanceDto> balanceList = new ArrayList<>();
+        initSDK();
+        //审核过的ORC1155余额
+        List<Map<String, String>> orc1155s = orc1155Mapper.selectAuditPassedOrc1155(null);
+        for (Map<String, String> map : orc1155s) {
+            String contractHash = map.get("contractHash");
+            String symbol = map.get("symbol");
+            String tokenId = map.get("tokenId");
+            String[] symbolArray = symbol.split(",");
+            String[] tokenIdArray = tokenId.split(",");
+            for (int i = 0; i < tokenIdArray.length; i++) {
+                BigDecimal balance = web3jSdkUtil.queryOrc1155Balance(address, contractHash, tokenIdArray[i]);
+                if (ConstantParam.ZERO.compareTo(balance) == 0) {
+                    continue;
+                }
+                BalanceDto balanceDto = BalanceDto.builder()
+                        .assetName(symbolArray[i])
+                        .assetType(ConstantParam.ASSET_TYPE_ORC1155)
+                        .balance(balance)
+                        .contractHash(contractHash)
+                        .build();
+                balanceList.add(balanceDto);
+            }
+        }
+        return balanceList;
+    }
+
     private List<BalanceDto> getEvmOngBalance(String address) {
         List<BalanceDto> balanceList = new ArrayList<>();
         initSDK();
-        Map<String, Object> balanceMap = sdk.getEVMONGAssetBalance(address);
+        String ongBalance = sdk.getOngBalanceByEvmAddress(address);
         BalanceDto balanceDto = BalanceDto.builder()
                 .assetName(ConstantParam.ONG)
                 .assetType(ConstantParam.ASSET_TYPE_NATIVE)
-                .balance((new BigDecimal((String) balanceMap.get(ConstantParam.ONG)).divide(ConstantParam.ONG_TOTAL)))
+                .balance((new BigDecimal(ongBalance).divide(ConstantParam.NEW_ONG_DECIMAL)))
                 .contractHash(ConstantParam.CONTRACTHASH_ONG)
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
     }
 
+    private List<BalanceDto> getAllEvmAssetBalance(String address) {
+        List<BalanceDto> balanceDtos = new ArrayList<>();
+        balanceDtos.addAll(getEvmOngBalance(address));
+        balanceDtos.addAll(getOrc20Balance(address));
+        balanceDtos.addAll(getOrc721Balance(address));
+        balanceDtos.addAll(getOrc1155Balance(address));
+        return balanceDtos;
+    }
 
     /**
      * 获取OEP5余额
@@ -775,7 +856,6 @@ public class AddressServiceImpl implements IAddressService {
         }
         return balanceList;
     }
-
 
     /**
      * get oep4 balance
@@ -1137,7 +1217,7 @@ public class AddressServiceImpl implements IAddressService {
      * @param ont
      * @return
      */
-    private String calculateWaitingBoundOng(String address, String ont) {
+    private String calculateWaitingBoundOng(String address, BigDecimal ont) {
 
         Integer latestOntTransferTxTime = null;
         //mysql 4.0.14+ bug
@@ -1151,8 +1231,7 @@ public class AddressServiceImpl implements IAddressService {
             return "0";
         }
         long now = System.currentTimeMillis() / 1000L;
-//        log.info("calculateWaitingBoundOng latestOntTransferTxTime:{},now:{}", latestOntTransferTxTime, now);
-        BigDecimal totalOng = new BigDecimal("0");
+        BigDecimal totalOng;
         //before 20190630000000 UTC
         if (latestOntTransferTxTime < TIMESTAMP_20190630000000_UTC) {
             BigDecimal ong01 =
@@ -1190,18 +1269,19 @@ public class AddressServiceImpl implements IAddressService {
         } else {
             totalOng = BigDecimal.ZERO;
         }
-        BigDecimal ong = totalOng.multiply(new BigDecimal(ont)).divide(ConstantParam.ONT_TOTAL);
+        BigDecimal ong = totalOng.multiply(ont).divide(ConstantParam.ONT_TOTAL);
 
         return ong.toPlainString();
     }
 
 
     @Override
-    public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
+    public ResponseBean queryTransferTxsByPage(String address, String assetName, Integer pageNumber, Integer
+            pageSize) {
 
         int start = pageSize * (pageNumber - 1) < 0 ? 0 : pageSize * (pageNumber - 1);
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
-        transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
@@ -1228,12 +1308,13 @@ public class AddressServiceImpl implements IAddressService {
     public ResponseBean queryTransferTxsByTime(String address, String assetName, Long beginTime, Long endTime) {
 
         List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByTime(address, assetName, beginTime, endTime);
-        transferTxDtos = formatTransferTxDtos(transferTxDtos);
+        transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), transferTxDtos);
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long endTime,
+    public ResponseBean queryTransferTxsByTime4Onto(String address, String assetName, Long beginTime, Long
+            endTime,
                                                     String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
@@ -1266,13 +1347,14 @@ public class AddressServiceImpl implements IAddressService {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeInToAddr4Onto(address, assetName, beginTime, endTime);
             }
         }
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos, null);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
 
     @Override
-    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long endTime, Integer pageSize,
+    public ResponseBean queryTransferTxsByTimeAndPage4Onto(String address, String assetName, Long
+            endTime, Integer pageSize,
                                                            String addressType) {
 
         List<TransferTxDto> transferTxDtos = new ArrayList<>();
@@ -1307,7 +1389,7 @@ public class AddressServiceImpl implements IAddressService {
                 transferTxDtos = txDetailMapper.selectTransferTxsByTimeAndPageInToAddr4Onto(address, assetName, endTime, pageSize);
             }
         }
-        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos);
+        List<TransferTxDto> formattedTransferTxDtos = formatTransferTxDtos(transferTxDtos, null);
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), formattedTransferTxDtos);
     }
@@ -1336,7 +1418,8 @@ public class AddressServiceImpl implements IAddressService {
 
 
     @Override
-    public ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) throws SDKException {
+    public ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) throws
+            SDKException {
         String tokenContractHash = paramsConfig.getContractHash(token);
         List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregations(address, tokenContractHash, from, to);
 
@@ -1392,7 +1475,8 @@ public class AddressServiceImpl implements IAddressService {
 
     // 查询所有交易的接口
     @Override
-    public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
+    public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer
+            pageNumber, Integer pageSize) {
         PageResponseBean pageResponse;
         Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
         if (txCount == null || txCount == 0) {
@@ -1400,7 +1484,7 @@ public class AddressServiceImpl implements IAddressService {
         } else {
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
-            transferTxDtos = formatTransferTxDtos(transferTxDtos);
+            transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
             pageResponse = new PageResponseBean(transferTxDtos, txCount);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
@@ -1408,7 +1492,8 @@ public class AddressServiceImpl implements IAddressService {
 
     // 查询一个地址的所有转账信息
     @Override
-    public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize) {
+    public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer
+            pageNumber, Integer pageSize) {
         tokenType = tokenType.toLowerCase();
         PageResponseBean pageResponse;
         Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
@@ -1417,16 +1502,14 @@ public class AddressServiceImpl implements IAddressService {
         } else {
             List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
             List<String> assetNames = null;
-            if ("oep4".equalsIgnoreCase(tokenType)) {
-                assetNames = "oep4".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
-            } else if ("orc20".equalsIgnoreCase(tokenType)) {
-                assetNames = "orc20".equalsIgnoreCase(tokenType) ? txDetailMapper.selectAssetNamesOfTokenType(tokenType) : null;
+            if ("oep4".equalsIgnoreCase(tokenType) || "orc20".equalsIgnoreCase(tokenType)) {
+                assetNames = txDetailMapper.selectAssetNamesOfTokenType(tokenType);
             }
 
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
                     tokenType, start, pageSize);
-            transferTxDtos = formatTransferTxDtos(transferTxDtos);
+            transferTxDtos = formatTransferTxDtos(transferTxDtos, tokenType);
             pageResponse = new PageResponseBean(transferTxDtos, txCount);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
@@ -1437,7 +1520,7 @@ public class AddressServiceImpl implements IAddressService {
      *
      * @return
      */
-    private List<TransferTxDto> formatTransferTxDtos(List<TransferTxDto> transferTxDtos) {
+    private List<TransferTxDto> formatTransferTxDtos(List<TransferTxDto> transferTxDtos, String tokenType) {
 
         List<TransferTxDto> formattedTransferTxs = new ArrayList<>();
 
@@ -1447,8 +1530,11 @@ public class AddressServiceImpl implements IAddressService {
             TransferTxDto transferTxDto = transferTxDtos.get(i);
             String assetName = transferTxDto.getAssetName();
             BigDecimal amount = transferTxDto.getAmount();
-            if (ConstantParam.ONG.equals(assetName)) {
-                amount = amount.divide(ConstantParam.ONG_TOTAL);
+            String assetType;
+            if (StringUtils.isEmpty(tokenType)) {
+                assetType = transferTxDto.getAssetType();
+            } else {
+                assetType = tokenType;
             }
 
             String txHash = transferTxDto.getTxHash();
@@ -1460,8 +1546,9 @@ public class AddressServiceImpl implements IAddressService {
                             .amount(amount)
                             .fromAddress(transferTxDto.getFromAddress())
                             .toAddress(transferTxDto.getToAddress())
-                            .assetName(transferTxDto.getAssetName())
+                            .assetName(assetName)
                             .contractHash(transferTxDto.getContractHash())
+                            .assetType(assetType)
                             .build();
 
                     List<TransferTxDetailDto> transferTxnList =
@@ -1477,8 +1564,9 @@ public class AddressServiceImpl implements IAddressService {
                         .amount(amount)
                         .fromAddress(transferTxDto.getFromAddress())
                         .toAddress(transferTxDto.getToAddress())
-                        .assetName(transferTxDto.getAssetName())
+                        .assetName(assetName)
                         .contractHash(transferTxDto.getContractHash())
+                        .assetType(assetType)
                         .build();
                 List<TransferTxDetailDto> transferTxnList = new ArrayList<>();
                 transferTxnList.add(transferTxDetailDto);
