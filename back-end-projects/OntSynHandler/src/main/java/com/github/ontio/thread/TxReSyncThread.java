@@ -414,6 +414,9 @@ public class TxReSyncThread {
         } else {
             eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(amount)));
         }
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(eventAmount) <= 0) {
+            eventAmount = ConstantParam.MAX_APPROVAL_AMOUNT;
+        }
         log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
@@ -591,6 +594,9 @@ public class TxReSyncThread {
         String assetName = oep4Obj.getString("symbol");
         Integer decimals = oep4Obj.getInteger("decimals");
         BigDecimal amount = eventAmount.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
+            amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+        }
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx,
                 EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);
@@ -837,7 +843,7 @@ public class TxReSyncThread {
             String assetName = orc20Obj.getString("name");
             Integer decimals = orc20Obj.getInteger("decimals");
             BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
-            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
                 amount = ConstantParam.MAX_APPROVAL_AMOUNT;
             }
 
@@ -964,6 +970,9 @@ public class TxReSyncThread {
                 toAddress = result.get(2).getValue().toString();
                 tokenId = result.get(3).getValue().toString();
                 amount = new BigDecimal((BigInteger) result.get(4).getValue());
+                if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                    amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                }
                 txAction = EventTypeEnum.Transfer.des();
                 eventType = EventTypeEnum.Transfer.type();
                 JSONObject orc1155Obj = ConstantParam.ORC1155MAP.get(contractHash + "-" + tokenId);
@@ -986,6 +995,9 @@ public class TxReSyncThread {
                 for (int i = 0; i < tokenIds.size(); i++) {
                     tokenId = tokenIds.get(i).getValue().toString();
                     amount = new BigDecimal(values.get(i).getValue());
+                    if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                        amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                    }
                     JSONObject orc1155Obj = ConstantParam.ORC1155MAP.get(contractHash + "-" + tokenId);
                     if (orc1155Obj != null) {
                         assetName = orc1155Obj.getString("name");
