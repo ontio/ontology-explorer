@@ -951,6 +951,9 @@ public class TxHandlerThread {
         } else {
             eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(amount)));
         }
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(eventAmount) <= 0) {
+            eventAmount = ConstantParam.MAX_APPROVAL_AMOUNT;
+        }
         log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
@@ -1162,7 +1165,7 @@ public class TxHandlerThread {
         String assetName = oep4Obj.getString("symbol");
         Integer decimals = oep4Obj.getInteger("decimals");
         BigDecimal amount = eventAmount.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
-        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
             amount = ConstantParam.MAX_APPROVAL_AMOUNT;
         }
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
@@ -1229,7 +1232,7 @@ public class TxHandlerThread {
             String assetName = orc20Obj.getString("name");
             Integer decimals = orc20Obj.getInteger("decimals");
             BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
-            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
                 amount = ConstantParam.MAX_APPROVAL_AMOUNT;
             }
 
@@ -1358,6 +1361,9 @@ public class TxHandlerThread {
                 toAddress = result.get(2).getValue().toString();
                 tokenId = result.get(3).getValue().toString();
                 amount = new BigDecimal((BigInteger) result.get(4).getValue());
+                if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                    amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                }
                 txAction = EventTypeEnum.Transfer.des();
                 eventType = EventTypeEnum.Transfer.type();
                 JSONObject orc1155Obj = ConstantParam.ORC1155MAP.get(contractHash + "-" + tokenId);
@@ -1380,6 +1386,9 @@ public class TxHandlerThread {
                 for (int i = 0; i < tokenIds.size(); i++) {
                     tokenId = tokenIds.get(i).getValue().toString();
                     amount = new BigDecimal(values.get(i).getValue());
+                    if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                        amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                    }
                     JSONObject orc1155Obj = ConstantParam.ORC1155MAP.get(contractHash + "-" + tokenId);
                     if (orc1155Obj != null) {
                         assetName = orc1155Obj.getString("name");
@@ -1566,7 +1575,7 @@ public class TxHandlerThread {
         String assetName = web3jSdkUtil.getOrcTokenSymbol(contractHash);
         Integer decimals = web3jSdkUtil.getOrc20Decimals(contractHash);
         BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
-        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
             amount = ConstantParam.MAX_APPROVAL_AMOUNT;
         }
         Map<String, Object> result = new HashMap<>();
@@ -1624,6 +1633,9 @@ public class TxHandlerThread {
             for (int i = 0; i < ids.size(); i++) {
                 String tokenId = ids.get(i).getValue().toString();
                 BigDecimal amount = new BigDecimal(values.get(i).getValue());
+                if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                    amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                }
                 tokenIds.add(tokenId);
                 amounts.add(amount);
             }
@@ -1637,6 +1649,9 @@ public class TxHandlerThread {
             toAddress = types.get(2).getValue().toString();
             String tokenId = types.get(3).getValue().toString();
             BigDecimal amount = new BigDecimal((BigInteger) types.get(4).getValue());
+            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+            }
             result.put("tokenIds", tokenId);
             result.put("amounts", amount);
         }
@@ -1710,6 +1725,9 @@ public class TxHandlerThread {
                         // oep4
                         BigDecimal eventAmount = BigDecimalFromNeoVmData(stateArray.getString(3));
                         BigDecimal amount = eventAmount.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
+                        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
+                            amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                        }
                         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                                 blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
@@ -1721,7 +1739,9 @@ public class TxHandlerThread {
                     String tokenId = stateArray.getString(3);
                     assetName = commonService.getOepSymbol(isWasm, contractHash, tokenId);
                     BigDecimal amount = BigDecimalFromNeoVmData(stateArray.getString(4));
-
+                    if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                        amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                    }
                     TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                             blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                     ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
