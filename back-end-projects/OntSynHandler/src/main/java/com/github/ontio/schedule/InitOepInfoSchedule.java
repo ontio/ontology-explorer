@@ -30,17 +30,18 @@ public class InitOepInfoSchedule {
     private final Oep8Mapper oep8Mapper;
 
     private final Orc20Mapper orc20Mapper;
-
     private final Orc721Mapper orc721Mapper;
+    private final Orc1155Mapper orc1155Mapper;
 
 
     @Autowired
-    public InitOepInfoSchedule(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper) {
+    public InitOepInfoSchedule(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
         this.orc20Mapper = orc20Mapper;
         this.orc721Mapper = orc721Mapper;
+        this.orc1155Mapper = orc1155Mapper;
     }
 
 
@@ -74,8 +75,8 @@ public class InitOepInfoSchedule {
             JSONObject obj = new JSONObject();
             obj.put("symbol", item.getSymbol());
             obj.put("name", item.getName());
-            ConstantParam.OEP8MAP.put((String) item.getContractHash() + "-" + (String) item.getTokenId(), obj);
-            ConstantParam.OEP8CONTRACTS.add((String) item.getContractHash());
+            ConstantParam.OEP8MAP.put(item.getContractHash() + "-" + item.getTokenId(), obj);
+            ConstantParam.OEP8CONTRACTS.add(item.getContractHash());
         });
 
         List<Orc20> orc20s = orc20Mapper.selectApprovedRecords();
@@ -102,6 +103,16 @@ public class InitOepInfoSchedule {
             ConstantParam.ORC721CONTRACTS.add(contractAddress);
         });
 
+        List<Orc1155> orc1155s = orc1155Mapper.selectApprovedRecords();
+        orc1155s.forEach(item -> {
+            JSONObject obj = new JSONObject();
+            obj.put("symbol", item.getSymbol());
+            obj.put("name", item.getName());
+            //拿到数据库中的"正的值",现在使用反序的方式来进行判断
+            String contractAddress = Helper.reverse(item.getContractHash().substring(2)).toLowerCase();
+            ConstantParam.ORC1155MAP.put(contractAddress + "-" + item.getTokenId(), obj);
+            ConstantParam.ORC1155CONTRACTS.add(contractAddress);
+        });
 
     }
 

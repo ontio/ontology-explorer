@@ -53,6 +53,7 @@ import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.RawTransaction;
 import org.web3j.crypto.TransactionDecoder;
+import org.web3j.utils.Numeric;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -107,6 +108,7 @@ public class TxHandlerThread {
         map.put(ConstantParam.IS_OEP8TX, false);
         map.put(ConstantParam.IS_ORC20TX, false);
         map.put(ConstantParam.IS_ORC721TX, false);
+        map.put(ConstantParam.IS_ORC1155TX, false);
         IS_OEPTX_FLAG.set(map);
 
         try {
@@ -137,36 +139,27 @@ public class TxHandlerThread {
         Boolean isOntidTx = false;
         Boolean insertInvokeDeploy = false;
         int txType = txJson.getInteger("TxType");
-
         String txHash = txJson.getString("Hash");
         String payer = txJson.getString("Payer");
 
-        String code = "";
+        String code;
         if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
             code = txJson.getString("Payload");
+            // wasm合约可以调用evm合约，所以对应的txHash需要判断
+            txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
+            payer = com.github.ontio.utils.Helper.ontAddrToEthAddr(payer);
         } else {
             code = txJson.getJSONObject("Payload").getString("Code");
         }
 
         // 交易类型的判断,解析交易类型,拿到交易中payload解析的calledContractHash 0x为部署合约
-        String calledContractHash = parseCalledContractHash(code, txType);
-
-        // 解决evm类型的ong转账,calledContractHash为转出地址的问题
-        if (txType == 211) {
-            payer = com.github.ontio.utils.Helper.ontAddrToEthAddr(payer);
-            String inputData = web3jSdkUtil.queryInputDataByTxHash(ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash));
-            if (inputData.equalsIgnoreCase(ConstantParam.EVM_ADDRESS_PREFIX)) {
-                // ONG转账及部署合约inputData都是0x
-                calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
-            }
-        }
+        String calledContractHash = parseCalledContractHash(code, txType, txHash);
 
         log.info("####txType:{}, txHash:{}, calledContractHash:{}", txType, txHash, calledContractHash);
 
         try {
             JSONObject eventLogObj = txJson.getJSONObject("EventLog");
             log.info("eventLog:{}", eventLogObj.toJSONString());
-
             //eventstate 1:success 0:failed
             int confirmFlag = eventLogObj.getInteger("State");
             // gasConsumed精度还是9
@@ -177,7 +170,7 @@ public class TxHandlerThread {
             if (TransactionTypeEnum.DEPLOYCODE.type() == txType) {
                 handleDeployContractTx(txJson, blockHeight, blockTime, indexInBlock, confirmFlag, gasConsumed, payer, calledContractHash);
             } else if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType && ConstantParam.EVM_ADDRESS_PREFIX.equals(calledContractHash)) {
-                handleEVMDeployContractTx(txJson, blockHeight, blockTime, indexInBlock, confirmFlag, gasConsumed, payer, calledContractHash);
+                handleEVMDeployContractTx(txJson, txHash, txType, blockHeight, blockTime, indexInBlock, confirmFlag, gasConsumed, payer, calledContractHash);
             }
 
             //invoke smart contract transaction
@@ -187,9 +180,9 @@ public class TxHandlerThread {
                 insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
                         gasConsumed, 1, EventTypeEnum.Others.type(), "", payer, calledContractHash);
             } else {
-                JSONArray stateArray = null;
-                String evmStates = "";
                 for (int i = 0, len = notifyArray.size(); i < len; i++) {
+                    JSONArray stateArray = null;
+                    String evmStates = "";
                     JSONObject notifyObj = (JSONObject) notifyArray.get(i);
                     String contractAddress = notifyObj.getString("ContractAddress");
 
@@ -256,6 +249,10 @@ public class TxHandlerThread {
                         // orc721 交易
                         handleOrc721TransferTxn(evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1, confirmFlag, ConstantParam.ORC721MAP.get(contractAddress), contractAddress, payer, calledContractHash);
 
+                    } else if (ConstantParam.ORC1155CONTRACTS.contains(contractAddress)) {
+                        // orc1155 交易
+                        handleOrc1155TransferTxn(evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1, confirmFlag, contractAddress, payer, calledContractHash);
+
                     } else if (paramsConfig.UNISWAP_FACTORY_CONTRACTHASH.contains(contractAddress)) {
                         if (!insertInvokeDeploy) {
                             for (int j = 0; j < notifyArray.size(); j++) {
@@ -274,17 +271,15 @@ public class TxHandlerThread {
                                 gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
                     } else {
                         //other transaction
-                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+                        handleUnauditedOepOrcTransferTx(stateArray, evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1, confirmFlag, contractAddress, payer, calledContractHash);
+//                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+//                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
                     }
 
                 }
             }
 
             //记录交易基本信息和eventlog详情 对应一笔交易
-            if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
-                txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-            }
             // 新增 nonce 值的字段，存在Eventlog 表中
             insertTxEventLog(txHash, blockTime, txType, blockHeight, indexInBlock, gasConsumed, confirmFlag, calledContractHash, eventLogObj.toJSONString(), isOntidTx);
 
@@ -321,7 +316,7 @@ public class TxHandlerThread {
      * @param txType
      * @return
      */
-    private String parseCalledContractHash(String code, Integer txType) {
+    private String parseCalledContractHash(String code, Integer txType, String txHash) throws IOException {
         // 从payload 中解析 被调用的 合约hash
         String calledContractHash = "";
         // neoVm 交易
@@ -344,6 +339,12 @@ public class TxHandlerThread {
         } else if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
             RawTransaction rawTransaction = TransactionDecoder.decode(code);
             calledContractHash = rawTransaction.getTo();
+            // 解决evm类型的ong转账,calledContractHash为转出地址的问题
+            String contractCode = web3jSdkUtil.getCode(calledContractHash);
+            if (ConstantParam.EVM_ADDRESS_PREFIX.equalsIgnoreCase(contractCode)) {
+                // 用户地址code为0x
+                calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
+            }
         }
 
         //判断属于什么OEP类型交易 payload 解析完就是的，在常量池存放的是正确的
@@ -357,6 +358,8 @@ public class TxHandlerThread {
             IS_OEPTX_FLAG.get().put(ConstantParam.IS_ORC20TX, true);
         } else if (ConstantParam.ORC721CONTRACTS.contains(calledContractHash)) {
             IS_OEPTX_FLAG.get().put(ConstantParam.IS_ORC721TX, true);
+        } else if (ConstantParam.ORC1155CONTRACTS.contains(calledContractHash)) {
+            IS_OEPTX_FLAG.get().put(ConstantParam.IS_ORC1155TX, true);
         }
         return calledContractHash;
     }
@@ -435,9 +438,7 @@ public class TxHandlerThread {
         }
     }
 
-    private void handleEVMDeployContractTx(JSONObject txJson, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, BigDecimal gasConsumed, String payer, String calledContractHash) throws Exception {
-        String txHash = txJson.getString("Hash");
-        int txType = txJson.getInteger("TxType");
+    private void handleEVMDeployContractTx(JSONObject txJson, String txHash, int txType, int blockHeight, int blockTime, int indexInBlock, int confirmFlag, BigDecimal gasConsumed, String payer, String calledContractHash) throws Exception {
         JSONObject eventLogObj = txJson.getJSONObject("EventLog");
         String deployContractAddress = eventLogObj.getString("CreatedContract");
         deployContractAddress = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(deployContractAddress);
@@ -446,7 +447,6 @@ public class TxHandlerThread {
         contractObj.put("Name", "");
         contractObj.put("Description", "deployed contract");
         contractObj.put("ContractHash", deployContractAddress);
-        txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, contractObj.toString(), gasConsumed, 0, EventTypeEnum.DeployContract.type(), deployContractAddress, payer, calledContractHash);
 
 
@@ -643,25 +643,12 @@ public class TxHandlerThread {
             topicList.add(topic);
         }
 
-        String data = "";
-        byte dataLength = reader.readByte();
-        if (dataLength != 0) {
-            byte[] dataBytes = reader.readBytes(dataLength);
-            data = Helper.toHexString(dataBytes);
-        }
+        byte[] dataBytes = reader.readVarBytes();
+        String data = Helper.toHexString(dataBytes);
 
         String decodeData = topicList.get(1) + topicList.get(2) + data;
-        TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<Uint256> amount1 = new TypeReference<Uint256>() {
-        };
 
-        List<TypeReference<?>> outputParameters = Arrays.asList(from, to, amount1);
-        List<TypeReference<Type>> convert = Utils.convert(outputParameters);
-
-        List<Type> result = FunctionReturnDecoder.decode(decodeData, convert);
+        List<Type> result = handleEvmOrc20Orc721TransferResults(decodeData);
 
         String fromAddress = result.get(0).getValue().toString();
         String toAddress = result.get(1).getValue().toString();
@@ -672,8 +659,6 @@ public class TxHandlerThread {
         BigDecimal amount = new BigDecimal(amountValue).divide(ConstantParam.NEW_ONG_DECIMAL);
 
         log.info("####fromAddress:{},toAddress:{},amount:{}####", fromAddress, toAddress, amount.toPlainString());
-        txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-        log.info("####tx hash{}####", txHash);
 
         if (gasConsumed.compareTo(ConstantParam.ZERO) != 0 && (indexInTx == notifyListSize)) {
             action = EventTypeEnum.Gasconsume.des();
@@ -690,6 +675,8 @@ public class TxHandlerThread {
             ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
         } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC721TX)) {
             ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, ConstantParam.EMPTY));
+        } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC1155TX)) {
+            ConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, ConstantParam.EMPTY));
         }
     }
 
@@ -997,9 +984,11 @@ public class TxHandlerThread {
                                        String contractAddress, JSONObject oep5Obj, String payer, String calledContractHash) throws Exception {
 
         Boolean isTransfer = Boolean.FALSE;
-        String action = (String) stateArray.get(0);
-        if (!"transfer".equalsIgnoreCase(action)) {
-            action = new String(Helper.hexToBytes(action));
+        String action;
+        try {
+            action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        } catch (Exception e) {
+            action = (String) stateArray.get(0);
         }
         //只解析birth和transfer合约方法
         if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
@@ -1208,51 +1197,43 @@ public class TxHandlerThread {
                 topicList.add(topic);
             }
 
-            String data = "";
-            byte dataLength = reader.readByte();
-            if (dataLength != 0) {
-                byte[] dataBytes = reader.readBytes(dataLength);
-                data = Helper.toHexString(dataBytes);
-            }
+            byte[] dataBytes = reader.readVarBytes();
+            String data = Helper.toHexString(dataBytes);
 
-
-            String fromAddress = "";
-            String toAddress = "";
-            String txAction = "";
+            String fromAddress = ConstantParam.EMPTY;
+            String toAddress = ConstantParam.EMPTY;
+            String txAction = ConstantParam.EMPTY;
             BigDecimal amountValue = BigDecimal.ZERO;
             int eventType = 0;
 
             if (ConstantParam.TRANSFER_TX.equals(topicList.get(0))) {
                 // Transfer TX
                 String parseData = topicList.get(1) + topicList.get(2) + data;
-                List<Type> result = handleOrc20Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
-                amountValue = new BigDecimal(result.get(2).getValue().toString());
+                amountValue = new BigDecimal((BigInteger) result.get(2).getValue());
                 txAction = EventTypeEnum.Transfer.des();
                 eventType = EventTypeEnum.Transfer.type();
 
             } else if (ConstantParam.Approval_TX.equals(topicList.get(0))) {
                 // Approval TX
                 String parseData = topicList.get(1) + topicList.get(2) + data;
-                List<Type> result = handleOrc20Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
-                amountValue = new BigDecimal(result.get(2).getValue().toString());
+                amountValue = new BigDecimal((BigInteger) result.get(2).getValue());
                 txAction = EventTypeEnum.Approval.des();
                 eventType = EventTypeEnum.Approval.type();
-            }
-            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amountValue) <= 0) {
-                amountValue = ConstantParam.MAX_APPROVAL_AMOUNT;
             }
             String assetName = orc20Obj.getString("name");
             Integer decimals = orc20Obj.getInteger("decimals");
             BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
+            if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+                amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+            }
 
             contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
-            if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
-                txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-            }
 
             TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
@@ -1261,20 +1242,14 @@ public class TxHandlerThread {
             ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
             ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
         } catch (IOException e) {
+            log.error("handle orc20 tx error");
             e.printStackTrace();
         }
     }
 
 
-    public List<Type> handleOrc20Results(String parseData) {
-        TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<Uint256> amount = new TypeReference<Uint256>() {
-        };
-
-        List<TypeReference<?>> outputParameters = Arrays.asList(from, to, amount);
+    public List<Type> handleEvmOrc20Orc721TransferResults(String parseData) {
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         return FunctionReturnDecoder.decode(parseData, convert);
@@ -1300,16 +1275,9 @@ public class TxHandlerThread {
                 topicList.add(topic);
             }
 
-            String data = "";
-            byte dataLength = reader.readByte();
-            if (dataLength != 0) {
-                byte[] dataBytes = reader.readBytes(dataLength);
-                data = Helper.toHexString(dataBytes);
-            }
-
-            String fromAddress = "";
-            String toAddress = "";
-            String txAction = "";
+            String fromAddress = ConstantParam.EMPTY;
+            String toAddress = ConstantParam.EMPTY;
+            String txAction = ConstantParam.EMPTY;
             BigDecimal amount = BigDecimal.ZERO;
             String tokenId = ConstantParam.EMPTY;
             int eventType = 0;
@@ -1317,7 +1285,7 @@ public class TxHandlerThread {
             if (ConstantParam.TRANSFER_TX.equals(topicList.get(0))) {
                 // Transfer TX
                 String parseData = topicList.get(1) + topicList.get(2) + topicList.get(3);
-                List<Type> result = handleEVMOrc721Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
                 amount = BigDecimal.ONE;
@@ -1327,7 +1295,7 @@ public class TxHandlerThread {
             } else if (ConstantParam.Approval_TX.equals(topicList.get(0))) {
                 // Approval TX
                 String parseData = topicList.get(1) + topicList.get(2) + topicList.get(3);
-                List<Type> result = handleEVMOrc721Results(parseData);
+                List<Type> result = handleEvmOrc20Orc721TransferResults(parseData);
                 fromAddress = result.get(0).getValue().toString();
                 toAddress = result.get(1).getValue().toString();
                 amount = BigDecimal.ONE;
@@ -1339,9 +1307,6 @@ public class TxHandlerThread {
             String assetName = orc721Obj.getString("name");
 
             contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
-            if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
-                txHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(txHash);
-            }
 
             TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
 
@@ -1349,25 +1314,441 @@ public class TxHandlerThread {
             ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
             ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, tokenId));
         } catch (IOException e) {
-            log.error("handle orc721 tx error ");
+            log.error("handle orc721 tx error");
             e.printStackTrace();
         }
     }
 
-    public List<Type> handleEVMOrc721Results(String parseData) {
-        TypeReference<org.web3j.abi.datatypes.Address> from = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<org.web3j.abi.datatypes.Address> to = new TypeReference<org.web3j.abi.datatypes.Address>() {
-        };
-        TypeReference<Uint256> tokenId = new TypeReference<Uint256>() {
-        };
+    private void handleOrc1155TransferTxn(String evmStates, int txType, String txHash, int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag, String contractHash, String payer, String calledContractHash) {
+        if (evmStates.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            evmStates = evmStates.substring(2);
+        }
+        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(evmStates));
+        BinaryReader reader = new BinaryReader(bais);
 
-        List<TypeReference<?>> outputParameters = Arrays.asList(from, to, tokenId);
+        try {
+            byte[] addressBytes = reader.readBytes(20);
+
+            int length = reader.readInt();
+            List<String> topicList = new ArrayList<String>();
+            for (int i = 0; i < length; i++) {
+                byte[] TopicBytes = reader.readBytes(32);
+                String topic = Helper.toHexString(TopicBytes);
+                topicList.add(topic);
+            }
+
+            byte[] dataBytes = reader.readVarBytes();
+            String data = Helper.toHexString(dataBytes);
+
+            String fromAddress = ConstantParam.EMPTY;
+            String toAddress = ConstantParam.EMPTY;
+            String txAction = ConstantParam.EMPTY;
+            BigDecimal amount = BigDecimal.ZERO;
+            String tokenId = ConstantParam.EMPTY;
+            String assetName = ConstantParam.EMPTY;
+            int eventType = 0;
+
+            String hexContractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
+
+            if (ConstantParam.TRANSFER_SINGLE_TX.equals(topicList.get(0))) {
+                // Transfer Single TX
+                String parseData = topicList.get(1) + topicList.get(2) + topicList.get(3) + data;
+                List<Type> result = handleOrc1155TransferResults(parseData);
+                fromAddress = result.get(1).getValue().toString();
+                toAddress = result.get(2).getValue().toString();
+                tokenId = result.get(3).getValue().toString();
+                amount = new BigDecimal((BigInteger) result.get(4).getValue());
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
+                JSONObject orc1155Obj = ConstantParam.ORC1155MAP.get(contractHash + "-" + tokenId);
+                if (orc1155Obj != null) {
+                    assetName = orc1155Obj.getString("name");
+                }
+                TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, hexContractHash, payer, calledContractHash);
+                ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                ConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, tokenId));
+            } else if (ConstantParam.TRANSFER_BATCH_TX.equals(topicList.get(0))) {
+                fromAddress = ConstantParam.EVM_ADDRESS_PREFIX + topicList.get(2).substring(24);
+                toAddress = ConstantParam.EVM_ADDRESS_PREFIX + topicList.get(3).substring(24);
+                List<Type> result = handleOrc1155BatchTransferResults(data);
+                List<Uint256> tokenIds = (List<Uint256>) result.get(0).getValue();
+                List<Uint256> values = (List<Uint256>) result.get(1).getValue();
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
+                int replaceIndexInTx = indexInTx;
+                for (int i = 0; i < tokenIds.size(); i++) {
+                    tokenId = tokenIds.get(i).getValue().toString();
+                    amount = new BigDecimal(values.get(i).getValue());
+                    JSONObject orc1155Obj = ConstantParam.ORC1155MAP.get(contractHash + "-" + tokenId);
+                    if (orc1155Obj != null) {
+                        assetName = orc1155Obj.getString("name");
+                    }
+                    if (i > 0) {
+                        replaceIndexInTx = indexInTx + 1000 + i;
+                    }
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, replaceIndexInTx, eventType, hexContractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    ConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, tokenId));
+                }
+            } else {
+                TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, hexContractHash, payer, calledContractHash);
+                ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                ConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, tokenId));
+            }
+        } catch (IOException e) {
+            log.error("handle orc1155 tx error");
+            e.printStackTrace();
+        }
+    }
+
+    public List<Type> handleOrc1155TransferResults(String parseData) {
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_ADDRESS, ConstantParam.TYPE_REFERENCE_UINT256, ConstantParam.TYPE_REFERENCE_UINT256);
         List<TypeReference<Type>> convert = Utils.convert(outputParameters);
 
         return FunctionReturnDecoder.decode(parseData, convert);
     }
 
+    public List<Type> handleOrc1155BatchTransferResults(String parseData) {
+        List<TypeReference<?>> outputParameters = Arrays.asList(ConstantParam.TYPE_REFERENCE_UINT256_ARRAY, ConstantParam.TYPE_REFERENCE_UINT256_ARRAY);
+        List<TypeReference<Type>> convert = Utils.convert(outputParameters);
+
+        return FunctionReturnDecoder.decode(parseData, convert);
+    }
+
+    private void handleUnauditedOepOrcTransferTx(JSONArray stateArray, String evmStates, int txType, String txHash, int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag, String contractAddress, String payer, String calledContractHash) {
+        if (stateArray == null) {
+            // evm交易
+            handleUnauditedOrcTransferTx(evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, gasConsumed, indexInTx, confirmFlag, contractAddress, payer, calledContractHash);
+        } else {
+            // ovm交易
+            handleUnauditedOepTransferTx(stateArray, txType, txHash, blockHeight, blockTime, indexInBlock, gasConsumed, indexInTx, confirmFlag, contractAddress, payer, calledContractHash);
+        }
+    }
+
+    private void handleUnauditedOrcTransferTx(String evmStates, int txType, String txHash, int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag, String contractAddress, String payer, String calledContractHash) {
+        try {
+            evmStates = Numeric.cleanHexPrefix(evmStates);
+            ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(evmStates));
+            BinaryReader reader = new BinaryReader(bais);
+            reader.readBytes(20);
+
+            int length = reader.readInt();
+            byte[] eventBytes = reader.readBytes(32);
+            String eventHash = Helper.toHexString(eventBytes);
+            if (ConstantParam.TRANSFER_TX.equalsIgnoreCase(eventHash)) {
+                String txAction = EventTypeEnum.Transfer.des();
+                Integer eventType = EventTypeEnum.Transfer.type();
+                if (length == 3) {
+                    // orc20
+                    Map<String, Object> result = parseUnAuditedOrc20Event(length, reader, contractAddress);
+                    String fromAddress = (String) result.get("fromAddress");
+                    String toAddress = (String) result.get("toAddress");
+                    BigDecimal amount = (BigDecimal) result.get("amount");
+                    String contractHash = (String) result.get("contractHash");
+                    String assetName = (String) result.get("assetName");
+
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
+                } else if (length == 4) {
+                    // orc721
+                    Map<String, Object> result = parseUnAuditedOrc721Event(length, reader, contractAddress);
+                    String fromAddress = (String) result.get("fromAddress");
+                    String toAddress = (String) result.get("toAddress");
+                    String tokenId = (String) result.get("tokenId");
+                    String contractHash = (String) result.get("contractHash");
+                    String assetName = (String) result.get("assetName");
+
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, BigDecimal.ONE, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, tokenId));
+                }
+
+            } else if (ConstantParam.Approval_TX.equalsIgnoreCase(eventHash)) {
+                String txAction = EventTypeEnum.Approval.des();
+                Integer eventType = EventTypeEnum.Approval.type();
+                if (length == 3) {
+                    // orc20
+                    Map<String, Object> result = parseUnAuditedOrc20Event(length, reader, contractAddress);
+                    String fromAddress = (String) result.get("fromAddress");
+                    String toAddress = (String) result.get("toAddress");
+                    BigDecimal amount = (BigDecimal) result.get("amount");
+                    String contractHash = (String) result.get("contractHash");
+                    String assetName = (String) result.get("assetName");
+
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
+                } else if (length == 4) {
+                    // orc721
+                    Map<String, Object> result = parseUnAuditedOrc721Event(length, reader, contractAddress);
+                    String fromAddress = (String) result.get("fromAddress");
+                    String toAddress = (String) result.get("toAddress");
+                    String tokenId = (String) result.get("tokenId");
+                    String contractHash = (String) result.get("contractHash");
+                    String assetName = (String) result.get("assetName");
+
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, BigDecimal.ONE, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, tokenId));
+                }
+            } else if (ConstantParam.TRANSFER_SINGLE_TX.equalsIgnoreCase(eventHash) || ConstantParam.TRANSFER_BATCH_TX.equalsIgnoreCase(eventHash)) {
+                String txAction = EventTypeEnum.Transfer.des();
+                Integer eventType = EventTypeEnum.Transfer.type();
+                Map<String, Object> result = parseUnAuditedOrc1155Event(length, reader, contractAddress);
+                String fromAddress = (String) result.get("fromAddress");
+                String toAddress = (String) result.get("toAddress");
+                Object tokenIds = result.get("tokenIds");
+                Object amounts = result.get("amounts");
+                String contractHash = (String) result.get("contractHash");
+                String assetName = (String) result.get("assetName");
+
+                if (tokenIds instanceof String) {
+                    String tokenId = (String) tokenIds;
+                    BigDecimal amount = (BigDecimal) amounts;
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    ConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, tokenId));
+                } else if (tokenIds instanceof List) {
+                    int replaceIndexInTx = indexInTx;
+                    for (int i = 0; i < ((List<?>) tokenIds).size(); i++) {
+                        String tokenId = (String) ((List<?>) tokenIds).get(i);
+                        BigDecimal amount = (BigDecimal) ((List<?>) amounts).get(i);
+                        if (i > 0) {
+                            replaceIndexInTx = indexInTx + 1000 + i;
+                        }
+                        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, replaceIndexInTx, eventType, contractHash, payer, calledContractHash);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                        ConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, tokenId));
+                    }
+                }
+            } else {
+                // other
+                TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                        blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+                ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+            }
+        } catch (Exception e) {
+            log.error("handleUnAuditedOrcTransferTx error", e);
+            TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        }
+    }
+
+    private Map<String, Object> parseUnAuditedOrc20Event(int length, BinaryReader reader, String contractAddress) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length - 1; i++) {
+            byte[] TopicBytes = reader.readBytes(32);
+            String topic = Helper.toHexString(TopicBytes);
+            stringBuilder.append(topic);
+        }
+        byte[] dataBytes = reader.readVarBytes();
+        String data = Helper.toHexString(dataBytes);
+        String parseData = stringBuilder.append(data).toString();
+        List<Type> types = handleEvmOrc20Orc721TransferResults(parseData);
+        String fromAddress = types.get(0).getValue().toString();
+        String toAddress = types.get(1).getValue().toString();
+        BigDecimal amountValue = new BigDecimal((BigInteger) types.get(2).getValue());
+
+        String contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractAddress);
+        String assetName = web3jSdkUtil.getOrcTokenSymbol(contractHash);
+        Integer decimals = web3jSdkUtil.getOrc20Decimals(contractHash);
+        BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
+            amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("fromAddress", fromAddress);
+        result.put("toAddress", toAddress);
+        result.put("amount", amount);
+        result.put("contractHash", contractHash);
+        result.put("assetName", assetName);
+        return result;
+    }
+
+    private Map<String, Object> parseUnAuditedOrc721Event(int length, BinaryReader reader, String contractAddress) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length - 1; i++) {
+            byte[] TopicBytes = reader.readBytes(32);
+            String topic = Helper.toHexString(TopicBytes);
+            stringBuilder.append(topic);
+        }
+        String parseData = stringBuilder.toString();
+        List<Type> types = handleEvmOrc20Orc721TransferResults(parseData);
+        String fromAddress = types.get(0).getValue().toString();
+        String toAddress = types.get(1).getValue().toString();
+        String tokenId = types.get(2).getValue().toString();
+
+        String contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractAddress);
+        String assetName = web3jSdkUtil.getOrcTokenSymbol(contractHash);
+        Map<String, Object> result = new HashMap<>();
+        result.put("fromAddress", fromAddress);
+        result.put("toAddress", toAddress);
+        result.put("tokenId", tokenId);
+        result.put("contractHash", contractHash);
+        result.put("assetName", assetName);
+        return result;
+    }
+
+    private Map<String, Object> parseUnAuditedOrc1155Event(int length, BinaryReader reader, String contractAddress) throws IOException {
+        Map<String, Object> result = new HashMap<>();
+        byte[] operatorBytes = reader.readBytes(32);
+        String operatorAddress = Helper.toHexString(operatorBytes);
+        byte[] fromBytes = reader.readBytes(32);
+        String fromAddress = Helper.toHexString(fromBytes);
+        byte[] toBytes = reader.readBytes(32);
+        String toAddress = Helper.toHexString(toBytes);
+        List<String> tokenIds = new ArrayList<>();
+        List<BigDecimal> amounts = new ArrayList<>();
+        byte[] dataBytes = reader.readVarBytes();
+        String data = Helper.toHexString(dataBytes);
+        if (data.length() > 128) {
+            // transferBatch
+            fromAddress = ConstantParam.EVM_ADDRESS_PREFIX + fromAddress.substring(24);
+            toAddress = ConstantParam.EVM_ADDRESS_PREFIX + toAddress.substring(24);
+            List<Type> types = handleOrc1155BatchTransferResults(data);
+            List<Uint256> ids = (List<Uint256>) types.get(0).getValue();
+            List<Uint256> values = (List<Uint256>) types.get(1).getValue();
+            for (int i = 0; i < ids.size(); i++) {
+                String tokenId = ids.get(i).getValue().toString();
+                BigDecimal amount = new BigDecimal(values.get(i).getValue());
+                tokenIds.add(tokenId);
+                amounts.add(amount);
+            }
+            result.put("tokenIds", tokenIds);
+            result.put("amounts", amounts);
+        } else {
+            // transferSingle
+            String parseData = operatorAddress + fromAddress + toAddress + data;
+            List<Type> types = handleOrc1155TransferResults(parseData);
+            fromAddress = types.get(1).getValue().toString();
+            toAddress = types.get(2).getValue().toString();
+            String tokenId = types.get(3).getValue().toString();
+            BigDecimal amount = new BigDecimal((BigInteger) types.get(4).getValue());
+            result.put("tokenIds", tokenId);
+            result.put("amounts", amount);
+        }
+
+        String contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractAddress);
+        String assetName = web3jSdkUtil.getOrcTokenSymbol(contractHash);
+        result.put("fromAddress", fromAddress);
+        result.put("toAddress", toAddress);
+        result.put("contractHash", contractHash);
+        result.put("assetName", assetName);
+        return result;
+    }
+
+    private void handleUnauditedOepTransferTx(JSONArray stateArray, int txType, String txHash, int blockHeight, int blockTime, int indexInBlock, BigDecimal gasConsumed, int indexInTx, int confirmFlag, String contractHash, String payer, String calledContractHash) {
+        try {
+            Boolean needParse = Boolean.FALSE;
+            Boolean isWasm = Boolean.FALSE;
+            String txAction = ConstantParam.EMPTY;
+            int eventType = EventTypeEnum.Others.type();
+            int size = stateArray.size();
+            String action = stateArray.getString(0);
+            if (ConstantParam.NEOVM_TRANSFER_ACTION.equals(action)) {
+                needParse = Boolean.TRUE;
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
+            } else if (EventTypeEnum.Transfer.des().equalsIgnoreCase(action)) {
+                isWasm = Boolean.TRUE;
+                needParse = Boolean.TRUE;
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
+            } else if (ConstantParam.NEOVM_APPROVAL_ACTION.equals(action)) {
+                needParse = Boolean.TRUE;
+                txAction = EventTypeEnum.Approval.des();
+                eventType = EventTypeEnum.Approval.type();
+            } else if (EventTypeEnum.Approval.des().equalsIgnoreCase(action)) {
+                isWasm = Boolean.TRUE;
+                needParse = Boolean.TRUE;
+                txAction = EventTypeEnum.Approval.des();
+                eventType = EventTypeEnum.Approval.type();
+            }
+            if (needParse) {
+                String assetName;
+                String fromAddress = stateArray.getString(1);
+                String toAddress = stateArray.getString(2);
+                if (!isWasm) {
+                    try {
+                        fromAddress = Address.parse(fromAddress).toBase58();
+                    } catch (Exception e) {
+                        log.warn("Address.parse(fromAddress).toBase58() error:{}", fromAddress);
+                    }
+                    try {
+                        toAddress = Address.parse(toAddress).toBase58();
+                    } catch (Exception e) {
+                        log.warn("Address.parse(toAddress).toBase58() error:{}", fromAddress);
+                    }
+                }
+                if (size == 4) {
+                    assetName = commonService.getOepSymbol(isWasm, contractHash, null);
+                    Integer decimals = commonService.getOep4Decimals(isWasm, contractHash);
+                    if (decimals == null) {
+                        // oep5
+                        String tokenId = stateArray.getString(3);
+                        BigDecimal amount = BigDecimal.ONE;
+                        assetName = assetName + tokenId;
+                        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
+                                blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                        ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
+                    } else {
+                        // oep4
+                        BigDecimal eventAmount = BigDecimalFromNeoVmData(stateArray.getString(3));
+                        BigDecimal amount = eventAmount.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
+                        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
+                                blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                        ConstantParam.BATCHBLOCKDTO.getOep4TxDetails().add(TxDetail.toOep4TxDetail(txDetail));
+                    }
+                } else if (size == 5) {
+                    // oep8
+                    String tokenId = stateArray.getString(3);
+                    assetName = commonService.getOepSymbol(isWasm, contractHash, tokenId);
+                    BigDecimal amount = BigDecimalFromNeoVmData(stateArray.getString(4));
+
+                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
+                            blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
+                } else {
+                    // other
+                    TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                            blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                }
+            } else {
+                // other
+                TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                        blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
+                ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+            }
+        } catch (Exception e) {
+            log.error("handleUnauditedOepTransferTx error", e);
+            TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
+            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        }
+    }
 
     private BigDecimal BigDecimalFromNeoVmData(String value) {
         try {
@@ -1378,6 +1759,7 @@ public class TxHandlerThread {
         }
 
     }
+
 
     /**
      * 构造基本交易信息dao
@@ -1464,6 +1846,8 @@ public class TxHandlerThread {
             ConstantParam.BATCHBLOCKDTO.getOrc20TxDetails().add(TxDetail.toOrc20TxDetail(txDetail));
         } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC721TX)) {
             ConstantParam.BATCHBLOCKDTO.getOrc721TxDetails().add(TxDetail.toOrc721TxDetail(txDetail, ConstantParam.EMPTY));
+        } else if (IS_OEPTX_FLAG.get().get(ConstantParam.IS_ORC1155TX)) {
+            ConstantParam.BATCHBLOCKDTO.getOrc1155TxDetails().add(TxDetail.toOrc1155TxDetail(txDetail, ConstantParam.EMPTY));
         }
 
     }

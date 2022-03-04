@@ -22,6 +22,12 @@ package com.github.ontio.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.model.common.BatchBlockDto;
+import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.DynamicArray;
+import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.datatypes.generated.Uint256;
+import org.web3j.abi.datatypes.generated.Uint8;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -119,6 +125,10 @@ public final class ConstantParam {
 
     public static Set<String> ORC721CONTRACTS = new HashSet<>();
 
+    public static Map<String, JSONObject> ORC1155MAP = new HashMap<>();
+
+    public static Set<String> ORC1155CONTRACTS = new HashSet<>();
+
 
     public static final String ASSET_NAME_ONT = "ont";
 
@@ -133,11 +143,19 @@ public final class ConstantParam {
     public static final String IS_OEP8TX = "is_oep8tx";
 
     public static final String IS_ORC20TX = "is_orc20tx";
-    public static final String IS_ORC721TX = "is_erc721tx";
+
+    public static final String IS_ORC721TX = "is_orc721tx";
+
+    public static final String IS_ORC1155TX = "is_orc1155tx";
 
 
     public static final String TRANSFER_TX = "ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+
     public static final String Approval_TX = "8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925";
+
+    public static final String TRANSFER_SINGLE_TX = "c3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62";
+
+    public static final String TRANSFER_BATCH_TX = "4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb";
 
     public static final String ONG_CONTRACT_ADDRESS = "0200000000000000000000000000000000000000";
 
@@ -159,4 +177,27 @@ public final class ConstantParam {
     public static final BigDecimal MAX_APPROVAL_AMOUNT = new BigDecimal("99999999999999999999");
 
     public static final String EMPTY = "";
+
+    public static final String FUN_BALANCE_OF = "balanceOf";
+
+    public static final String FUN_SYMBOL = "symbol";
+
+    public static final String FUN_DECIMALS = "decimals";
+
+    public static final String NEOVM_TRANSFER_ACTION = "7472616e73666572";
+
+    public static final String NEOVM_APPROVAL_ACTION = "617070726f76616c";
+    /**
+     * evm TypeReference
+     */
+    public static TypeReference<Address> TYPE_REFERENCE_ADDRESS = new TypeReference<Address>() {
+    };
+    public static TypeReference<Uint256> TYPE_REFERENCE_UINT256 = new TypeReference<Uint256>() {
+    };
+    public static TypeReference<DynamicArray<Uint256>> TYPE_REFERENCE_UINT256_ARRAY = new TypeReference<DynamicArray<Uint256>>() {
+    };
+    public static TypeReference<Utf8String> TYPE_REFERENCE_UTF8 = new TypeReference<Utf8String>() {
+    };
+    public static TypeReference<Uint8> TYPE_REFERENCE_UINT8 = new TypeReference<Uint8>() {
+    };
 }

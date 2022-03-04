@@ -39,4 +39,6 @@ public class BatchBlockDto {
 
     private List<Orc721TxDetail> orc721TxDetails = Collections.synchronizedList(new ArrayList<Orc721TxDetail>());
 
+    private List<Orc1155TxDetail> orc1155TxDetails = Collections.synchronizedList(new ArrayList<Orc1155TxDetail>());
+
 }

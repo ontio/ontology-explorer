@@ -7,17 +7,24 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.core.payload.DeployCode;
+import com.github.ontio.core.payload.InvokeWasmCode;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.BatchBlockDto;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,14 +50,15 @@ public class CommonService {
     private final ContractMapper contractMapper;
     private final TxDetailDailyMapper txDetailDailyMapper;
     private final TxDetailIndexMapper txDetailIndexMapper;
-
     private final Orc20TxDetailMapper orc20TxDetailMapper;
     private final Orc721TxDetailMapper orc721TxDetailMapper;
+    private final Orc1155TxDetailMapper orc1155TxDetailMapper;
 
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
                          Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
-                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, Orc20TxDetailMapper orc20TxDetailMapper, Orc721TxDetailMapper orc721TxDetailMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
+                         BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, Orc20TxDetailMapper orc20TxDetailMapper, Orc721TxDetailMapper orc721TxDetailMapper,
+                         Orc1155TxDetailMapper orc1155TxDetailMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.currentMapper = currentMapper;
@@ -63,6 +71,7 @@ public class CommonService {
         this.oep5DragonMapper = oep5DragonMapper;
         this.orc20TxDetailMapper = orc20TxDetailMapper;
         this.orc721TxDetailMapper = orc721TxDetailMapper;
+        this.orc1155TxDetailMapper = orc1155TxDetailMapper;
         this.contractMapper = contractMapper;
         this.txDetailDailyMapper = txDetailDailyMapper;
         this.txDetailIndexMapper = txDetailIndexMapper;
@@ -207,7 +216,7 @@ public class CommonService {
             }
         }
 
-        // 插入 tbl_erc721_tx_detail 表中
+        // 插入 tbl_orc721_tx_detail 表中
         if (batchBlockDto.getOrc721TxDetails().size() > 0) {
             int count = batchBlockDto.getOrc721TxDetails().size();
             if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
@@ -222,6 +231,20 @@ public class CommonService {
             }
         }
 
+        // 插入 tbl_orc1155_tx_detail 表中
+        if (batchBlockDto.getOrc1155TxDetails().size() > 0) {
+            int count = batchBlockDto.getOrc1155TxDetails().size();
+            if (count > paramsConfig.BATCHINSERT_SQL_COUNT) {
+                for (int j = 0; j <= count / paramsConfig.BATCHINSERT_SQL_COUNT; j++) {
+                    List<Orc1155TxDetail> list = batchBlockDto.getOrc1155TxDetails().subList(j * paramsConfig.BATCHINSERT_SQL_COUNT, (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT > count ? count : (j + 1) * paramsConfig.BATCHINSERT_SQL_COUNT);
+                    if (list.size() > 0) {
+                        orc1155TxDetailMapper.batchInsert(list);
+                    }
+                }
+            } else {
+                orc1155TxDetailMapper.batchInsert(batchBlockDto.getOrc1155TxDetails());
+            }
+        }
 
         //插入tbl_contract表
         if (batchBlockDto.getContracts().size() > 0) {
@@ -574,4 +597,67 @@ public class CommonService {
         txDetailIndexMapper.buildTxDetailIndexForToAddress(beginHeight, endHeight, null);
     }
 
+    public String getOepSymbol(Boolean isWasm, String contract, String tokenId) {
+        String symbol = ConstantParam.EMPTY;
+        try {
+            if (isWasm) {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                List<Object> invokeParams;
+                if (StringUtils.isEmpty(tokenId)) {
+                    invokeParams = Collections.emptyList();
+                } else {
+                    invokeParams = Collections.singletonList(new BigInteger(tokenId));
+                }
+                InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contract, ConstantParam.FUN_SYMBOL, invokeParams, Address.ZERO, 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                symbol = new String(Helper.hexToBytes(result));
+            } else {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                List<Object> paramList = new ArrayList<>();
+                paramList.add(ConstantParam.FUN_SYMBOL.getBytes());
+                List<Object> invokeParams;
+                if (StringUtils.isEmpty(tokenId)) {
+                    invokeParams = Collections.emptyList();
+                } else {
+                    invokeParams = Collections.singletonList(Helper.hexToBytes(tokenId));
+                }
+                paramList.add(invokeParams);
+                byte[] params = BuildParams.createCodeParamsScript(paramList);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contract), null, params, Address.ZERO.toBase58(), 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                symbol = new String(Helper.hexToBytes(result));
+            }
+        } catch (Exception e) {
+            log.error("getOep4Decimal error...{}", e.getMessage());
+        }
+        return symbol;
+    }
+
+    public Integer getOep4Decimals(Boolean isWasm, String contract) {
+        Integer decimals = null;
+        try {
+            if (isWasm) {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contract, ConstantParam.FUN_DECIMALS, Collections.emptyList(), Address.ZERO, 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                decimals = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result)).intValue();
+            } else {
+                OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
+                List<Object> paramList = new ArrayList<>();
+                paramList.add(ConstantParam.FUN_DECIMALS.getBytes());
+                paramList.add(Collections.emptyList());
+                byte[] params = BuildParams.createCodeParamsScript(paramList);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contract), null, params, Address.ZERO.toBase58(), 20000, 2500);
+                JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                String result = jsonObject.getString("Result");
+                decimals = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result)).intValue();
+            }
+        } catch (Exception e) {
+            log.error("getOep4Decimal error...{}", e.getMessage());
+        }
+        return decimals;
+    }
 }

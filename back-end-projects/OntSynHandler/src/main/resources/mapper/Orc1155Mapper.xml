@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.Orc1155Mapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.Orc1155">
+    <id column="contract_hash" jdbcType="VARCHAR" property="contractHash" />
+    <id column="token_id" jdbcType="VARCHAR" property="tokenId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="total_supply" jdbcType="DECIMAL" property="totalSupply" />
+    <result column="symbol" jdbcType="VARCHAR" property="symbol" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="audit_flag" jdbcType="BIT" property="auditFlag" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="vm_category" jdbcType="VARCHAR" property="vmCategory" />
+  </resultMap>
+
+  <sql id="baseColumns">
+    contract_hash as contractHash,
+    token_id as tokenId,
+    name as name,
+    total_supply as totalSupply,
+    symbol as symbol,
+    create_time as createTime,
+    audit_flag as auditFlag,
+    update_time as updateTime
+  </sql>
+
+  <select id="selectApprovedRecords" resultType="com.github.ontio.model.dao.Orc1155">
+    select <include refid="baseColumns"/>
+    from tbl_orc1155
+    where audit_flag = 1
+  </select>
+
+
+</mapper>
