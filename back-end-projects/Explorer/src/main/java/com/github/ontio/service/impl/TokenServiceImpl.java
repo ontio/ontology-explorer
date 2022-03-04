@@ -137,7 +137,7 @@ public class TokenServiceImpl implements ITokenService {
                 PageHelper.startPage(pageNumber, pageSize);
                 List<Orc1155DetailDto> orc1155DetailDtos = orc1155Mapper.selectOrc1155Tokens(ascending, descending);
                 total = ((Long) ((Page) orc1155DetailDtos).getTotal()).intValue();
-                //OEP8同一个合约hash有多种token，需要根据tokenId分类
+                //ORC1155同一个合约hash有多种token，需要根据tokenId分类
                 orc1155DetailDtos.forEach(item -> {
                     formatOrc1155DetailDto(item);
                 });
