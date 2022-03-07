@@ -199,11 +199,11 @@ public class Web3jSdkUtil {
         Web3j web3j = getWeb3jSingleton();
         try {
             EthGetCode ethGetCode = web3j.ethGetCode(address, DefaultBlockParameterName.LATEST).send();
-            Response.Error error = ethGetCode.getError();
-            if (error != null) {
-                String errorMessage = error.getMessage();
-                log.error("eth getCode error, address:{},error:{}", address, errorMessage);
-            }
+//            Response.Error error = ethGetCode.getError();
+//            if (error != null) {
+//                String errorMessage = error.getMessage();
+//                log.error("eth getCode error, address:{},error:{}", address, errorMessage);
+//            }
             code = ethGetCode.getCode();
         } catch (IOException e) {
             log.error("getCode error....", e);

@@ -341,7 +341,7 @@ public class TxHandlerThread {
             calledContractHash = rawTransaction.getTo();
             // 解决evm类型的ong转账,calledContractHash为转出地址的问题
             String contractCode = web3jSdkUtil.getCode(calledContractHash);
-            if (ConstantParam.EVM_ADDRESS_PREFIX.equalsIgnoreCase(contractCode)) {
+            if (null == contractCode || ConstantParam.EVM_ADDRESS_PREFIX.equalsIgnoreCase(contractCode)) {
                 // 用户地址code为0x
                 calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
             }
