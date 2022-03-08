@@ -58,6 +58,7 @@ public class AddressServiceImpl implements IAddressService {
     private final Orc721Mapper orc721Mapper;
     private final Orc1155Mapper orc1155Mapper;
     private final TxDetailMapper txDetailMapper;
+    private final TxDetailIndexMapper txDetailIndexMapper;
     private final ParamsConfig paramsConfig;
     private final CommonService commonService;
     private final AddressDailyAggregationMapper addressDailyAggregationMapper;
@@ -66,8 +67,8 @@ public class AddressServiceImpl implements IAddressService {
 
     @Autowired
     public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper,
-                              TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CommonService commonService, AddressDailyAggregationMapper addressDailyAggregationMapper,
-                              RankingMapper rankingMapper) {
+                              TxDetailMapper txDetailMapper, TxDetailIndexMapper txDetailIndexMapper, ParamsConfig paramsConfig, CommonService commonService,
+                              AddressDailyAggregationMapper addressDailyAggregationMapper, RankingMapper rankingMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
@@ -75,6 +76,7 @@ public class AddressServiceImpl implements IAddressService {
         this.orc721Mapper = orc721Mapper;
         this.orc1155Mapper = orc1155Mapper;
         this.txDetailMapper = txDetailMapper;
+        this.txDetailIndexMapper = txDetailIndexMapper;
         this.paramsConfig = paramsConfig;
         this.commonService = commonService;
         this.addressDailyAggregationMapper = addressDailyAggregationMapper;
@@ -1222,7 +1224,7 @@ public class AddressServiceImpl implements IAddressService {
         Integer latestOntTransferTxTime = null;
         //mysql 4.0.14+ bug
         try {
-            latestOntTransferTxTime = txDetailMapper.selectLatestOntTransferTxTime(address);
+            latestOntTransferTxTime = txDetailIndexMapper.selectLatestOntTransferTxTime(address);
         } catch (Exception e) {
             log.error("{} error...", Helper.currentMethod(), e);
         }
