@@ -18,7 +18,6 @@ import com.github.ontio.model.dto.aggregation.AddressAggregationDto;
 import com.github.ontio.model.dto.aggregation.AddressBalanceAggregationsDto;
 import com.github.ontio.model.dto.aggregation.ExtremeBalanceDto;
 import com.github.ontio.model.dto.ranking.AddressRankingDto;
-import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.service.IAddressService;
 import com.github.ontio.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +29,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -1420,40 +1414,13 @@ public class AddressServiceImpl implements IAddressService {
 
 
     @Override
-    public ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) throws
-            SDKException {
+    public ResponseBean queryDailyAggregation(String address, String token, Date from, Date to) {
         String tokenContractHash = paramsConfig.getContractHash(token);
         List<AddressAggregationDto> aggregations = addressDailyAggregationMapper.findAggregations(address, tokenContractHash, from, to);
 
-        String ontAddr = "";
-        String ethAddr = "";
-        if (address.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-            ethAddr = address;
-            ontAddr = Helper.EthAddrToOntAddr(address);
-        } else {
-            ethAddr = Helper.ontAddrToEthAddr(address);
-            ontAddr = address;
-        }
-
- /*
-        String finalOntAddress = ontAddr;
-        String finalEthAddress = ethAddr;
-        ExtremeBalanceDto max1 = extremeBalances.get(address + tokenContractHash + "max", key -> addressDailyAggregationMapper.findMaxBalance(finalOntAddress, tokenContractHash));
-        ExtremeBalanceDto max2 = extremeBalances.get(address + tokenContractHash + "max", key -> addressDailyAggregationMapper.findMaxBalance(finalEthAddress, tokenContractHash));
-
-
-        String finalOntAddr = ontAddr;
-        String finalEthAddr = ethAddr;*/
-
-        String finalAddress = address;
         ExtremeBalanceDto max = extremeBalances.get(address + tokenContractHash + "max", key -> addressDailyAggregationMapper.findMaxBalance(address, tokenContractHash));
 
-
-        String finalAddress1 = address;
-        ExtremeBalanceDto min = extremeBalances.get(address + token + "min", key -> addressDailyAggregationMapper.findMinBalance(finalAddress1, tokenContractHash));
-
-//        ExtremeBalanceDto min = extremeBalances.get(address + token + "min", key -> addressDailyAggregationMapper.findMinBalance(finalAddress1, tokenContractHash));
-
+        ExtremeBalanceDto min = extremeBalances.get(address + token + "min", key -> addressDailyAggregationMapper.findMinBalance(address, tokenContractHash));
 
         AddressBalanceAggregationsDto result = new AddressBalanceAggregationsDto(max, min, aggregations);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
