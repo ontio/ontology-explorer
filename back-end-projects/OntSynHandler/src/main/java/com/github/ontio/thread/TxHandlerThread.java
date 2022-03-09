@@ -339,11 +339,13 @@ public class TxHandlerThread {
         } else if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType) {
             RawTransaction rawTransaction = TransactionDecoder.decode(code);
             calledContractHash = rawTransaction.getTo();
-            // 解决evm类型的ong转账,calledContractHash为转出地址的问题
-            String contractCode = web3jSdkUtil.getCode(calledContractHash);
-            if (null == contractCode || ConstantParam.EVM_ADDRESS_PREFIX.equalsIgnoreCase(contractCode)) {
-                // 用户地址code为0x
-                calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
+            if (!ConstantParam.EVM_ADDRESS_PREFIX.equals(calledContractHash)) {
+                // 解决evm类型的ong转账,calledContractHash为转出地址的问题
+                String contractCode = web3jSdkUtil.getCode(calledContractHash);
+                if (null == contractCode || ConstantParam.EVM_ADDRESS_PREFIX.equalsIgnoreCase(contractCode)) {
+                    // 用户地址code为0x
+                    calledContractHash = ConstantParam.ONG_CONTRACT_ADDRESS;
+                }
             }
         }
 
