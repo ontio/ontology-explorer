@@ -176,7 +176,7 @@ public class TxHandlerThread {
             //invoke smart contract transaction
             JSONArray notifyArray = eventLogObj.getJSONArray("Notify");
             //no event transaction or deploy smart contract transaction
-            if (notifyArray.size() == 0) {
+            if (notifyArray == null || notifyArray.size() == 0) {
                 insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
                         gasConsumed, 1, EventTypeEnum.Others.type(), "", payer, calledContractHash);
             } else {
