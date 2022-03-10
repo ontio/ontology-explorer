@@ -164,7 +164,7 @@ public class TxReSyncThread {
             //invoke smart contract transaction
             JSONArray notifyArray = eventLogObj.getJSONArray("Notify");
             //no event transaction or deploy smart contract transaction
-            if (notifyArray.size() != 0) {
+            if (notifyArray != null && notifyArray.size() != 0) {
                 for (int i = 0, len = notifyArray.size(); i < len; i++) {
                     JSONArray stateArray = null;
                     String evmStates = "";

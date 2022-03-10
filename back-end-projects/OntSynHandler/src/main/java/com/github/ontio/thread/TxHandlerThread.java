@@ -177,8 +177,21 @@ public class TxHandlerThread {
             JSONArray notifyArray = eventLogObj.getJSONArray("Notify");
             //no event transaction or deploy smart contract transaction
             if (notifyArray == null || notifyArray.size() == 0) {
-                insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                        gasConsumed, 1, EventTypeEnum.Others.type(), "", payer, calledContractHash);
+                String contractAddress = "";
+                String fromAddress = "";
+                Integer eventType = EventTypeEnum.Others.type();
+                if (confirmFlag == 0 && BigDecimal.ZERO.compareTo(gasConsumed) == 0) {
+                    eventType = EventTypeEnum.Gasconsume.type();
+                    fromAddress = payer;
+                    contractAddress = calledContractHash;
+                    if (ConstantParam.NATIVE_CALLED_CONTRACT_HASH.equalsIgnoreCase(calledContractHash)) {
+                        int length = code.length();
+                        int start = length - 90;
+                        contractAddress = Helper.reverse(code.substring(start, start + 40));
+                    }
+                }
+                insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "", gasConsumed,
+                        1, eventType, contractAddress, fromAddress, payer, calledContractHash);
             } else {
                 for (int i = 0, len = notifyArray.size(); i < len; i++) {
                     JSONArray stateArray = null;
@@ -193,7 +206,7 @@ public class TxHandlerThread {
                         evmStates = object.toString();
                     } else {
                         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, "", payer, calledContractHash);
                         continue;
                     }
 
@@ -223,7 +236,7 @@ public class TxHandlerThread {
                     } else if (paramsConfig.AUTH_CONTRACTHASH.equals(contractAddress)) {
                         //auth transaction
                         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, EventTypeEnum.Auth.des(),
-                                gasConsumed, i + 1, EventTypeEnum.Auth.type(), contractAddress, payer, calledContractHash);
+                                gasConsumed, i + 1, EventTypeEnum.Auth.type(), contractAddress, "", payer, calledContractHash);
 
                     } else if (ConstantParam.OEP8CONTRACTS.contains(contractAddress)) {
                         //OEP8交易
@@ -268,7 +281,7 @@ public class TxHandlerThread {
                             insertInvokeDeploy = true;
                         }
                         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
-                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, "", payer, calledContractHash);
                     } else {
                         //other transaction
                         handleUnauditedOepOrcTransferTx(stateArray, evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, gasConsumed, i + 1, confirmFlag, contractAddress, payer, calledContractHash);
@@ -426,7 +439,7 @@ public class TxHandlerThread {
         contractObj.remove("ContractHash");
 
         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, contractObj.toString(),
-                gasConsumed, 0, EventTypeEnum.DeployContract.type(), contractHash, payer, calledContractHash);
+                gasConsumed, 0, EventTypeEnum.DeployContract.type(), contractHash, "", payer, calledContractHash);
 
         //部署成功的合约才记录
         if (confirmFlag == 1) {
@@ -449,7 +462,7 @@ public class TxHandlerThread {
         contractObj.put("Name", "");
         contractObj.put("Description", "deployed contract");
         contractObj.put("ContractHash", deployContractAddress);
-        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, contractObj.toString(), gasConsumed, 0, EventTypeEnum.DeployContract.type(), deployContractAddress, payer, calledContractHash);
+        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, contractObj.toString(), gasConsumed, 0, EventTypeEnum.DeployContract.type(), deployContractAddress, "", payer, calledContractHash);
 
 
         if (confirmFlag == 1) {
@@ -724,7 +737,7 @@ public class TxHandlerThread {
         ConstantParam.BATCHBLOCKDTO.getOntidTxDetails().add(ontidTxDetail);
 
         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, 1, EventTypeEnum.Ontid.des() + action,
-                gasConsumed, indexInTx, EventTypeEnum.Ontid.type(), contractAddress, payer, calledContractHash);
+                gasConsumed, indexInTx, EventTypeEnum.Ontid.type(), contractAddress, "", payer, calledContractHash);
 
         //如果是注册ontid交易，ontid数量加1
         if (ConstantParam.REGISTER.equals(action)) {
@@ -880,7 +893,7 @@ public class TxHandlerThread {
         }
 
         insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, 1, sb.toString(),
-                gasConsumed, indexInTx, EventTypeEnum.Claimrecord.type(), contractAddress, payer, calledContractHash);
+                gasConsumed, indexInTx, EventTypeEnum.Claimrecord.type(), contractAddress, "", payer, calledContractHash);
     }
 
 
@@ -1847,11 +1860,11 @@ public class TxHandlerThread {
      * @throws Exception
      */
     // 首先插入 tx_detail 大表中
-    private void insertTxBasicInfo(int txType, String txHash, int blockHeight, int blockTime,
-                                   int indexInBlock, int confirmFlag, String action, BigDecimal gasConsumed, int indexInTx,
-                                   int eventType, String contractAddress, String payer, String calledContractHash) throws Exception {
+    private void insertTxBasicInfo(int txType, String txHash, int blockHeight, int blockTime, int indexInBlock,
+                                   int confirmFlag, String action, BigDecimal gasConsumed, int indexInTx,
+                                   int eventType, String contractAddress, String fromAddress, String payer, String calledContractHash) throws Exception {
 
-        TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
+        TxDetail txDetail = generateTransaction(fromAddress, "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
                 blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, eventType, contractAddress, payer, calledContractHash);
 
         ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);

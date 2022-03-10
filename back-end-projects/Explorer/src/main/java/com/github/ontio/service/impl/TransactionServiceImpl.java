@@ -363,6 +363,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     txType = TxTypeEnum.ONG_TRANSFER;
                     calledContractHash = ConstantParam.CONTRACTHASH_ONG;
                 } else {
+                    calledContractHash = ConstantParam.CONTRACTHASH_ONG;
                     txType = TxTypeEnum.CONTRACT_CALL;
                 }
             } else {

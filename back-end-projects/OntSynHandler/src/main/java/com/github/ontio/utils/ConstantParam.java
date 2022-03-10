@@ -187,6 +187,8 @@ public final class ConstantParam {
     public static final String NEOVM_TRANSFER_ACTION = "7472616e73666572";
 
     public static final String NEOVM_APPROVAL_ACTION = "617070726f76616c";
+
+    public static final String NATIVE_CALLED_CONTRACT_HASH = "792e4e61746976652e496e766f6b65";
     /**
      * evm TypeReference
      */
