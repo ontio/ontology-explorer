@@ -82,7 +82,7 @@ public class InitOepInfoSchedule {
         List<Orc20> orc20s = orc20Mapper.selectApprovedRecords();
         orc20s.forEach(item -> {
             JSONObject obj = new JSONObject();
-            obj.put("name", item.getName());
+            obj.put("symbol", item.getSymbol());
             obj.put("decimals", item.getDecimals());
 
             // 拿到数据库中的 "正的值" 现在使用反序的方式来进行判断
@@ -95,6 +95,7 @@ public class InitOepInfoSchedule {
         List<Orc721> orc721s = orc721Mapper.selectApprovedRecords();
         orc721s.forEach(item -> {
             JSONObject obj = new JSONObject();
+            obj.put("symbol", item.getSymbol());
             obj.put("name", item.getName());
 
             //拿到数据库中的"正的值",现在使用反序的方式来进行判断
