@@ -840,7 +840,7 @@ public class TxReSyncThread {
                 txAction = EventTypeEnum.Approval.des();
                 eventType = EventTypeEnum.Approval.type();
             }
-            String assetName = orc20Obj.getString("name");
+            String assetName = orc20Obj.getString("symbol");
             Integer decimals = orc20Obj.getInteger("decimals");
             BigDecimal amount = amountValue.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
             if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
@@ -916,7 +916,7 @@ public class TxReSyncThread {
                 eventType = EventTypeEnum.Approval.type();
             }
 
-            String assetName = orc721Obj.getString("name");
+            String assetName = orc721Obj.getString("symbol");
 
             contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractHash);
 
