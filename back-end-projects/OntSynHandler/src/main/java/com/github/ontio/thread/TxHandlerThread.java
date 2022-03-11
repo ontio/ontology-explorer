@@ -966,19 +966,23 @@ public class TxHandlerThread {
         } else {
             eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(amount)));
         }
-        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(eventAmount) <= 0) {
-            eventAmount = ConstantParam.MAX_APPROVAL_AMOUNT;
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(eventAmount) <= 0 || BigDecimal.ZERO.compareTo(eventAmount) > 0) {
+            TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        } else {
+            log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
+
+            TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
+
+            ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+            ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+            ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
+
+            transferTransactionPush.publish(txDetail);
         }
-        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
-
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
-                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
-
-        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-        ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
-
-        transferTransactionPush.publish(txDetail);
     }
 
     /**
@@ -1754,14 +1758,18 @@ public class TxHandlerThread {
                     String tokenId = stateArray.getString(3);
                     assetName = commonService.getOepSymbol(isWasm, contractHash, tokenId);
                     BigDecimal amount = BigDecimalFromNeoVmData(stateArray.getString(4));
-                    if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0) {
-                        amount = ConstantParam.MAX_APPROVAL_AMOUNT;
+                    if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
+                        TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                                blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                    } else {
+                        TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
+                                blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+                        ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+                        ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
                     }
-                    TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
-                            blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
-                    ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-                    ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-                    ConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
                 } else {
                     // other
                     TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,

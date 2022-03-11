@@ -414,17 +414,21 @@ public class TxReSyncThread {
         } else {
             eventAmount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(amount)));
         }
-        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(eventAmount) <= 0) {
-            eventAmount = ConstantParam.MAX_APPROVAL_AMOUNT;
+        if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(eventAmount) <= 0 || BigDecimal.ZERO.compareTo(eventAmount) > 0) {
+            TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+            ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+            ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+        } else {
+            log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
+
+            TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
+                    blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
+
+            ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
+            ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
+            ReSyncConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
         }
-        log.info("OEP8TransferTx:fromaddress:{}, toaddress:{}, tokenid:{}, amount:{}", fromAddress, toAddress, tokenId, eventAmount);
-
-        TxDetail txDetail = generateTransaction(fromAddress, toAddress, oep8Obj.getString("name"), eventAmount, txType, txHash, blockHeight,
-                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(), contractAddress, payer, calledContractHash);
-
-        ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-        ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-        ReSyncConstantParam.BATCHBLOCKDTO.getOep8TxDetails().add(TxDetail.toOep8TxDetail(txDetail));
     }
 
     /**

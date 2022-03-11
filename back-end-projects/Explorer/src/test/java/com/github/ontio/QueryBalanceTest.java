@@ -42,4 +42,12 @@ public class QueryBalanceTest {
         System.out.println(decimal);
 
     }
+
+    @Test
+    public void getOntAddressByEthAddress() throws Exception {
+        String ethAddress = "0xe457E2f710c3001CA5b5098F8Af6DCB508056Ad2";
+        Address address = Address.parse(ethAddress.substring(2));
+        String ontAddress = address.toBase58();
+        System.out.println(ontAddress);
+    }
 }
