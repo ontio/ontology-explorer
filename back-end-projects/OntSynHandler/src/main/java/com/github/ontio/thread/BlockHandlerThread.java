@@ -66,7 +66,7 @@ public class BlockHandlerThread extends Thread {
         log.info("Staring block sync");
         try {
             // 等待30秒，等待OEP合约信息刷新
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.SECONDS.sleep(30);
             ConstantParam.MASTERNODE_RESTFULURL = paramsConfig.MASTERNODE_RESTFUL_URL;
             //初始化node列表
             initNodeRestfulList();
