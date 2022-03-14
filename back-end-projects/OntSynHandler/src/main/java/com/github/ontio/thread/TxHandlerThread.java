@@ -1115,10 +1115,12 @@ public class TxHandlerThread {
         }
 
         String action;
+        boolean isWasm = false;
         try {
             action = new String(Helper.hexToBytes((String) stateArray.get(0)));
         } catch (Exception e) {
             action = (String) stateArray.get(0);
+            isWasm = true;
         }
 
         if (action.equalsIgnoreCase("transfer")) {
@@ -1133,7 +1135,12 @@ public class TxHandlerThread {
             } catch (Exception e) {
                 toAddress = (String) stateArray.get(2);
             }
-            eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+
+            if (isWasm) {
+                eventAmount = new BigDecimal((String) stateArray.get(3));
+            } else {
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+            }
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
             isTransfer = Boolean.TRUE;
         }
@@ -1152,9 +1159,13 @@ public class TxHandlerThread {
             } catch (Exception e) {
                 toAddress = (String) stateArray.get(2);
             }
-            eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+
+            if (isWasm) {
+                eventAmount = new BigDecimal((String) stateArray.get(3));
+            } else {
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+            }
             log.info("Parsing OEP4 approval event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
-//            isTransfer = Boolean.TRUE;
         }
 
         if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
@@ -1742,7 +1753,12 @@ public class TxHandlerThread {
                         ConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
                     } else {
                         // oep4
-                        BigDecimal eventAmount = BigDecimalFromNeoVmData(stateArray.getString(3));
+                        BigDecimal eventAmount;
+                        if (isWasm) {
+                            eventAmount = new BigDecimal(stateArray.getString(3));
+                        } else {
+                            eventAmount = BigDecimalFromNeoVmData(stateArray.getString(3));
+                        }
                         BigDecimal amount = eventAmount.divide(BigDecimal.TEN.pow(decimals), decimals, RoundingMode.DOWN);
                         if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
                             amount = ConstantParam.MAX_APPROVAL_AMOUNT;
@@ -1757,7 +1773,12 @@ public class TxHandlerThread {
                     // oep8
                     String tokenId = stateArray.getString(3);
                     assetName = commonService.getOepSymbol(isWasm, contractHash, tokenId);
-                    BigDecimal amount = BigDecimalFromNeoVmData(stateArray.getString(4));
+                    BigDecimal amount;
+                    if (isWasm) {
+                        amount = new BigDecimal(stateArray.getString(4));
+                    } else {
+                        amount = BigDecimalFromNeoVmData(stateArray.getString(4));
+                    }
                     if (ConstantParam.MAX_APPROVAL_AMOUNT.compareTo(amount) <= 0 || BigDecimal.ZERO.compareTo(amount) > 0) {
                         TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
                                 blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);

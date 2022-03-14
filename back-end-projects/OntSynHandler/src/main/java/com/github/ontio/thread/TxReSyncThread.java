@@ -539,7 +539,6 @@ public class TxReSyncThread {
         String fromAddress = "";
         String toAddress = "";
         BigDecimal eventAmount = BigDecimal.ZERO;
-        Boolean isTransfer = Boolean.FALSE;
 
         if (stateArray.size() != 4) {
             log.warn("Invalid OEP-4 event in transaction {}", txHash);
@@ -552,7 +551,14 @@ public class TxReSyncThread {
             return;
         }
 
-        String action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        String action;
+        boolean isWasm = false;
+        try {
+            action = new String(Helper.hexToBytes((String) stateArray.get(0)));
+        } catch (Exception e) {
+            action = (String) stateArray.get(0);
+            isWasm = true;
+        }
 
         if (action.equalsIgnoreCase("transfer")) {
             try {
@@ -563,12 +569,15 @@ public class TxReSyncThread {
 
             try {
                 toAddress = Address.parse((String) stateArray.get(2)).toBase58();
-                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             } catch (Exception e) {
-                log.warn("Parsing OEP-4 transfer event failed in transaction {}", txHash);
+                toAddress = (String) stateArray.get(2);
+            }
+            if (isWasm) {
+                eventAmount = new BigDecimal((String) stateArray.get(3));
+            } else {
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
             }
             log.info("Parsing OEP4 transfer event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
-            isTransfer = Boolean.TRUE;
         }
 
         if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
