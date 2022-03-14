@@ -1135,6 +1135,7 @@ public class TxHandlerThread {
             } catch (Exception e) {
                 toAddress = (String) stateArray.get(2);
             }
+
             if (isWasm) {
                 eventAmount = new BigDecimal((String) stateArray.get(3));
             } else {
@@ -1158,9 +1159,13 @@ public class TxHandlerThread {
             } catch (Exception e) {
                 toAddress = (String) stateArray.get(2);
             }
-            eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+
+            if (isWasm) {
+                eventAmount = new BigDecimal((String) stateArray.get(3));
+            } else {
+                eventAmount = BigDecimalFromNeoVmData((String) stateArray.get(3));
+            }
             log.info("Parsing OEP4 approval event: from {}, to {}, amount {}", fromAddress, toAddress, eventAmount);
-//            isTransfer = Boolean.TRUE;
         }
 
         if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
