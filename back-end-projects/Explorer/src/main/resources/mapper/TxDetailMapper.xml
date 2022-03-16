@@ -122,6 +122,14 @@
         limit 1
     </select>
 
+    <select id="selectTransferTxsCount" resultType="Integer">
+        SELECT COUNT(DISTINCT tx_hash)
+        FROM tbl_tx_detail_index
+        WHERE address = #{address}
+        <if test="assetName != '' and assetName != null">
+            AND asset_name = #{assetName}
+        </if>
+    </select>
 
     <select id="selectTransferTxsByPage" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT
@@ -497,6 +505,53 @@
         WHERE o.audit_flag = 1
     </select>
 
+    <select id="selectTransferTxsCountOfHashes" resultType="Integer">
+        SELECT
+        COUNT(DISTINCT tx_hash)
+        <choose>
+            <when test="tokenType == 'oep4'">
+                FROM tbl_oep4_tx_detail d
+            </when>
+            <when test="tokenType == 'oep5'">
+                FROM tbl_oep5_tx_detail d
+            </when>
+            <when test="tokenType == 'orc20'">
+                FROM tbl_orc20_tx_detail d
+            </when>
+            <when test="tokenType == 'orc721'">
+                FROM tbl_orc721_tx_detail d
+            </when>
+            <when test="tokenType == 'orc1155'">
+                FROM tbl_orc1155_tx_detail d
+            </when>
+            <otherwise>
+                FROM tbl_oep8_tx_detail d
+            </otherwise>
+        </choose>
+        INNER JOIN
+        (
+        SELECT DISTINCT idx.tx_hash AS `hash`
+        FROM tbl_tx_detail_index idx
+        WHERE idx.address = #{address}
+        <if test="hashes != null and hashes.size() > 0">
+            AND
+            <if test="assetNames != null and assetNames.size() > 0 and address != 'AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK'">
+                (
+            </if>
+            idx.called_contract_hash IN
+            <foreach collection="hashes" item="hash" open="(" separator="," close=")">
+                #{hash}
+            </foreach>
+        </if>
+        <if test="assetNames != null and assetNames.size() > 0 and address != 'AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK'">
+            OR idx.asset_name IN
+            <foreach collection="assetNames" item="assetName" open="(" separator="," close=")">
+                #{assetName}
+            </foreach>
+            )
+        </if>
+        ) idx ON idx.hash = d.tx_hash
+    </select>
     <select id="selectTransferTxsOfHashes" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT
         <include refid="transferTxDetailColumns"/>
@@ -545,9 +600,6 @@
         ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
-        WHERE ( d.from_address = #{address}
-        OR d.to_address = #{address} )
-        AND d.event_type IN (2, 3)
         ORDER BY block_height DESC, tx_hash, tx_index
     </select>
 

@@ -1444,10 +1444,10 @@ public class AddressServiceImpl implements IAddressService {
 
     // 查询所有交易的接口
     @Override
-    public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer
-            pageNumber, Integer pageSize) {
+    public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
         PageResponseBean pageResponse;
-        Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
+//        Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
+        Integer txCount = txDetailMapper.selectTransferTxsCount(address, assetName);
         if (txCount == null || txCount == 0) {
             pageResponse = new PageResponseBean(Collections.emptyList(), 0);
         } else {
@@ -1461,20 +1461,36 @@ public class AddressServiceImpl implements IAddressService {
 
     // 查询一个地址的所有转账信息
     @Override
-    public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer
-            pageNumber, Integer pageSize) {
+    public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize) {
         tokenType = tokenType.toLowerCase();
         PageResponseBean pageResponse;
-        Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
+//        Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
+//        if (txCount == null || txCount == 0) {
+//            pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+//        } else {
+//            List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
+//            List<String> assetNames = null;
+//            if ("oep4".equalsIgnoreCase(tokenType) || "orc20".equalsIgnoreCase(tokenType)) {
+//                assetNames = txDetailMapper.selectAssetNamesOfTokenType(tokenType);
+//            }
+//
+//            int start = Math.max(pageSize * (pageNumber - 1), 0);
+//            List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
+//                    tokenType, start, pageSize);
+//            transferTxDtos = formatTransferTxDtos(transferTxDtos, tokenType);
+//            pageResponse = new PageResponseBean(transferTxDtos, txCount);
+//        }
+//        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
+
+        List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
+        List<String> assetNames = null;
+        if ("oep4".equalsIgnoreCase(tokenType) || "orc20".equalsIgnoreCase(tokenType)) {
+            assetNames = txDetailMapper.selectAssetNamesOfTokenType(tokenType);
+        }
+        Integer txCount = txDetailMapper.selectTransferTxsCountOfHashes(address, contractHashes, assetNames, tokenType);
         if (txCount == null || txCount == 0) {
             pageResponse = new PageResponseBean(Collections.emptyList(), 0);
         } else {
-            List<String> contractHashes = txDetailMapper.selectCalledContractHashesOfTokenType(tokenType);
-            List<String> assetNames = null;
-            if ("oep4".equalsIgnoreCase(tokenType) || "orc20".equalsIgnoreCase(tokenType)) {
-                assetNames = txDetailMapper.selectAssetNamesOfTokenType(tokenType);
-            }
-
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsOfHashes(address, contractHashes, assetNames,
                     tokenType, start, pageSize);

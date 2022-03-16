@@ -538,6 +538,8 @@ public class TxReSyncThread {
                                        JSONObject oep4Obj, String contractHash, String payer, String calledContractHash) throws Exception {
         String fromAddress = "";
         String toAddress = "";
+        String txAction = "";
+        Integer eventType = EventTypeEnum.Others.type();
         BigDecimal eventAmount = BigDecimal.ZERO;
 
         if (stateArray.size() != 4) {
@@ -561,6 +563,8 @@ public class TxReSyncThread {
         }
 
         if (action.equalsIgnoreCase("transfer")) {
+            txAction = EventTypeEnum.Transfer.des();
+            eventType = EventTypeEnum.Transfer.type();
             try {
                 fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
             } catch (Exception e) {
@@ -582,6 +586,8 @@ public class TxReSyncThread {
 
         if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
             if (action.equalsIgnoreCase("IncreasePAX")) {
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
                 try {
                     fromAddress = paramsConfig.PAX_CONTRACTHASH;
                     toAddress = Address.parse((String) stateArray.get(1)).toBase58();
@@ -593,6 +599,8 @@ public class TxReSyncThread {
             }
 
             if (action.equalsIgnoreCase("DecreasePAX")) {
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
                 try {
                     fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
                     toAddress = paramsConfig.PAX_CONTRACTHASH;
@@ -611,8 +619,8 @@ public class TxReSyncThread {
             amount = ConstantParam.MAX_APPROVAL_AMOUNT;
         }
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
-                blockTime, indexInBlock, confirmFlag, EventTypeEnum.Transfer.des(), gasConsumed, indexInTx,
-                EventTypeEnum.Transfer.type(), contractHash, payer, calledContractHash);
+                blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx,
+                eventType, contractHash, payer, calledContractHash);
 
         ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
         ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
