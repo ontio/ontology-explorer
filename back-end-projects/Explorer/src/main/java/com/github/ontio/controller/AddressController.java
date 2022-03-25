@@ -13,15 +13,13 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -198,4 +196,16 @@ public class AddressController {
         return addressService.queryTransferTxsOfTokenTypeByPage(address, tokenType, pageNumber, pageSize);
     }
 
+    @RequestLimit(count = 30)
+    @ApiOperation(value = "Export transaction record by CSV")
+    @GetMapping(value = "/{address}/txs/export")
+    public void exportAddressTransferTxs(
+            @PathVariable @Length(min = 34, max = 42, message = "Incorrect address format") String address,
+            @RequestParam Integer start,
+            @RequestParam Integer end,
+            @RequestParam String language,
+            @RequestParam String token,
+            HttpServletResponse resp) throws IOException {
+        addressService.exportAddressTransferTxs(token, language, address, start, end, resp);
+    }
 }

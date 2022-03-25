@@ -175,8 +175,8 @@ public class ParamsConfig {
     @Value("${eth.web3j.url}")
     public String ETH_WEB3J_URL;
 
+    @Value("${recaptcha.secret.key}")
+    public String RECAPTCHA_SECRET_KEY;
 
-    @Value("${token.bridge.contract}")
-    public String TOKEN_BRIDGE_CONTRACT;
 
 }

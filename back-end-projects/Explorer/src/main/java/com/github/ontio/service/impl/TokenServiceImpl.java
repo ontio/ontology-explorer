@@ -1,5 +1,7 @@
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.config.ParamsConfig;
@@ -20,15 +22,11 @@ import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -217,29 +215,44 @@ public class TokenServiceImpl implements ITokenService {
     public ResponseBean queryTokenDetail(String tokenType, String contractHash) {
 
         Object obj = new Object();
-
+        String contactInfo;
         switch (tokenType.toLowerCase()) {
             case ConstantParam.ASSET_TYPE_OEP4:
                 Oep4DetailDto oep4DetailDto = oep4Mapper.selectOep4TokenDetail(contractHash);
+                contactInfo = oep4DetailDto.getContactInfo();
+                contactInfo = formatContactInfo(contactInfo);
+                oep4DetailDto.setContactInfo(contactInfo);
                 obj = oep4DetailDto;
                 break;
             case ConstantParam.ASSET_TYPE_OEP5:
                 Oep5DetailDto oep5DetailDto = oep5Mapper.selectOep5TokenDetail(contractHash);
+                contactInfo = oep5DetailDto.getContactInfo();
+                contactInfo = formatContactInfo(contactInfo);
+                oep5DetailDto.setContactInfo(contactInfo);
                 obj = oep5DetailDto;
                 break;
             case ConstantParam.ASSET_TYPE_OEP8:
                 Oep8DetailDto oep8DetailDto = oep8Mapper.selectOep8TokenDetail(contractHash);
                 if (Helper.isNotEmptyAndNull(oep8DetailDto)) {
-                    oep8DetailDto = formatOep8DetailDto(oep8DetailDto);
+                    formatOep8DetailDto(oep8DetailDto);
                 }
+                contactInfo = oep8DetailDto.getContactInfo();
+                contactInfo = formatContactInfo(contactInfo);
+                oep8DetailDto.setContactInfo(contactInfo);
                 obj = oep8DetailDto;
                 break;
             case ConstantParam.ASSET_TYPE_ORC20:
                 Orc20DetailDto orc20DetailDto = orc20Mapper.selectOrc20TokenDetail(contractHash);
+                contactInfo = orc20DetailDto.getContactInfo();
+                contactInfo = formatContactInfo(contactInfo);
+                orc20DetailDto.setContactInfo(contactInfo);
                 obj = orc20DetailDto;
                 break;
             case ConstantParam.ASSET_TYPE_ORC721:
                 Orc721DetailDto orc721DetailDto = orc721Mapper.selectOrc721TokenDetail(contractHash);
+                contactInfo = orc721DetailDto.getContactInfo();
+                contactInfo = formatContactInfo(contactInfo);
+                orc721DetailDto.setContactInfo(contactInfo);
                 obj = orc721DetailDto;
                 break;
             case ConstantParam.ASSET_TYPE_ORC1155:
@@ -247,6 +260,9 @@ public class TokenServiceImpl implements ITokenService {
                 if (Helper.isNotEmptyAndNull(orc1155DetailDto)) {
                     formatOrc1155DetailDto(orc1155DetailDto);
                 }
+                contactInfo = orc1155DetailDto.getContactInfo();
+                contactInfo = formatContactInfo(contactInfo);
+                orc1155DetailDto.setContactInfo(contactInfo);
                 obj = orc1155DetailDto;
                 break;
         }
@@ -254,6 +270,26 @@ public class TokenServiceImpl implements ITokenService {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), obj);
+    }
+
+    private String formatContactInfo(String contactInfo) {
+        try {
+            if (!StringUtils.isEmpty(contactInfo)) {
+                JSONObject jsonObject = JSONObject.parseObject(contactInfo);
+                String website = jsonObject.getString("website");
+                if (StringUtils.isEmpty(website)) {
+                    jsonObject.remove("website");
+                }
+                String email = jsonObject.getString("email");
+                if (StringUtils.isEmpty(email)) {
+                    jsonObject.remove("email");
+                }
+                return JSON.toJSONString(jsonObject);
+            }
+        } catch (Exception e) {
+            log.error("parse contractDetail error:{}", e.getMessage());
+        }
+        return contactInfo;
     }
 
     @Override

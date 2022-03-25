@@ -94,7 +94,7 @@ public enum ErrorInfo {
 
     TOKEN_EXPIRED(61014,"Token expired."),
 
-    TOKEN_UNMATCH(61015,"Token unmatch."),
+    TOKEN_MISMATCH(61015,"Token mismatch."),
 
     TOKEN_EMPTY(61016,"Token empty."),
 

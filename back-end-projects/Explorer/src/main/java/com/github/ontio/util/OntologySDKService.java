@@ -761,4 +761,62 @@ public class OntologySDKService {
             return "";
         }
     }
+
+    /**
+     * 获取区块
+     *
+     * @param blockHeight
+     * @return
+     */
+    public String getBlockHash(Integer blockHeight) {
+        String blockHash = null;
+        try {
+            String resp = HttpClientUtil.getRequest(String.format(ConstantParam.GET_BLOCK_HASH_URL, paramsConfig.MASTERNODE_RESTFUL_URL, blockHeight), Collections.emptyMap(), Collections.emptyMap());
+            JSONObject jsonObject = JSONObject.parseObject(resp);
+            Integer error = jsonObject.getInteger("Error");
+            if (error == 0) {
+                blockHash = jsonObject.getString("Result");
+            }
+        } catch (Exception e) {
+            log.error("getTxPayload error...", e);
+        }
+        return blockHash;
+    }
+
+    public boolean checkOntIdExist(String ontId) {
+        OntSdk ontSdk = getOntSdk();
+        boolean exist = false;
+        try {
+            String documentStr = ontSdk.nativevm().ontId().sendGetDocument(ontId);
+            exist = !StringUtils.isEmpty(documentStr);
+        } catch (Exception e) {
+            log.error("checkOntIdExist error:{}", e.getMessage());
+        }
+        return exist;
+    }
+
+    public boolean checkTxExist(String txHash) {
+        if (txHash != null && txHash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            txHash = Helper.reverse(txHash.substring(2));
+        }
+        String txPayload = getTxPayload(txHash);
+        return !StringUtils.isEmpty(txPayload);
+    }
+
+    public boolean checkTxInMemPool(String txHash) {
+        if (txHash != null && txHash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            txHash = Helper.reverse(txHash.substring(2));
+        }
+        try {
+            String resp = HttpClientUtil.getRequest(String.format(ConstantParam.GET_MEMPOOL_TRANSACTION_URL, paramsConfig.MASTERNODE_RESTFUL_URL, txHash), Collections.emptyMap(), Collections.emptyMap());
+            JSONObject jsonObject = JSONObject.parseObject(resp);
+            Integer error = jsonObject.getInteger("Error");
+            if (error == 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("checkTxInMemPool error:{}", e.getMessage());
+        }
+        return false;
+    }
 }

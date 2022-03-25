@@ -6,6 +6,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Expiry;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
@@ -27,8 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -838,6 +843,9 @@ public class AddressServiceImpl implements IAddressService {
                     for (int i = 0; i < balanceArray.size(); i++) {
                         BigInteger tokenId = balanceArray.getBigInteger(i);
                         BigInteger amount = sdk.getWasmVmOep8TokenIdBalance(address, contractHash, tokenId);
+                        if (BigInteger.ZERO.compareTo(amount) >= 0) {
+                            continue;
+                        }
                         BalanceDto balanceDto = BalanceDto.builder()
                                 .assetName(symbolArray[tokenId.intValue() - 1])
                                 .assetType(ConstantParam.ASSET_TYPE_OEP8)
@@ -1498,6 +1506,94 @@ public class AddressServiceImpl implements IAddressService {
             pageResponse = new PageResponseBean(transferTxDtos, txCount);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
+    }
+
+    @Override
+    public void exportAddressTransferTxs(String token, String language, String address, Integer start, Integer end, HttpServletResponse response) throws IOException {
+        // 验证token
+        boolean verify = verifyReCAPTCHAToken(token);
+        if (!verify) {
+            throw new ExplorerException(ErrorInfo.VERIFY_FAILED);
+        }
+        OutputStream os = response.getOutputStream();
+        try {
+            List<String> titles;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            if (ConstantParam.LANGUAGE_CN.equalsIgnoreCase(language)) {
+                titles = ConstantParam.EXPORT_TX_TITLE_CN;
+                dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+            } else {
+                titles = ConstantParam.EXPORT_TX_TITLE_EN;
+                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            }
+
+            // 查询数据
+            List<Map<String, Object>> list = txDetailMapper.selectByAddressAndTxTime(address, start, end);
+            // 构造导出数据结构
+            for (Map<String, Object> map : list) {
+                int txTime = (int) map.get("tx_time");
+                String date = dateFormat.format(new Date(txTime * 1000L));
+                map.put("utc", date);
+                int eventType = (int) map.get("event_type");
+                String description = getDescriptionByEventType(eventType);
+                map.put("description", description);
+                int confirmFlag = (int) map.get("confirm_flag");
+                map.put("confirm_flag", confirmFlag == 1 ? "Confirmed" : "Failed");
+                BigDecimal amount = (BigDecimal) map.get("amount");
+                map.put("amount", amount.stripTrailingZeros().toPlainString());
+            }
+
+            // 文件导出
+            CsvUtil.responseSetProperties(String.format(ConstantParam.EXPORT_TX_FILENAME, address), response);
+            CsvUtil.doExport(list, titles, ConstantParam.EXPORT_TX_KEY, os);
+        } catch (Exception e) {
+            log.error("export tx csv error:{}" + e.getMessage());
+            throw new ExplorerException(ErrorInfo.FILE_ERROR);
+        } finally {
+            os.close();
+        }
+    }
+
+    private boolean verifyReCAPTCHAToken(String token) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("secret", paramsConfig.RECAPTCHA_SECRET_KEY);
+        params.put("response", token);
+        try {
+            String resp = HttpClientUtil.getRequest(ConstantParam.RECAPTCHA_VERIFY_URL, params, Collections.emptyMap());
+            JSONObject jsonObject = JSONObject.parseObject(resp);
+            Boolean success = jsonObject.getBoolean("success");
+            if (!success) {
+                log.info("verifyReCAPTCHAToken resp:{}", resp);
+            }
+            return success;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String getDescriptionByEventType(int eventType) {
+        String description;
+        switch (eventType) {
+            case 1:
+                description = ConstantParam.DESCRIPTION_DEPLOY_CONTRACTS;
+                break;
+            case 2:
+                description = ConstantParam.DESCRIPTION_TRANSACTION_FEE;
+                break;
+            case 3:
+                description = ConstantParam.DESCRIPTION_TRANSFER;
+                break;
+            case 4:
+                description = ConstantParam.DESCRIPTION_REGISTER_ONT_ID;
+                break;
+            case 7:
+                description = ConstantParam.DESCRIPTION_APPROVAL;
+                break;
+            default:
+                description = ConstantParam.DESCRIPTION_OTHERS;
+                break;
+        }
+        return description;
     }
 
     /**

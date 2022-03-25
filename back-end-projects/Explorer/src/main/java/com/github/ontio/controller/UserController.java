@@ -184,7 +184,7 @@ public class UserController {
         if (!JwtUtil.verifyToken(token)) {
             throw new ExplorerException(ErrorInfo.TOKEN_EXPIRED);
         } else if (!JwtUtil.getClaim(token, ConstantParam.JWT_LOGINID).asString().equals(ontId)) {
-            throw new ExplorerException(ErrorInfo.TOKEN_UNMATCH);
+            throw new ExplorerException(ErrorInfo.TOKEN_MISMATCH);
         }
     }
 

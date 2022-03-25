@@ -46,7 +46,7 @@ public interface IContractService {
 
     ResponseBean queryDailyAggregationOfTokenType(String contractHash, String tokenType, Date from, Date to);
 
-
     ResponseBean checkIfExistsHash(String contractHash);
 
+    ResponseBean checkTypeOfSearch(String content);
 }

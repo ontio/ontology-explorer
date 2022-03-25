@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface TxDetailMapper extends Mapper<TxDetailDto> {
@@ -77,4 +78,6 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
     Integer selectTransferTxsCount(@Param("address") String address, @Param("assetName") String assetName);
 
     Integer selectTransferTxsCountOfHashes(@Param("address") String address, @Param("hashes") List<String> contractHashes, @Param("assetNames") List<String> assetNames, @Param("tokenType") String tokenType);
+
+    List<Map<String, Object>> selectByAddressAndTxTime(@Param("address") String address, @Param("startTime") Integer startTime, @Param("endTime") Integer endTime);
 }

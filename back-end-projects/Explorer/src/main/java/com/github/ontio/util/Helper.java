@@ -20,10 +20,12 @@
 package com.github.ontio.util;
 
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Common;
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.sdk.exception.SDKException;
+import org.web3j.utils.Numeric;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -287,4 +289,42 @@ public class Helper {
         return ConstantParam.EVM_ADDRESS_PREFIX + reverse;
     }
 
+
+    public static int validHexString(String content) {
+        String hex = Numeric.cleanHexPrefix(content);
+        try {
+            Numeric.toBigIntNoPrefix(hex);
+        } catch (Exception e) {
+            return 0;
+        }
+        return hex.length();
+    }
+
+    public static boolean validBase58Address(String content) {
+        boolean matches = ConstantParam.BASE58_ADDRESS_PATTERN.matcher(content).matches();
+        if (matches) {
+            try {
+                Address.decodeBase58(content);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return matches;
+    }
+
+    public static boolean validOntId(String content) {
+        boolean matches = content.startsWith(Common.didont) && ConstantParam.BASE58_ADDRESS_PATTERN.matcher(content.substring(8)).matches();
+        if (matches) {
+            try {
+                Address.decodeBase58(content);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return matches;
+    }
+
+    public static boolean validBlockHeight(String content) {
+        return ConstantParam.BLOCK_HEIGHT_PATTERN.matcher(content).matches();
+    }
 }

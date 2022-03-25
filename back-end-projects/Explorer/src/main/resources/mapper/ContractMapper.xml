@@ -43,7 +43,7 @@
     </cache>
 
     <sql id="basicColumns">
-        contract_hash as contractHash,
+    contract_hash as contractHash,
     name as name,
     create_time as createTime,
     update_time as updateTime,
@@ -178,4 +178,51 @@
         WHERE contract_hash = #{contractHash}
     </select>
 
+    <select id="selectByHashOrName" resultType="com.github.ontio.model.dto.ContractInfoDto">
+        SELECT
+            c.contract_hash AS contractHash,
+            c.NAME,
+            c.type,
+            c.logo,
+            CASE
+            WHEN oep4.symbol IS NOT NULL THEN
+            oep4.symbol
+            WHEN oep5.symbol IS NOT NULL THEN
+            oep5.symbol
+            WHEN oep8.symbol IS NOT NULL THEN
+            oep8.symbol
+            WHEN orc20.symbol IS NOT NULL THEN
+            orc20.symbol
+            WHEN orc721.symbol IS NOT NULL THEN
+            orc721.symbol
+            WHEN orc1155.symbol IS NOT NULL THEN
+            orc1155.symbol ELSE ''
+            END AS symbol
+            FROM
+            tbl_contract c
+            LEFT JOIN tbl_oep4 oep4 ON oep4.contract_hash = c.contract_hash
+            LEFT JOIN tbl_oep5 oep5 ON oep5.contract_hash = c.contract_hash
+            LEFT JOIN tbl_oep8 oep8 ON oep8.contract_hash = c.contract_hash
+            LEFT JOIN tbl_orc20 orc20 ON orc20.contract_hash = c.contract_hash
+            LEFT JOIN tbl_orc721 orc721 ON orc721.contract_hash = c.contract_hash
+            LEFT JOIN tbl_orc1155 orc1155 ON orc1155.contract_hash = c.contract_hash
+        WHERE
+            c.contract_hash = #{content}
+           <if test="!isHex">
+               OR c.name LIKE CONCAT( '%', #{content}, '%' )
+               OR oep4.name LIKE CONCAT( '%', #{content}, '%' )
+               OR oep4.symbol LIKE CONCAT( '%', #{content}, '%' )
+               OR oep5.name LIKE CONCAT( '%', #{content}, '%' )
+               OR oep5.symbol LIKE CONCAT( '%', #{content}, '%' )
+               OR oep8.name LIKE CONCAT( '%', #{content}, '%' )
+               OR oep8.symbol LIKE CONCAT( '%', #{content}, '%' )
+               OR orc20.name LIKE CONCAT( '%', #{content}, '%' )
+               OR orc20.symbol LIKE CONCAT( '%', #{content}, '%' )
+               OR orc721.name LIKE CONCAT( '%', #{content}, '%' )
+               OR orc721.symbol LIKE CONCAT( '%', #{content}, '%' )
+               OR orc1155.name LIKE CONCAT( '%', #{content}, '%' )
+               OR orc1155.symbol LIKE CONCAT('%',#{content},'%')
+           </if>
+        GROUP BY c.contract_hash
+    </select>
 </mapper>

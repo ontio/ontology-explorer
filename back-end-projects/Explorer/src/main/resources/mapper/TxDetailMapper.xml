@@ -608,4 +608,26 @@
         where tx_hash = #{txHash}
         LIMIT 1
     </select>
+
+    <select id="selectByAddressAndTxTime" resultType="Map">
+        SELECT
+        tx_hash,
+        block_height,
+        tx_time,
+        from_address,
+        to_address,
+        amount,
+        asset_name,
+        contract_hash,
+        event_type,
+        confirm_flag
+        FROM tbl_tx_detail
+        WHERE
+        ( from_address = #{address} OR to_address = #{address} )
+        AND tx_time >= #{startTime}
+        AND tx_time <![CDATA[<= #{endTime}]]>
+        ORDER BY
+        block_height
+        LIMIT 5000;
+    </select>
 </mapper>
