@@ -313,15 +313,20 @@ public class Helper {
     }
 
     public static boolean validOntId(String content) {
-        boolean matches = content.startsWith(Common.didont) && ConstantParam.BASE58_ADDRESS_PATTERN.matcher(content.substring(8)).matches();
-        if (matches) {
-            try {
-                Address.decodeBase58(content);
-            } catch (Exception e) {
-                return false;
+        if (content.length() == 42) {
+            String address = content.substring(8);
+            boolean matches = content.startsWith(Common.didont) && ConstantParam.BASE58_ADDRESS_PATTERN.matcher(address).matches();
+            if (matches) {
+                try {
+                    Address.decodeBase58(address);
+                } catch (Exception e) {
+                    return false;
+                }
             }
+            return matches;
+        } else {
+            return false;
         }
-        return matches;
     }
 
     public static boolean validBlockHeight(String content) {
