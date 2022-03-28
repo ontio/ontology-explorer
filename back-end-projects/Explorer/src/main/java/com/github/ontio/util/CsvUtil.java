@@ -22,6 +22,13 @@ public class CsvUtil {
     private static final String CSV_COLUMN_SEPARATOR = ",";
 
     /**
+     * CSV文本用引号+"\t"，防止科学计数法
+     */
+    private static final String CSV_QUOTATION_START = "\"";
+
+    private static final String CSV_QUOTATION_END = "\t\"";
+
+    /**
      * CSV文件行分隔符
      */
     private static final String CSV_ROW_SEPARATOR = System.lineSeparator();
@@ -45,7 +52,7 @@ public class CsvUtil {
         if (!CollectionUtils.isEmpty(dataList)) {
             for (Map<String, Object> data : dataList) {
                 for (String key : keys) {
-                    buf.append(data.get(key)).append(CSV_COLUMN_SEPARATOR);
+                    buf.append(CSV_QUOTATION_START).append(data.get(key)).append(CSV_QUOTATION_END).append(CSV_COLUMN_SEPARATOR);
                 }
                 buf.append(CSV_ROW_SEPARATOR);
             }

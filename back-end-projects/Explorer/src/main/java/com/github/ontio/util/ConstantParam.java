@@ -260,11 +260,11 @@ public class ConstantParam {
 
     public static final String DESCRIPTION_OTHERS = "Others";
 
-    public static final List<String> EXPORT_TX_TITLE_EN = Arrays.asList("Transaction Hash", "Block Height", "Unix Timestamp", "UTC",
-            "From", "To", "Amount", "Asset Name", "Contract Hash", "Description", "Status");
+    public static final List<String> EXPORT_TX_TITLE_EN = Arrays.asList("\"Transaction Hash\"", "\"Block Height\"", "\"Unix Timestamp\"", "\"UTC\"",
+            "\"From\"", "\"To\"", "\"Amount\"", "\"Asset Name\"", "\"Contract Hash\"", "\"Description\"", "\"Status\"");
 
-    public static final List<String> EXPORT_TX_TITLE_CN = Arrays.asList("Transaction Hash", "Block Height", "Unix Timestamp", "UTC+8",
-            "From", "To", "Amount", "Asset Name", "Contract Hash", "Description", "Status");
+    public static final List<String> EXPORT_TX_TITLE_CN = Arrays.asList("\"Transaction Hash\"", "\"Block Height\"", "\"Unix Timestamp\"", "\"UTC+8\"",
+            "\"From\"", "\"To\"", "\"Amount\"", "\"Asset Name\"", "\"Contract Hash\"", "\"Description\"", "\"Status\"");
 
     public static final List<String> EXPORT_TX_KEY = Arrays.asList("tx_hash", "block_height", "tx_time", "utc",
             "from_address", "to_address", "amount", "asset_name", "contract_hash", "description", "confirm_flag");

@@ -1531,6 +1531,10 @@ public class AddressServiceImpl implements IAddressService {
             List<Map<String, Object>> list = txDetailMapper.selectByAddressAndTxTime(address, start, end);
             // 构造导出数据结构
             for (Map<String, Object> map : list) {
+                String assetName = (String) map.get("asset_name");
+                if (ConstantParam.ONT.equals(assetName) || ConstantParam.ONG.equals(assetName)) {
+                    map.put("asset_name", assetName.toUpperCase());
+                }
                 int txTime = (int) map.get("tx_time");
                 String date = dateFormat.format(new Date(txTime * 1000L));
                 map.put("utc", date);
