@@ -228,4 +228,6 @@ public class ConstantParam {
     public static final String FUN_QUERY_TOKEN_IDS_BY_OWNER_ADDR = "queryTokenIDsByOwnerAddr";
 
     public static final String FUN_BALANCE_OF = "balanceOf";
+
+    public static final String FUN_TOTAL_SUPPLY = "totalSupply";
 }
