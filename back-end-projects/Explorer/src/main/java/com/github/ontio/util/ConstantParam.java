@@ -234,6 +234,8 @@ public class ConstantParam {
 
     public static final String FUN_BALANCE_OF = "balanceOf";
 
+    public static final String FUN_TOTAL_SUPPLY = "totalSupply";
+
     /**
      * pattern
      */

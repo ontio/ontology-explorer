@@ -12,9 +12,7 @@ import com.github.ontio.model.dao.OepLogo;
 import com.github.ontio.model.dto.*;
 import com.github.ontio.model.dto.ranking.TokenRankingDto;
 import com.github.ontio.service.ITokenService;
-import com.github.ontio.util.ConstantParam;
-import com.github.ontio.util.ErrorInfo;
-import com.github.ontio.util.Helper;
+import com.github.ontio.util.*;
 import com.github.ontio.util.external.CoinMarketCapApi;
 import com.github.ontio.util.external.CoinMarketCapQuotes;
 import com.github.pagehelper.Page;
@@ -25,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -52,11 +52,14 @@ public class TokenServiceImpl implements ITokenService {
     private final RankingMapper rankingMapper;
     private final CoinMarketCapApi coinMarketCapApi;
     private final OepLogoMapper oepLogoMapper;
+    private final OntologySDKService ontologySDKService;
+    private final Web3jSdkUtil web3jSdkUtil;
 
     @Autowired
-    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper,
-                            Oep8TxDetailMapper oep8TxDetailMapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
-                            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper) {
+    public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Oep8TxDetailMapper oep8TxDetailMapper,
+                            Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
+                            RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper,
+                            OntologySDKService ontologySDKService, Web3jSdkUtil web3jSdkUtil) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
@@ -68,6 +71,8 @@ public class TokenServiceImpl implements ITokenService {
         this.rankingMapper = rankingMapper;
         this.coinMarketCapApi = coinMarketCapApi;
         this.oepLogoMapper = oepLogoMapper;
+        this.ontologySDKService = ontologySDKService;
+        this.web3jSdkUtil = web3jSdkUtil;
     }
 
     @Override
@@ -222,6 +227,12 @@ public class TokenServiceImpl implements ITokenService {
                 contactInfo = oep4DetailDto.getContactInfo();
                 contactInfo = formatContactInfo(contactInfo);
                 oep4DetailDto.setContactInfo(contactInfo);
+                String vmCategory = oep4DetailDto.getVmCategory();
+                Integer decimals = oep4DetailDto.getDecimals();
+                BigDecimal totalSupply = getTotalSupply(contractHash, decimals, vmCategory);
+                if (totalSupply != null) {
+                    oep4DetailDto.setTotalSupply(totalSupply);
+                }
                 obj = oep4DetailDto;
                 break;
             case ConstantParam.ASSET_TYPE_OEP5:
@@ -246,6 +257,12 @@ public class TokenServiceImpl implements ITokenService {
                 contactInfo = orc20DetailDto.getContactInfo();
                 contactInfo = formatContactInfo(contactInfo);
                 orc20DetailDto.setContactInfo(contactInfo);
+                vmCategory = orc20DetailDto.getVmCategory();
+                decimals = orc20DetailDto.getDecimals();
+                totalSupply = getTotalSupply(contractHash, decimals, vmCategory);
+                if (totalSupply != null) {
+                    orc20DetailDto.setTotalSupply(totalSupply);
+                }
                 obj = orc20DetailDto;
                 break;
             case ConstantParam.ASSET_TYPE_ORC721:
@@ -270,6 +287,26 @@ public class TokenServiceImpl implements ITokenService {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), obj);
+    }
+
+    private BigDecimal getTotalSupply(String contractHash, Integer decimals, String vmCategory) {
+        BigDecimal totalSupply = null;
+        try {
+            BigDecimal decimal = BigDecimal.TEN.pow(decimals);
+            if (ConstantParam.VM_CATEGORY_NEOVM.equalsIgnoreCase(vmCategory)) {
+                BigDecimal totalSupplyWithDecimals = ontologySDKService.getNeovmOep4TotalSupply(contractHash);
+                totalSupply = totalSupplyWithDecimals.divide(decimal, decimals, RoundingMode.DOWN).stripTrailingZeros();
+            } else if (ConstantParam.VM_CATEGORY_WASMVM.equalsIgnoreCase(vmCategory)) {
+                BigDecimal totalSupplyWithDecimals = ontologySDKService.getWasmvmOep4TotalSupply(contractHash);
+                totalSupply = totalSupplyWithDecimals.divide(decimal, decimals, RoundingMode.DOWN).stripTrailingZeros();
+            } else {
+                BigDecimal totalSupplyWithDecimals = web3jSdkUtil.queryOrc20TotalSupply(contractHash);
+                totalSupply = totalSupplyWithDecimals.divide(decimal, decimals, RoundingMode.DOWN).stripTrailingZeros();
+            }
+        } catch (Exception e) {
+            log.error("contract:{} getTotalSupply error:{}", contractHash, e.getMessage());
+        }
+        return totalSupply;
     }
 
     private String formatContactInfo(String contactInfo) {

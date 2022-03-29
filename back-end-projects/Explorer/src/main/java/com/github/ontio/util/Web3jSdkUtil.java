@@ -29,10 +29,7 @@ import org.web3j.utils.Numeric;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Slf4j
@@ -224,5 +221,21 @@ public class Web3jSdkUtil {
         return parse.toBase58();
     }
 
+    public BigDecimal queryOrc20TotalSupply(String contract) {
+        BigDecimal balance = BigDecimal.ZERO;
+        Web3j web3j = getWeb3jSingleton();
+        try {
+            List<Type> params = Collections.emptyList();
+            TypeReference<Uint256> reserve0 = new TypeReference<Uint256>() {
+            };
+            List<TypeReference<?>> outputParameters = Arrays.asList(reserve0);
+            List<Type> result = sendPreTransactionAndDecode(web3j, contract, ConstantParam.FUN_TOTAL_SUPPLY, Address.DEFAULT.getValue(), params, outputParameters);
+            balance = new BigDecimal((BigInteger) result.get(0).getValue());
+        } catch (Exception e) {
+            web3j.shutdown();
+            log.error("queryOrc20TotalSupply error,contract:{}....", contract, e);
+        }
+        return balance;
+    }
 
 }

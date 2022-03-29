@@ -235,7 +235,6 @@ public class OntologySDKService {
             List<Object> params = new ArrayList<>(Collections.singletonList(Address.decodeBase58(address)));
             InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractHash, ConstantParam.FUN_BALANCE_OF, params, Address.decodeBase58(address), 500, 25000000);
             JSONObject result = (JSONObject) ontSdk.getRestful().sendRawTransactionPreExec(tx.toHexString());
-            log.info("getWasmvmOep4AssetBalance result:{}", result);
             BigInteger bigInteger = Helper.BigIntFromNeoBytes(Helper.hexToBytes(result.getString("Result")));
             return bigInteger.toString();
 //            long longValue = bigInteger.longValue();
@@ -819,4 +818,36 @@ public class OntologySDKService {
         }
         return false;
     }
+
+    public BigDecimal getNeovmOep4TotalSupply(String contractHash) {
+        OntSdk ontSdk = getOntSdk();
+        try {
+            List<Object> argsList = Collections.emptyList();
+            List<Object> paramList = new ArrayList<>();
+            paramList.add(ConstantParam.FUN_TOTAL_SUPPLY.getBytes());
+            paramList.add(argsList);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, Address.ZERO.toBase58(), 20000, 2500);
+            JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String rs = jsonObject.getString("Result");
+            return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(rs)));
+        } catch (Exception e) {
+            log.error("getNeovmOep4AssetBalance error...", e);
+            return null;
+        }
+    }
+
+    public BigDecimal getWasmvmOep4TotalSupply(String contractHash) {
+        try {
+            OntSdk ontSdk = getOntSdk();
+            List<Object> params = new ArrayList<>(Collections.emptyList());
+            InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contractHash, ConstantParam.FUN_TOTAL_SUPPLY, params, Address.ZERO, 20000, 2500);
+            JSONObject result = (JSONObject) ontSdk.getRestful().sendRawTransactionPreExec(tx.toHexString());
+            return new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes(result.getString("Result"))));
+        } catch (Exception e) {
+            log.error("getWasmvmOep4TotalSupply error...", e);
+            return null;
+        }
+    }
+
 }
