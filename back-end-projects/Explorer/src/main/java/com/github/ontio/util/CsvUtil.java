@@ -24,9 +24,9 @@ public class CsvUtil {
     /**
      * CSV文本用引号+"\t"，防止科学计数法
      */
-    private static final String CSV_QUOTATION_START = "\"";
+    public static final String CSV_QUOTATION = "\"";
 
-    private static final String CSV_QUOTATION_END = "\t\"";
+    public static final String CSV_TAB = "\t";
 
     /**
      * CSV文件行分隔符
@@ -52,7 +52,7 @@ public class CsvUtil {
         if (!CollectionUtils.isEmpty(dataList)) {
             for (Map<String, Object> data : dataList) {
                 for (String key : keys) {
-                    buf.append(CSV_QUOTATION_START).append(data.get(key)).append(CSV_QUOTATION_END).append(CSV_COLUMN_SEPARATOR);
+                    buf.append(CSV_QUOTATION).append(data.get(key)).append(CSV_QUOTATION).append(CSV_COLUMN_SEPARATOR);
                 }
                 buf.append(CSV_ROW_SEPARATOR);
             }

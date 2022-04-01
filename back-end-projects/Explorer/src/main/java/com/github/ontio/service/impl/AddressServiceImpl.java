@@ -1545,6 +1545,8 @@ public class AddressServiceImpl implements IAddressService {
                 map.put("confirm_flag", confirmFlag == 1 ? "Confirmed" : "Failed");
                 BigDecimal amount = (BigDecimal) map.get("amount");
                 map.put("amount", amount.stripTrailingZeros().toPlainString());
+                String contractHash = (String) map.get("contract_hash");
+                map.put("contract_hash", contractHash + CsvUtil.CSV_TAB);
             }
 
             // 文件导出
