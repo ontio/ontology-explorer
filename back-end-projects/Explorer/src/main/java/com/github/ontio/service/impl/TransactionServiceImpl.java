@@ -147,7 +147,15 @@ public class TransactionServiceImpl implements ITransactionService {
     public ResponseBean queryTxDetailByHash(String txHash) {
         TxEventLog txEventLog = txEventLogMapper.selectTxLogByHash(txHash);
         if (Helper.isEmptyOrNull(txEventLog)) {
-            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+            initSDK();
+            boolean inMemPool = sdk.checkTxInMemPool(txHash);
+            if (inMemPool) {
+                Map<String, Object> tempResult = new HashMap<>();
+                tempResult.put("confirm_flag", ConfirmFlagEnum.PENDING.ordinal());
+                return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), tempResult);
+            } else {
+                return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), false);
+            }
         }
         Map<String, Object> txTypeMap = determineTxType(txEventLog);
         String calledContractHash = (String) txTypeMap.get("calledContractHash");

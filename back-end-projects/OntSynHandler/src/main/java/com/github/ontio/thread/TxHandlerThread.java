@@ -1100,8 +1100,8 @@ public class TxHandlerThread {
         String toAddress = "";
         BigDecimal eventAmount = BigDecimal.ZERO;
         Boolean isTransfer = Boolean.FALSE;
-        String txAction = EventTypeEnum.Transfer.des();
-        Integer eventType = EventTypeEnum.Transfer.type();
+        String txAction = "";
+        Integer eventType = EventTypeEnum.Others.type();
 
         if (stateArray.size() != 4) {
             log.warn("Invalid OEP-4 event in transaction {}", txHash);
@@ -1124,6 +1124,8 @@ public class TxHandlerThread {
         }
 
         if (action.equalsIgnoreCase("transfer")) {
+            txAction = EventTypeEnum.Transfer.des();
+            eventType = EventTypeEnum.Transfer.type();
             try {
                 fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
             } catch (Exception e) {
@@ -1170,6 +1172,8 @@ public class TxHandlerThread {
 
         if (paramsConfig.PAX_CONTRACTHASH.equals(contractHash)) {
             if (action.equalsIgnoreCase("IncreasePAX")) {
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
                 try {
                     fromAddress = paramsConfig.PAX_CONTRACTHASH;
                     toAddress = Address.parse((String) stateArray.get(1)).toBase58();
@@ -1181,6 +1185,8 @@ public class TxHandlerThread {
             }
 
             if (action.equalsIgnoreCase("DecreasePAX")) {
+                txAction = EventTypeEnum.Transfer.des();
+                eventType = EventTypeEnum.Transfer.type();
                 try {
                     fromAddress = Address.parse((String) stateArray.get(1)).toBase58();
                     toAddress = paramsConfig.PAX_CONTRACTHASH;

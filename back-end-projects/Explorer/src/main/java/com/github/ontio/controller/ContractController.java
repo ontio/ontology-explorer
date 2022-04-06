@@ -188,12 +188,18 @@ public class ContractController {
         return contractService.queryDailyAggregationOfTokenType(contractHash, tokenType, from, to);
     }
 
-    @ApiOperation(value = "Get address daily aggregations by specific token type")
+    @ApiOperation(value = "check if contract exist")
     @GetMapping(value = "/checkIfExist/{contract_hash}")
     public ResponseBean checkIfExistContract(@PathVariable("contract_hash") @Length(min = 40, max = 42, message = "Incorrect contract hash") String contractHash) {
         log.info("####{}.{} begin...contract_hash:{}", CLASS_NAME, Helper.currentMethod(), contractHash);
         return contractService.checkIfExistsHash(contractHash);
     }
 
-
+    @RequestLimit(count = 30)
+    @ApiOperation(value = "check if contract exist")
+    @GetMapping(value = "/check_type/{content}")
+    public ResponseBean checkTypeOfSearch(@PathVariable("content") String content) {
+        log.info("####{}.{} begin...content:{}", CLASS_NAME, Helper.currentMethod(), content);
+        return contractService.checkTypeOfSearch(content);
+    }
 }

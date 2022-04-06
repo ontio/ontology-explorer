@@ -2,9 +2,9 @@ package com.github.ontio.mapper;
 
 import com.github.ontio.model.common.ContractType;
 import com.github.ontio.model.dto.ContractDto;
+import com.github.ontio.model.dto.ContractInfoDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
@@ -29,4 +29,5 @@ public interface ContractMapper extends Mapper<ContractDto> {
 
     Integer selectIfHashExists(String contractHash);
 
+    List<ContractInfoDto> selectByHashOrName(@Param("content") String content, @Param("isHex") boolean isHex);
 }

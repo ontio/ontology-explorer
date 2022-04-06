@@ -21,6 +21,7 @@ package com.github.ontio.util;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author zhouq
@@ -225,9 +226,50 @@ public class ConstantParam {
 
     public static final String GET_TRANSACTION_URL = "%s/api/v1/transaction/%s";
 
+    public static final String GET_MEMPOOL_TRANSACTION_URL = "%s/api/v1/mempool/txstate/%s";
+
+    public static final String GET_BLOCK_HASH_URL = "%s/api/v1/block/hash/%d";
+
     public static final String FUN_QUERY_TOKEN_IDS_BY_OWNER_ADDR = "queryTokenIDsByOwnerAddr";
 
     public static final String FUN_BALANCE_OF = "balanceOf";
 
     public static final String FUN_TOTAL_SUPPLY = "totalSupply";
+
+    /**
+     * pattern
+     */
+    public static final Pattern BASE58_ADDRESS_PATTERN = Pattern.compile("A[0-9a-zA-Z]{33}");
+
+    public static final Pattern BLOCK_HEIGHT_PATTERN = Pattern.compile("^\\d+$");
+
+    /**
+     * export csv
+     */
+    public static final String RECAPTCHA_VERIFY_URL = "https://recaptcha.net/recaptcha/api/siteverify";
+
+    public static final String LANGUAGE_CN = "cn";
+
+    public static final String DESCRIPTION_DEPLOY_CONTRACTS = "Deploy Contracts";
+
+    public static final String DESCRIPTION_TRANSACTION_FEE = "Transaction Fee";
+
+    public static final String DESCRIPTION_TRANSFER = "Transfer";
+
+    public static final String DESCRIPTION_REGISTER_ONT_ID = "Register ONT ID";
+
+    public static final String DESCRIPTION_APPROVAL = "Approval";
+
+    public static final String DESCRIPTION_OTHERS = "Others";
+
+    public static final List<String> EXPORT_TX_TITLE_EN = Arrays.asList("\"Transaction Hash\"", "\"Block Height\"", "\"Unix Timestamp\"", "\"UTC\"",
+            "\"From\"", "\"To\"", "\"Amount\"", "\"Asset Name\"", "\"Contract Hash\"", "\"Description\"", "\"Status\"");
+
+    public static final List<String> EXPORT_TX_TITLE_CN = Arrays.asList("\"Transaction Hash\"", "\"Block Height\"", "\"Unix Timestamp\"", "\"UTC+8\"",
+            "\"From\"", "\"To\"", "\"Amount\"", "\"Asset Name\"", "\"Contract Hash\"", "\"Description\"", "\"Status\"");
+
+    public static final List<String> EXPORT_TX_KEY = Arrays.asList("tx_hash", "block_height", "tx_time", "utc",
+            "from_address", "to_address", "amount", "asset_name", "contract_hash", "description", "confirm_flag");
+
+    public static final String EXPORT_TX_FILENAME = "export-%s.csv";
 }

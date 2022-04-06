@@ -33,15 +33,16 @@
     a.create_time as createTime,
     a.update_time as updateTime,
     a.contact_info as contactInfo,
-    a.address_count as addressCount,
+    IFNULL(c.holder_count,a.address_count) as addressCount,
     a.tx_count as txCount,
     b.total_supply as totalSupply,
     b.decimals as decimals,
     b.symbol as symbol,
     b.vm_category as vmCategory
-    FROM tbl_contract a, tbl_oep4 b
-    where a.contract_hash = b.contract_hash
-    and a.audit_flag = 1
+    FROM tbl_contract a
+    INNER JOIN tbl_oep4 b ON a.contract_hash = b.contract_hash
+    LEFT JOIN tbl_holder_contract c ON a.contract_hash = c.contract_hash
+    where a.audit_flag = 1
     and b.audit_flag = 1
     <trim prefix="order by" prefixOverrides=",">
       <if test="ascending != null">

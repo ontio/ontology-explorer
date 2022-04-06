@@ -18,12 +18,14 @@
 
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.common.SearchCategoryEnum;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.*;
 import com.github.ontio.model.dto.aggregation.ContractAggregationDto;
@@ -35,6 +37,8 @@ import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
@@ -104,6 +108,23 @@ public class ContractServiceImpl implements IContractService {
     public ResponseBean queryContractDetail(String contractHash) {
 
         ContractDto contractDto = contractMapper.selectContractDetail(contractHash);
+        String contactInfo = contractDto.getContactInfo();
+        try {
+            if (!StringUtils.isEmpty(contactInfo)) {
+                JSONObject jsonObject = JSONObject.parseObject(contactInfo);
+                String website = jsonObject.getString("website");
+                if (StringUtils.isEmpty(website)) {
+                    jsonObject.remove("website");
+                }
+                String email = jsonObject.getString("email");
+                if (StringUtils.isEmpty(email)) {
+                    jsonObject.remove("email");
+                }
+                contractDto.setContactInfo(JSON.toJSONString(jsonObject));
+            }
+        } catch (Exception e) {
+            log.error("parse contactInfo error:{}", e.getMessage());
+        }
 
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), contractDto);
     }
@@ -642,12 +663,78 @@ public class ContractServiceImpl implements IContractService {
 
     @Override
     public ResponseBean checkIfExistsHash(String contractHash) {
-
         Integer integer = contractMapper.selectIfHashExists(contractHash);
         if (0 == integer) {
             return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), false);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), true);
+    }
+
+    @Override
+    public ResponseBean checkTypeOfSearch(String content) {
+        List<SearchContentDto> result = new ArrayList<>();
+        if (Helper.validBase58Address(content)) {
+            SearchContentDto dto = new SearchContentDto();
+            dto.setCategory(SearchCategoryEnum.Address.getDes());
+            result.add(dto);
+        } else {
+            boolean isTxHash = false;
+            boolean isHex = false;
+            boolean isOntId = false;
+            int length = Helper.validHexString(content);
+            if (length == 64) {
+                // tx
+                isTxHash = true;
+                initSDK();
+                boolean exist = sdk.checkTxExist(content);
+                if (exist) {
+                    SearchContentDto dto = new SearchContentDto();
+                    dto.setCategory(SearchCategoryEnum.Transaction.getDes());
+                    result.add(dto);
+                }
+            } else if (length == 40) {
+                // address
+                isHex = true;
+            } else if (Helper.validBlockHeight(content)) {
+                // block height
+                initSDK();
+                String blockHash = sdk.getBlockHash(Integer.valueOf(content));
+                if (blockHash != null) {
+                    SearchContentDto dto = new SearchContentDto();
+                    dto.setCategory(SearchCategoryEnum.BlockHeight.getDes());
+                    result.add(dto);
+                }
+            } else if (Helper.validOntId(content)) {
+                // ontId
+                isOntId = true;
+                initSDK();
+                boolean idExist = sdk.checkOntIdExist(content);
+                if (idExist) {
+                    SearchContentDto dto = new SearchContentDto();
+                    dto.setCategory(SearchCategoryEnum.OntId.getDes());
+                    result.add(dto);
+                }
+            }
+
+            // 判断完所有其他可能之后查询合约
+            if (!(isTxHash || isOntId)) {
+                List<ContractInfoDto> contracts = contractMapper.selectByHashOrName(content, isHex);
+                if (!CollectionUtils.isEmpty(contracts)) {
+                    for (ContractInfoDto contractInfoDto : contracts) {
+                        SearchContentDto dto = new SearchContentDto();
+                        dto.setCategory(StringUtils.isEmpty(contractInfoDto.getType()) ? SearchCategoryEnum.Contract.getDes() : SearchCategoryEnum.Token.getDes());
+                        dto.setContractInfo(contractInfoDto);
+                        result.add(dto);
+                    }
+                } else if (isHex) {
+                    SearchContentDto dto = new SearchContentDto();
+                    dto.setCategory(SearchCategoryEnum.Address.getDes());
+                    result.add(dto);
+                }
+            }
+        }
+
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
 

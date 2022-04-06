@@ -3,6 +3,8 @@ package com.github.ontio.service;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.sdk.exception.SDKException;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -37,4 +39,5 @@ public interface IAddressService {
 
     ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize);
 
+    void exportAddressTransferTxs(String token, String language, String address, Integer start, Integer end, HttpServletResponse resp) throws IOException;
 }

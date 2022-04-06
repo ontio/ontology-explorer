@@ -20,11 +20,11 @@
         FROM tbl_node_overview
         WHERE id = 1;
     </select>
-
+    
     <select id="selectLeftTimeToNxtRnd" resultType="java.lang.Long" useCache="true">
         SELECT left_time_to_next_rnd
         FROM tbl_node_overview
         WHERE id = 1;
     </select>
-
+    
 </mapper>
