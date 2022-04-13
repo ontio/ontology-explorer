@@ -221,6 +221,36 @@ public class TransactionServiceImpl implements ITransactionService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txPayload);
     }
 
+    public Map<String, Object> decodeInputData(String inputData) throws IOException {
+        Map<String, Object> decode = new HashMap<>();
+        int nativeInvokeIndex = inputData.lastIndexOf(ConstantParam.NATIVE_INPUT_DATA_END);
+        if (inputData.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            // evm
+        } else if (nativeInvokeIndex != -1) {
+            // native
+            String argsMethodContract = inputData.substring(6, nativeInvokeIndex);
+            int length = argsMethodContract.length();
+            String contract = argsMethodContract.substring(length - 40);
+            String argsMethod = argsMethodContract.substring(0, length - 42);
+            String[] args = argsMethod.split(ConstantParam.NATIVE_ARGS_OP_CODE);
+            String opSizeMethod = args[args.length - 1];
+            long size = 0;
+            String method;
+            String opMethod = opSizeMethod.substring(2);
+            int opPackIndex = opMethod.lastIndexOf(ConstantParam.NATIVE_OP_PACK);
+            if (opPackIndex != -1) {
+                // 参数为list
+                String methodHex = opMethod.substring(opPackIndex + 2 + 2);
+                method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+                size = com.github.ontio.util.Helper.parseInputDataNumber(opMethod.substring(0, opPackIndex));
+            } else {
+                // 考虑到方法名不会大于255个字节
+                String methodHex = opMethod.substring(2);
+                method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+            }
+        }
+        return decode;
+    }
 
     private TxDetailDto queryTxDetailByTxHash(String txHash) {
         TxDetailDto txDetailDto = txDetailMapper.selectTxByHash(txHash);

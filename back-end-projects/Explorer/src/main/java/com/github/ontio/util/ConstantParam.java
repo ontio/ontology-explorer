@@ -218,7 +218,11 @@ public class ConstantParam {
 
     public static final String EVM_ADDRESS_PREFIX = "0x";
 
-    public static final String NATIVE_CONTRACT_HASH = "792e4e61746976652e496e766f6b65";
+    public static final String NATIVE_INPUT_DATA_END = "0068164f6e746f6c6f67792e4e61746976652e496e766f6b65";
+
+    public static final String NATIVE_ARGS_OP_CODE = "6a7cc8";
+
+    public static final String NATIVE_OP_PACK = "c1";
 
     public static final Map<String, String> CONTRACT_TAG = new HashMap<>();
 

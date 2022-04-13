@@ -21,6 +21,7 @@ package com.github.ontio.util;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
+import com.github.ontio.io.BinaryReader;
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
 import com.github.ontio.model.common.ResponseBean;
@@ -28,9 +29,8 @@ import com.github.ontio.sdk.exception.SDKException;
 import org.web3j.utils.Numeric;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.math.BigInteger;
 import java.util.Base64;
 import java.util.Random;
 
@@ -331,5 +331,29 @@ public class Helper {
 
     public static boolean validBlockHeight(String content) {
         return ConstantParam.BLOCK_HEIGHT_PATTERN.matcher(content).matches();
+    }
+
+    public static long parseInputDataNumber(String hexNumber) throws IOException {
+        if (hexNumber.length() < 2) {
+            return 0;
+        }
+        byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber.substring(0, 2));
+        BigInteger number = com.github.ontio.common.Helper.BigIntFromNeoBytes(bytes);
+        int value = number.intValue();
+        if (value > 80 && value <= 96) {
+            return value - 80;
+        } else if (value == 0) {
+            return 0;
+        } else if (value == 79) {
+            return -1;
+        } else {
+            bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            BinaryReader reader = new BinaryReader(bais);
+            byte[] numberBytes = reader.readVarBytes();
+            reader.close();
+            bais.close();
+            return com.github.ontio.common.Helper.BigIntFromNeoBytes(numberBytes).longValue();
+        }
     }
 }

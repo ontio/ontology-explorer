@@ -3,12 +3,15 @@ package com.github.ontio;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.asset.State;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
+import com.github.ontio.util.ConstantParam;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -77,11 +80,10 @@ public class BasicTest {
         if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
 
             Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
-           System.out.println("node_name:"+new String(Helper.hexToBytes(((String) map.get("node_name")))));
-           System.out.println("node_pubkey:"+map.get("node_pubkey"));
+            System.out.println("node_name:" + new String(Helper.hexToBytes(((String) map.get("node_name")))));
+            System.out.println("node_pubkey:" + map.get("node_pubkey"));
         }
     }
-
 
     @Test
     public void dappBindedWalletTest() throws Exception {
@@ -105,7 +107,7 @@ public class BasicTest {
         Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
 
         String result = ((JSONObject) obj).getString("Result");
-        System.out.println("result:"+result);
+        System.out.println("result:" + result);
 /*        if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
 
             Map<String,Object> map = (Map<String,Object>) BuildParams.deserializeItem(Helper.hexToBytes(result));
@@ -117,9 +119,56 @@ public class BasicTest {
         if (com.github.ontio.util.Helper.isNotEmptyAndNull(result)) {
 
             Map map = (Map) BuildParams.deserializeItem(Helper.hexToBytes(result));
-            System.out.println("receive_account:"+ Address.parse((String) map.get("receive_account")).toBase58());
-            System.out.println("ont_id:"+new String(Helper.hexToBytes((String) map.get("ontid"))));
+            System.out.println("receive_account:" + Address.parse((String) map.get("receive_account")).toBase58());
+            System.out.println("ont_id:" + new String(Helper.hexToBytes((String) map.get("ontid"))));
         }
+    }
+
+    @Test
+    public void testDecodeInputData() throws Exception {
+        String inputData = "00c66b423032363732326665643233653439343136323635383962326335386132396261663334306166356536316634306132653463383932643231333862386634393766636a7cc814a6133b354f4060d038deacae97bbb0084defd28e6a7cc8081c270000000000006a7cc8296469643a6f6e744157757a725a3961434b32686e684256514a367a32655a39364362737743675165776a7cc8516a7cc86c11726567697374657243616e6469646174651400000000000000000000000000000000000000070068164f6e746f6c6f67792e4e61746976652e496e766f6b65";
+        int nativeInvokeIndex = inputData.lastIndexOf(ConstantParam.NATIVE_INPUT_DATA_END);
+        if (inputData.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            // evm
+        } else if (nativeInvokeIndex != -1) {
+            // native
+            String argsMethodContract = inputData.substring(6, nativeInvokeIndex);
+            int length = argsMethodContract.length();
+            String contract = argsMethodContract.substring(length - 40);
+            String argsMethod = argsMethodContract.substring(0, length - 42);
+            String[] args = argsMethod.split(ConstantParam.NATIVE_ARGS_OP_CODE);
+            String opSizeMethod = args[args.length - 1];
+            long size = 0;
+            String method;
+            String opMethod = opSizeMethod.substring(2);
+            int opPackIndex = opMethod.lastIndexOf(ConstantParam.NATIVE_OP_PACK);
+            if (opPackIndex != -1) {
+                // 参数为list
+                String methodHex = opMethod.substring(opPackIndex + 2 + 2);
+                method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+                size = com.github.ontio.util.Helper.parseInputDataNumber(opMethod.substring(0, opPackIndex));
+            } else {
+                // 考虑到方法名不会大于255个字节
+                String methodHex = opMethod.substring(2);
+                method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+            }
+            System.out.println("contract:" + contract);
+            System.out.println("method:" + method);
+            System.out.println("args:" + Arrays.toString(args));
+            System.out.println("size:" + size);
+        }
+    }
+
+    @Test
+    public void testMakeTransfers() throws Exception {
+        OntSdk ontSdk = OntSdk.getInstance();
+        ontSdk.setRestful("http://dappnode1.ont.io:20334");
+        Address from = Address.decodeBase58("AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew");
+        Address to = Address.decodeBase58("AXTCgkrLSxYWbYGK98CbsD6Ur8WVqEh8Fb");
+        long amount = 1000000000;
+        State[] states = new State[]{new State(from,to,amount),new State(to,from,amount)};
+        Transaction transaction = ontSdk.nativevm().ongV2().makeTransfer(states, "AXTCgkrLSxYWbYGK98CbsD6Ur8WVqEh8Fb", 400000, 2500);
+        System.out.println(transaction.toHexString());
     }
 
 }
