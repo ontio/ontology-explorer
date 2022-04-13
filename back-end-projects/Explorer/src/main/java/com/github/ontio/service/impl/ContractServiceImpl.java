@@ -106,8 +106,10 @@ public class ContractServiceImpl implements IContractService {
 
     @Override
     public ResponseBean queryContractDetail(String contractHash) {
-
         ContractDto contractDto = contractMapper.selectContractDetail(contractHash);
+        if (contractDto == null) {
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), null);
+        }
         String contactInfo = contractDto.getContactInfo();
         try {
             if (!StringUtils.isEmpty(contactInfo)) {
@@ -192,6 +194,9 @@ public class ContractServiceImpl implements IContractService {
     public ResponseBean queryTxsByContractHash(String contractHash, Integer pageNumber, Integer pageSize) {
 
         ContractDto contractDto = contractMapper.selectContractDetail(contractHash);
+        if (contractDto == null) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), null);
+        }
         String contractType = contractDto.getType();
         if (Helper.isEmptyOrNull(contractType) || ConstantParam.CONTRACT_TYPE_OTHER.equals(contractType)) {
             contractType = ConstantParam.CONTRACT_TYPE_OTHER;
