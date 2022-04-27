@@ -4,12 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.asset.State;
+import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
+import com.github.ontio.smartcontract.nativevm.abi.Struct;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.util.ConstantParam;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -141,12 +145,12 @@ public class BasicTest {
             long size = 0;
             String method;
             String opMethod = opSizeMethod.substring(2);
-            int opPackIndex = opMethod.lastIndexOf(ConstantParam.NATIVE_OP_PACK);
+            int opPackIndex = opMethod.lastIndexOf(ConstantParam.OP_PACK);
             if (opPackIndex != -1) {
                 // 参数为list
                 String methodHex = opMethod.substring(opPackIndex + 2 + 2);
                 method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
-                size = com.github.ontio.util.Helper.parseInputDataNumber(opMethod.substring(0, opPackIndex));
+                size = com.github.ontio.util.Helper.parseInputDataNumber(opMethod.substring(0, opPackIndex), true).longValue();
             } else {
                 // 考虑到方法名不会大于255个字节
                 String methodHex = opMethod.substring(2);
@@ -165,10 +169,74 @@ public class BasicTest {
         ontSdk.setRestful("http://dappnode1.ont.io:20334");
         Address from = Address.decodeBase58("AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew");
         Address to = Address.decodeBase58("AXTCgkrLSxYWbYGK98CbsD6Ur8WVqEh8Fb");
-        long amount = 1000000000;
-        State[] states = new State[]{new State(from,to,amount),new State(to,from,amount)};
-        Transaction transaction = ontSdk.nativevm().ongV2().makeTransfer(states, "AXTCgkrLSxYWbYGK98CbsD6Ur8WVqEh8Fb", 400000, 2500);
-        System.out.println(transaction.toHexString());
+        long amount = -1;
+        State[] states = new State[]{new State(from, to, amount), new State(to, from, amount)};
+        InvokeCode transaction = (InvokeCode) ontSdk.nativevm().ongV2().makeTransfer(states, "AXTCgkrLSxYWbYGK98CbsD6Ur8WVqEh8Fb", 400000, 2500);
+        System.out.println(Helper.toHexString(transaction.code));
     }
+
+    @Test
+    public void testMakeApprove() throws Exception {
+        OntSdk ontSdk = OntSdk.getInstance();
+        BigInteger amount = new BigInteger("1000000000000000000000000000");
+        InvokeCode transaction = (InvokeCode) ontSdk.nativevm().ongV2().makeApprove("AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", "AXTCgkrLSxYWbYGK98CbsD6Ur8WVqEh8Fb", amount, "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 400000, 2500);
+        System.out.println(Helper.toHexString(transaction.code));
+    }
+
+    @Test
+    public void testMakeRegisterOntId() throws Exception {
+        OntSdk ontSdk = OntSdk.getInstance();
+//        byte[] pubKey = Helper.hexToBytes("");
+        byte[] pubKey = "020202020202f7af8eacdc1723f9c08a31f68e0e22001738e8e1f58c903bc305ecb883553e2202f7af8eacdc1723f9c08a31f68e0e22001738e8e1f58c903bc305ecb883553e2202f7af8eacdc1723f9c08a31f68e0e22001738e8e1f58c903bc305ecb883553e2202f7af8eacdc1723f9c08a31f68e0e22001738e8e1f58c903bc305eHA".getBytes();
+        String ontId = "did:ont:AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew";
+        InvokeCode transaction = (InvokeCode) ontSdk.nativevm().ontId().makeRegister(ontId, pubKey, "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 400000, 2500);
+        System.out.println(Helper.toHexString(transaction.code));
+    }
+
+    @Test
+    public void testMakeNoParamsTx() throws Exception {
+        OntSdk ontSdk = OntSdk.getInstance();
+        InvokeCode transaction = (InvokeCode) ontSdk.vm().buildNativeParams(new Address(Helper.hexToBytes("0000000000000000000000000000000000000007")), "callSplit", new byte[0], "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 400000, 2500);
+        System.out.println(Helper.toHexString(transaction.code));
+    }
+
+    @Test
+    public void testMakeArrayParamsTx() throws Exception {
+        String[] peerPubkey = new String[]{"123", "456", "abcdefg"};
+        long[] posList = {100000000L, 200000000L, 3000000000000000000L};
+        OntSdk ontSdk = OntSdk.getInstance();
+        List list = new ArrayList();
+        Struct struct = new Struct();
+        struct.add(new Object[]{Address.decodeBase58("AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew")});
+        struct.add(new Object[]{peerPubkey.length});
+
+        int i;
+        for (i = 0; i < peerPubkey.length; ++i) {
+            struct.add(new Object[]{peerPubkey[i]});
+        }
+
+        struct.add(new Object[]{posList.length});
+
+        for (i = 0; i < peerPubkey.length; ++i) {
+            struct.add(new Object[]{posList[i]});
+        }
+
+        list.add(struct);
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        InvokeCode transaction = (InvokeCode) ontSdk.vm().buildNativeParams(new Address(Helper.hexToBytes("0000000000000000000000000000000000000007")), "authorizeForPeer", args, "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 400000, 2500);
+        System.out.println(Helper.toHexString(transaction.code));
+    }
+
+    @Test
+    public void testDeleteStringBuild() throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("123(String 1,String 2,");
+        int length = stringBuilder.length();
+        if (length > 1) {
+            stringBuilder.delete(length - 1, length);
+        }
+        System.out.println(stringBuilder);
+    }
+
 
 }

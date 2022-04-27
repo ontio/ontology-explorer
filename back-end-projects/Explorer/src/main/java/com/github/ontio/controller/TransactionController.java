@@ -118,4 +118,15 @@ public class TransactionController {
         return rs;
     }
 
+    @GetMapping(value = "/transactions/input-data/{txHash}")
+    public ResponseBean queryInputDataAndDecode(@PathVariable("txHash") String txHash) {
+        ResponseBean rs = transactionService.queryInputDataAndDecode(txHash);
+        return rs;
+    }
+
+    @GetMapping(value = "/transactions/inputdata/decode/{inputData}")
+    public ResponseBean decodeInputData(@PathVariable("inputData") String inputData) {
+        ResponseBean rs = transactionService.decodeInputData(inputData);
+        return rs;
+    }
 }

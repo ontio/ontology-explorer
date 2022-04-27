@@ -170,6 +170,12 @@ public class Contract {
     private String sourceCode;
 
     /**
+     * 创建合约交易
+     */
+    @Column(name = "create_tx_hash")
+    private String createTxHash;
+
+    /**
      * 获取合约hash值
      *
      * @return contract_hash - 合约hash值
@@ -663,8 +669,16 @@ public class Contract {
         this.reSyncStatBlock = reSyncStatBlock;
     }
 
+    public String getCreateTxHash() {
+        return createTxHash;
+    }
+
+    public void setCreateTxHash(String createTxHash) {
+        this.createTxHash = createTxHash;
+    }
+
     @Builder
-    public Contract(String contractHash, String name, Integer createTime, Integer updateTime, Boolean auditFlag, String contactInfo, String description, String type, String logo, String creator, Integer addressCount, Integer txCount, BigDecimal ontSum, BigDecimal ongSum, String tokenSum, String category, String dappName, Boolean dappstoreFlag, BigDecimal totalReward, BigDecimal lastweekReward, String abi, String code, String sourceCode) {
+    public Contract(String contractHash, String name, Integer createTime, Integer updateTime, Boolean auditFlag, String contactInfo, String description, String type, String logo, String creator, Integer addressCount, Integer txCount, BigDecimal ontSum, BigDecimal ongSum, String tokenSum, String category, String dappName, Boolean dappstoreFlag, BigDecimal totalReward, BigDecimal lastweekReward, String abi, String code, String sourceCode,String createTxHash) {
         this.contractHash = contractHash;
         this.name = name;
         this.createTime = createTime;
@@ -688,5 +702,6 @@ public class Contract {
         this.abi = abi;
         this.code = code;
         this.sourceCode = sourceCode;
+        this.createTxHash = createTxHash;
     }
 }
