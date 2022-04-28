@@ -371,4 +371,11 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
+    @ApiOperation(value = "query nodes by filter ")
+    @PostMapping(value = "/get-nodes")
+    public ResponseBean getNodes(@RequestBody NodesInfoDto dto) {
+        PageResponseBean response = nodesService.getNodesByFilter(dto);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
+    }
+
 }
