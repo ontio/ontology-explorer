@@ -185,6 +185,7 @@ public class ConstantParam {
 
     public static final String VM_CATEGORY_WASMVM = "wasmvm";
 
+    public static final String VM_CATEGORY_EVM = "evm";
 
     public static final String CONTRACTHASH_ONG = "0200000000000000000000000000000000000000";
 

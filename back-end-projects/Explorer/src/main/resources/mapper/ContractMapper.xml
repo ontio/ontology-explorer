@@ -89,7 +89,8 @@
     compiler_type as compilerType,
     compiler_version as compilerVersion,
     vm_type as vmType,
-    vm_version as vmVersion
+    vm_version as vmVersion,
+    audit_flag as auditFlag
     </sql>
 
 
