@@ -106,8 +106,7 @@
         WHERE status = 2;
     </select>
 
-    <select id="selectTheLastConsensusNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto"
-            useCache="true">
+    <select id="selectTheLastConsensusNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
         SELECT node_rank,
                name,
                current_stake,

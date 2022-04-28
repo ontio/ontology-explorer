@@ -9,7 +9,7 @@ public class NodesInfoDto {
     private Integer pageNumber;
     private Integer pageSize;
     private String name;
-    // nodeType; //  0 不限  1 共识 2  候选
+    // nodeType; //  0 不限  1是候选节点，2是共识节点
     private Integer nodeType;
     // isStake;  // 0 不限   1 可质押  2 不可质押
     private Integer isStake;
