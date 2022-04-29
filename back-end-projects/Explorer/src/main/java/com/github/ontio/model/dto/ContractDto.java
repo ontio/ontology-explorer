@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 
 @Data
@@ -14,10 +15,15 @@ import java.math.BigDecimal;
 @Table(name = "tbl_contract")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ContractDto extends Contract {
+    @Transient
     private Boolean optimization;
+    @Transient
     private Integer optimizationRun;
+    @Transient
     private String licenseType;
+    @Transient
     private String setting;
+    @Transient
     private String constructArgument;
 
     @Builder
