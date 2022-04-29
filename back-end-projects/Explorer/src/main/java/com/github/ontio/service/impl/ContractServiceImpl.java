@@ -131,7 +131,7 @@ public class ContractServiceImpl implements IContractService {
         }
         if (contractDto.getAuditFlag() == 1 && contractHash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
             ContractCompileInfo contractCompileInfo = contractCompileInfoMapper.selectByPrimaryKey(contractHash);
-            if (contractCompileInfo.getAuditFlag() == 1) {
+            if (contractCompileInfo != null && contractCompileInfo.getAuditFlag() == 1) {
                 contractDto.setVmType(ConstantParam.VM_CATEGORY_EVM);
                 contractDto.setCompilerType(contractCompileInfo.getCompilerType());
                 contractDto.setCompilerVersion(contractCompileInfo.getCompilerVersion());
