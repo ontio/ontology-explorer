@@ -468,6 +468,14 @@ public class TransactionServiceImpl implements ITransactionService {
                 } else {
                     InputDataDecode inputDataDecode = new InputDataDecode();
                     String arg = args[argIndex];
+                    // 兼容参数为嵌套的struct类型(忽略嵌套的struct参数类型)
+                    if (arg.startsWith(ConstantParam.NATIVE_STRUCT_START)) {
+                        arg = arg.substring(6);
+                    }
+                    if (arg.equals(ConstantParam.NATIVE_STRUCT_END)) {
+                        argIndex++;
+                        continue;
+                    }
                     Map<String, Object> map = decodeDataByType(type, arg, true);
                     String rawData = (String) map.get("rawData");
                     Object data = map.get("data");
@@ -511,9 +519,8 @@ public class TransactionServiceImpl implements ITransactionService {
                 data = address.toBase58();
                 rawData = com.github.ontio.common.Helper.toHexString(address.toArray());
                 break;
-            case "Long":
+            case "Uint64":
             case "BigInt":
-            case "Int":
                 data = Helper.parseInputDataNumber(arg, isNative);
                 BigInteger number = (BigInteger) data;
                 if (isNative) {

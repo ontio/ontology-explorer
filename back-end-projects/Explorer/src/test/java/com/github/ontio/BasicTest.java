@@ -238,5 +238,10 @@ public class BasicTest {
         System.out.println(stringBuilder);
     }
 
-
+    @Test
+    public void testMakeTransferFrom() throws Exception {
+        OntSdk ontSdk = OntSdk.getInstance();
+        InvokeCode transaction = (InvokeCode) ontSdk.nativevm().ong().makeTransferFrom("AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 1,"AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew",400000, 2500);
+        System.out.println(Helper.toHexString(transaction.code));
+    }
 }
