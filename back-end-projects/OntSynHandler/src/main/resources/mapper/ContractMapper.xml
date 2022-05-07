@@ -38,6 +38,7 @@
   <insert id="batchInsert" parameterType="java.util.List">
     INSERT INTO `tbl_contract` (
     `contract_hash`,
+    `create_tx_hash`,
     `name`,
     `abi`,
     `code`,
@@ -65,6 +66,7 @@
     <foreach collection="list" index="index" item="item" separator=",">
       (
       #{item.contractHash},
+      #{item.createTxHash},
       #{item.name},
       #{item.abi},
       #{item.code},
