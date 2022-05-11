@@ -98,5 +98,6 @@ public interface INodesService {
 
     PageResponseBean getNodeCycleByPubKey(String publicKey, Integer pageNum, Integer pageSize);
 
+    PageResponseBean getNodesByFilter(NodesInfoDto nodesInfo);
 
 }

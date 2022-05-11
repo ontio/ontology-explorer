@@ -128,11 +128,11 @@ public class Web3jSdkUtil {
     }
 
 
-    public String queryPayloadByTxHash(String txHash) throws IOException {
+    public org.web3j.protocol.core.methods.response.Transaction queryPayloadByTxHash(String txHash) throws IOException {
         Web3j web3j = getWeb3jSingleton();
         EthTransaction send = web3j.ethGetTransactionByHash(txHash).send();
-        String input = send.getResult().getInput();
-        return input;
+        org.web3j.protocol.core.methods.response.Transaction transaction = send.getResult();
+        return transaction;
     }
 
     public List<Type> sendPreTransactionAndDecode(Web3j web3j, String contract, String name, String address, List<Type> params,

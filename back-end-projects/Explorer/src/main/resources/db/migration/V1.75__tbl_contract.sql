@@ -1,0 +1,1 @@
+ALTER TABLE `tbl_contract` MODIFY COLUMN `source_code` longtext COMMENT '合约源码';

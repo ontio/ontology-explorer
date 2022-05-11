@@ -274,7 +274,7 @@ public class TxHandlerThread {
                                 Object subObject = subNotifyObj.get("States");
                                 JSONArray subStateArray = (JSONArray) subObject;
                                 if (ConstantParam.INVOKE_DEPLOY_CONTRACT_ACTION.equals(subStateArray.getString(0))) {
-                                    handleDeployContractTxByInvoke(blockTime, confirmFlag, payer, subContractAddress);
+                                    handleDeployContractTxByInvoke(blockTime, confirmFlag, payer, subContractAddress, txHash);
                                     break;
                                 }
                             }
@@ -308,7 +308,7 @@ public class TxHandlerThread {
         }
     }
 
-    private void handleDeployContractTxByInvoke(int blockTime, int confirmFlag, String payer, String contractAddress) throws Exception {
+    private void handleDeployContractTxByInvoke(int blockTime, int confirmFlag, String payer, String contractAddress, String txHash) throws Exception {
         JSONObject contractObj = commonService.getContractInfoByContractAddress(contractAddress);
         //部署成功的合约才记录
         if (confirmFlag == 1) {
@@ -317,7 +317,7 @@ public class TxHandlerThread {
                     .build();
             Integer count = contractMapper.selectCount(contract);
             if (count.equals(0)) {
-                insertContractInfo(contractAddress, blockTime, contractObj, payer);
+                insertContractInfo(contractAddress, blockTime, contractObj, payer, txHash);
             }
         }
     }
@@ -448,7 +448,7 @@ public class TxHandlerThread {
                     .build();
             Integer count = contractMapper.selectCount(contract);
             if (count.equals(0)) {
-                insertContractInfo(contractHash, blockTime, contractObj, payer);
+                insertContractInfo(contractHash, blockTime, contractObj, payer, txHash);
             }
         }
     }
@@ -471,7 +471,7 @@ public class TxHandlerThread {
                     .build();
             Integer count = contractMapper.selectCount(contract);
             if (count.equals(0)) {
-                insertContractInfo(deployContractAddress, blockTime, contractObj, payer);
+                insertContractInfo(deployContractAddress, blockTime, contractObj, payer, txHash);
             }
         }
     }
@@ -512,7 +512,7 @@ public class TxHandlerThread {
      * @param blockTime
      * @param contractObj
      */
-    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String payer) {
+    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String payer, String txHash) {
         //在该批区块中可能出现多个部署合约交易， 但部署的是同一个合约
         if (!ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST.contains(contractHash)) {
             Contract contract = Contract.builder()
@@ -539,6 +539,7 @@ public class TxHandlerThread {
                     .dappName("")
                     .totalReward(ConstantParam.ZERO)
                     .lastweekReward(ConstantParam.ZERO)
+                    .createTxHash(txHash)
                     .build();
 
             ConstantParam.BATCHBLOCKDTO.getContracts().add(contract);

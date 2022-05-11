@@ -23,9 +23,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.ontio.common.Address;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.*;
+import com.github.ontio.model.dao.DecodeInputAbi;
 import com.github.ontio.model.dao.TxEventLog;
 import com.github.ontio.model.dto.*;
 import com.github.ontio.service.ITransactionService;
@@ -35,12 +37,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.web3j.protocol.core.methods.response.Transaction;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -58,10 +61,13 @@ public class TransactionServiceImpl implements ITransactionService {
     private final Web3jSdkUtil web3jSdkUtil;
     private final ContractTagMapper contractTagMapper;
     private final ParamsConfig paramsConfig;
+    private LoadingCache<String, Map<String, List<AbiParameters>>> decodeInputAbi;
+    private final DecodeInputAbiMapper decodeInputAbiMapper;
 
     @Autowired
-    public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper,
-                                  OntidTxDetailMapper ontidTxDetailMapper, TxEventLogMapper txEventLogMapper, ContractMapper contractMapper, Web3jSdkUtil web3jSdkUtil, ParamsConfig paramsConfig, ContractTagMapper contractTagMapper) {
+    public TransactionServiceImpl(TxDetailMapper txDetailMapper, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
+                                  TxEventLogMapper txEventLogMapper, ContractMapper contractMapper, Web3jSdkUtil web3jSdkUtil,
+                                  ParamsConfig paramsConfig, ContractTagMapper contractTagMapper, DecodeInputAbiMapper decodeInputAbiMapper) {
         this.txDetailMapper = txDetailMapper;
         this.currentMapper = currentMapper;
         this.ontidTxDetailMapper = ontidTxDetailMapper;
@@ -70,6 +76,7 @@ public class TransactionServiceImpl implements ITransactionService {
         this.web3jSdkUtil = web3jSdkUtil;
         this.paramsConfig = paramsConfig;
         this.contractTagMapper = contractTagMapper;
+        this.decodeInputAbiMapper = decodeInputAbiMapper;
     }
 
     private OntologySDKService sdk;
@@ -213,7 +220,7 @@ public class TransactionServiceImpl implements ITransactionService {
     public ResponseBean queryInputDataByHash(String txHash) throws IOException {
         String txPayload;
         if (txHash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-            txPayload = web3jSdkUtil.queryPayloadByTxHash(txHash);
+            txPayload = web3jSdkUtil.queryPayloadByTxHash(txHash).getInput();
         } else {
             initSDK();
             txPayload = sdk.getTxPayload(txHash);
@@ -221,6 +228,339 @@ public class TransactionServiceImpl implements ITransactionService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), txPayload);
     }
 
+    @Override
+    public ResponseBean queryInputDataAndDecode(String txHash) {
+        InputDataView inputDataView = null;
+        String inputData = "";
+        int txType = 0;
+        try {
+            if (txHash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+                Transaction transaction = web3jSdkUtil.queryPayloadByTxHash(txHash);
+                inputData = transaction.getInput();
+                String to = transaction.getTo();
+                String abi = null;
+                ContractDto contractDto = contractMapper.selectByPrimaryKey(to);
+                if (contractDto != null) {
+                    abi = contractDto.getAbi();
+                }
+                inputDataView = new InputDataView();
+                inputDataView.setOriginalView(inputData);
+                inputDataView.setAbi(abi);
+            } else {
+                String resp = HttpClientUtil.getRequest(String.format(ConstantParam.GET_TRANSACTION_URL, paramsConfig.MASTERNODE_RESTFUL_URL, txHash), Collections.emptyMap(), Collections.emptyMap());
+                JSONObject jsonObject = JSONObject.parseObject(resp);
+                Integer error = jsonObject.getInteger("Error");
+                if (error == 0) {
+                    JSONObject result = jsonObject.getJSONObject("Result");
+                    JSONObject payload = result.getJSONObject("Payload");
+                    txType = result.getInteger("TxType");
+                    inputData = payload.getString("Code");
+                }
+                inputDataView = decodeInputData(txType, inputData);
+                if (inputDataView == null) {
+                    inputDataView = new InputDataView();
+                }
+                inputDataView.setOriginalView(inputData);
+            }
+        } catch (Exception e) {
+            log.error("getTxPayload error...", e);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), inputDataView);
+    }
+
+    @Override
+    public ResponseBean decodeInputData(String inputData) {
+        InputDataView inputDataView = decodeInputData(209, inputData);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), inputDataView);
+    }
+
+    public InputDataView decodeInputData(int txType, String inputData) {
+        InputDataView inputDataView = null;
+        if (txType == 209) {
+            int nativeInvokeIndex = inputData.lastIndexOf(ConstantParam.NATIVE_INPUT_DATA_END);
+            if (nativeInvokeIndex != -1) {
+                // native
+                inputDataView = decodeNativeInputData(inputData, nativeInvokeIndex);
+            } else {
+                // neoVm
+                inputDataView = decodeNeoVmInputData(inputData);
+            }
+        } else if (txType == 210) {
+            // wasmVm
+        }
+        return inputDataView;
+    }
+
+    private InputDataView decodeNeoVmInputData(String inputData) {
+        StringBuilder function = new StringBuilder();
+        function.append(ConstantParam.FUNCTION_PARAM_START);
+        try {
+            int contractIndex = inputData.length() - 40;
+//            String contract = inputData.substring(contractIndex);
+            String searchMethod = inputData.substring(0, contractIndex - 2);
+            int opPackIndex = searchMethod.lastIndexOf(ConstantParam.OP_PACK);
+            String args = searchMethod.substring(0, opPackIndex);
+            String methodHex = searchMethod.substring(opPackIndex + 2 + 2);
+            String method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+            Map<String, List<AbiParameters>> oep4Abi = decodeInputAbi.get(ConstantParam.VM_CATEGORY_NEOVM);
+            if (oep4Abi == null) {
+                return null;
+            }
+            List<AbiParameters> abiParameters = oep4Abi.get(method);
+            if (abiParameters == null) {
+                return null;
+            }
+            List<String> params = new ArrayList<>();
+            List<InputDataDecode> decodes = new ArrayList<>();
+            for (int i = abiParameters.size() - 1; i >= 0; i--) {
+                InputDataDecode inputDataDecode = new InputDataDecode();
+                AbiParameters parameters = abiParameters.get(i);
+                String type = parameters.getType();
+                String name = parameters.getName();
+                function.append(type).append(ConstantParam.BLANK).append(name).append(ConstantParam.FUNCTION_PARAM_SPLIT);
+                Map<String, Object> map = decodeDataByType(type, args, false);
+                String rawData = (String) map.get("rawData");
+                String removeVarBytes = args.substring(2);
+                int index = removeVarBytes.indexOf(rawData);
+                args = removeVarBytes.substring(index + rawData.length());
+                Object data = map.get("data");
+                params.add(rawData);
+                inputDataDecode.setName(name);
+                inputDataDecode.setType(type);
+                inputDataDecode.setData(Collections.singletonList(data));
+                decodes.add(inputDataDecode);
+            }
+            Collections.reverse(decodes);
+            int length = function.length();
+            if (length > 1) {
+                function.delete(length - 1, length);
+            }
+            function.append(ConstantParam.FUNCTION_PARAM_END);
+            function.insert(0, method);
+            DefaultView defaultView = new DefaultView();
+            defaultView.setFunction(function.toString());
+            defaultView.setMethodId(methodHex);
+            defaultView.setParams(params);
+            InputDataView inputDataView = new InputDataView();
+            inputDataView.setDefaultView(defaultView);
+            inputDataView.setDecode(decodes);
+            return inputDataView;
+        } catch (Exception e) {
+            log.error("decodeNeoVmInputData error", e);
+        }
+        return null;
+    }
+
+    private InputDataView decodeNativeInputData(String inputData, int nativeInvokeIndex) {
+        try {
+            long size = 0;
+            String methodHex;
+            String method;
+            String contractHash;
+            String[] args = null;
+            if (inputData.startsWith(ConstantParam.NATIVE_STRUCT_START)) {
+                // 有参数
+                String argsMethodContract = inputData.substring(6, nativeInvokeIndex);
+                int length = argsMethodContract.length();
+                String contract = argsMethodContract.substring(length - 40);
+                contractHash = com.github.ontio.common.Helper.reverse(contract);
+                String argsMethod = argsMethodContract.substring(0, length - 42);
+                args = argsMethod.split(ConstantParam.NATIVE_ARGS_OP_CODE);
+                String opSizeMethod = args[args.length - 1];
+
+                String opMethod = opSizeMethod.substring(2);
+                int opPackIndex = opMethod.lastIndexOf(ConstantParam.OP_PACK);
+                if (opPackIndex != -1) {
+                    // 参数为list
+                    methodHex = opMethod.substring(opPackIndex + 2 + 2);
+                    method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+                    size = com.github.ontio.util.Helper.parseInputDataNumber(opMethod.substring(0, opPackIndex), true).longValue();
+                } else {
+                    // 考虑到方法名不会大于255个字节
+                    methodHex = opMethod.substring(2);
+                    method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+                }
+            } else {
+                // native方法无参数
+                String methodContract = inputData.substring(0, nativeInvokeIndex);
+                int length = methodContract.length();
+                String contract = methodContract.substring(length - 40);
+                contractHash = com.github.ontio.common.Helper.reverse(contract);
+                methodHex = methodContract.substring(2, length - 42);
+                method = new String(com.github.ontio.common.Helper.hexToBytes(methodHex));
+            }
+            Map<String, List<AbiParameters>> methodParameters = decodeInputAbi.get(contractHash);
+            if (methodParameters == null) {
+                // 没有该合约abi
+                return null;
+            }
+            List<AbiParameters> abiParameters = methodParameters.get(method);
+            if (abiParameters == null) {
+                // 没有该方法
+                return null;
+            }
+            // 遍历abiParameters,在args中取参数
+            return decodeInputDataParameter(methodHex, method, abiParameters, args, size);
+        } catch (Exception e) {
+            log.error("decodeNativeInputData error", e);
+        }
+        return null;
+    }
+
+    private InputDataView decodeInputDataParameter(String methodId, String method, List<AbiParameters> abiParameters, String[] args, long size) throws IOException {
+        List<String> params = new ArrayList<>();
+        List<InputDataDecode> decodes = Collections.emptyList();
+        StringBuilder function = new StringBuilder();
+        function.append(ConstantParam.FUNCTION_PARAM_START);
+        int argIndex = 0;
+        int lastLength = 0;
+        if (!CollectionUtils.isEmpty(abiParameters)) {
+            decodes = new ArrayList<>();
+            for (AbiParameters parameter : abiParameters) {
+                String type = parameter.getType();
+                String name = parameter.getName();
+                if (ConstantParam.NATIVE_TYPE_STRUCT.equals(type)) {
+                    List<AbiParameters> subType = parameter.getSubType();
+                    for (AbiParameters subParameter : subType) {
+                        // for make function
+                        String sType = subParameter.getType();
+                        String sName = subParameter.getName();
+                        function.append(sType).append(ConstantParam.BLANK).append(sName).append(ConstantParam.FUNCTION_PARAM_SPLIT);
+                    }
+                    for (int j = 0; j < size; j++) {
+                        for (AbiParameters subParameter : subType) {
+                            InputDataDecode inputDataDecode = new InputDataDecode();
+                            String sType = subParameter.getType();
+                            String arg = args[argIndex];
+                            arg = arg.startsWith(ConstantParam.NATIVE_SECOND_STRUCT_START) ? arg.substring(8) : arg;
+                            Map<String, Object> map = decodeDataByType(sType, arg, true);
+                            String rawData = (String) map.get("rawData");
+                            Object data = map.get("data");
+                            params.add(rawData);
+                            inputDataDecode.setName(subParameter.getName());
+                            inputDataDecode.setType(sType);
+                            inputDataDecode.setData(Collections.singletonList(data));
+                            decodes.add(inputDataDecode);
+                            argIndex++;
+                        }
+                    }
+                } else if (type.endsWith(ConstantParam.TYPE_ARRAY_SUFFIX)) {
+                    InputDataDecode inputDataDecode = new InputDataDecode();
+                    List<Object> dataList = new ArrayList<>();
+                    List<AbiParameters> subType = parameter.getSubType();
+                    for (int j = 0; j < lastLength; j++) {
+                        for (AbiParameters subParameter : subType) {
+                            String sType = subParameter.getType();
+                            String arg = args[argIndex];
+                            Map<String, Object> map = decodeDataByType(sType, arg, true);
+                            String rawData = (String) map.get("rawData");
+                            Object data = map.get("data");
+                            params.add(rawData);
+                            dataList.add(data);
+                            argIndex++;
+                        }
+                    }
+                    function.append(type).append(ConstantParam.BLANK).append(name).append(ConstantParam.FUNCTION_PARAM_SPLIT);
+                    inputDataDecode.setName(name);
+                    inputDataDecode.setType(type);
+                    inputDataDecode.setData(dataList);
+                    decodes.add(inputDataDecode);
+                } else {
+                    InputDataDecode inputDataDecode = new InputDataDecode();
+                    String arg = args[argIndex];
+                    // 兼容参数为嵌套的struct类型(忽略嵌套的struct参数类型)
+                    if (arg.startsWith(ConstantParam.NATIVE_STRUCT_START)) {
+                        arg = arg.substring(6);
+                    }
+                    if (arg.equals(ConstantParam.NATIVE_STRUCT_END)) {
+                        argIndex++;
+                        continue;
+                    }
+                    Map<String, Object> map = decodeDataByType(type, arg, true);
+                    String rawData = (String) map.get("rawData");
+                    Object data = map.get("data");
+                    params.add(rawData);
+                    if (data instanceof BigInteger) {
+                        lastLength = ((BigInteger) data).intValue();
+                    }
+                    function.append(type).append(ConstantParam.BLANK).append(name).append(ConstantParam.FUNCTION_PARAM_SPLIT);
+                    inputDataDecode.setName(name);
+                    inputDataDecode.setType(type);
+                    inputDataDecode.setData(Collections.singletonList(data));
+                    decodes.add(inputDataDecode);
+                    argIndex++;
+                }
+            }
+
+        }
+        int length = function.length();
+        if (length > 1) {
+            function.delete(length - 1, length);
+        }
+        function.append(ConstantParam.FUNCTION_PARAM_END);
+        function.insert(0, method);
+        DefaultView defaultView = new DefaultView();
+        defaultView.setFunction(function.toString());
+        defaultView.setMethodId(methodId);
+        defaultView.setParams(params);
+        InputDataView inputDataView = new InputDataView();
+        inputDataView.setDefaultView(defaultView);
+        inputDataView.setDecode(decodes);
+        return inputDataView;
+    }
+
+    private Map<String, Object> decodeDataByType(String type, String arg, boolean isNative) throws IOException {
+        Map<String, Object> map = new HashMap<>();
+        Object data = null;
+        String rawData = null;
+        switch (type) {
+            case "Address":
+                Address address = Helper.parseInputDataAddress(arg);
+                data = address.toBase58();
+                rawData = com.github.ontio.common.Helper.toHexString(address.toArray());
+                break;
+            case "Uint64":
+            case "BigInt":
+                data = Helper.parseInputDataNumber(arg, isNative);
+                BigInteger number = (BigInteger) data;
+                if (isNative) {
+                    BigInteger rawNumber;
+                    int value = number.intValue();
+                    if (value > 0 && value <= 16) {
+                        rawNumber = number.add(BigInteger.valueOf(80));
+                    } else if (value == 0) {
+                        rawNumber = BigInteger.ZERO;
+                    } else if (value == -1) {
+                        rawNumber = BigInteger.valueOf(79);
+                    } else {
+                        rawNumber = number;
+                    }
+                    if (BigInteger.ZERO.compareTo(rawNumber) == 0) {
+                        rawData = "00";
+                    } else {
+                        byte[] bytes = com.github.ontio.common.Helper.BigIntToNeoBytes(rawNumber);
+                        rawData = com.github.ontio.common.Helper.toHexString(bytes);
+                    }
+                } else {
+                    byte[] bytes = com.github.ontio.common.Helper.BigIntToNeoBytes(number);
+                    rawData = com.github.ontio.common.Helper.toHexString(bytes);
+                }
+                break;
+            case "ByteArray":
+                data = Helper.parseInputDataBytes(arg);
+                rawData = (String) data;
+                break;
+            case "String":
+                data = Helper.parseInputDataString(arg);
+                rawData = com.github.ontio.common.Helper.toHexString(((String) data).getBytes());
+                break;
+            default:
+                break;
+        }
+        map.put("rawData", rawData);
+        map.put("data", data);
+        return map;
+    }
 
     private TxDetailDto queryTxDetailByTxHash(String txHash) {
         TxDetailDto txDetailDto = txDetailMapper.selectTxByHash(txHash);
@@ -415,4 +755,35 @@ public class TransactionServiceImpl implements ITransactionService {
                 });
     }
 
+    @Autowired
+    public void setDecodeInputAbi() {
+        this.decodeInputAbi = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build(contractHash -> {
+            DecodeInputAbi decodeInputAbi = decodeInputAbiMapper.selectByPrimaryKey(contractHash);
+            if (decodeInputAbi != null) {
+                Map<String, List<AbiParameters>> map = new HashMap<>();
+                try {
+                    String abi = decodeInputAbi.getAbi();
+                    JSONObject jsonObject = JSONObject.parseObject(abi);
+                    JSONArray functions = jsonObject.getJSONArray("functions");
+                    if (!CollectionUtils.isEmpty(functions)) {
+                        for (Object obj : functions) {
+                            JSONObject function = (JSONObject) obj;
+                            String name = function.getString("name");
+                            JSONArray parameters = function.getJSONArray("parameters");
+                            if (CollectionUtils.isEmpty(parameters)) {
+                                map.put(name, Collections.emptyList());
+                            } else {
+                                List<AbiParameters> abiParameters = JSONArray.parseArray(parameters.toString(), AbiParameters.class);
+                                map.put(name, abiParameters);
+                            }
+                        }
+                    }
+                    return map;
+                } catch (Exception e) {
+                    log.error("parse contract abi error:{},{}", contractHash, e.getMessage());
+                }
+            }
+            return null;
+        });
+    }
 }

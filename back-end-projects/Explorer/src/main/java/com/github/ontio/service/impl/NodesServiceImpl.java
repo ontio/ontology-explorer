@@ -23,26 +23,10 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.*;
-import com.github.ontio.mapper.CommonMapper;
-import com.github.ontio.mapper.NetNodeInfoMapper;
-import com.github.ontio.mapper.NodeBonusMapper;
-import com.github.ontio.mapper.NodeInfoOffChainMapper;
-import com.github.ontio.mapper.NodeInfoOnChainMapper;
-import com.github.ontio.mapper.NodeOverviewMapper;
-import com.github.ontio.mapper.NodeRankChangeMapper;
-import com.github.ontio.mapper.NodeRankHistoryMapper;
-import com.github.ontio.model.common.PageResponseBean;
-import com.github.ontio.model.dao.NetNodeInfo;
-import com.github.ontio.model.dao.NodeBonus;
-import com.github.ontio.model.dao.NodeInfoOffChain;
-import com.github.ontio.model.dao.NodeInfoOnChain;
-import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
-import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
-import com.github.ontio.model.dao.NodeRankChange;
-import com.github.ontio.model.dao.NodeRankHistory;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.service.INodesService;
 import com.github.ontio.util.ConstantParam;
@@ -56,6 +40,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("NodesService")
@@ -942,5 +927,79 @@ public class NodesServiceImpl implements INodesService {
 
     }
 
+    @Override
+    public PageResponseBean getNodesByFilter(NodesInfoDto dto) {
+        String dtoName = dto.getName();
+        Integer isStake = dto.getIsStake();
+        Integer nodeType = dto.getNodeType();
+        int start = Math.max(dto.getPageSize() * (dto.getPageNumber() - 1), 0);
+        String publicKey = "";
+        String address = "";
+        String name = "";
 
+        if (dtoName.length() == 66) {
+            publicKey = dtoName;
+        } else if (dtoName.length() == 34) {
+            address = dtoName;
+        } else {
+            name = dtoName;
+        }
+
+        List<NodeInfoOnChainDto> nodeInfoOnChainList = nodeInfoOnChainMapper.selectNodesByFilter(publicKey, address, name, nodeType, isStake, start, dto.getPageSize());
+        Map<String, NodeInfoOnChain> nodeInfoOnChainMap = new HashMap<>();
+        nodeInfoOnChainList.forEach(item -> nodeInfoOnChainMap.put(item.getPublicKey(), item));
+
+        List<Integer> tagList = dto.getTagList();
+        List<NodesInfoRespDto> respDtoList = new ArrayList<>();
+        List<NodeInfoOffChain> nodeInfoOffChains = nodeInfoOffChainMapper.selectAll();
+        outer:
+        for (NodeInfoOffChain nodeInfoOffChain : nodeInfoOffChains) {
+            if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
+                Integer contactInfoVerified = nodeInfoOffChain.getContactInfoVerified();
+                Integer feeSharingRatio = nodeInfoOffChain.getFeeSharingRatio();
+                Integer ontologyHarbinger = nodeInfoOffChain.getOntologyHarbinger();
+                Integer oldNode = nodeInfoOffChain.getOldNode();
+                // 验证不通过的 continue
+                for (Integer verification : tagList) {
+                    if (verification == 0 && oldNode != 1) {
+                        continue outer;
+                    } else if (verification == 1 && contactInfoVerified != 1) {
+                        continue outer;
+                    } else if (verification == 2 && feeSharingRatio != 1) {
+                        continue outer;
+                    } else if (verification == 3 && ontologyHarbinger != 1) {
+                        continue outer;
+                    }
+                }
+                NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
+                respDtoList.add(NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
+                        .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                        .build());
+            }
+        }
+        // get address inspire
+        List<NodeInspire> nodeInspires = nodeInspireMapper.selectAll();
+        Map<String, NodeInspire> nodeInspireMap = new HashMap<>();
+        nodeInspires.forEach(nodeInspire -> nodeInspireMap.put(nodeInspire.getPublicKey(), nodeInspire));
+
+        respDtoList.forEach(respDto -> {
+            NodeInspire nodeInspire = nodeInspireMap.get(respDto.getPublicKey());
+            String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
+            String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
+            String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
+            double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
+            double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
+            double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
+            respDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
+        });
+
+        if (dto.getOrderType() == 1) {
+            // order by annualizedRate desc
+            respDtoList.sort((v1, v2) -> Double.compare(Double.parseDouble(v2.getAnnualizedRate().replaceAll("%", "")), Double.parseDouble(v1.getAnnualizedRate().replaceAll("%", ""))));
+        } else if (dto.getOrderType() == 2) {
+            // order by current stake desc
+            respDtoList = respDtoList.stream().sorted(Comparator.comparingLong(NodesInfoRespDto::getCurrentStake).reversed()).collect(Collectors.toList());
+        }
+        return new PageResponseBean(respDtoList, respDtoList.size());
+    }
 }
