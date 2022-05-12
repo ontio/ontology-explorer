@@ -905,7 +905,8 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal userFoundationUsd = userFoundationInspire.multiply(ong);
 
         Long maxAuthorize = calculationNode.getMaxAuthorize();
-        if (maxAuthorize == 0 && totalPos1 == 0) {
+        // 考虑此节点用户质押部分满了的情况,此时用户不能再进行质押,收益为0
+        if ((maxAuthorize == 0 && totalPos1 == 0) || (maxAuthorize - totalPos1 == 0)) {
             nodeInspire.setUserReleasedOngIncentive("0");
             nodeInspire.setUserGasFeeIncentive("0");
             nodeInspire.setUserFoundationBonusIncentive("0");
