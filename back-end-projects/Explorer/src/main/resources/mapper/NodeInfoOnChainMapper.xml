@@ -182,7 +182,6 @@
                     AND <![CDATA[ progress =  '100.00%' ]]>
                 </when>
             </choose>
-            limit #{start}, #{size}
         </where>
     </select>
 </mapper>
