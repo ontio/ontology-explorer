@@ -974,7 +974,6 @@ public class NodesServiceImpl implements INodesService {
         String dtoName = dto.getName();
         Integer isStake = dto.getIsStake();
         Integer nodeType = dto.getNodeType();
-        int start = Math.max(dto.getPageSize() * (dto.getPageNumber() - 1), 0);
         String publicKey = "";
         String address = "";
         String name = "";
@@ -987,53 +986,64 @@ public class NodesServiceImpl implements INodesService {
             name = dtoName;
         }
 
-        List<NodeInfoOnChainDto> nodeInfoOnChainList = nodeInfoOnChainMapper.selectNodesByFilter(publicKey, address, name, nodeType, isStake, start, dto.getPageSize());
+        List<NodeInfoOnChainDto> nodeInfoOnChainList = nodeInfoOnChainMapper.selectNodesByFilter(publicKey, address, name, nodeType, isStake);
         Map<String, NodeInfoOnChain> nodeInfoOnChainMap = new HashMap<>();
         nodeInfoOnChainList.forEach(item -> nodeInfoOnChainMap.put(item.getPublicKey(), item));
 
         List<Integer> tagList = dto.getTagList();
         List<NodesInfoRespDto> respDtoList = new ArrayList<>();
         List<NodeInfoOffChain> nodeInfoOffChains = nodeInfoOffChainMapper.selectAll();
-        outer:
-        for (NodeInfoOffChain nodeInfoOffChain : nodeInfoOffChains) {
-            if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
-                Integer contactInfoVerified = nodeInfoOffChain.getContactInfoVerified();
-                Integer feeSharingRatio = nodeInfoOffChain.getFeeSharingRatio();
-                Integer ontologyHarbinger = nodeInfoOffChain.getOntologyHarbinger();
-                Integer oldNode = nodeInfoOffChain.getOldNode();
-                // 验证不通过的 continue
-                for (Integer verification : tagList) {
-                    if (verification == 0 && oldNode != 1) {
-                        continue outer;
-                    } else if (verification == 1 && contactInfoVerified != 1) {
-                        continue outer;
-                    } else if (verification == 2 && feeSharingRatio != 1) {
-                        continue outer;
-                    } else if (verification == 3 && ontologyHarbinger != 1) {
-                        continue outer;
-                    }
-                }
-                NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
-                respDtoList.add(NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
-                        .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
-                        .build());
-            }
-        }
+
         // get address inspire
         List<NodeInspire> nodeInspires = nodeInspireMapper.selectAll();
         Map<String, NodeInspire> nodeInspireMap = new HashMap<>();
         nodeInspires.forEach(nodeInspire -> nodeInspireMap.put(nodeInspire.getPublicKey(), nodeInspire));
 
-        respDtoList.forEach(respDto -> {
-            NodeInspire nodeInspire = nodeInspireMap.get(respDto.getPublicKey());
-            String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
-            String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
-            String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
-            double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
-            double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
-            double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
-            respDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
-        });
+        if (tagList.size() != 0) {
+            // 多个tag之间是 并集
+            for (NodeInfoOffChain nodeInfoOffChain : nodeInfoOffChains) {
+                if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
+                    Integer contactInfoVerified = nodeInfoOffChain.getContactInfoVerified();
+                    Integer feeSharingRatio = nodeInfoOffChain.getFeeSharingRatio();
+                    Integer ontologyHarbinger = nodeInfoOffChain.getOntologyHarbinger();
+                    Integer oldNode = nodeInfoOffChain.getOldNode();
+                    if ((oldNode == 1 && tagList.contains(0)) || (contactInfoVerified == 1 && tagList.contains(1)) || (feeSharingRatio == 1 && tagList.contains(2)) || (ontologyHarbinger == 1 && tagList.contains(3))) {
+                        NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
+                        NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
+                                .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                                .build();
+                        NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
+                        String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
+                        String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
+                        String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
+                        double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
+                        double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
+                        double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
+                        infoRespDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
+                        respDtoList.add(infoRespDto);
+                    }
+                }
+            }
+        } else {
+            for (NodeInfoOffChain nodeInfoOffChain : nodeInfoOffChains) {
+                if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
+                    NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
+                    NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
+                            .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                            .build();
+                    NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
+                    String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
+                    String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
+                    String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
+                    double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
+                    double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
+                    double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
+                    infoRespDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
+                    respDtoList.add(infoRespDto);
+                }
+            }
+        }
+
 
         if (dto.getOrderType() == 1) {
             // order by annualizedRate desc
@@ -1042,6 +1052,14 @@ public class NodesServiceImpl implements INodesService {
             // order by current stake desc
             respDtoList = respDtoList.stream().sorted(Comparator.comparingLong(NodesInfoRespDto::getCurrentStake).reversed()).collect(Collectors.toList());
         }
-        return new PageResponseBean(respDtoList, respDtoList.size());
+
+        int respSize = respDtoList.size();
+        int start = Math.max(dto.getPageSize() * (dto.getPageNumber() - 1), 0);
+        Integer pageSize = dto.getPageSize();
+        if (start >= respSize) {
+            return new PageResponseBean(new ArrayList<>(), respSize);
+        } else {
+            return new PageResponseBean(respDtoList.subList(start, Math.min(start + pageSize, respSize)), respSize);
+        }
     }
 }
