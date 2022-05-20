@@ -1000,28 +1000,41 @@ public class NodesServiceImpl implements INodesService {
         nodeInspires.forEach(nodeInspire -> nodeInspireMap.put(nodeInspire.getPublicKey(), nodeInspire));
 
         if (tagList.size() != 0) {
-            // 多个tag之间是 并集
+            outer:
             for (NodeInfoOffChain nodeInfoOffChain : nodeInfoOffChains) {
                 if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
-                    Integer contactInfoVerified = nodeInfoOffChain.getContactInfoVerified();
-                    Integer feeSharingRatio = nodeInfoOffChain.getFeeSharingRatio();
-                    Integer ontologyHarbinger = nodeInfoOffChain.getOntologyHarbinger();
-                    Integer oldNode = nodeInfoOffChain.getOldNode();
-                    if ((oldNode == 1 && tagList.contains(0)) || (contactInfoVerified == 1 && tagList.contains(1)) || (feeSharingRatio == 1 && tagList.contains(2)) || (ontologyHarbinger == 1 && tagList.contains(3))) {
-                        NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
-                        NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
-                                .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
-                                .build();
-                        NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
-                        String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
-                        String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
-                        String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
-                        double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
-                        double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
-                        double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
-                        infoRespDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
-                        respDtoList.add(infoRespDto);
+                    // 筛选出tagList中总的选项, 并且每个节点都满足这些选择, 取交集
+                    List<Integer> currentTag = new ArrayList<>();
+                    if (nodeInfoOffChain.getOldNode() == 1) {
+                        currentTag.add(0);
                     }
+                    if (nodeInfoOffChain.getContactInfoVerified() == 1) {
+                        currentTag.add(1);
+                    }
+                    if (nodeInfoOffChain.getFeeSharingRatio() == 1) {
+                        currentTag.add(2);
+                    }
+                    if (nodeInfoOffChain.getOntologyHarbinger() == 1) {
+                        currentTag.add(3);
+                    }
+                    for (Integer verification : tagList) {
+                        if (!currentTag.contains(verification)) {
+                            continue outer;
+                        }
+                    }
+                    NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
+                    NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
+                            .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                            .build();
+                    NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
+                    String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
+                    String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
+                    String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
+                    double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
+                    double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
+                    double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
+                    infoRespDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
+                    respDtoList.add(infoRespDto);
                 }
             }
         } else {
