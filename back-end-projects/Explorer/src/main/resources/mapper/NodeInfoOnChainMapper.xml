@@ -106,7 +106,8 @@
         WHERE status = 2;
     </select>
 
-    <select id="selectTheLastConsensusNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
+    <select id="selectTheLastConsensusNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto"
+            useCache="true">
         SELECT node_rank,
                name,
                current_stake,
@@ -161,7 +162,7 @@
         user_proportion,
         current_stake_percentage
         FROM tbl_node_info_on_chain
-        <where> 1 = 1
+        <where>1 = 1
             <if test="publicKey != '' ">
                 AND public_key = #{publicKey}
             </if>
@@ -176,10 +177,10 @@
             </if>
             <choose>
                 <when test="isStake == 1">
-                    AND <![CDATA[ progress <>  '100.00%' ]]>
+                    AND (<![CDATA[ progress <>  '100.00%' ]]> AND <![CDATA[ progress <> '100%' ]]>)
                 </when>
                 <when test="isStake == 2">
-                    AND <![CDATA[ progress =  '100.00%' ]]>
+                    AND (<![CDATA[ progress =  '100.00%' ]]>  OR  <![CDATA[ progress = '100%' ]]> )
                 </when>
             </choose>
         </where>
