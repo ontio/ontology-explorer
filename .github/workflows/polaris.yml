@@ -3,7 +3,8 @@ name: Maven CI/CD
 on:
   pull_request:
     branches:
-    # - master
+      - test_version_2.1.0
+      - testgithubaction
   push:
     branches:
       - test_version_2.1.0
