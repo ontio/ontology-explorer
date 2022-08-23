@@ -276,17 +276,14 @@ public class Helper {
     }
 
     public static String EthAddrToOntAddr(String ethAddr) {
-        if (ethAddr.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-            ethAddr = ethAddr.substring(2);
-        }
         Address parse = Address.parse(ethAddr);
         return parse.toBase58();
     }
 
     public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
         Address address = Address.decodeBase58(ontAddr);
-        String reverse = com.github.ontio.common.Helper.reverse(address.toHexString());
-        return ConstantParam.EVM_ADDRESS_PREFIX + reverse;
+        String hexAddress = com.github.ontio.common.Helper.toHexString(address.toArray());
+        return ConstantParam.EVM_ADDRESS_PREFIX + hexAddress;
     }
 
 

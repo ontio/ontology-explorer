@@ -6,6 +6,7 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.asset.State;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.nativevm.abi.Struct;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -241,7 +242,22 @@ public class BasicTest {
     @Test
     public void testMakeTransferFrom() throws Exception {
         OntSdk ontSdk = OntSdk.getInstance();
-        InvokeCode transaction = (InvokeCode) ontSdk.nativevm().ong().makeTransferFrom("AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 1,"AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew",400000, 2500);
+        InvokeCode transaction = (InvokeCode) ontSdk.nativevm().ong().makeTransferFrom("AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 1, "AWuzrZ9aCK2hnhBVQJ6z2eZ96CbswCgQew", 400000, 2500);
         System.out.println(Helper.toHexString(transaction.code));
+    }
+
+    @Test
+    public void EthAddrToOntAddr() {
+        String ethAddr = "";
+        Address parse = Address.parse(ethAddr);
+        System.out.println(parse.toBase58());
+    }
+
+    @Test
+    public void ontAddrToEthAddr() throws SDKException {
+        String ontAddr = "";
+        Address address = Address.decodeBase58(ontAddr);
+        String hexAddress = com.github.ontio.common.Helper.toHexString(address.toArray());
+        System.out.println("0x" + hexAddress);
     }
 }
