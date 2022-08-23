@@ -598,7 +598,7 @@ public class CommonService {
     }
 
     public String getOepSymbol(Boolean isWasm, String contract, String tokenId) {
-        String symbol = ConstantParam.EMPTY;
+        String symbol = null;
         try {
             if (isWasm) {
                 OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;

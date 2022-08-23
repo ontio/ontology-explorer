@@ -448,6 +448,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     InputDataDecode inputDataDecode = new InputDataDecode();
                     List<Object> dataList = new ArrayList<>();
                     List<AbiParameters> subType = parameter.getSubType();
+                    // native array类型长度会在前一个参数表示,subType一般只有一个且与array同类型
                     for (int j = 0; j < lastLength; j++) {
                         for (AbiParameters subParameter : subType) {
                             String sType = subParameter.getType();

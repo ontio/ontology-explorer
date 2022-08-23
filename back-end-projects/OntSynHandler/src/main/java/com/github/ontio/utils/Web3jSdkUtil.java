@@ -212,7 +212,7 @@ public class Web3jSdkUtil {
     }
 
     public String getOrcTokenSymbol(String contract) {
-        String symbol = ConstantParam.EMPTY;
+        String symbol = null;
         Web3j web3j = getWeb3jSingleton();
         try {
             List<Type> params = Collections.emptyList();

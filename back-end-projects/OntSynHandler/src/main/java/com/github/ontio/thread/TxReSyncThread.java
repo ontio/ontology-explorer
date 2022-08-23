@@ -215,7 +215,7 @@ public class TxReSyncThread {
             }
 
         } catch (RestfulException e) {
-            log.error("handleOneTx RestfulException...{}", e);
+            log.error("handleOneTx RestfulException...", e);
             e.printStackTrace();
             throw e;
         } catch (Exception e) {
