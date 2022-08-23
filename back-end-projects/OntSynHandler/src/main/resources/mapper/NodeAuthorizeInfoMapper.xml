@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.NodeAuthorizeInfoMapper">
+  <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodeAuthorizeInfo">
+    <id column="public_key" jdbcType="VARCHAR" property="publicKey" />
+    <id column="address" jdbcType="VARCHAR" property="address" />
+    <result column="consensus_pos" jdbcType="INTEGER" property="consensusPos" />
+    <result column="freeze_pos" jdbcType="INTEGER" property="freezePos" />
+    <result column="new_pos" jdbcType="INTEGER" property="newPos" />
+    <result column="withdraw_pos" jdbcType="INTEGER" property="withdrawPos" />
+    <result column="withdraw_freeze_pos" jdbcType="INTEGER" property="withdrawFreezePos" />
+    <result column="withdraw_unfreeze_pos" jdbcType="INTEGER" property="withdrawUnfreezePos" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO tbl_node_authorize_info (
+    `public_key`,
+    `address`,
+    `consensus_pos`,
+    `freeze_pos`,
+    `new_pos`,
+    `withdraw_pos`,
+    `withdraw_freeze_pos`,
+    `withdraw_unfreeze_pos`,
+    `status`
+    )
+    VALUES
+    <foreach collection="list" item="item" index="index" separator=",">
+      (
+      #{item.publicKey},
+      #{item.address},
+      #{item.consensusPos},
+      #{item.freezePos},
+      #{item.newPos},
+      #{item.withdrawPos},
+      #{item.withdrawFreezePos},
+      #{item.withdrawUnfreezePos},
+      #{item.status}
+      )
+    </foreach>
+    ON DUPLICATE KEY UPDATE consensus_pos = values(consensus_pos), freeze_pos = values(freeze_pos), new_pos = values(new_pos),
+    withdraw_pos = values(withdraw_pos), withdraw_freeze_pos = values(withdraw_freeze_pos), withdraw_unfreeze_pos = values(withdraw_unfreeze_pos),
+    status = values(status)
+  </insert>
+
+
+</mapper>

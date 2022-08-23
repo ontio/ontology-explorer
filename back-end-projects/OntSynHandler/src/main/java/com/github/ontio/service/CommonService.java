@@ -13,6 +13,7 @@ import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.BatchBlockDto;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.smartcontract.nativevm.Governance;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
@@ -53,12 +54,14 @@ public class CommonService {
     private final Orc20TxDetailMapper orc20TxDetailMapper;
     private final Orc721TxDetailMapper orc721TxDetailMapper;
     private final Orc1155TxDetailMapper orc1155TxDetailMapper;
+    private final NodeAuthorizeInfoMapper nodeAuthorizeInfoMapper;
 
     @Autowired
     public CommonService(TxDetailMapper txDetailMapper, ParamsConfig paramsConfig, CurrentMapper currentMapper, OntidTxDetailMapper ontidTxDetailMapper,
                          Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper, TxEventLogMapper txEventLogMapper,
                          BlockMapper blockMapper, Oep5DragonMapper oep5DragonMapper, Orc20TxDetailMapper orc20TxDetailMapper, Orc721TxDetailMapper orc721TxDetailMapper,
-                         Orc1155TxDetailMapper orc1155TxDetailMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper) {
+                         Orc1155TxDetailMapper orc1155TxDetailMapper, ContractMapper contractMapper, TxDetailDailyMapper txDetailDailyMapper, TxDetailIndexMapper txDetailIndexMapper,
+                         NodeAuthorizeInfoMapper nodeAuthorizeInfoMapper) {
         this.txDetailMapper = txDetailMapper;
         this.paramsConfig = paramsConfig;
         this.currentMapper = currentMapper;
@@ -75,6 +78,7 @@ public class CommonService {
         this.contractMapper = contractMapper;
         this.txDetailDailyMapper = txDetailDailyMapper;
         this.txDetailIndexMapper = txDetailIndexMapper;
+        this.nodeAuthorizeInfoMapper = nodeAuthorizeInfoMapper;
     }
 
     /**
@@ -246,6 +250,11 @@ public class CommonService {
             }
         }
 
+        // 更新 tbl_node_authorize_ingo 表
+        if (batchBlockDto.getStakeNodeDetails().size() > 0) {
+            nodeAuthorizeInfoMapper.batchInsert(batchBlockDto.getStakeNodeDetails());
+        }
+
         //插入tbl_contract表
         if (batchBlockDto.getContracts().size() > 0) {
             contractMapper.batchInsert(batchBlockDto.getContracts());
@@ -286,6 +295,7 @@ public class CommonService {
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
         ConstantParam.ONT_SDKSERVICE = wm;
+        ConstantParam.ONT_GOVERNANCE = new Governance(wm);
     }
 
     /**
@@ -659,5 +669,13 @@ public class CommonService {
             log.error("getOep4Decimal error...{}", e.getMessage());
         }
         return decimals;
+    }
+
+    public NodeAuthorizeInfo getAuthorizeInfo(String peerPubkey, Address addr) {
+        String authorizeInfoStr = ConstantParam.ONT_GOVERNANCE.getAuthorizeInfo(peerPubkey, addr);
+        if (authorizeInfoStr != null) {
+            return JSONObject.parseObject(authorizeInfoStr, NodeAuthorizeInfo.class);
+        }
+        return null;
     }
 }

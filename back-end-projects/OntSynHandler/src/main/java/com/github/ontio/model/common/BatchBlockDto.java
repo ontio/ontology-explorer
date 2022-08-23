@@ -41,4 +41,6 @@ public class BatchBlockDto {
 
     private List<Orc1155TxDetail> orc1155TxDetails = Collections.synchronizedList(new ArrayList<Orc1155TxDetail>());
 
+    private List<NodeAuthorizeInfo> stakeNodeDetails = Collections.synchronizedList(new ArrayList<>());
+
 }

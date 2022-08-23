@@ -329,22 +329,20 @@ public class TxHandlerThread {
      * @param txType
      * @return
      */
-    private String parseCalledContractHash(String code, Integer txType, String txHash) throws IOException {
+    private String parseCalledContractHash(String code, Integer txType, String txHash) {
         // 从payload 中解析 被调用的 合约hash
         String calledContractHash = "";
         // neoVm 交易
         if (TransactionTypeEnum.NEOVM_INVOKECODE.type() == txType) {
-            while (code.contains(ConstantParam.TXPAYLOAD_CODE_FLAG)) {
-                int index = code.indexOf(ConstantParam.TXPAYLOAD_CODE_FLAG);
-                code = code.substring(index + 2);
-                if (code.length() < 40) {
-                    //native合约都是792e4e61746976652e496e766f6b65
-                    calledContractHash = code;
-                    break;
-                } else if (code.length() == 40) {
-                    calledContractHash = Helper.reverse(code);
-                    break;
-                }
+            if (code.endsWith(ConstantParam.NATIVE_INPUT_DATA_END)) {
+                // native
+                // native合约都是792e4e61746976652e496e766f6b65是错误的,但是统计服务用到,所以暂时不改
+                calledContractHash = ConstantParam.NATIVE_CALLED_CONTRACT_HASH;
+                parseStakingTx(code);
+            } else {
+                int contractIndex = code.length() - 40;
+                String contract = code.substring(contractIndex);
+                calledContractHash = Helper.reverse(contract);
             }
         } else if (TransactionTypeEnum.WASMVM_INVOKECODE.type() == txType) {
             // Wasm 交易的payload 前40位是逆序
@@ -377,6 +375,55 @@ public class TxHandlerThread {
             IS_OEPTX_FLAG.get().put(ConstantParam.IS_ORC1155TX, true);
         }
         return calledContractHash;
+    }
+
+    private void parseStakingTx(String inputData) {
+        try {
+            int nativeInvokeIndex = inputData.length() - 50;
+            String methodHex;
+            if (inputData.startsWith(ConstantParam.NATIVE_STRUCT_START)) {
+                // 有参数
+                String argsMethodContract = inputData.substring(6, nativeInvokeIndex);
+                int length = argsMethodContract.length();
+                String contract = argsMethodContract.substring(length - 40);
+                if (ConstantParam.GOVERNANCE_CONTRACT_ADDRESS_REV.equals(contract)) {
+                    String argsMethod = argsMethodContract.substring(0, length - 42);
+                    String[] args = argsMethod.split(ConstantParam.NATIVE_ARGS_OP_CODE);
+                    String opSizeMethod = args[args.length - 1];
+                    String opMethod = opSizeMethod.substring(2);
+                    int opPackIndex = opMethod.lastIndexOf(ConstantParam.OP_PACK);
+                    if (opPackIndex != -1) {
+                        // 参数为list
+                        methodHex = opMethod.substring(opPackIndex + 2 + 2);
+                    } else {
+                        // 考虑到方法名不会大于255个字节
+                        methodHex = opMethod.substring(2);
+                    }
+                    String method = new String(Helper.hexToBytes(methodHex));
+                    if (ConstantParam.INVOLVE_USER_STAKE_METHOD.contains(method)) {
+                        Address address = Address.parse(args[0].substring(2));
+                        BigInteger publicKeyLength = com.github.ontio.utils.Helper.parseInputDataNumber(args[1], true);
+                        int publicKeyIndex = 2;
+                        for (int i = 0; i < publicKeyLength.intValue(); i++) {
+                            String publicKey = com.github.ontio.utils.Helper.parseInputDataString(args[publicKeyIndex]);
+                            NodeAuthorizeInfo nodeAuthorizeInfo = commonService.getAuthorizeInfo(publicKey, address);
+                            if (nodeAuthorizeInfo == null) {
+                                nodeAuthorizeInfo = new NodeAuthorizeInfo();
+                                nodeAuthorizeInfo.setPublicKey(publicKey);
+                                nodeAuthorizeInfo.setAddress(address.toBase58());
+                                nodeAuthorizeInfo.setStatus(0);
+                            } else {
+                                nodeAuthorizeInfo.setStatus(1);
+                            }
+                            ConstantParam.BATCHBLOCKDTO.getStakeNodeDetails().add(nodeAuthorizeInfo);
+                            publicKeyIndex++;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("parseStakingTx error", e);
+        }
     }
 
 

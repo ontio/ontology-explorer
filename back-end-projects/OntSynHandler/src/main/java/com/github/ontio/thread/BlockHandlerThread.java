@@ -27,6 +27,7 @@ import com.github.ontio.mapper.CurrentMapper;
 import com.github.ontio.model.common.BatchBlockDto;
 import com.github.ontio.service.BlockHandleService;
 import com.github.ontio.service.CommonService;
+import com.github.ontio.smartcontract.nativevm.Governance;
 import com.github.ontio.utils.ConstantParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,6 +140,7 @@ public class BlockHandlerThread extends Thread {
         OntSdk sdkService = OntSdk.getInstance();
         sdkService.setRestful(ConstantParam.MASTERNODE_RESTFULURL);
         ConstantParam.ONT_SDKSERVICE = sdkService;
+        ConstantParam.ONT_GOVERNANCE = new Governance(sdkService);
     }
 
 

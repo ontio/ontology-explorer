@@ -22,6 +22,7 @@ package com.github.ontio.utils;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.model.common.BatchBlockDto;
+import com.github.ontio.smartcontract.nativevm.Governance;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.DynamicArray;
@@ -53,6 +54,8 @@ public final class ConstantParam {
      * Ontology SDK object
      */
     public static OntSdk ONT_SDKSERVICE = null;
+
+    public static Governance ONT_GOVERNANCE = null;
 
     /**
      * the number of new ontid of batch block
@@ -159,6 +162,17 @@ public final class ConstantParam {
 
     public static final String ONG_CONTRACT_ADDRESS = "0200000000000000000000000000000000000000";
 
+    public static final String GOVERNANCE_CONTRACT_ADDRESS_REV = "0000000000000000000000000000000000000007";
+
+    public static final String NATIVE_INPUT_DATA_END = "0068164f6e746f6c6f67792e4e61746976652e496e766f6b65";
+
+    public static final String NATIVE_STRUCT_START = "00c66b";
+
+    public static final String NATIVE_ARGS_OP_CODE = "6a7cc8";
+
+    public static final String OP_PACK = "c1";
+
+    public static final List<String> INVOLVE_USER_STAKE_METHOD = Arrays.asList("authorizeForPeer", "unAuthorizeForPeer", "withdraw");
 
     public static final String TXPAYLOAD_CODE_FLAG = "67";
 

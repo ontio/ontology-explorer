@@ -21,7 +21,12 @@ package com.github.ontio.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
+import com.github.ontio.io.BinaryReader;
 import com.github.ontio.sdk.exception.SDKException;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
 
 public class Helper {
 
@@ -84,6 +89,50 @@ public class Helper {
         }
         Address parse = Address.parse(ethAddr);
         return parse.toBase58();
+    }
+
+    public static BigInteger parseInputDataNumber(String hexNumber, boolean isNative) throws IOException {
+        if (hexNumber.length() < 2) {
+            return BigInteger.ZERO;
+        }
+        if (isNative) {
+            byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber.substring(0, 2));
+            BigInteger number = com.github.ontio.common.Helper.BigIntFromNeoBytes(bytes);
+            int value = number.intValue();
+            if (value > 80 && value <= 96) {
+                return number.subtract(BigInteger.valueOf(80));
+            } else if (value == 0) {
+                return BigInteger.ZERO;
+            } else if (value == 79) {
+                return BigInteger.ONE.negate();
+            } else {
+                bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber);
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                BinaryReader reader = new BinaryReader(bais);
+                byte[] numberBytes = reader.readVarBytes();
+                reader.close();
+                bais.close();
+                return com.github.ontio.common.Helper.BigIntFromNeoBytes(numberBytes);
+            }
+        } else {
+            byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            BinaryReader reader = new BinaryReader(bais);
+            byte[] numberBytes = reader.readVarBytes();
+            reader.close();
+            bais.close();
+            return com.github.ontio.common.Helper.BigIntFromNeoBytes(numberBytes);
+        }
+    }
+
+    public static String parseInputDataString(String hexString) throws IOException {
+        byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexString);
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        BinaryReader reader = new BinaryReader(bais);
+        byte[] readVarBytes = reader.readVarBytes2();
+        reader.close();
+        bais.close();
+        return new String(readVarBytes);
     }
 
 }
