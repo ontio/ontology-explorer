@@ -763,18 +763,18 @@ public class TxHandlerThread {
      */
     private String formatOntIdOperation(String ontId, String action, JSONArray stateList) throws Exception {
 
-        String str = "";
+        String str;
         StringBuilder descriptionSb = new StringBuilder(140);
         descriptionSb.append(action);
         descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
 
-        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
+        if (OntIdEventDesEnum.REGISTERONTID.des().equalsIgnoreCase(action)) {
 
             descriptionSb.append(ontId);
             str = descriptionSb.toString();
             log.info("####Register OntId:{}", ontId);
 
-        } else if (OntIdEventDesEnum.PUBLICKEYOPE.des().equals(action)) {
+        } else if (OntIdEventDesEnum.PUBLICKEYOPE.des().equalsIgnoreCase(action)) {
 
             String op = stateList.getString(1);
             int publickeyNumber = stateList.getInteger(3);
@@ -790,7 +790,7 @@ public class TxHandlerThread {
             descriptionSb.append(publickeyNumber);
             str = descriptionSb.toString();
 
-        } else if (OntIdEventDesEnum.ATTRIBUTEOPE.des().equals(action)) {
+        } else if (OntIdEventDesEnum.ATTRIBUTEOPE.des().equalsIgnoreCase(action)) {
 
             String op = stateList.getString(1);
             log.info("####Attribute op:{}####", op);
@@ -818,7 +818,7 @@ public class TxHandlerThread {
             }
             str = descriptionSb.substring(0, descriptionSb.length() - 1);
 
-        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equals(action) || OntIdEventDesEnum.RECOVERYOPE.des().toLowerCase().equals(action)) {
+        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equalsIgnoreCase(action)) {
             log.info("compare action: {} & {}", OntIdEventDesEnum.RECOVERYOPE.des(), action);
             String op = stateList.getString(1);
             String address = "";
@@ -837,6 +837,10 @@ public class TxHandlerThread {
                 descriptionSb.append(address);
             }
 
+            str = descriptionSb.toString();
+        } else {
+            log.info("####else ontId action:{}####", action);
+            descriptionSb.append(ontId);
             str = descriptionSb.toString();
         }
         return str;
