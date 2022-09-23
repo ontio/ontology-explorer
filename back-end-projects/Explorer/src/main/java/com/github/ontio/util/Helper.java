@@ -150,8 +150,6 @@ public class Helper {
             }
         } else if (OntIdEventEnum.RECOVERYOPE.value().equals(action)) {
             descriptionSb.append(desArray[1]);
-            descriptionSb.append(" recovery:");
-            descriptionSb.append(desArray[3]);
         } else {
             descriptionSb.append(action);
         }
