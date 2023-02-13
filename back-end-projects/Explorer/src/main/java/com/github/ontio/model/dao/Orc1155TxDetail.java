@@ -1,7 +1,9 @@
 package com.github.ontio.model.dao;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -10,6 +12,8 @@ import java.math.BigDecimal;
 
 @Table(name = "tbl_orc1155_tx_detail")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Orc1155TxDetail {
     @Id
     private Integer id;
