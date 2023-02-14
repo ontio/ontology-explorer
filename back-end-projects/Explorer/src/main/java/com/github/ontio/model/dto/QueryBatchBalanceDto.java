@@ -3,6 +3,7 @@ package com.github.ontio.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author zhouq
@@ -10,6 +11,7 @@ import lombok.Data;
  * @date 2019/7/9
  */
 @Data
+@NoArgsConstructor
 public class QueryBatchBalanceDto {
 
     @JsonProperty("Action")

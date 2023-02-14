@@ -1,9 +1,7 @@
 package com.github.ontio.model.dto;
 
 import com.github.ontio.model.dao.OntidTxDetail;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -16,6 +14,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_ontid_tx_detail")
+@AllArgsConstructor
 public class OntidTxDetailDto extends OntidTxDetail {
 
     @Builder

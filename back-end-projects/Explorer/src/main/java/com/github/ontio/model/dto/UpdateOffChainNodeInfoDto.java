@@ -1,10 +1,11 @@
 package com.github.ontio.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class UpdateOffChainNodeInfoDto {
 
     private String nodeInfo;

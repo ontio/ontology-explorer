@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.ontio.util.TxAmountSerializer;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
  * @date 2019/5/9
  */
 @Data
+@NoArgsConstructor
 public class TransferTxDetailDto {
 
     @JsonSerialize(using = TxAmountSerializer.class)

@@ -2,9 +2,7 @@ package com.github.ontio.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.Oep4TxDetail;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -13,6 +11,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_oep4_tx_detail")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
 public class Oep4TxDetailDto extends Oep4TxDetail {
 
     @Builder

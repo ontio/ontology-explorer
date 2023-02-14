@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.common.VmTypeEnum;
 import com.github.ontio.model.dao.TxDetail;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -15,6 +13,8 @@ import java.math.BigDecimal;
 @Table(name = "tbl_tx_detail")
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
+@NoArgsConstructor
 public class TxDetailDto extends TxDetail {
 
     private JSONObject detail;

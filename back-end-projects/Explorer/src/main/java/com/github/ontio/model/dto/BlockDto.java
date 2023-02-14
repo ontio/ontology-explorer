@@ -2,9 +2,7 @@ package com.github.ontio.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.Block;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Table;
 import java.util.List;
@@ -13,6 +11,8 @@ import java.util.List;
 @Table(name = "tbl_block")
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
+@NoArgsConstructor
 public class BlockDto extends Block {
 
     private List<TxBasicDto> txs;
