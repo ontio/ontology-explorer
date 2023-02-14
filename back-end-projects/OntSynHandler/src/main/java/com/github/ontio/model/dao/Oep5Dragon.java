@@ -1,10 +1,17 @@
 package com.github.ontio.model.dao;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Table(name = "tbl_oep5_dragon")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Oep5Dragon {
     @Id
     @GeneratedValue(generator = "JDBC")

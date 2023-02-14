@@ -1,6 +1,7 @@
 package com.github.ontio.model.dao;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -8,6 +9,7 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Table(name = "tbl_orc20_tx_detail")
+@NoArgsConstructor
 public class Orc20TxDetail {
     /**
      * 交易hash

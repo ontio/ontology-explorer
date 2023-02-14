@@ -1,6 +1,8 @@
 package com.github.ontio.model.dao;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -8,6 +10,8 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Table(name = "tbl_contract")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Contract {
     /**
      * 合约hash值
