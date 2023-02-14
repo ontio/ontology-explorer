@@ -1,8 +1,6 @@
 package com.github.ontio.model.dao;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -12,6 +10,7 @@ import java.util.Date;
 @Table(name = "tbl_orc721")
 @Data
 @ToString
+@NoArgsConstructor
 public class Orc721 {
 
     /**
