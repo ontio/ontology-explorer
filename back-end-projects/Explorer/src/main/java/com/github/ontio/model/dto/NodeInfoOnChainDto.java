@@ -2,11 +2,13 @@ package com.github.ontio.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.NodeInfoOnChain;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Table;
 
 @Table(name = "tbl_node_info_on_chain")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class NodeInfoOnChainDto extends NodeInfoOnChain {
 
     //@Builder

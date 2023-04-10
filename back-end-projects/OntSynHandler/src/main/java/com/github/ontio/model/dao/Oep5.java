@@ -1,6 +1,7 @@
 package com.github.ontio.model.dao;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -8,6 +9,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Table(name = "tbl_oep5")
+@NoArgsConstructor
 public class Oep5 {
     /**
      * 合约hash值

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.ContractCompileInfoMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.ContractCompileInfo">
+        <id column="contract_hash" jdbcType="VARCHAR" property="contractHash"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="optimization" jdbcType="TINYINT" property="optimization"/>
+        <result column="optimization_run" jdbcType="INTEGER" property="optimizationRun"/>
+        <result column="constructor_argument" jdbcType="VARCHAR" property="constructorArgument"/>
+        <result column="contact_library" jdbcType="VARCHAR" property="contactLibrary"/>
+        <result column="audit_flag" jdbcType="INTEGER" property="audit_flag"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+</mapper>

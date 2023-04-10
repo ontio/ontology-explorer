@@ -61,6 +61,7 @@ public interface ITransactionService {
 
     /**
      * query transaction detail by hash
+     *
      * @param txHash
      * @return
      */
@@ -68,5 +69,9 @@ public interface ITransactionService {
 
 
     ResponseBean queryInputDataByHash(String txHash) throws IOException, ConnectorException;
+
+    ResponseBean queryInputDataAndDecode(String txHash);
+
+    ResponseBean decodeInputData(String inputData);
 
 }

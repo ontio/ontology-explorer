@@ -2,9 +2,7 @@ package com.github.ontio.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.Oep5TxDetail;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -13,6 +11,8 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "tbl_oep5_tx_detail")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AllArgsConstructor
+@NoArgsConstructor
 public class Oep5TxDetailDto extends Oep5TxDetail {
 
     //TODO 云斗龙特殊字段，后续oep5最好统一规范

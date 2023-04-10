@@ -274,7 +274,7 @@ public class TxHandlerThread {
                                 Object subObject = subNotifyObj.get("States");
                                 JSONArray subStateArray = (JSONArray) subObject;
                                 if (ConstantParam.INVOKE_DEPLOY_CONTRACT_ACTION.equals(subStateArray.getString(0))) {
-                                    handleDeployContractTxByInvoke(blockTime, confirmFlag, payer, subContractAddress);
+                                    handleDeployContractTxByInvoke(blockTime, confirmFlag, payer, subContractAddress, txHash);
                                     break;
                                 }
                             }
@@ -308,7 +308,7 @@ public class TxHandlerThread {
         }
     }
 
-    private void handleDeployContractTxByInvoke(int blockTime, int confirmFlag, String payer, String contractAddress) throws Exception {
+    private void handleDeployContractTxByInvoke(int blockTime, int confirmFlag, String payer, String contractAddress, String txHash) throws Exception {
         JSONObject contractObj = commonService.getContractInfoByContractAddress(contractAddress);
         //部署成功的合约才记录
         if (confirmFlag == 1) {
@@ -317,7 +317,7 @@ public class TxHandlerThread {
                     .build();
             Integer count = contractMapper.selectCount(contract);
             if (count.equals(0)) {
-                insertContractInfo(contractAddress, blockTime, contractObj, payer);
+                insertContractInfo(contractAddress, blockTime, contractObj, payer, txHash);
             }
         }
     }
@@ -448,7 +448,7 @@ public class TxHandlerThread {
                     .build();
             Integer count = contractMapper.selectCount(contract);
             if (count.equals(0)) {
-                insertContractInfo(contractHash, blockTime, contractObj, payer);
+                insertContractInfo(contractHash, blockTime, contractObj, payer, txHash);
             }
         }
     }
@@ -471,7 +471,7 @@ public class TxHandlerThread {
                     .build();
             Integer count = contractMapper.selectCount(contract);
             if (count.equals(0)) {
-                insertContractInfo(deployContractAddress, blockTime, contractObj, payer);
+                insertContractInfo(deployContractAddress, blockTime, contractObj, payer, txHash);
             }
         }
     }
@@ -512,7 +512,7 @@ public class TxHandlerThread {
      * @param blockTime
      * @param contractObj
      */
-    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String payer) {
+    private void insertContractInfo(String contractHash, int blockTime, JSONObject contractObj, String payer, String txHash) {
         //在该批区块中可能出现多个部署合约交易， 但部署的是同一个合约
         if (!ConstantParam.BATCHBLOCK_CONTRACTHASH_LIST.contains(contractHash)) {
             Contract contract = Contract.builder()
@@ -539,6 +539,7 @@ public class TxHandlerThread {
                     .dappName("")
                     .totalReward(ConstantParam.ZERO)
                     .lastweekReward(ConstantParam.ZERO)
+                    .createTxHash(txHash)
                     .build();
 
             ConstantParam.BATCHBLOCKDTO.getContracts().add(contract);
@@ -762,18 +763,18 @@ public class TxHandlerThread {
      */
     private String formatOntIdOperation(String ontId, String action, JSONArray stateList) throws Exception {
 
-        String str = "";
+        String str;
         StringBuilder descriptionSb = new StringBuilder(140);
         descriptionSb.append(action);
         descriptionSb.append(ConstantParam.ONTID_SEPARATOR);
 
-        if (OntIdEventDesEnum.REGISTERONTID.des().equals(action)) {
+        if (OntIdEventDesEnum.REGISTERONTID.des().equalsIgnoreCase(action)) {
 
             descriptionSb.append(ontId);
             str = descriptionSb.toString();
             log.info("####Register OntId:{}", ontId);
 
-        } else if (OntIdEventDesEnum.PUBLICKEYOPE.des().equals(action)) {
+        } else if (OntIdEventDesEnum.PUBLICKEYOPE.des().equalsIgnoreCase(action)) {
 
             String op = stateList.getString(1);
             int publickeyNumber = stateList.getInteger(3);
@@ -789,7 +790,7 @@ public class TxHandlerThread {
             descriptionSb.append(publickeyNumber);
             str = descriptionSb.toString();
 
-        } else if (OntIdEventDesEnum.ATTRIBUTEOPE.des().equals(action)) {
+        } else if (OntIdEventDesEnum.ATTRIBUTEOPE.des().equalsIgnoreCase(action)) {
 
             String op = stateList.getString(1);
             log.info("####Attribute op:{}####", op);
@@ -817,7 +818,7 @@ public class TxHandlerThread {
             }
             str = descriptionSb.substring(0, descriptionSb.length() - 1);
 
-        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equals(action) || OntIdEventDesEnum.RECOVERYOPE.des().toLowerCase().equals(action)) {
+        } else if (OntIdEventDesEnum.RECOVERYOPE.des().equalsIgnoreCase(action)) {
             log.info("compare action: {} & {}", OntIdEventDesEnum.RECOVERYOPE.des(), action);
             String op = stateList.getString(1);
             String address = "";
@@ -836,6 +837,10 @@ public class TxHandlerThread {
                 descriptionSb.append(address);
             }
 
+            str = descriptionSb.toString();
+        } else {
+            log.info("####else ontId action:{}####", action);
+            descriptionSb.append(ontId);
             str = descriptionSb.toString();
         }
         return str;
@@ -1494,7 +1499,9 @@ public class TxHandlerThread {
                     BigDecimal amount = (BigDecimal) result.get("amount");
                     String contractHash = (String) result.get("contractHash");
                     String assetName = (String) result.get("assetName");
-
+                    if (assetName == null) {
+                        throw new RuntimeException("cannot get assetName,not orc20");
+                    }
                     TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                     ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
                     ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
@@ -1507,7 +1514,9 @@ public class TxHandlerThread {
                     String tokenId = (String) result.get("tokenId");
                     String contractHash = (String) result.get("contractHash");
                     String assetName = (String) result.get("assetName");
-
+                    if (assetName == null) {
+                        throw new RuntimeException("cannot get assetName,not orc721");
+                    }
                     TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, BigDecimal.ONE, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                     ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
                     ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
@@ -1525,7 +1534,9 @@ public class TxHandlerThread {
                     BigDecimal amount = (BigDecimal) result.get("amount");
                     String contractHash = (String) result.get("contractHash");
                     String assetName = (String) result.get("assetName");
-
+                    if (assetName == null) {
+                        throw new RuntimeException("cannot get assetName,not orc20");
+                    }
                     TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                     ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
                     ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
@@ -1538,7 +1549,9 @@ public class TxHandlerThread {
                     String tokenId = (String) result.get("tokenId");
                     String contractHash = (String) result.get("contractHash");
                     String assetName = (String) result.get("assetName");
-
+                    if (assetName == null) {
+                        throw new RuntimeException("cannot get assetName,not orc721");
+                    }
                     TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, BigDecimal.ONE, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                     ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
                     ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
@@ -1554,7 +1567,9 @@ public class TxHandlerThread {
                 Object amounts = result.get("amounts");
                 String contractHash = (String) result.get("contractHash");
                 String assetName = (String) result.get("assetName");
-
+                if (assetName == null) {
+                    throw new RuntimeException("cannot get assetName,not orc1155");
+                }
                 if (tokenIds instanceof String) {
                     String tokenId = (String) tokenIds;
                     BigDecimal amount = (BigDecimal) amounts;
@@ -1746,6 +1761,9 @@ public class TxHandlerThread {
                 }
                 if (size == 4) {
                     assetName = commonService.getOepSymbol(isWasm, contractHash, null);
+                    if (assetName == null) {
+                        throw new RuntimeException("cannot get assetName,not oep4 or oep5");
+                    }
                     Integer decimals = commonService.getOep4Decimals(isWasm, contractHash);
                     if (decimals == null) {
                         // oep5
@@ -1779,6 +1797,9 @@ public class TxHandlerThread {
                     // oep8
                     String tokenId = stateArray.getString(3);
                     assetName = commonService.getOepSymbol(isWasm, contractHash, tokenId);
+                    if (assetName == null) {
+                        throw new RuntimeException("cannot get assetName,not oep8");
+                    }
                     BigDecimal amount;
                     if (isWasm) {
                         amount = new BigDecimal(stateArray.getString(4));
@@ -1812,7 +1833,7 @@ public class TxHandlerThread {
                 ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
             }
         } catch (Exception e) {
-            log.error("handleUnauditedOepTransferTx error", e);
+            log.warn("handleUnauditedOepTransferTx error:{}", e.getMessage());
             TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
                     blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
             ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
@@ -1837,7 +1858,7 @@ public class TxHandlerThread {
      * @param fromAddress
      * @param toAddress
      * @param assetName
-     * @param account
+     * @param amount
      * @param txType
      * @param txHash
      * @param blockHeight
@@ -1852,7 +1873,7 @@ public class TxHandlerThread {
      * @param payer
      * @return
      */
-    private TxDetail generateTransaction(String fromAddress, String toAddress, String assetName, BigDecimal account, int txType,
+    private TxDetail generateTransaction(String fromAddress, String toAddress, String assetName, BigDecimal amount, int txType,
                                          String txHash, int blockHeight, int blockTime, int indexInBlock, int confirmFlag,
                                          String action, BigDecimal gasConsumed, int indexInTx, int eventType, String contractAddress,
                                          String payer, String calledContractHash) {
@@ -1870,7 +1891,7 @@ public class TxHandlerThread {
                 .payer(payer)
                 .calledContractHash(calledContractHash)
                 .contractHash(contractAddress)
-                .amount(account)
+                .amount(amount)
                 .assetName(assetName)
                 .fromAddress(fromAddress)
                 .toAddress(toAddress)

@@ -185,6 +185,7 @@ public class ConstantParam {
 
     public static final String VM_CATEGORY_WASMVM = "wasmvm";
 
+    public static final String VM_CATEGORY_EVM = "evm";
 
     public static final String CONTRACTHASH_ONG = "0200000000000000000000000000000000000000";
 
@@ -217,8 +218,6 @@ public class ConstantParam {
     public static final Integer UTC_20210801 = 1627776000;
 
     public static final String EVM_ADDRESS_PREFIX = "0x";
-
-    public static final String NATIVE_CONTRACT_HASH = "792e4e61746976652e496e766f6b65";
 
     public static final Map<String, String> CONTRACT_TAG = new HashMap<>();
 
@@ -272,4 +271,28 @@ public class ConstantParam {
             "from_address", "to_address", "amount", "asset_name", "contract_hash", "description", "confirm_flag");
 
     public static final String EXPORT_TX_FILENAME = "export-%s.csv";
+
+    /**
+     * decode input data
+     */
+    public static final String NATIVE_INPUT_DATA_END = "0068164f6e746f6c6f67792e4e61746976652e496e766f6b65";
+
+    public static final String NATIVE_STRUCT_START = "00c66b";
+
+    public static final String NATIVE_STRUCT_END = "6c";
+
+    public static final String NATIVE_SECOND_STRUCT_START = NATIVE_STRUCT_END + NATIVE_STRUCT_START;
+
+    public static final String NATIVE_ARGS_OP_CODE = "6a7cc8";
+
+    public static final String OP_PACK = "c1";
+
+    public static final String NATIVE_TYPE_STRUCT = "Struct";
+
+    public static final String TYPE_ARRAY_SUFFIX = "[]";
+
+    public static final String FUNCTION_PARAM_START = "(";
+    public static final String FUNCTION_PARAM_END = ")";
+    public static final String BLANK = " ";
+    public static final String FUNCTION_PARAM_SPLIT = ",";
 }

@@ -1,10 +1,13 @@
 package com.github.ontio.model.dao;
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Table;
 
 @Table(name = "tbl_current")
+@NoArgsConstructor
 public class Current {
     /**
      * 当前同步的最新区块高度

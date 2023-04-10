@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("NodesService")
@@ -904,7 +905,8 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal userFoundationUsd = userFoundationInspire.multiply(ong);
 
         Long maxAuthorize = calculationNode.getMaxAuthorize();
-        if (maxAuthorize == 0 && totalPos1 == 0) {
+        // 考虑此节点用户质押部分满了的情况,此时用户不能再进行质押,收益为0
+        if ((maxAuthorize == 0 && totalPos1 == 0) || (maxAuthorize - totalPos1 == 0)) {
             nodeInspire.setUserReleasedOngIncentive("0");
             nodeInspire.setUserGasFeeIncentive("0");
             nodeInspire.setUserFoundationBonusIncentive("0");
@@ -967,5 +969,110 @@ public class NodesServiceImpl implements INodesService {
 
     }
 
+    @Override
+    public PageResponseBean getNodesByFilter(NodesInfoDto dto) {
+        String dtoName = dto.getName();
+        Integer isStake = dto.getIsStake();
+        Integer nodeType = dto.getNodeType();
+        String publicKey = "";
+        String address = "";
+        String name = "";
 
+        if (dtoName.length() == 66) {
+            publicKey = dtoName;
+        } else if (dtoName.length() == 34) {
+            address = dtoName;
+        } else {
+            name = dtoName;
+        }
+
+        List<NodeInfoOnChainDto> nodeInfoOnChainList = nodeInfoOnChainMapper.selectNodesByFilter(publicKey, address, name, nodeType, isStake);
+        Map<String, NodeInfoOnChain> nodeInfoOnChainMap = new HashMap<>();
+        nodeInfoOnChainList.forEach(item -> nodeInfoOnChainMap.put(item.getPublicKey(), item));
+
+        List<Integer> tagList = dto.getTagList();
+        List<NodesInfoRespDto> respDtoList = new ArrayList<>();
+        List<NodeInfoOffChain> nodeInfoOffChains = nodeInfoOffChainMapper.selectAll();
+
+        // get address inspire
+        List<NodeInspire> nodeInspires = nodeInspireMapper.selectAll();
+        Map<String, NodeInspire> nodeInspireMap = new HashMap<>();
+        nodeInspires.forEach(nodeInspire -> nodeInspireMap.put(nodeInspire.getPublicKey(), nodeInspire));
+
+        if (tagList.size() != 0) {
+            outer:
+            for (NodeInfoOffChain nodeInfoOffChain : nodeInfoOffChains) {
+                if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
+                    // 筛选出tagList中总的选项, 并且每个节点都满足这些选择, 取交集
+                    List<Integer> currentTag = new ArrayList<>();
+                    if (nodeInfoOffChain.getOldNode() == 1) {
+                        currentTag.add(0);
+                    }
+                    if (nodeInfoOffChain.getContactInfoVerified() == 1) {
+                        currentTag.add(1);
+                    }
+                    if (nodeInfoOffChain.getFeeSharingRatio() == 1) {
+                        currentTag.add(2);
+                    }
+                    if (nodeInfoOffChain.getOntologyHarbinger() == 1) {
+                        currentTag.add(3);
+                    }
+                    for (Integer verification : tagList) {
+                        if (!currentTag.contains(verification)) {
+                            continue outer;
+                        }
+                    }
+                    NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
+                    NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
+                            .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                            .build();
+                    NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
+                    String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
+                    String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
+                    String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
+                    double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
+                    double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
+                    double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
+                    infoRespDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
+                    respDtoList.add(infoRespDto);
+                }
+            }
+        } else {
+            for (NodeInfoOffChain nodeInfoOffChain : nodeInfoOffChains) {
+                if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
+                    NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
+                    NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
+                            .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                            .build();
+                    NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
+                    String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
+                    String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
+                    String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
+                    double userFoundationRate = Double.parseDouble(userFoundationBonusIncentiveRate.replaceAll("%", ""));
+                    double userGasFeeRate = Double.parseDouble(userGasFeeIncentiveRate.replaceAll("%", ""));
+                    double userReleasedOngRate = Double.parseDouble(userReleasedOngIncentiveRate.replaceAll("%", ""));
+                    infoRespDto.setAnnualizedRate(userFoundationRate + userGasFeeRate + userReleasedOngRate + "%");
+                    respDtoList.add(infoRespDto);
+                }
+            }
+        }
+
+
+        if (dto.getOrderType() == 1) {
+            // order by annualizedRate desc
+            respDtoList.sort((v1, v2) -> Double.compare(Double.parseDouble(v2.getAnnualizedRate().replaceAll("%", "")), Double.parseDouble(v1.getAnnualizedRate().replaceAll("%", ""))));
+        } else if (dto.getOrderType() == 2) {
+            // order by current stake desc
+            respDtoList = respDtoList.stream().sorted(Comparator.comparingLong(NodesInfoRespDto::getCurrentStake).reversed()).collect(Collectors.toList());
+        }
+
+        int respSize = respDtoList.size();
+        int start = Math.max(dto.getPageSize() * (dto.getPageNumber() - 1), 0);
+        Integer pageSize = dto.getPageSize();
+        if (start >= respSize) {
+            return new PageResponseBean(new ArrayList<>(), respSize);
+        } else {
+            return new PageResponseBean(respDtoList.subList(start, Math.min(start + pageSize, respSize)), respSize);
+        }
+    }
 }

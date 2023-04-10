@@ -61,12 +61,13 @@ public class ContractServiceImpl implements IContractService {
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
     private final NodeInfoOnChainMapper nodeInfoOnChainMapper;
     private final ContractDailyAggregationMapper contractDailyAggregationMapper;
+    private final ContractCompileInfoMapper contractCompileInfoMapper;
 
     @Autowired
     public ContractServiceImpl(ContractMapper contractMapper, Oep4TxDetailMapper oep4TxDetailMapper, Oep5TxDetailMapper oep5TxDetailMapper, Oep8TxDetailMapper oep8TxDetailMapper,
                                Orc20TxDetailMapper orc20TxDetailMapper, Orc721TxDetailMapper orc721TxDetailMapper, Orc1155TxDetailMapper orc1155TxDetailMapper,
                                TxEventLogMapper txEventLogMapper, ParamsConfig paramsConfig, NodeInfoOffChainMapper nodeInfoOffChainMapper, NodeInfoOnChainMapper nodeInfoOnChainMapper,
-                               ContractDailySummaryMapper contractDailySummaryMapper, ContractDailyAggregationMapper contractDailyAggregationMapper) {
+                               ContractDailySummaryMapper contractDailySummaryMapper, ContractDailyAggregationMapper contractDailyAggregationMapper, ContractCompileInfoMapper contractCompileInfoMapper) {
         this.contractMapper = contractMapper;
         this.oep4TxDetailMapper = oep4TxDetailMapper;
         this.oep5TxDetailMapper = oep5TxDetailMapper;
@@ -80,6 +81,7 @@ public class ContractServiceImpl implements IContractService {
         this.contractDailySummaryMapper = contractDailySummaryMapper;
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.contractDailyAggregationMapper = contractDailyAggregationMapper;
+        this.contractCompileInfoMapper = contractCompileInfoMapper;
     }
 
     private OntologySDKService sdk;
@@ -106,8 +108,10 @@ public class ContractServiceImpl implements IContractService {
 
     @Override
     public ResponseBean queryContractDetail(String contractHash) {
-
         ContractDto contractDto = contractMapper.selectContractDetail(contractHash);
+        if (contractDto == null) {
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), null);
+        }
         String contactInfo = contractDto.getContactInfo();
         try {
             if (!StringUtils.isEmpty(contactInfo)) {
@@ -125,7 +129,20 @@ public class ContractServiceImpl implements IContractService {
         } catch (Exception e) {
             log.error("parse contactInfo error:{}", e.getMessage());
         }
-
+        if (contractDto.getAuditFlag() == 1 && contractHash.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
+            ContractCompileInfo contractCompileInfo = contractCompileInfoMapper.selectByPrimaryKey(contractHash);
+            if (contractCompileInfo != null && contractCompileInfo.getAuditFlag() == 1) {
+                contractDto.setVmType(ConstantParam.VM_CATEGORY_EVM);
+                contractDto.setCompilerType(contractCompileInfo.getCompilerType());
+                contractDto.setCompilerVersion(contractCompileInfo.getCompilerVersion());
+                contractDto.setOptimization(contractCompileInfo.getOptimization());
+                contractDto.setOptimizationRun(contractCompileInfo.getOptimizationRun());
+                contractDto.setVmVersion(contractCompileInfo.getEvmVersion());
+                contractDto.setLicenseType(contractCompileInfo.getLicenseType());
+                contractDto.setSetting(contractCompileInfo.getSetting());
+                contractDto.setConstructArgument(contractCompileInfo.getConstructorArgument());
+            }
+        }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), contractDto);
     }
 
@@ -192,6 +209,9 @@ public class ContractServiceImpl implements IContractService {
     public ResponseBean queryTxsByContractHash(String contractHash, Integer pageNumber, Integer pageSize) {
 
         ContractDto contractDto = contractMapper.selectContractDetail(contractHash);
+        if (contractDto == null) {
+            return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), null);
+        }
         String contractType = contractDto.getType();
         if (Helper.isEmptyOrNull(contractType) || ConstantParam.CONTRACT_TYPE_OTHER.equals(contractType)) {
             contractType = ConstantParam.CONTRACT_TYPE_OTHER;

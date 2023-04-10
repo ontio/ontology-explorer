@@ -1,0 +1,42 @@
+name: Maven CI/CD
+
+on:
+  pull_request:
+    branches:
+      - test_version_2.1.0
+      - testgithubaction
+  push:
+    branches:
+      - test_version_2.1.0
+      - testgithubaction
+
+jobs:
+  build_and_test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3.3.0
+      with:
+        java-version: '8'
+        distribution: 'zulu'
+        cache: "maven"
+
+    - name: Build explr polaris backend
+      run: cd back-end-projects/Explorer/ && mvn clean package -Dmaven.test.skip=true && mv target/explorer-1.3.0.RELEASE.jar ../../
+
+    - name: Build explr polaris version sync
+      run: cd back-end-projects/OntSynHandler/ && mvn clean package -Dmaven.test.skip=true && mv target/ontsynhandler-1.1.1-RELEASE.jar ../../
+
+
+    - name: uploading jar package
+      run: |
+        sudo apt-get install -y lftp
+        ver=`date '+%Y%m%d%H%M%S'`
+        commit=`git rev-parse --short HEAD`
+        zip -r explr-backend-sync-polaris-$ver-$commit.zip explorer-1.3.0.RELEASE.jar ontsynhandler-1.1.1-RELEASE.jar
+        lftp -c "open -u ${{ secrets.FTP_HOST }}; put -O / explr-backend-sync-polaris-$ver-$commit.zip"
+

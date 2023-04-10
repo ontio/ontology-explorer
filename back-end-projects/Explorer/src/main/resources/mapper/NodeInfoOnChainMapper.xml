@@ -106,7 +106,8 @@
         WHERE status = 2;
     </select>
 
-    <select id="selectTheLastConsensusNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
+    <select id="selectTheLastConsensusNodeInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto"
+            useCache="true">
         SELECT node_rank,
                name,
                current_stake,
@@ -142,5 +143,46 @@
                current_stake_percentage
         FROM tbl_node_info_on_chain
         WHERE node_rank = 49;
+    </select>
+
+
+    <select id="selectNodesByFilter" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
+        SELECT node_rank,
+        name,
+        current_stake,
+        progress,
+        detail_url,
+        public_key,
+        address,
+        status,
+        init_pos,
+        total_pos,
+        max_authorize,
+        node_proportion,
+        user_proportion,
+        current_stake_percentage
+        FROM tbl_node_info_on_chain
+        <where>1 = 1
+            <if test="publicKey != '' ">
+                AND public_key = #{publicKey}
+            </if>
+            <if test="address != '' ">
+                AND address = #{address}
+            </if>
+            <if test="name != ''">
+                AND name LIKE concat('%', #{name}, '%')
+            </if>
+            <if test="nodeType != 0">
+                AND status = #{nodeType}
+            </if>
+            <choose>
+                <when test="isStake == 1">
+                    AND (<![CDATA[ progress <>  '100.00%' ]]> AND <![CDATA[ progress <> '100%' ]]>)
+                </when>
+                <when test="isStake == 2">
+                    AND (<![CDATA[ progress =  '100.00%' ]]>  OR  <![CDATA[ progress = '100%' ]]> )
+                </when>
+            </choose>
+        </where>
     </select>
 </mapper>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.DecodeInputAbiMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.DecodeInputAbi">
+        <id column="contract_hash" jdbcType="VARCHAR" property="contractHash"/>
+        <result column="abi" jdbcType="VARCHAR" property="abi"/>
+    </resultMap>
+</mapper>

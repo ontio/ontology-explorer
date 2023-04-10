@@ -29,4 +29,6 @@ public interface NodeInfoOnChainMapper extends Mapper<NodeInfoOnChain> {
 
     NodeInfoOnChain selectThe49thNodeInfo();
 
+    List<NodeInfoOnChainDto> selectNodesByFilter(@Param("publicKey") String publicKey, @Param("address") String address, @Param("name") String name, @Param("nodeType") Integer nodeType, @Param("isStake") Integer isStake);
+
 }

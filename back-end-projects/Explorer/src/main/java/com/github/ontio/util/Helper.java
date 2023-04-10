@@ -21,6 +21,7 @@ package com.github.ontio.util;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
+import com.github.ontio.io.BinaryReader;
 import com.github.ontio.mapper.BlockMapper;
 import com.github.ontio.model.common.OntIdEventEnum;
 import com.github.ontio.model.common.ResponseBean;
@@ -28,9 +29,8 @@ import com.github.ontio.sdk.exception.SDKException;
 import org.web3j.utils.Numeric;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.math.BigInteger;
 import java.util.Base64;
 import java.util.Random;
 
@@ -150,8 +150,6 @@ public class Helper {
             }
         } else if (OntIdEventEnum.RECOVERYOPE.value().equals(action)) {
             descriptionSb.append(desArray[1]);
-            descriptionSb.append(" recovery:");
-            descriptionSb.append(desArray[3]);
         } else {
             descriptionSb.append(action);
         }
@@ -276,17 +274,14 @@ public class Helper {
     }
 
     public static String EthAddrToOntAddr(String ethAddr) {
-        if (ethAddr.startsWith(ConstantParam.EVM_ADDRESS_PREFIX)) {
-            ethAddr = ethAddr.substring(2);
-        }
         Address parse = Address.parse(ethAddr);
         return parse.toBase58();
     }
 
     public static String ontAddrToEthAddr(String ontAddr) throws SDKException {
         Address address = Address.decodeBase58(ontAddr);
-        String reverse = com.github.ontio.common.Helper.reverse(address.toHexString());
-        return ConstantParam.EVM_ADDRESS_PREFIX + reverse;
+        String hexAddress = com.github.ontio.common.Helper.toHexString(address.toArray());
+        return ConstantParam.EVM_ADDRESS_PREFIX + hexAddress;
     }
 
 
@@ -331,5 +326,67 @@ public class Helper {
 
     public static boolean validBlockHeight(String content) {
         return ConstantParam.BLOCK_HEIGHT_PATTERN.matcher(content).matches();
+    }
+
+    public static BigInteger parseInputDataNumber(String hexNumber, boolean isNative) throws IOException {
+        if (hexNumber.length() < 2) {
+            return BigInteger.ZERO;
+        }
+        if (isNative) {
+            byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber.substring(0, 2));
+            BigInteger number = com.github.ontio.common.Helper.BigIntFromNeoBytes(bytes);
+            int value = number.intValue();
+            if (value > 80 && value <= 96) {
+                return number.subtract(BigInteger.valueOf(80));
+            } else if (value == 0) {
+                return BigInteger.ZERO;
+            } else if (value == 79) {
+                return BigInteger.ONE.negate();
+            } else {
+                bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber);
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                BinaryReader reader = new BinaryReader(bais);
+                byte[] numberBytes = reader.readVarBytes();
+                reader.close();
+                bais.close();
+                return com.github.ontio.common.Helper.BigIntFromNeoBytes(numberBytes);
+            }
+        } else {
+            byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexNumber);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            BinaryReader reader = new BinaryReader(bais);
+            byte[] numberBytes = reader.readVarBytes();
+            reader.close();
+            bais.close();
+            return com.github.ontio.common.Helper.BigIntFromNeoBytes(numberBytes);
+        }
+    }
+
+    public static Address parseInputDataAddress(String hexString) throws IOException {
+        byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexString);
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        BinaryReader reader = new BinaryReader(bais);
+        byte[] readVarBytes = reader.readVarBytes2();
+        return Address.parse(com.github.ontio.common.Helper.toHexString(readVarBytes));
+    }
+
+    public static String parseInputDataString(String hexString) throws IOException {
+        byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexString);
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        BinaryReader reader = new BinaryReader(bais);
+        byte[] readVarBytes = reader.readVarBytes2();
+        reader.close();
+        bais.close();
+        return new String(readVarBytes);
+    }
+
+    public static String parseInputDataBytes(String hexString) throws IOException {
+        byte[] bytes = com.github.ontio.common.Helper.hexToBytes(hexString);
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        BinaryReader reader = new BinaryReader(bais);
+        byte[] readVarBytes = reader.readVarBytes2();
+        reader.close();
+        bais.close();
+        return com.github.ontio.common.Helper.toHexString(readVarBytes);
     }
 }
