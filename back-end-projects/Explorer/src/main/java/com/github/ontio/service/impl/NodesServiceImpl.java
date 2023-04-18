@@ -1005,13 +1005,13 @@ public class NodesServiceImpl implements INodesService {
                 if (nodeInfoOnChainMap.containsKey(nodeInfoOffChain.getPublicKey())) {
                     // 筛选出tagList中总的选项, 并且每个节点都满足这些选择, 取交集
                     List<Integer> currentTag = new ArrayList<>();
-                    if (nodeInfoOffChain.getOldNode() == 1) {
+                    if (nodeInfoOffChain.getBadActor() == 1) {
                         currentTag.add(0);
                     }
-                    if (nodeInfoOffChain.getContactInfoVerified() == 1) {
+                    if (nodeInfoOffChain.getFeeSharingRatio() == 1) {
                         currentTag.add(1);
                     }
-                    if (nodeInfoOffChain.getFeeSharingRatio() == 1) {
+                    if (nodeInfoOffChain.getRisky() == 1) {
                         currentTag.add(2);
                     }
                     if (nodeInfoOffChain.getOntologyHarbinger() == 1) {
