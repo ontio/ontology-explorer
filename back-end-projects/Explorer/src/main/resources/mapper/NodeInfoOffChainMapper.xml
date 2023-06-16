@@ -57,7 +57,9 @@
            fee_sharing_ratio AS feeSharingRatio,
            ontology_harbinger AS ontologyHarbinger,
            contact_info_verified AS contactInfoVerified,
-           old_node AS oldNode
+           old_node AS oldNode,
+            risky,
+            bad_actor AS badActor
     </sql>
 
     <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOffChainDto" useCache="true">

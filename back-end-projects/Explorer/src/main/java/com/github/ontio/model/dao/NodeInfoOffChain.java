@@ -3,8 +3,11 @@ package com.github.ontio.model.dao;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
-import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -68,6 +71,10 @@ public class NodeInfoOffChain {
 
     @Column(name = "ontology_harbinger")
     private Integer ontologyHarbinger;
+
+    private Integer risky;
+    @Column(name = "bad_actor")
+    private Integer badActor;
 
     public Integer getContactInfoVerified() {
         return contactInfoVerified;
@@ -372,5 +379,21 @@ public class NodeInfoOffChain {
 
     public void setVerification(Integer verification) {
         this.verification = verification;
+    }
+
+    public Integer getRisky() {
+        return risky;
+    }
+
+    public void setRisky(Integer risky) {
+        this.risky = risky;
+    }
+
+    public Integer getBadActor() {
+        return badActor;
+    }
+
+    public void setBadActor(Integer badActor) {
+        this.badActor = badActor;
     }
 }
