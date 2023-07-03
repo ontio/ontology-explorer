@@ -7,6 +7,8 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="current_stake" jdbcType="BIGINT" property="currentStake"/>
+        <result column="init_pos" jdbcType="BIGINT" property="initPos"/>
+        <result column="total_pos" jdbcType="BIGINT" property="totalPos"/>
         <result column="node_released_ong_incentive" jdbcType="BIGINT" property="nodeReleasedOngIncentive"/>
         <result column="node_released_ong_incentive_rate" jdbcType="VARCHAR" property="nodeReleasedOngIncentiveRate"/>
         <result column="user_released_ong_incentive" jdbcType="BIGINT" property="userReleasedOngIncentive"/>
@@ -32,6 +34,8 @@
         name,
         status,
         current_stake,
+        init_pos,
+        total_pos,
         node_released_ong_incentive,
         node_released_ong_incentive_rate,
         user_released_ong_incentive,
