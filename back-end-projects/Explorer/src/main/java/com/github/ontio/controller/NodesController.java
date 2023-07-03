@@ -315,8 +315,8 @@ public class NodesController {
     @ApiOperation(value = "Get nodes inspire")
     @GetMapping(value = "/inspire/all")
     public ResponseBean getNodesInspire(
-            @RequestParam(value = "page_number") @Min(value = 1, message = "Invalid page number") Integer pageNum,
-            @RequestParam(value = "page_size") @Min(value = 1, message = "Invalid page size") @Max(value = 500, message =
+            @RequestParam(value = "page_number", defaultValue = "1") @Min(value = 1, message = "Invalid page number") Integer pageNum,
+            @RequestParam(value = "page_size", defaultValue = "20") @Min(value = 1, message = "Invalid page size") @Max(value = 500, message =
                     "Invalid page size") Integer pageSize
     ) {
         PageResponseBean response = nodesService.getNodesInspire(pageNum, pageSize);

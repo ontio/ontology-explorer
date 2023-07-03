@@ -66,4 +66,9 @@ public class NodeInspire {
     @Column(name = "user_foundation_bonus_incentive_rate")
     private String userFoundationBonusIncentiveRate;
 
+    @Column(name = "node_apy")
+    private String nodeApy;
+
+    @Column(name = "user_apy")
+    private String userApy;
 }
