@@ -457,56 +457,26 @@ public class TxReSyncThread {
         } catch (Exception e) {
             action = (String) stateArray.get(0);
         }
-        //只解析birth和transfer合约方法
-        if (!(action.equalsIgnoreCase("transfer") || action.equalsIgnoreCase("birth"))) {
-            TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
-                    blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Others.type(),
-                    contractAddress, payer, calledContractHash);
 
-            ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
-            ReSyncConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
-            ReSyncConstantParam.BATCHBLOCKDTO.getOep5TxDetails().add(TxDetail.toOep5TxDetail(txDetail));
-            return;
-        }
-
-        String fromAddress = (String) stateArray.get(1);
-        if (40 == fromAddress.length()) {
-            fromAddress = Address.parse(fromAddress).toBase58();
-        }
-        String toAddress = (String) stateArray.get(2);
-        if (40 == toAddress.length()) {
-            toAddress = Address.parse(toAddress).toBase58();
-        }
-
+        String fromAddress = "";
+        String toAddress = "";
         String assetName = "";
         BigDecimal amount = ConstantParam.ZERO;
-        //云斗龙特殊处理,记录birth出来的云斗龙信息
-        if ("HyperDragons".equalsIgnoreCase(oep5Obj.getString("name"))) {
-            // 如果是birth方法，tokenid位置在2；如果是transfer方法，tokenid位置在3
-            String dragonId = "";
-            if ("birth".equalsIgnoreCase(action)) {
-                dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).toString();
-                fromAddress = "";
-                toAddress = "";
-
+        Integer eventType = EventTypeEnum.Transfer.type();
+        if ("birth".equalsIgnoreCase(action)) {
+            //云斗龙特殊处理,记录birth出来的云斗龙信息
+            if ("HyperDragons".equalsIgnoreCase(oep5Obj.getString("name"))) {
+                String dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).toString();
                 Oep5Dragon oep5Dragon = Oep5Dragon.builder()
                         .contractHash(contractAddress)
                         .assetName(ConstantParam.ASSET_NAME_DRAGON + dragonId)
                         .jsonUrl(getDragonUrl(contractAddress, dragonId))
                         .build();
                 ReSyncConstantParam.BATCHBLOCKDTO.getOep5Dragons().add(oep5Dragon);
+                assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
             } else {
-                amount = ConstantParam.ONE;
-                dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
-            }
-            assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
-        } else {
-            //OEP5初始化交易，更新total_supply。且tokenid位置在2
-            if ("birth".equalsIgnoreCase(action)) {
+                //OEP5初始化交易，更新total_supply。且tokenId位置在2
                 assetName = oep5Obj.getString("symbol") + stateArray.get(2);
-                fromAddress = "";
-                toAddress = "";
-
                 Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
                 Oep5 oep5 = Oep5.builder()
                         .contractHash(contractAddress)
@@ -514,18 +484,48 @@ public class TxReSyncThread {
                         .build();
                 //在子线程直接更新，不批量更新
                 oep5Mapper.updateByPrimaryKeySelective(oep5);
+            }
+        } else if ("transfer".equalsIgnoreCase(action)) {
+            try {
+                fromAddress = (String) stateArray.get(1);
+                if (40 == fromAddress.length()) {
+                    fromAddress = Address.parse(fromAddress).toBase58();
+                }
+                toAddress = (String) stateArray.get(2);
+                if (40 == toAddress.length()) {
+                    toAddress = Address.parse(toAddress).toBase58();
+                }
+            } catch (Exception ignore) {
+            }
 
-            } else if ("transfer".equalsIgnoreCase(action)) {
-                //transfer方法，tokenid在位置3
+            if ("HyperDragons".equalsIgnoreCase(oep5Obj.getString("name"))) {
+                amount = ConstantParam.ONE;
+                String dragonId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
+                assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
+            } else {
+                //transfer方法，tokenId在位置3
                 assetName = oep5Obj.getString("symbol") + stateArray.get(3);
                 amount = ConstantParam.ONE;
             }
+        } else if ("mintTokenAction".equalsIgnoreCase(action)) {
+            //mintTokenAction方法，tokenId在位置2
+            try {
+                toAddress = (String) stateArray.get(1);
+                if (40 == toAddress.length()) {
+                    toAddress = Address.parse(toAddress).toBase58();
+                }
+            } catch (Exception ignore) {
+            }
+            assetName = oep5Obj.getString("symbol") + stateArray.get(2);
+            amount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))));
+        } else {
+            eventType = EventTypeEnum.Others.type();
         }
 
         log.info("OEP5TransferTx:fromaddress:{}, toaddress:{}, assetName:{}", fromAddress, toAddress, assetName);
 
         TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight,
-                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, EventTypeEnum.Transfer.type(),
+                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, eventType,
                 contractAddress, payer, calledContractHash);
 
         ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
@@ -699,7 +699,7 @@ public class TxReSyncThread {
                                    int eventType, String contractAddress, String payer, String calledContractHash) throws Exception {
 //
 //        TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
-//                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, eventType, contractAddress, payer, 
+//                blockTime, indexInBlock, confirmFlag, action, gasConsumed, indexInTx, eventType, contractAddress, payer,
 //                calledContractHash);
 //
 //        ReSyncConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
