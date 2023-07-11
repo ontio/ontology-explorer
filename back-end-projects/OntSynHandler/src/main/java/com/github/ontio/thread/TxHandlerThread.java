@@ -1036,7 +1036,12 @@ public class TxHandlerThread {
                 assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
             } else {
                 //OEP5初始化交易，更新total_supply。且tokenId位置在2
-                assetName = oep5Obj.getString("symbol") + stateArray.get(2);
+                String tokenId = stateArray.get(2).toString();
+                try {
+                    tokenId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).toString();
+                } catch (Exception ignore) {
+                }
+                assetName = oep5Obj.getString("symbol") + ": " + tokenId;
                 Long totalSupply = commonService.getOep5TotalSupply(contractAddress);
                 Oep5 oep5 = Oep5.builder()
                         .contractHash(contractAddress)
@@ -1064,7 +1069,12 @@ public class TxHandlerThread {
                 assetName = ConstantParam.ASSET_NAME_DRAGON + dragonId;
             } else {
                 //transfer方法，tokenId在位置3
-                assetName = oep5Obj.getString("symbol") + stateArray.get(3);
+                String tokenId = stateArray.get(3).toString();
+                try {
+                    tokenId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))).toString();
+                } catch (Exception ignore) {
+                }
+                assetName = oep5Obj.getString("symbol") + ": " + tokenId;
                 amount = ConstantParam.ONE;
             }
             isTransfer = Boolean.TRUE;
@@ -1077,7 +1087,12 @@ public class TxHandlerThread {
                 }
             } catch (Exception ignore) {
             }
-            assetName = oep5Obj.getString("symbol") + stateArray.get(2);
+            String tokenId = stateArray.get(2).toString();
+            try {
+                tokenId = Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(2))).toString();
+            } catch (Exception ignore) {
+            }
+            assetName = oep5Obj.getString("symbol") + ": " + tokenId;
             amount = new BigDecimal(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String) stateArray.get(3))));
         } else {
             eventType = EventTypeEnum.Others.type();
