@@ -30,6 +30,12 @@ public class NodeInspire {
     @Column(name = "current_stake")
     private Long currentStake;
 
+    @Column(name = "init_pos")
+    private Long initPos;
+
+    @Column(name = "total_pos")
+    private Long totalPos;
+
     @Column(name = "node_released_ong_incentive")
     private Long nodeReleasedOngIncentive;
 
@@ -66,4 +72,9 @@ public class NodeInspire {
     @Column(name = "user_foundation_bonus_incentive_rate")
     private String userFoundationBonusIncentiveRate;
 
+    @Column(name = "node_apy")
+    private String nodeApy;
+
+    @Column(name = "user_apy")
+    private String userApy;
 }

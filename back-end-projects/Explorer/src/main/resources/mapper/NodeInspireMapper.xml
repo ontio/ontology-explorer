@@ -2,14 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.NodeInspireMapper">
     <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.NodeInspire">
-        <!--
-          WARNING - @mbg.generated
-        -->
         <id column="public_key" jdbcType="VARCHAR" property="publicKey"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
         <result column="current_stake" jdbcType="BIGINT" property="currentStake"/>
+        <result column="init_pos" jdbcType="BIGINT" property="initPos"/>
+        <result column="total_pos" jdbcType="BIGINT" property="totalPos"/>
         <result column="node_released_ong_incentive" jdbcType="BIGINT" property="nodeReleasedOngIncentive"/>
         <result column="node_released_ong_incentive_rate" jdbcType="VARCHAR" property="nodeReleasedOngIncentiveRate"/>
         <result column="user_released_ong_incentive" jdbcType="BIGINT" property="userReleasedOngIncentive"/>
@@ -22,6 +21,8 @@
         <result column="node_foundation_bonus_incentive_rate" jdbcType="VARCHAR" property="nodeFoundationBonusIncentiveRate"/>
         <result column="user_foundation_bonus_incentive" jdbcType="BIGINT" property="userFoundationBonusIncentive"/>
         <result column="user_foundation_bonus_incentive_rate" jdbcType="VARCHAR" property="userFoundationBonusIncentiveRate"/>
+        <result column="node_apy" jdbcType="VARCHAR" property="nodeApy"/>
+        <result column="user_apy" jdbcType="VARCHAR" property="userApy"/>
     </resultMap>
     <!--
     self-defined SQL
@@ -33,6 +34,8 @@
         name,
         status,
         current_stake,
+        init_pos,
+        total_pos,
         node_released_ong_incentive,
         node_released_ong_incentive_rate,
         user_released_ong_incentive,
@@ -44,7 +47,9 @@
         node_foundation_bonus_incentive,
         node_foundation_bonus_incentive_rate,
         user_foundation_bonus_incentive,
-        user_foundation_bonus_incentive_rate
+        user_foundation_bonus_incentive_rate,
+        node_apy,
+        user_apy
         FROM tbl_node_inspire
         LIMIT #{start},#{pageSize}
     </select>
