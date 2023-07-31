@@ -210,6 +210,12 @@ public class TxHandlerThread {
                         continue;
                     }
 
+                    if (stateArray == null) {
+                        insertTxBasicInfo(txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, "",
+                                gasConsumed, i + 1, EventTypeEnum.Others.type(), contractAddress, "", payer, calledContractHash);
+                        continue;
+                    }
+
                     if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType && paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
                         handleEVMOngTransferTx(evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, contractAddress, gasConsumed, i + 1, notifyArray.size(), confirmFlag, payer, calledContractHash);
 
