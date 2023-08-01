@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.Utils;
@@ -179,7 +180,7 @@ public class TxReSyncThread {
                     } else {
                         continue;
                     }
-                    if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType && paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+                    if (StringUtils.hasLength(evmStates) && paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
                         handleEVMOngTransferTx(evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, contractAddress, gasConsumed, i + 1, notifyArray.size(), confirmFlag, payer, calledContractHash);
                     } else if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
                         //gas transaction

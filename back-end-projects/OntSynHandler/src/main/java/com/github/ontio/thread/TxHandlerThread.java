@@ -210,7 +210,7 @@ public class TxHandlerThread {
                         continue;
                     }
 
-                    if (TransactionTypeEnum.EVM_INVOKECODE.type() == txType && paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
+                    if (StringUtils.hasLength(evmStates) && paramsConfig.ONG_CONTRACTHASH.equals(contractAddress)) {
                         handleEVMOngTransferTx(evmStates, txType, txHash, blockHeight, blockTime, indexInBlock, contractAddress, gasConsumed, i + 1, notifyArray.size(), confirmFlag, payer, calledContractHash);
 
                     } else if (paramsConfig.ONG_CONTRACTHASH.equals(contractAddress) || paramsConfig.ONT_CONTRACTHASH.equals(contractAddress)) {
