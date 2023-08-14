@@ -7,8 +7,4 @@ import tk.mybatis.mapper.common.Mapper;
 @Repository
 public interface NodeOverviewMapper extends Mapper<NodeOverview> {
 
-    Long selectBlkCountToNxtRnd();
-
-    Long selectLeftTimeToNxtRnd();
-
 }

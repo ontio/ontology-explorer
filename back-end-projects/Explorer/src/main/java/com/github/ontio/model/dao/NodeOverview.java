@@ -11,6 +11,12 @@ public class NodeOverview {
     @Column(name = "blk_cnt_to_nxt_rnd")
     private Long blkCntToNxtRnd;
 
+    @Column(name = "left_time_to_next_rnd")
+    private Integer leftTimeToNextRnd;
+
+    @Column(name = "rnd_start_time")
+    private Integer rndStartTime;
+
     /**
      * @return id
      */
@@ -37,5 +43,21 @@ public class NodeOverview {
      */
     public void setBlkCntToNxtRnd(Long blkCntToNxtRnd) {
         this.blkCntToNxtRnd = blkCntToNxtRnd;
+    }
+
+    public Integer getLeftTimeToNextRnd() {
+        return leftTimeToNextRnd;
+    }
+
+    public void setLeftTimeToNextRnd(Integer leftTimeToNextRnd) {
+        this.leftTimeToNextRnd = leftTimeToNextRnd;
+    }
+
+    public Integer getRndStartTime() {
+        return rndStartTime;
+    }
+
+    public void setRndStartTime(Integer rndStartTime) {
+        this.rndStartTime = rndStartTime;
     }
 }
