@@ -37,6 +37,8 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
+import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -47,6 +49,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -850,4 +853,52 @@ public class OntologySDKService {
         }
     }
 
+    public long getAddressTotalStake(String address) {
+        try {
+            OntSdk ontSdk = getOntSdk();
+            byte[] totalStakeBytes = ConstantParam.TOTAL_STAKE.getBytes();
+            byte[] addressBytes = Address.decodeBase58(address).toArray();
+            byte[] key = new byte[totalStakeBytes.length + addressBytes.length];
+            System.arraycopy(totalStakeBytes, 0, key, 0, totalStakeBytes.length);
+            System.arraycopy(addressBytes, 0, key, totalStakeBytes.length, addressBytes.length);
+            String res = ontSdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString(key));
+            if (res == null || "".equals(res)) {
+                return 0;
+            }
+            TotalStake totalStake = new TotalStake();
+            ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
+            BinaryReader reader = new BinaryReader(bais);
+            totalStake.deserialize(reader);
+            return totalStake.stake;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    class TotalStake implements Serializable {
+        public Address address;
+        public long stake;
+        public int timeOffset;
+
+        public TotalStake() {
+        }
+
+        @Override
+        public void deserialize(BinaryReader reader) throws IOException {
+            try {
+                this.address = reader.readSerializable(Address.class);
+                this.stake = reader.readLong();
+                this.timeOffset = reader.readInt();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void serialize(BinaryWriter writer) throws IOException {
+
+        }
+    }
 }

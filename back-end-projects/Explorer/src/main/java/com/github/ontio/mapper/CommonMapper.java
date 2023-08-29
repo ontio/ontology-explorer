@@ -12,8 +12,10 @@ import java.util.List;
 @Repository
 public interface CommonMapper {
 
-	List<GovernanceInfoDto> findGovernanceInfo(@Param("pubKey") String pubKey, @Param("start") int start, @Param("size") int size);
+    List<GovernanceInfoDto> findGovernanceInfo(@Param("pubKey") String pubKey, @Param("start") int start, @Param("size") int size);
 
-	int countGovernanceInfo(@Param("pubKey") String pubKey);
+    int countGovernanceInfo(@Param("pubKey") String pubKey);
+
+    List<GovernanceInfoDto> getAuthorizeInfoByAddress(@Param("address") String address);
 
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.ontio.mapper.CommonMapper">
-  
+
   <select id="findGovernanceInfo" resultType="com.github.ontio.model.dto.GovernanceInfoDto">
     SELECT address,
       consensus_pos AS consensusPos,
@@ -22,4 +22,17 @@
     WHERE peer_pub_key = #{pubKey}
   </select>
 
+  <select id="getAuthorizeInfoByAddress" resultType="com.github.ontio.model.dto.GovernanceInfoDto">
+    SELECT a.peer_pub_key AS publicKey,
+           b.name,
+           a.consensus_pos AS consensusPos,
+           a.candidate_pos AS candidatePos,
+           a.new_pos AS newPos,
+           a.withdraw_consensus_pos AS withdrawConsensusPos,
+           a.withdraw_candidate_pos AS withdrawCandidatePos,
+           a.withdraw_unfreeze_pos AS withdrawUnfreezePos
+    FROM tbl_governance_info a
+           INNER JOIN tbl_node_info_off_chain b ON a.peer_pub_key = b.public_key
+    WHERE a.address = #{address}
+  </select>
 </mapper>
