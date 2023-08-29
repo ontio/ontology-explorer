@@ -1581,7 +1581,7 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean getAddressAuthorizeInfo(String address) {
+    public ResponseBean getAddressStakingInfo(String address) {
         List<NodeInfoOffChain> currentOffChainInfo = nodesService.getCurrentOffChainInfo();
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
         initSDK();
@@ -1590,25 +1590,25 @@ public class AddressServiceImpl implements IAddressService {
             try {
                 if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
                     String name = nodeInfoOffChain.getName();
-                    String authorizeInfo = sdk.getAuthorizeInfo(publicKey, address);
-                    putAuthorizeInfoList(authorizeInfo, name, publicKey, nodeStakeDtos);
+                    String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                    putStakingInfoList(stakingInfo, name, publicKey, nodeStakeDtos);
                 }
             } catch (Exception e) {
-                log.error("getAddressAuthorizeInfo error:{},{},{}", address, publicKey, e.getMessage());
+                log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
             }
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeStakeDtos);
     }
 
-    private void putAuthorizeInfoList(String authorizeInfo, String nodeName, String publicKey, List<NodeStakeDto> nodeStakeDtos) {
-        if (authorizeInfo != null) {
-            JSONObject authorizeInfoObj = JSONObject.parseObject(authorizeInfo);
-            Long consensusPos = authorizeInfoObj.getLong("consensusPos");
-            Long freezePos = authorizeInfoObj.getLong("freezePos");
-            Long newPos = authorizeInfoObj.getLong("newPos");
-            Long withdrawPos = authorizeInfoObj.getLong("withdrawPos");
-            Long withdrawFreezePos = authorizeInfoObj.getLong("withdrawFreezePos");
-            Long withdrawUnfreezePos = authorizeInfoObj.getLong("withdrawUnfreezePos");
+    private void putStakingInfoList(String stakingInfo, String nodeName, String publicKey, List<NodeStakeDto> nodeStakeDtos) {
+        if (stakingInfo != null) {
+            JSONObject stakingInfoObj = JSONObject.parseObject(stakingInfo);
+            Long consensusPos = stakingInfoObj.getLong("consensusPos");
+            Long freezePos = stakingInfoObj.getLong("freezePos");
+            Long newPos = stakingInfoObj.getLong("newPos");
+            Long withdrawPos = stakingInfoObj.getLong("withdrawPos");
+            Long withdrawFreezePos = stakingInfoObj.getLong("withdrawFreezePos");
+            Long withdrawUnfreezePos = stakingInfoObj.getLong("withdrawUnfreezePos");
 
             if (newPos > 0) {
                 NodeStakeDto dto = new NodeStakeDto();
@@ -1648,16 +1648,16 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean getAddressAuthorizeInfoWhenRoundStart(String address) {
-        List<GovernanceInfoDto> authorizeInfoList = commonMapper.getAuthorizeInfoByAddress(address);
+    public ResponseBean getAddressStakingInfoWhenRoundStart(String address) {
+        List<GovernanceInfoDto> stakingInfoList = commonMapper.getStakingInfoByAddress(address);
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
-        for (GovernanceInfoDto governanceInfoDto : authorizeInfoList) {
-            putAuthorizeInfoList(governanceInfoDto, nodeStakeDtos);
+        for (GovernanceInfoDto governanceInfoDto : stakingInfoList) {
+            putStakingInfoList(governanceInfoDto, nodeStakeDtos);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeStakeDtos);
     }
 
-    private void putAuthorizeInfoList(GovernanceInfoDto governanceInfoDto, List<NodeStakeDto> nodeStakeDtos) {
+    private void putStakingInfoList(GovernanceInfoDto governanceInfoDto, List<NodeStakeDto> nodeStakeDtos) {
         Long consensusPos = governanceInfoDto.getConsensusPos();
         Long freezePos = governanceInfoDto.getCandidatePos();
         Long newPos = governanceInfoDto.getNewPos();

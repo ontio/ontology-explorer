@@ -210,16 +210,16 @@ public class AddressController {
     }
 
     @RequestLimit(count = 30)
-    @ApiOperation(value = "get address stake authorize info")
-    @GetMapping(value = "/{address}/authorize-info")
-    public ResponseBean getAddressAuthorizeInfo(@PathVariable @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
-        return addressService.getAddressAuthorizeInfo(address);
+    @ApiOperation(value = "get address staking info")
+    @GetMapping(value = "/{address}/staking-info")
+    public ResponseBean getAddressStakingInfo(@PathVariable @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
+        return addressService.getAddressStakingInfo(address);
     }
 
     @RequestLimit(count = 30)
-    @ApiOperation(value = "get address stake authorize info when round start")
-    @GetMapping(value = "/{address}/authorize-info/round-start")
-    public ResponseBean getAddressAuthorizeInfoWhenRoundStart(@PathVariable @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
-        return addressService.getAddressAuthorizeInfoWhenRoundStart(address);
+    @ApiOperation(value = "get address staking info when round start")
+    @GetMapping(value = "/{address}/staking-info/round-start")
+    public ResponseBean getAddressStakingInfoWhenRoundStart(@PathVariable @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
+        return addressService.getAddressStakingInfoWhenRoundStart(address);
     }
 }

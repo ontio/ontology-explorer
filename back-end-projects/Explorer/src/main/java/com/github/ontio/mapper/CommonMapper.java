@@ -16,6 +16,6 @@ public interface CommonMapper {
 
     int countGovernanceInfo(@Param("pubKey") String pubKey);
 
-    List<GovernanceInfoDto> getAuthorizeInfoByAddress(@Param("address") String address);
+    List<GovernanceInfoDto> getStakingInfoByAddress(@Param("address") String address);
 
 }

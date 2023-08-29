@@ -41,7 +41,7 @@ public interface IAddressService {
 
     void exportAddressTransferTxs(String token, String language, String address, Integer start, Integer end, HttpServletResponse resp) throws IOException;
 
-    ResponseBean getAddressAuthorizeInfo(String address);
+    ResponseBean getAddressStakingInfo(String address);
 
-    ResponseBean getAddressAuthorizeInfoWhenRoundStart(String address);
+    ResponseBean getAddressStakingInfoWhenRoundStart(String address);
 }

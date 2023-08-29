@@ -22,7 +22,7 @@
     WHERE peer_pub_key = #{pubKey}
   </select>
 
-  <select id="getAuthorizeInfoByAddress" resultType="com.github.ontio.model.dto.GovernanceInfoDto">
+  <select id="getStakingInfoByAddress" resultType="com.github.ontio.model.dto.GovernanceInfoDto">
     SELECT a.peer_pub_key AS publicKey,
            b.name,
            a.consensus_pos AS consensusPos,
