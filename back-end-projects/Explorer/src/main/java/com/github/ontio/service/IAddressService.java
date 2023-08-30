@@ -40,4 +40,8 @@ public interface IAddressService {
     ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize);
 
     void exportAddressTransferTxs(String token, String language, String address, Integer start, Integer end, HttpServletResponse resp) throws IOException;
+
+    ResponseBean getAddressStakingInfo(String address);
+
+    ResponseBean getAddressStakingInfoWhenRoundStart(String address);
 }

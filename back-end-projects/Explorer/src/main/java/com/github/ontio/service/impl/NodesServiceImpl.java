@@ -133,21 +133,12 @@ public class NodesServiceImpl implements INodesService {
         }
     }
 
-    public long getBlkCountToNxtRnd() {
+    public NodeOverview getNodeOverviewInfo() {
         try {
-            return nodeOverviewMapper.selectBlkCountToNxtRnd();
+            return nodeOverviewMapper.selectByPrimaryKey(1);
         } catch (Exception e) {
             log.warn("Getting block count to next round failed: {}", e.getMessage());
-            return -1;
-        }
-    }
-
-    public long getLeftTimeToNextRound() {
-        try {
-            return nodeOverviewMapper.selectLeftTimeToNxtRnd();
-        } catch (Exception e) {
-            log.warn("Getting  left time to  next round failed: {}", e.getMessage());
-            return -1;
+            return null;
         }
     }
 

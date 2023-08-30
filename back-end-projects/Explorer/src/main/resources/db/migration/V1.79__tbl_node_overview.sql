@@ -1,0 +1,1 @@
+ALTER TABLE tbl_node_overview ADD COLUMN `rnd_start_time` int(11) DEFAULT NULL COMMENT '当前周期开始时间';

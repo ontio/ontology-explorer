@@ -10,16 +10,15 @@ import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.common.StakeStatusEnum;
 import com.github.ontio.model.dao.*;
-import com.github.ontio.model.dto.BalanceDto;
-import com.github.ontio.model.dto.QueryBatchBalanceDto;
-import com.github.ontio.model.dto.TransferTxDetailDto;
-import com.github.ontio.model.dto.TransferTxDto;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.model.dto.aggregation.AddressAggregationDto;
 import com.github.ontio.model.dto.aggregation.AddressBalanceAggregationsDto;
 import com.github.ontio.model.dto.aggregation.ExtremeBalanceDto;
 import com.github.ontio.model.dto.ranking.AddressRankingDto;
 import com.github.ontio.service.IAddressService;
+import com.github.ontio.service.INodesService;
 import com.github.ontio.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -62,12 +61,14 @@ public class AddressServiceImpl implements IAddressService {
     private final CommonService commonService;
     private final AddressDailyAggregationMapper addressDailyAggregationMapper;
     private final RankingMapper rankingMapper;
+    private final INodesService nodesService;
+    private final CommonMapper commonMapper;
 
 
     @Autowired
     public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper,
                               TxDetailMapper txDetailMapper, TxDetailIndexMapper txDetailIndexMapper, ParamsConfig paramsConfig, CommonService commonService,
-                              AddressDailyAggregationMapper addressDailyAggregationMapper, RankingMapper rankingMapper) {
+                              AddressDailyAggregationMapper addressDailyAggregationMapper, RankingMapper rankingMapper, INodesService nodesService, CommonMapper commonMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
@@ -80,6 +81,8 @@ public class AddressServiceImpl implements IAddressService {
         this.commonService = commonService;
         this.addressDailyAggregationMapper = addressDailyAggregationMapper;
         this.rankingMapper = rankingMapper;
+        this.nodesService = nodesService;
+        this.commonMapper = commonMapper;
     }
 
     private OntologySDKService sdk;
@@ -1574,6 +1577,129 @@ public class AddressServiceImpl implements IAddressService {
             return success;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    @Override
+    public ResponseBean getAddressStakingInfo(String address) {
+        List<NodeInfoOffChain> currentOffChainInfo = nodesService.getCurrentOffChainInfo();
+        List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
+        initSDK();
+        for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
+            String publicKey = nodeInfoOffChain.getPublicKey();
+            try {
+                if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
+                    String name = nodeInfoOffChain.getName();
+                    String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                    putStakingInfoList(stakingInfo, name, publicKey, nodeStakeDtos);
+                }
+            } catch (Exception e) {
+                log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+            }
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeStakeDtos);
+    }
+
+    private void putStakingInfoList(String stakingInfo, String nodeName, String publicKey, List<NodeStakeDto> nodeStakeDtos) {
+        if (stakingInfo != null) {
+            JSONObject stakingInfoObj = JSONObject.parseObject(stakingInfo);
+            Long consensusPos = stakingInfoObj.getLong("consensusPos");
+            Long freezePos = stakingInfoObj.getLong("freezePos");
+            Long newPos = stakingInfoObj.getLong("newPos");
+            Long withdrawPos = stakingInfoObj.getLong("withdrawPos");
+            Long withdrawFreezePos = stakingInfoObj.getLong("withdrawFreezePos");
+            Long withdrawUnfreezePos = stakingInfoObj.getLong("withdrawUnfreezePos");
+
+            if (newPos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                dto.setAmount(newPos.toString());
+                dto.setState(StakeStatusEnum.PENDING.state());
+                nodeStakeDtos.add(dto);
+            }
+            if (consensusPos + freezePos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                Long amount = consensusPos + freezePos;
+                dto.setAmount(amount.toString());
+                dto.setState(StakeStatusEnum.IN_STAKE.state());
+                nodeStakeDtos.add(dto);
+            }
+            if (withdrawUnfreezePos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                dto.setAmount(withdrawUnfreezePos.toString());
+                dto.setState(StakeStatusEnum.WITHDRAWABLE.state());
+                nodeStakeDtos.add(dto);
+            }
+            if (withdrawPos + withdrawFreezePos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                Long amount = withdrawPos + withdrawFreezePos;
+                dto.setAmount(amount.toString());
+                dto.setState(StakeStatusEnum.CANCELLING.state());
+                nodeStakeDtos.add(dto);
+            }
+        }
+    }
+
+    @Override
+    public ResponseBean getAddressStakingInfoWhenRoundStart(String address) {
+        List<GovernanceInfoDto> stakingInfoList = commonMapper.getStakingInfoByAddress(address);
+        List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
+        for (GovernanceInfoDto governanceInfoDto : stakingInfoList) {
+            putStakingInfoList(governanceInfoDto, nodeStakeDtos);
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeStakeDtos);
+    }
+
+    private void putStakingInfoList(GovernanceInfoDto governanceInfoDto, List<NodeStakeDto> nodeStakeDtos) {
+        Long consensusPos = governanceInfoDto.getConsensusPos();
+        Long freezePos = governanceInfoDto.getCandidatePos();
+        Long newPos = governanceInfoDto.getNewPos();
+        Long withdrawPos = governanceInfoDto.getWithdrawConsensusPos();
+        Long withdrawFreezePos = governanceInfoDto.getWithdrawCandidatePos();
+        Long withdrawUnfreezePos = governanceInfoDto.getWithdrawUnfreezePos();
+        String publicKey = governanceInfoDto.getPublicKey();
+        String nodeName = governanceInfoDto.getName();
+
+        if (newPos > 0) {
+            NodeStakeDto dto = new NodeStakeDto();
+            dto.setNodeName(nodeName);
+            dto.setNodePubKey(publicKey);
+            dto.setAmount(newPos.toString());
+            dto.setState(StakeStatusEnum.PENDING.state());
+            nodeStakeDtos.add(dto);
+        }
+        if (consensusPos + freezePos > 0) {
+            NodeStakeDto dto = new NodeStakeDto();
+            dto.setNodeName(nodeName);
+            dto.setNodePubKey(publicKey);
+            Long amount = consensusPos + freezePos;
+            dto.setAmount(amount.toString());
+            dto.setState(StakeStatusEnum.IN_STAKE.state());
+            nodeStakeDtos.add(dto);
+        }
+        if (withdrawUnfreezePos > 0) {
+            NodeStakeDto dto = new NodeStakeDto();
+            dto.setNodeName(nodeName);
+            dto.setNodePubKey(publicKey);
+            dto.setAmount(withdrawUnfreezePos.toString());
+            dto.setState(StakeStatusEnum.WITHDRAWABLE.state());
+            nodeStakeDtos.add(dto);
+        }
+        if (withdrawPos + withdrawFreezePos > 0) {
+            NodeStakeDto dto = new NodeStakeDto();
+            dto.setNodeName(nodeName);
+            dto.setNodePubKey(publicKey);
+            Long amount = withdrawPos + withdrawFreezePos;
+            dto.setAmount(amount.toString());
+            dto.setState(StakeStatusEnum.CANCELLING.state());
+            nodeStakeDtos.add(dto);
         }
     }
 

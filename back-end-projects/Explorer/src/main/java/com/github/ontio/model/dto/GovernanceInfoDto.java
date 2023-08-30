@@ -12,18 +12,22 @@ import java.io.Serializable;
 @Setter
 public class GovernanceInfoDto implements Serializable {
 
-	private String address;
+    private String address;
 
-	private Long consensusPos;
+    private Long consensusPos;
 
-	private Long candidatePos;
+    private Long candidatePos;
 
-	private Long newPos;
+    private Long newPos;
 
-	private Long withdrawConsensusPos;
+    private Long withdrawConsensusPos;
 
-	private Long withdrawCandidatePos;
+    private Long withdrawCandidatePos;
 
-	private Long withdrawUnfreezePos;
-	
+    private Long withdrawUnfreezePos;
+
+    private String publicKey;
+
+    private String name;
+
 }

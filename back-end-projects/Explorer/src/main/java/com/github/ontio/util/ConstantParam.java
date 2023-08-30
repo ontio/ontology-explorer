@@ -235,6 +235,10 @@ public class ConstantParam {
 
     public static final String FUN_TOTAL_SUPPLY = "totalSupply";
 
+    public static final String TOTAL_STAKE = "totalStake";
+
+    public static final String FAKE_NODE_PUBKEY_PREFIX = "00aaaaaaaaa";
+
     /**
      * pattern
      */
