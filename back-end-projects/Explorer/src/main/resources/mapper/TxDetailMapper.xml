@@ -166,7 +166,7 @@
             AND d.asset_name = #{assetName}
         </if>
         AND d.event_type IN (2, 3)
-        ORDER BY block_height DESC, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_hash, tx_index
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
@@ -185,6 +185,7 @@
         </if>
         ORDER BY desc_block_height, tx_hash, tx_index
         ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
+        ORDER BY block_height DESC, block_index
     </select>
 
 
@@ -213,7 +214,7 @@
         ) a
         where a.txTime &gt;= #{startTime}
         and <![CDATA[ a.txTime <= #{endTime} ]]>
-        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+        ORDER BY a.blockHeight DESC, a.blockIndex, a.txHash, a.txIndex
     </select>
 
 
@@ -229,7 +230,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_hash, tx_index
     </select>
 
 
@@ -244,7 +245,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_hash, tx_index
     </select>
 
 
@@ -272,7 +273,7 @@
         AND event_type = 3
         ) a
         where <![CDATA[ a.txTime < #{endTime} ]]>
-        ORDER BY a.txTime DESC
+        ORDER BY a.txTime DESC, a.blockIndex
         limit #{pageSize}
     </select>
 
@@ -287,7 +288,7 @@
         </if>
         AND event_type = 3
         AND <![CDATA[ tx_time < #{endTime} ]]>
-        ORDER BY tx_time DESC
+        ORDER BY tx_time DESC, block_index
         limit #{pageSize}
     </select>
 
@@ -302,7 +303,7 @@
         </if>
         AND event_type = 3
         AND <![CDATA[ tx_time < #{endTime} ]]>
-        ORDER BY tx_time DESC
+        ORDER BY tx_time DESC, block_index
         limit #{pageSize}
     </select>
 
@@ -328,7 +329,7 @@
         ) a
         where a.txTime &gt;= #{startTime}
         and <![CDATA[ a.txTime <= #{endTime} ]]>
-        ORDER BY a.blockHeight DESC, a.txHash, a.txIndex
+        ORDER BY a.blockHeight DESC, a.blockIndex, a.txHash, a.txIndex
     </select>
 
     <!--use for ONTO-->
@@ -341,7 +342,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_hash, tx_index
     </select>
 
 
@@ -355,7 +356,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_hash, tx_index
     </select>
 
 
@@ -379,7 +380,7 @@
         AND event_type = 3
         ) a
         where <![CDATA[ a.txTime < #{endTime} ]]>
-        ORDER BY a.txTime DESC
+        ORDER BY a.txTime DESC, a.blockIndex
         limit #{pageSize}
     </select>
 
@@ -392,8 +393,8 @@
         WHERE from_address = #{address}
         and asset_name like #{assetName}
         AND event_type = 3
-        where <![CDATA[ tx_time < #{endTime} ]]>
-        ORDER BY tx_time DESC
+        AND <![CDATA[ tx_time < #{endTime} ]]>
+        ORDER BY tx_time DESC, block_index
         limit #{pageSize}
     </select>
 
@@ -406,8 +407,8 @@
         WHERE to_address = #{address}
         and asset_name like #{assetName}
         AND event_type = 3
-        where <![CDATA[ tx_time < #{endTime} ]]>
-        ORDER BY tx_time DESC
+        AND <![CDATA[ tx_time < #{endTime} ]]>
+        ORDER BY tx_time DESC, block_index
         limit #{pageSize}
     </select>
 
@@ -456,7 +457,7 @@
         WHERE d.from_address = #{address}
         OR d.to_address = #{address}
         AND d.event_type IN (2, 3)
-        ORDER BY block_height DESC, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_hash, tx_index
     </select>
 
     <select id="selectCalledContractHashesOfTokenType" resultType="java.lang.String">
@@ -552,6 +553,7 @@
         </if>
         ) idx ON idx.hash = d.tx_hash
     </select>
+
     <select id="selectTransferTxsOfHashes" resultType="com.github.ontio.model.dto.TransferTxDto">
         SELECT
         <include refid="transferTxDetailColumns"/>
@@ -602,7 +604,7 @@
         ) idx ON idx.hash = d.tx_hash
         WHERE (d.from_address = #{address}
         OR d.to_address = #{address})
-        ORDER BY block_height DESC, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_hash, tx_index
     </select>
 
     <select id="selectPayerByHash" resultType="String">
@@ -629,7 +631,7 @@
         AND tx_time >= #{startTime}
         AND tx_time <![CDATA[<= #{endTime}]]>
         ORDER BY
-        block_height
+        block_height, block_index
         LIMIT 5000;
     </select>
 </mapper>
