@@ -24,11 +24,14 @@ public class BalanceDto {
 
     private String contractHash;
 
+    private String vmType;
+
     @Builder
-    public BalanceDto(BigDecimal balance, String assetName, String assetType, String contractHash) {
+    public BalanceDto(BigDecimal balance, String assetName, String assetType, String contractHash, String vmType) {
         this.balance = balance;
         this.assetName = assetName;
         this.assetType = assetType;
         this.contractHash = contractHash;
+        this.vmType = vmType;
     }
 }

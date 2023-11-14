@@ -608,6 +608,7 @@ public class AddressServiceImpl implements IAddressService {
                 .assetType(ConstantParam.ASSET_TYPE_OEP4)
                 .balance(balance)
                 .contractHash(oep4.getContractHash())
+                .vmType(oep4.getVmCategory())
                 .build();
         balanceList.add(balanceDto);
         return balanceList;
