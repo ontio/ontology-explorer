@@ -9,6 +9,7 @@ import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.OepLogo;
+import com.github.ontio.model.dao.TokenPrice;
 import com.github.ontio.model.dto.*;
 import com.github.ontio.model.dto.ranking.TokenRankingDto;
 import com.github.ontio.service.ITokenService;
@@ -54,12 +55,13 @@ public class TokenServiceImpl implements ITokenService {
     private final OepLogoMapper oepLogoMapper;
     private final OntologySDKService ontologySDKService;
     private final Web3jSdkUtil web3jSdkUtil;
+    private final TokenPriceMapper tokenPriceMapper;
 
     @Autowired
     public TokenServiceImpl(Oep4Mapper oep4Mapper, Oep5Mapper oep5Mapper, Oep8Mapper oep8Mapper, Oep8TxDetailMapper oep8TxDetailMapper,
                             Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper, TokenDailyAggregationMapper tokenDailyAggregationMapper,
                             RankingMapper rankingMapper, CoinMarketCapApi coinMarketCapApi, OepLogoMapper oepLogoMapper,
-                            OntologySDKService ontologySDKService, Web3jSdkUtil web3jSdkUtil) {
+                            OntologySDKService ontologySDKService, Web3jSdkUtil web3jSdkUtil, TokenPriceMapper tokenPriceMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep5Mapper = oep5Mapper;
         this.oep8Mapper = oep8Mapper;
@@ -73,6 +75,7 @@ public class TokenServiceImpl implements ITokenService {
         this.oepLogoMapper = oepLogoMapper;
         this.ontologySDKService = ontologySDKService;
         this.web3jSdkUtil = web3jSdkUtil;
+        this.tokenPriceMapper = tokenPriceMapper;
     }
 
     @Override
@@ -364,9 +367,21 @@ public class TokenServiceImpl implements ITokenService {
 
     @Override
     public ResponseBean queryPrice(String token, String fiat) {
-        String key = token + "-" + fiat;
-        CoinMarketCapQuotes quotes = tokenQuotes.get(key);
-        TokenPriceDto dto = TokenPriceDto.from(token, quotes);
+        TokenPriceDto dto;
+        if ("USD".equalsIgnoreCase(fiat)) {
+            TokenPrice tokenPrice = tokenPriceMapper.selectTokenPriceBySymbol(token);
+            TokenPriceDto.Price tokenPriceDtoPrice = new TokenPriceDto.Price(tokenPrice.getPrice(), tokenPrice.getPercentChange24h());
+            Map<String, TokenPriceDto.Price> prices = new HashMap<>();
+            prices.put("USD", tokenPriceDtoPrice);
+            dto = new TokenPriceDto();
+            dto.setToken(token);
+            dto.setRank(tokenPrice.getRank());
+            dto.setPrices(prices);
+        } else {
+            String key = token + "-" + fiat;
+            CoinMarketCapQuotes quotes = tokenQuotes.get(key);
+            dto = TokenPriceDto.from(token, quotes);
+        }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), dto);
     }
 
