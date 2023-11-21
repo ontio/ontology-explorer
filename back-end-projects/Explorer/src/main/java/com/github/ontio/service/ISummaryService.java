@@ -1,8 +1,10 @@
 package com.github.ontio.service;
 
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.TokenInfoDto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface ISummaryService {
 
@@ -18,4 +20,5 @@ public interface ISummaryService {
 
     BigDecimal queryNativeTotalCirculatingSupply(String token);
 
+    List<TokenInfoDto> queryTokenInfo(String token);
 }

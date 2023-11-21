@@ -56,4 +56,25 @@
     where called_contract_hash = #{calledContractHash}
   </select>
 
+  <select id="selectTransferSumByCondition" resultType="BigDecimal">
+    SELECT IFNULL(SUM(amount),0) FROM tbl_tx_detail
+    WHERE from_address = #{fromAddress}
+    AND to_address = #{toAddress}
+    AND called_contract_hash IN
+        (
+        <foreach collection="calledContractHash" item="item" separator=",">
+          #{item}
+        </foreach>
+    )
+    <if test="assetName != null and assetName != ''">
+      AND asset_name = #{assetName}
+    </if>
+      <if test="fromBlock != null">
+        AND block_height <![CDATA[>=]]> #{fromBlock}
+      </if>
+    <if test="toBlock != null">
+      AND block_height <![CDATA[<=]]> #{toBlock}
+    </if>
+  </select>
+
 </mapper>

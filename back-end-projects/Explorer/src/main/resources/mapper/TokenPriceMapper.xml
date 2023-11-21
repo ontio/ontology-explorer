@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.ontio.mapper.TokenPriceMapper">
+    <resultMap id="BaseResultMap" type="com.github.ontio.model.dao.TokenPrice">
+        <result column="symbol" jdbcType="VARCHAR" property="symbol"/>
+        <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="percent_change_24h" jdbcType="DECIMAL" property="percentChange24h"/>
+        <result column="rank" jdbcType="INTEGER" property="rank"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <select id="selectTokenPriceBySymbol" parameterType="java.lang.String" resultMap="BaseResultMap" useCache="true">
+        SELECT symbol, price, percent_change_24h, rank, update_time
+        FROM tbl_token_price
+        WHERE symbol = #{symbol}
+    </select>
+
+</mapper>
