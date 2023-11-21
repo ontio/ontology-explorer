@@ -56,7 +56,7 @@
     where called_contract_hash = #{calledContractHash}
   </select>
 
-  <select id="selectTransferSumByCondition" resultType="BigDecimal">
+  <select id="selectTransferSumByCondition" resultType="BigDecimal" useCache="true">
     SELECT IFNULL(SUM(amount),0) FROM tbl_tx_detail
     WHERE from_address = #{fromAddress}
     AND to_address = #{toAddress}

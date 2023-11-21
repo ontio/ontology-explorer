@@ -117,7 +117,7 @@ public class SummaryController {
     }
 
     @ApiOperation(value = "Get ONT,ONG token info")
-    @GetMapping(value = "/api/{token}/info")
+    @GetMapping(value = "/v2/api/{token}/info")
     public List<TokenInfoDto> queryTokenInfo(@PathVariable String token) {
         return summaryService.queryTokenInfo(token);
     }
