@@ -1,5 +1,6 @@
 package com.github.ontio.controller;
 
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.dto.Anniversary6thDataDto;
 import com.github.ontio.service.IActivityDataService;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +22,7 @@ public class ActivityDataController {
     @Autowired
     private IActivityDataService activityDataService;
 
-
+    @RequestLimit(count = 120)
     @ApiOperation(value = "Get address 6th anniversary data")
     @GetMapping(value = "/6th_anniversary/{address}")
     public Anniversary6thDataDto queryAddress6thAnniversaryData(@PathVariable("address") @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
