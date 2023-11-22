@@ -4,10 +4,13 @@ import com.github.ontio.config.ParamsConfig;
 import com.github.ontio.mapper.*;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dao.CurrencyRate;
 import com.github.ontio.model.dao.OngSupply;
+import com.github.ontio.model.dao.TokenPrice;
 import com.github.ontio.model.dto.ContractDailySummaryDto;
 import com.github.ontio.model.dto.CurrentDto;
 import com.github.ontio.model.dto.DailySummaryDto;
+import com.github.ontio.model.dto.TokenInfoDto;
 import com.github.ontio.service.ISummaryService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -19,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +46,12 @@ public class SummaryServiceImpl implements ISummaryService {
     private final AddressDailySummaryMapper addressDailySummaryMapper;
     private final OntologySDKService ontologySDKService;
     private final OngSupplyMapper ongSupplyMapper;
+    private final CurrencyRateMapper currencyRateMapper;
+    private final TokenPriceMapper tokenPriceMapper;
 
     @Autowired
     public SummaryServiceImpl(ParamsConfig paramsConfig, TxEventLogMapper txEventLogMapper, DailySummaryMapper dailySummaryMapper, ContractDailySummaryMapper contractDailySummaryMapper, CurrentMapper currentMapper, AddressDailySummaryMapper addressDailySummaryMapper, OntologySDKService ontologySDKService
-            , OngSupplyMapper ongSupplyMapper) {
+            , OngSupplyMapper ongSupplyMapper, CurrencyRateMapper currencyRateMapper, TokenPriceMapper tokenPriceMapper) {
         this.paramsConfig = paramsConfig;
         this.txEventLogMapper = txEventLogMapper;
         this.dailySummaryMapper = dailySummaryMapper;
@@ -53,6 +60,8 @@ public class SummaryServiceImpl implements ISummaryService {
         this.addressDailySummaryMapper = addressDailySummaryMapper;
         this.ontologySDKService = ontologySDKService;
         this.ongSupplyMapper = ongSupplyMapper;
+        this.currencyRateMapper = currencyRateMapper;
+        this.tokenPriceMapper = tokenPriceMapper;
     }
 
 
@@ -169,11 +178,11 @@ public class SummaryServiceImpl implements ISummaryService {
         }
         BigDecimal ontTotalSupply = ConstantParam.ONT_TOTAL.subtract(specialAddrOnt);
 
-        if (ConstantParam.ONT.equals(token.toLowerCase())) {
+        if (ConstantParam.ONT.equalsIgnoreCase(token)) {
             return ontTotalSupply;
         }
 
-        if (ConstantParam.ONG.equals(token.toLowerCase())) {
+        if (ConstantParam.ONG.equalsIgnoreCase(token)) {
             BigDecimal ong01 = new BigDecimal(TIMESTAMP_20190630000000_UTC).subtract(new BigDecimal(TIMESTAMP_20180630000000_UTC)).multiply(new BigDecimal(5));
             BigDecimal ong02 = new BigDecimal(TIMESTAMP_20200629000000_UTC).subtract(new BigDecimal(TIMESTAMP_20190630000000_UTC)).multiply(new BigDecimal(4));
             BigDecimal ong03 = new BigDecimal(TIMESTAMP_20200707000000_UTC).subtract(new BigDecimal(TIMESTAMP_20200629000000_UTC)).multiply(new BigDecimal(3));
@@ -193,5 +202,42 @@ public class SummaryServiceImpl implements ISummaryService {
             return ongTotalSupply;
         }
         return null;
+    }
+
+    @Override
+    public List<TokenInfoDto> queryTokenInfo(String token) {
+        String symbol;
+        long maxSupply;
+        if (ConstantParam.ONT.equalsIgnoreCase(token)) {
+            symbol = ConstantParam.ONT.toUpperCase();
+            maxSupply = 1000000000L;
+        } else if (ConstantParam.ONG.equalsIgnoreCase(token)) {
+            symbol = ConstantParam.ONG.toUpperCase();
+            maxSupply = 1000000000L;
+        } else {
+            return null;
+        }
+        BigDecimal circulatingSupply = queryNativeTotalCirculatingSupply(symbol);
+
+        TokenPrice tokenPrice = tokenPriceMapper.selectTokenPriceBySymbol(symbol);
+        BigDecimal price = tokenPrice.getPrice();
+
+        List<CurrencyRate> currencyRates = currencyRateMapper.selectAll();
+        List<TokenInfoDto> result = new ArrayList<>();
+        for (CurrencyRate currencyRate : currencyRates) {
+            String currencyName = currencyRate.getCurrencyName();
+            BigDecimal currencyRatePrice = currencyRate.getPrice();
+            BigDecimal currencyPrice = price.multiply(currencyRatePrice).setScale(4, RoundingMode.DOWN);
+            BigDecimal marketCap = currencyPrice.multiply(circulatingSupply).stripTrailingZeros();
+            TokenInfoDto tokenInfoDto = new TokenInfoDto();
+            tokenInfoDto.setSymbol(symbol);
+            tokenInfoDto.setCurrencyCode(currencyName);
+            tokenInfoDto.setPrice(currencyPrice);
+            tokenInfoDto.setMarketCap(marketCap);
+            tokenInfoDto.setCirculatingSupply(circulatingSupply.longValue());
+            tokenInfoDto.setMaxSupply(maxSupply);
+            result.add(tokenInfoDto);
+        }
+        return result;
     }
 }

@@ -2,6 +2,7 @@ package com.github.ontio.controller;
 
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.ResponseBean;
+import com.github.ontio.model.dto.TokenInfoDto;
 import com.github.ontio.service.impl.SummaryServiceImpl;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -96,7 +98,7 @@ public class SummaryController {
         return rs;
     }
 
-    @ApiOperation(value = "Get ONT,ONG total supply")
+    @ApiOperation(value = "Get ONT,ONG total circulating supply")
     @GetMapping(value = "/v2/summary/native/circulating-supply/{token}")
     public BigDecimal queryNativeTotalCirculatingSupply(@PathVariable String token) {
         log.info("####{}.{} begin...", CLASS_NAME, Helper.currentMethod());
@@ -112,5 +114,11 @@ public class SummaryController {
         } else {
             return null;
         }
+    }
+
+    @ApiOperation(value = "Get ONT,ONG token info")
+    @GetMapping(value = "/v2/api/{token}/info")
+    public List<TokenInfoDto> queryTokenInfo(@PathVariable String token) {
+        return summaryService.queryTokenInfo(token);
     }
 }
