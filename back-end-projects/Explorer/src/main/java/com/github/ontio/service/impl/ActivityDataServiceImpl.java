@@ -1,5 +1,9 @@
 package com.github.ontio.service.impl;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.ontio.common.Address;
+import com.github.ontio.common.Helper;
 import com.github.ontio.mapper.CommonMapper;
 import com.github.ontio.mapper.NodeInfoOnChainMapper;
 import com.github.ontio.mapper.NodeOverviewHistoryMapper;
@@ -17,9 +21,8 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.time.Duration;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -73,10 +76,11 @@ public class ActivityDataServiceImpl implements IActivityDataService {
         boolean stakingStOntIn221 = BigDecimal.ZERO.compareTo(mintAmountBeforeCycle222) < 0;
 
         // 是否运行节点
+        List<String> publicKeyAddressList = Optional.ofNullable(nodePublicKeyAddress.get("1")).orElse(Collections.emptyList());
         Example example = new Example(NodeInfoOnChain.class);
         example.createCriteria().andEqualTo("address", address);
         int count = nodeInfoOnChainMapper.selectCountByExample(example);
-        boolean runningNode = count > 0;
+        boolean runningNode = count > 0 || publicKeyAddressList.contains(address);
 
         Anniversary6thDataDto anniversary6thDataDto = new Anniversary6thDataDto();
         anniversary6thDataDto.setStakingAmount(stakingAmount);
@@ -84,5 +88,23 @@ public class ActivityDataServiceImpl implements IActivityDataService {
         anniversary6thDataDto.setStakingStOntIn221(stakingStOntIn221);
         anniversary6thDataDto.setRunningNode(runningNode);
         return anniversary6thDataDto;
+    }
+
+    private LoadingCache<String, List<String>> nodePublicKeyAddress;
+
+    @Autowired
+    public void initNodePublicKeyAddress() {
+        nodePublicKeyAddress = Caffeine.newBuilder()
+                .expireAfterWrite(Duration.ofMinutes(30))
+                .build(key -> {
+                    List<String> addressList = new ArrayList<>();
+                    List<NodeInfoOnChain> nodeInfoOnChains = nodeInfoOnChainMapper.selectAll();
+                    for (NodeInfoOnChain nodeInfoOnChain : nodeInfoOnChains) {
+                        String publicKey = nodeInfoOnChain.getPublicKey();
+                        String address = Address.addressFromPubKey(Helper.hexToBytes(publicKey)).toBase58();
+                        addressList.add(address);
+                    }
+                    return addressList;
+                });
     }
 }
