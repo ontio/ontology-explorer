@@ -65,7 +65,7 @@ public class ActivityDataServiceImpl implements IActivityDataService {
         BigDecimal mintAmount = oep4TxDetailMapper.selectTransferSumByCondition(ZERO_ADDRESS, address, list, "stONT", null, null);
         BigDecimal unstakeAmount = oep4TxDetailMapper.selectTransferSumByCondition(address, ZERO_ADDRESS, list, "stONT", null, null);
         BigDecimal mintRemainAmount = mintAmount.subtract(unstakeAmount);
-        if (BigDecimal.ZERO.compareTo(stOntBalance) != 0 && mintRemainAmount.compareTo(stOntBalance) >= 0) {
+        if (BigDecimal.ZERO.compareTo(mintAmount) != 0 && mintRemainAmount.compareTo(stOntBalance) >= 0) {
             stakingStOnt = true;
         }
         // 是否参与221轮 stONT质押
