@@ -95,7 +95,7 @@ public class ActivityDataServiceImpl implements IActivityDataService {
     @Autowired
     public void initNodePublicKeyAddress() {
         nodePublicKeyAddress = Caffeine.newBuilder()
-                .expireAfterWrite(Duration.ofMinutes(30))
+                .expireAfterWrite(Duration.ofMinutes(5))
                 .build(key -> {
                     List<String> addressList = new ArrayList<>();
                     List<NodeInfoOnChain> nodeInfoOnChains = nodeInfoOnChainMapper.selectAll();
