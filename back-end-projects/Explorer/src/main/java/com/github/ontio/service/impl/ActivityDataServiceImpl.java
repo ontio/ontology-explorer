@@ -6,8 +6,8 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.mapper.CommonMapper;
 import com.github.ontio.mapper.NodeInfoOnChainMapper;
-import com.github.ontio.mapper.NodeOverviewHistoryMapper;
 import com.github.ontio.mapper.Oep4TxDetailMapper;
+import com.github.ontio.mapper.TxDetailMapper;
 import com.github.ontio.model.dao.NodeInfoOnChain;
 import com.github.ontio.model.dto.Anniversary6thDataDto;
 import com.github.ontio.model.dto.GovernanceInfoDto;
@@ -30,7 +30,7 @@ public class ActivityDataServiceImpl implements IActivityDataService {
     @Autowired
     private CommonMapper commonMapper;
     @Autowired
-    private NodeOverviewHistoryMapper nodeOverviewHistoryMapper;
+    private TxDetailMapper txDetailMapper;
     @Autowired
     private Oep4TxDetailMapper oep4TxDetailMapper;
     @Autowired
@@ -106,5 +106,19 @@ public class ActivityDataServiceImpl implements IActivityDataService {
                     }
                     return addressList;
                 });
+    }
+
+    @Override
+    public Integer queryAddressTxCountInPeriod(String address, Integer startTime, Integer endTime) {
+        return txDetailMapper.selectFromTxCountInPeriod(address, startTime, endTime);
+    }
+
+    @Override
+    public String queryAddressCertainTimeBalance(String address, Integer timestamp) {
+        BigDecimal ontBalance = new BigDecimal((String) sdk.getNativeAssetBalance(address).get(ConstantParam.ONT));
+        BigDecimal fromAmount = txDetailMapper.selectAssetTransferAmountByAddress(ConstantParam.ONT, address, null, timestamp);
+        BigDecimal toAmount = txDetailMapper.selectAssetTransferAmountByAddress(ConstantParam.ONT, null, address, timestamp);
+        BigDecimal certainTimeBalance = ontBalance.add(fromAmount).subtract(toAmount);
+        return certainTimeBalance.stripTrailingZeros().toPlainString();
     }
 }

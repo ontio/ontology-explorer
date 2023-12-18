@@ -634,4 +634,33 @@
         block_height, block_index
         LIMIT 5000;
     </select>
+
+    <select id="selectFromTxCountInPeriod" resultType="Integer" useCache="true">
+        SELECT COUNT(DISTINCT tx_hash)
+        FROM tbl_tx_detail
+        <where>
+            from_address = #{address}
+            <if test="startTime != null">
+                AND tx_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND tx_time <![CDATA[<= #{endTime}]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAssetTransferAmountByAddress" resultType="BigDecimal" useCache="true">
+        SELECT IFNULL(SUM(amount),0)
+        FROM tbl_tx_detail
+        <where>
+            asset_name = #{assetName}
+            <if test="fromAddress !=null">
+                AND from_address = #{fromAddress}
+            </if>
+            <if test="toAddress !=null">
+                AND to_address = #{toAddress}
+            </if>
+            AND tx_time > #{time}
+        </where>
+    </select>
 </mapper>
