@@ -115,7 +115,7 @@ public class ActivityDataServiceImpl implements IActivityDataService {
 
     @Override
     public String queryAddressCertainTimeBalance(String address, Integer timestamp) {
-        BigDecimal ontBalance = new BigDecimal((String) sdk.getNativeAssetBalance(address).get(ConstantParam.ONT));
+        BigDecimal ontBalance = new BigDecimal((String) sdk.getNativeAssetBalance(address).get(ConstantParam.ONT)).divide(ConstantParam.NEW_ONT_DECIMAL, 9, RoundingMode.DOWN);
         BigDecimal fromAmount = txDetailMapper.selectAssetTransferAmountByAddress(ConstantParam.ONT, address, null, timestamp);
         BigDecimal toAmount = txDetailMapper.selectAssetTransferAmountByAddress(ConstantParam.ONT, null, address, timestamp);
         BigDecimal certainTimeBalance = ontBalance.add(fromAmount).subtract(toAmount);
