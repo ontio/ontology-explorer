@@ -569,10 +569,6 @@ public class TxHandlerThread {
                                         int blockHeight, int blockTime, int indexInBlock, String contractAddress,
                                         BigDecimal gasConsumed, int indexInTx, int notifyListSize, int confirmFlag,
                                         String payer, String calledContractHash) throws Exception {
-        if (stateList == null) {
-            log.info("stateList == null,txHash:{},blockHeight:{},indexInTx:{}", txHash, blockHeight, indexInTx);
-//            return;
-        }
         int stateSize = stateList.size();
         if (stateSize < 3) {
             TxDetail txDetail = generateTransaction("", "", "", ConstantParam.ZERO, txType, txHash, blockHeight,
