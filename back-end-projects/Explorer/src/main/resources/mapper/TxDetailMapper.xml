@@ -148,17 +148,17 @@
         d.contract_hash as contractHash,
         c.type AS assetType
         FROM tbl_tx_detail d
-        INNER JOIN
-        (
-        SELECT DISTINCT tx_hash AS `hash`
-        FROM tbl_tx_detail_index
-        WHERE address = #{address}
-        <if test="assetName != '' and assetName != null">
-            AND asset_name = #{assetName}
-        </if>
-        ORDER BY desc_block_height, tx_hash, tx_index
-        LIMIT #{startIndex}, #{pageSize}
-        ) idx ON idx.hash = d.tx_hash
+<!--        INNER JOIN-->
+<!--        (-->
+<!--        SELECT DISTINCT tx_hash AS `hash`-->
+<!--        FROM tbl_tx_detail_index-->
+<!--        WHERE address = #{address}-->
+<!--        <if test="assetName != '' and assetName != null">-->
+<!--            AND asset_name = #{assetName}-->
+<!--        </if>-->
+<!--        ORDER BY desc_block_height, tx_hash, tx_index-->
+<!--        LIMIT #{startIndex}, #{pageSize}-->
+<!--        ) idx ON idx.hash = d.tx_hash-->
         LEFT JOIN tbl_contract c ON d.contract_hash = c.contract_hash
         WHERE (d.from_address = #{address}
         OR d.to_address = #{address})
@@ -167,6 +167,7 @@
         </if>
         AND d.event_type IN (2, 3)
         ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        LIMIT #{startIndex}, #{pageSize}
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
