@@ -329,7 +329,7 @@ public class CommonService {
      * @throws Exception
      */
     public JSONObject getBlockJsonByHeight(int height) throws Exception {
-        JSONObject blockObj = new JSONObject();
+        JSONObject blockObj;
         int tryTime = 1;
         while (true) {
             try {
@@ -611,7 +611,7 @@ public class CommonService {
                 InvokeWasmCode tx = ontSdk.wasmvm().makeInvokeCodeTransaction(contract, ConstantParam.FUN_SYMBOL, invokeParams, Address.ZERO, 20000, 2500);
                 JSONObject jsonObject = (JSONObject) ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
                 String result = jsonObject.getString("Result");
-                symbol = new String(Helper.hexToBytes(result));
+                symbol = new String(Helper.hexToBytes(result.substring(2)));
             } else {
                 OntSdk ontSdk = ConstantParam.ONT_SDKSERVICE;
                 List<Object> paramList = new ArrayList<>();

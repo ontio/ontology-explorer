@@ -28,21 +28,26 @@
     </cache>
 
     <select id="selectAllInfo" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
-        SELECT node_rank,
-               name,
-               current_stake,
-               progress,
-               detail_url,
-               public_key,
-               address,
-               status,
-               init_pos,
-               total_pos,
-               max_authorize,
-               node_proportion,
-               user_proportion,
-               current_stake_percentage
-        FROM tbl_node_info_on_chain
+        SELECT a.node_rank,
+               a.name,
+               a.current_stake,
+               a.progress,
+               a.detail_url,
+               a.public_key,
+               a.address,
+               a.status,
+               a.init_pos,
+               a.total_pos,
+               a.max_authorize,
+               a.node_proportion,
+               a.user_proportion,
+               a.current_stake_percentage,
+               b.ontology_harbinger,
+               b.fee_sharing_ratio,
+               b.risky,
+               b.bad_actor
+        FROM tbl_node_info_on_chain a
+        LEFT JOIN tbl_node_info_off_chain b ON a.public_key = b.public_key
     </select>
 
     <select id="selectTotalStake" resultType="java.lang.Long" useCache="true">

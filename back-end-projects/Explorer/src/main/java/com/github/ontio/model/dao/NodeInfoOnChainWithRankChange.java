@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class NodeInfoOnChainWithRankChange extends NodeInfoOnChain {
+public class NodeInfoOnChainWithRankChange extends NodeInfoOnChainDto {
 
     private Integer rankChange;
 
