@@ -4,8 +4,8 @@
 
     <insert id="buildTxDetailIndexForFromAddress">
         INSERT INTO tbl_tx_detail_index
-        (address, desc_block_height, tx_hash, tx_index, called_contract_hash, tx_time, asset_name, tx_direction)
-        SELECT from_address, (~0 >> 33) - block_height, tx_hash, tx_index, called_contract_hash, tx_time, asset_name, 0
+        (address, desc_block_height, tx_hash, block_index, tx_index, called_contract_hash, tx_time, asset_name, tx_direction)
+        SELECT from_address, (~0 >> 33) - block_height, tx_hash, block_index, tx_index, called_contract_hash, tx_time, asset_name, 0
         FROM tbl_tx_detail
         WHERE block_height BETWEEN #{beginHeight} AND #{endHeight} AND from_address &lt;&gt; '' AND event_type IN (2, 3)
         <if test="contractHash != null and contractHash != ''">
@@ -17,8 +17,8 @@
 
     <insert id="buildTxDetailIndexForToAddress">
         INSERT INTO tbl_tx_detail_index
-        (address, desc_block_height, tx_hash, tx_index, called_contract_hash, tx_time, asset_name, tx_direction)
-        SELECT to_address, (~0 >> 33) - block_height, tx_hash, tx_index, called_contract_hash, tx_time, asset_name, 1
+        (address, desc_block_height, tx_hash, block_index, tx_index, called_contract_hash, tx_time, asset_name, tx_direction)
+        SELECT to_address, (~0 >> 33) - block_height, tx_hash, block_index, tx_index, called_contract_hash, tx_time, asset_name, 1
         FROM tbl_tx_detail
         WHERE block_height BETWEEN #{beginHeight} AND #{endHeight} AND to_address &lt;&gt; '' AND event_type IN (2, 3)
         <if test="contractHash != null and contractHash != ''">

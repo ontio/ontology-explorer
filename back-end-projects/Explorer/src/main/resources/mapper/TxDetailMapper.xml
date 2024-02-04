@@ -156,7 +156,7 @@
         <if test="assetName != '' and assetName != null">
             AND asset_name = #{assetName}
         </if>
-        ORDER BY desc_block_height, tx_hash, tx_index
+        ORDER BY desc_block_height, block_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
         LEFT JOIN tbl_contract c ON d.contract_hash = c.contract_hash
@@ -166,7 +166,7 @@
             AND d.asset_name = #{assetName}
         </if>
         AND d.event_type IN (2, 3)
-        ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_index
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
@@ -183,9 +183,9 @@
         <if test="assetName != '' and assetName != null">
             AND asset_name = #{assetName}
         </if>
-        ORDER BY desc_block_height, tx_hash, tx_index
+        ORDER BY desc_block_height, block_index
         ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
-        ORDER BY block_height DESC, block_index
+        ORDER BY block_height DESC, block_index, tx_index
     </select>
 
 
@@ -451,13 +451,13 @@
         ON o.contract_hash = idx.called_contract_hash
         WHERE idx.address = #{address}
         AND o.audit_flag = 1
-        ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
+        ORDER BY idx.desc_block_height, idx.block_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
         WHERE d.from_address = #{address}
         OR d.to_address = #{address}
         AND d.event_type IN (2, 3)
-        ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_index
     </select>
 
     <select id="selectCalledContractHashesOfTokenType" resultType="java.lang.String">
@@ -599,12 +599,12 @@
             </foreach>
             )
         </if>
-        ORDER BY idx.desc_block_height, idx.tx_hash, idx.tx_index
+        ORDER BY idx.desc_block_height, idx.block_index
         LIMIT #{startIndex}, #{pageSize}
         ) idx ON idx.hash = d.tx_hash
         WHERE (d.from_address = #{address}
         OR d.to_address = #{address})
-        ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index, tx_index
     </select>
 
     <select id="selectPayerByHash" resultType="String">
