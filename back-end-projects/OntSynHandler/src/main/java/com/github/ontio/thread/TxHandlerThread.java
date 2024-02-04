@@ -1551,7 +1551,7 @@ public class TxHandlerThread {
                     String contractHash = (String) result.get("contractHash");
                     String assetName = (String) result.get("assetName");
                     if (assetName == null) {
-                        throw new RuntimeException("cannot get assetName,not orc20");
+                        assetName = "ORC-20 TOKEN";
                     }
                     TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, amount, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                     ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
@@ -1566,7 +1566,7 @@ public class TxHandlerThread {
                     String contractHash = (String) result.get("contractHash");
                     String assetName = (String) result.get("assetName");
                     if (assetName == null) {
-                        throw new RuntimeException("cannot get assetName,not orc721");
+                        assetName = "ORC-721 NFT";
                     }
                     TxDetail txDetail = generateTransaction(fromAddress, toAddress, assetName, BigDecimal.ONE, txType, txHash, blockHeight, blockTime, indexInBlock, confirmFlag, txAction, gasConsumed, indexInTx, eventType, contractHash, payer, calledContractHash);
                     ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
@@ -1584,7 +1584,7 @@ public class TxHandlerThread {
                 String contractHash = (String) result.get("contractHash");
                 String assetName = (String) result.get("assetName");
                 if (assetName == null) {
-                    throw new RuntimeException("cannot get assetName,not orc1155");
+                    assetName = "ORC-1155 NFT";
                 }
                 if (tokenIds instanceof String) {
                     String tokenId = (String) tokenIds;
@@ -1609,15 +1609,17 @@ public class TxHandlerThread {
                 }
             } else {
                 // other
+                String contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractAddress);
                 TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
-                        blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+                        blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
                 ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
                 ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
             }
         } catch (Exception e) {
             log.error("handleUnAuditedOrcTransferTx error", e);
+            String contractHash = ConstantParam.EVM_ADDRESS_PREFIX + Helper.reverse(contractAddress);
             TxDetail txDetail = generateTransaction(ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.EMPTY, ConstantParam.ZERO, txType, txHash, blockHeight,
-                    blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractAddress, payer, calledContractHash);
+                    blockTime, indexInBlock, confirmFlag, ConstantParam.EMPTY, gasConsumed, indexInTx, EventTypeEnum.Others.type(), contractHash, payer, calledContractHash);
             ConstantParam.BATCHBLOCKDTO.getTxDetails().add(txDetail);
             ConstantParam.BATCHBLOCKDTO.getTxDetailDailys().add(TxDetail.toTxDetailDaily(txDetail));
         }
