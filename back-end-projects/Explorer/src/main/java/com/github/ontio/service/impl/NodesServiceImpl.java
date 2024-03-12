@@ -991,6 +991,7 @@ public class NodesServiceImpl implements INodesService {
                     NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
                     NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
                             .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                            .feeSharingRatio(nodeInfoOffChain.getFeeSharingRatio()).ontologyHarbinger(nodeInfoOffChain.getOntologyHarbinger()).risky(nodeInfoOffChain.getRisky()).badActor(nodeInfoOffChain.getBadActor())
                             .build();
                     NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
                     String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
@@ -1009,6 +1010,7 @@ public class NodesServiceImpl implements INodesService {
                     NodeInfoOnChain nodeInfoOnChain = nodeInfoOnChainMap.get(nodeInfoOffChain.getPublicKey());
                     NodesInfoRespDto infoRespDto = NodesInfoRespDto.builder().publicKey(nodeInfoOffChain.getPublicKey()).address(nodeInfoOffChain.getAddress()).name(nodeInfoOffChain.getName())
                             .currentStake(nodeInfoOnChain.getCurrentStake()).totalStake(nodeInfoOnChain.getInitPos() + nodeInfoOnChain.getMaxAuthorize()).progress(nodeInfoOnChain.getProgress())
+                            .feeSharingRatio(nodeInfoOffChain.getFeeSharingRatio()).ontologyHarbinger(nodeInfoOffChain.getOntologyHarbinger()).risky(nodeInfoOffChain.getRisky()).badActor(nodeInfoOffChain.getBadActor())
                             .build();
                     NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
                     String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
