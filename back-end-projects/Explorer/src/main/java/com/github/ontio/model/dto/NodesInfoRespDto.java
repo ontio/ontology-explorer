@@ -17,4 +17,8 @@ public class NodesInfoRespDto {
     public Long currentStake;
     public Long totalStake;
     private String progress;
+    private Integer feeSharingRatio;
+    private Integer ontologyHarbinger;
+    private Integer risky;
+    private Integer badActor;
 }

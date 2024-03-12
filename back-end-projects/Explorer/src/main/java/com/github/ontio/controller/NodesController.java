@@ -332,7 +332,7 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
-    @ApiOperation(value = "calculation node inspire")
+    @ApiOperation(value = "get calculation node inspire info")
     @GetMapping(value = "/node-incentives/calculation-info")
     public ResponseBean getCalculationNodeIncentivesInfo() {
         CalculationInspireInfoDto response = nodesService.getCalculationNodeIncentivesInfo();
@@ -353,7 +353,7 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
-    @ApiOperation(value = "get all node cycle history ")
+    @ApiOperation(value = "get all node cycle history")
     @GetMapping(value = "/node-cycle-data/all")
     public ResponseBean getNodeCycleHistoryData(@RequestParam(value = "page_number") @Min(value = 1, message = "Invalid page number") Integer pageNum,
                                                 @RequestParam(value = "page_size") @Min(value = 1, message = "Invalid page size") @Max(value = 50, message = "Invalid page size") Integer pageSize) {
@@ -371,7 +371,7 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
-    @ApiOperation(value = "query nodes by filter ")
+    @ApiOperation(value = "query nodes by filter")
     @PostMapping(value = "/get-nodes")
     public ResponseBean getNodes(@RequestBody NodesInfoDto dto) {
         PageResponseBean response = nodesService.getNodesByFilter(dto);
