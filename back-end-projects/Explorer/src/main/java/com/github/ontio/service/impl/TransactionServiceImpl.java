@@ -545,6 +545,11 @@ public class TransactionServiceImpl implements ITransactionService {
                 } else {
                     byte[] bytes = com.github.ontio.common.Helper.BigIntToNeoBytes(number);
                     rawData = com.github.ontio.common.Helper.toHexString(bytes);
+                    int byteLength = Integer.parseInt(arg.substring(0, 2));
+                    int rawDataByteLength = rawData.length() / 2;
+                    for (int i = rawDataByteLength; i < byteLength; i++) {
+                        rawData = rawData + "00";
+                    }
                 }
                 break;
             case "ByteArray":
