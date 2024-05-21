@@ -42,6 +42,8 @@
                a.node_proportion,
                a.user_proportion,
                a.current_stake_percentage,
+               b.introduction,
+               b.logo_url,
                b.ontology_harbinger,
                b.fee_sharing_ratio,
                b.risky,

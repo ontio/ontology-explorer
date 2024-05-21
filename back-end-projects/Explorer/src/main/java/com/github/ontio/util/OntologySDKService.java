@@ -39,6 +39,7 @@ import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
@@ -850,6 +851,16 @@ public class OntologySDKService {
         } catch (Exception e) {
             log.error("getWasmvmOep4TotalSupply error...", e);
             return null;
+        }
+    }
+
+    public int getGovernanceView() {
+        try {
+            OntSdk ontSdk = getOntSdk();
+            return ontSdk.nativevm().governance().getGovernanceView().view;
+        } catch (ConnectorException | IOException | SDKException e) {
+            log.warn("getGovernanceView failed: {}", e.getMessage());
+            return 0;
         }
     }
 

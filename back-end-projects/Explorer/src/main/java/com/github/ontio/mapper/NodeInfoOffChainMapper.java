@@ -4,7 +4,6 @@ import com.github.ontio.model.dao.NodeInfoOffChain;
 import com.github.ontio.model.dto.NodeInfoOffChainDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import tk.mybatis.mapper.annotation.RegisterMapper;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
@@ -17,5 +16,7 @@ public interface NodeInfoOffChainMapper extends Mapper<NodeInfoOffChain> {
     List<NodeInfoOffChain> selectAllConsensusNodeInfo();
 
     List<NodeInfoOffChain> selectAllCandidateNodeInfo();
+
+    List<NodeInfoOffChain> selectAllStakingNodeInfo();
 
 }

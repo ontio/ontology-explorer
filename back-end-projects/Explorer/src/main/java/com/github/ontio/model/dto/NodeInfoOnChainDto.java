@@ -4,30 +4,40 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.ontio.model.dao.NodeInfoOnChain;
 import lombok.Data;
 
-import javax.persistence.Column;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Table(name = "tbl_node_info_on_chain")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class NodeInfoOnChainDto extends NodeInfoOnChain {
 
-    @Column(name = "fee_sharing_ratio")
+    @Transient
+    private String introduction;
+
+    @Transient
+    private String logoUrl;
+
+    @Transient
     private Integer feeSharingRatio;
 
-    @Column(name = "ontology_harbinger")
+    @Transient
     private Integer ontologyHarbinger;
 
+    @Transient
     private Integer risky;
 
-    @Column(name = "bad_actor")
+    @Transient
     private Integer badActor;
 
     public NodeInfoOnChainDto() {
 
     }
+
     public NodeInfoOnChainDto(NodeInfoOnChainDto nodeInfoOnChain) {
         super(nodeInfoOnChain);
+        this.introduction = nodeInfoOnChain.getIntroduction();
+        this.logoUrl = nodeInfoOnChain.getLogoUrl();
         this.feeSharingRatio = nodeInfoOnChain.getFeeSharingRatio();
         this.ontologyHarbinger = nodeInfoOnChain.getOntologyHarbinger();
         this.risky = nodeInfoOnChain.getRisky();

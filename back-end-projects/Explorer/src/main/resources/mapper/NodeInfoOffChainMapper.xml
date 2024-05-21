@@ -90,4 +90,18 @@
         WHERE node_type = 2
         AND open_flag = 1;;
     </select>
+
+    <select id="selectAllStakingNodeInfo" resultType="com.github.ontio.model.dao.NodeInfoOffChain" useCache="true">
+        SELECT
+            a.public_key,
+            a.name,
+            a.address,
+            b.status,
+            b.progress,
+            c.user_apy
+        FROM tbl_node_info_off_chain a
+        LEFT JOIN tbl_node_info_on_chain b ON a.public_key = b.public_key
+        LEFT JOIN tbl_node_inspire c ON a.public_key = c.public_key
+        ORDER BY c.user_apy IS NULL, b.progress = '100.00%', a.public_key
+    </select>
 </mapper>
