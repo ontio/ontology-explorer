@@ -21,7 +21,10 @@ public class NodeStakeDto {
     // 1-待生效;2-质押中;3-可提取;4-取消中
     private int state;
 
-    // 1-候选节点;2-共识节点;3-节点退出
+    // 1-候选节点;2-共识节点
+    private int nodeType;
+
+    // 0-节点退出;1-节点运行中
     private int nodeState;
 
     private boolean allowStake;
@@ -30,5 +33,4 @@ public class NodeStakeDto {
 
     // user apr
     private String apr;
-
 }

@@ -96,7 +96,7 @@
             a.public_key,
             a.name,
             a.address,
-            b.status,
+            a.node_type,
             b.progress,
             c.user_apy
         FROM tbl_node_info_off_chain a

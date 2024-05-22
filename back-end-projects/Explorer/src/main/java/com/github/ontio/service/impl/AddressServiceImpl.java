@@ -1586,7 +1586,6 @@ public class AddressServiceImpl implements IAddressService {
         int currentRound = sdk.getGovernanceView();
         List<NodeInfoOffChain> currentOffChainInfo = nodeInfoOffChainMapper.selectAllStakingNodeInfo();
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
-        initSDK();
         for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
             String publicKey = nodeInfoOffChain.getPublicKey();
             try {
@@ -1607,8 +1606,11 @@ public class AddressServiceImpl implements IAddressService {
             String nodeName = nodeInfoOffChain.getName();
             String address = nodeInfoOffChain.getAddress();
             String progress = nodeInfoOffChain.getProgress();
+            int nodeType = nodeInfoOffChain.getNodeType();
+            // 节点存在且质押进度没到100%,则可以质押
             boolean allowStake = progress != null && !"100.00%".equals(progress);
-            int nodeStatus = Optional.ofNullable(nodeInfoOffChain.getStatus()).orElse(3);
+            // 判断节点存在是否存在
+            int nodeStatus = progress == null ? 0 : 1;
             String userApy = Optional.ofNullable(nodeInfoOffChain.getUserApy()).orElse("");
             JSONObject stakingInfoObj = JSONObject.parseObject(stakingInfo);
             Long consensusPos = stakingInfoObj.getLong("consensusPos");
@@ -1626,6 +1628,7 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeWalletAddress(address);
                 dto.setAmount(Long.toString(amount));
                 dto.setState(StakeStatusEnum.IN_STAKE.state());
+                dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
                 dto.setCurrentRound(currentRound);
@@ -1639,6 +1642,7 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeWalletAddress(address);
                 dto.setAmount(newPos.toString());
                 dto.setState(StakeStatusEnum.PENDING.state());
+                dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
                 dto.setCurrentRound(currentRound);
@@ -1652,6 +1656,7 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeWalletAddress(address);
                 dto.setAmount(withdrawUnfreezePos.toString());
                 dto.setState(StakeStatusEnum.WITHDRAWABLE.state());
+                dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
                 dto.setCurrentRound(currentRound);
@@ -1666,6 +1671,7 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeWalletAddress(address);
                 dto.setAmount(Long.toString(amount));
                 dto.setState(StakeStatusEnum.CANCELLING.state());
+                dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
                 dto.setCurrentRound(currentRound);
