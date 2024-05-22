@@ -98,6 +98,8 @@
             a.address,
             a.node_type,
             b.progress,
+            b.total_pos,
+            b.max_authorize,
             c.user_apy
         FROM tbl_node_info_off_chain a
         LEFT JOIN tbl_node_info_on_chain b ON a.public_key = b.public_key

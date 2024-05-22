@@ -29,6 +29,10 @@ public class NodeStakeDto {
 
     private boolean allowStake;
 
+    private long totalPos;
+
+    private long maxAuthorize;
+
     private int currentRound;
 
     // user apr

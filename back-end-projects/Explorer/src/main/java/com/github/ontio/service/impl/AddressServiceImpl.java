@@ -1606,6 +1606,8 @@ public class AddressServiceImpl implements IAddressService {
             String nodeName = nodeInfoOffChain.getName();
             String address = nodeInfoOffChain.getAddress();
             String progress = nodeInfoOffChain.getProgress();
+            Long totalPos = Optional.ofNullable(nodeInfoOffChain.getTotalPos()).orElse(0L);
+            Long maxAuthorize = Optional.ofNullable(nodeInfoOffChain.getMaxAuthorize()).orElse(0L);
             int nodeType = nodeInfoOffChain.getNodeType();
             // 节点存在且质押进度没到100%,则可以质押
             boolean allowStake = progress != null && !"100.00%".equals(progress);
@@ -1631,6 +1633,8 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
+                dto.setTotalPos(totalPos);
+                dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
                 nodeStakeDtos.add(dto);
@@ -1645,6 +1649,8 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
+                dto.setTotalPos(totalPos);
+                dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
                 nodeStakeDtos.add(dto);
@@ -1659,6 +1665,8 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
+                dto.setTotalPos(totalPos);
+                dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
                 nodeStakeDtos.add(dto);
@@ -1674,6 +1682,8 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
+                dto.setTotalPos(totalPos);
+                dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
                 nodeStakeDtos.add(dto);

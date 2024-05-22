@@ -86,5 +86,11 @@ public class NodeInfoOffChain {
     private String progress;
 
     @Transient
+    private Long totalPos;
+
+    @Transient
+    private Long maxAuthorize;
+
+    @Transient
     private String userApy;
 }
