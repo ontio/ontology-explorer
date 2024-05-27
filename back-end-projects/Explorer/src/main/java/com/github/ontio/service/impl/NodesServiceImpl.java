@@ -872,7 +872,7 @@ public class NodesServiceImpl implements INodesService {
 
         Long maxAuthorize = calculationNode.getMaxAuthorize();
         // 考虑此节点用户质押部分满了的情况,此时用户不能再进行质押,收益为0
-        if ((maxAuthorize == 0 && totalPos1 == 0) || (maxAuthorize - totalPos1 == 0)) {
+        if (maxAuthorize == 0 && totalPos1 == 0) {
             nodeInspire.setUserReleasedOngIncentive("0");
             nodeInspire.setUserGasFeeIncentive("0");
             nodeInspire.setUserFoundationBonusIncentive("0");
