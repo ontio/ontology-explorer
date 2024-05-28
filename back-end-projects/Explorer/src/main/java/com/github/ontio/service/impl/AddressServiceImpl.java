@@ -1627,7 +1627,7 @@ public class AddressServiceImpl implements IAddressService {
             boolean allowStake = progress != null && !"100.00%".equals(progress);
             // 判断节点存在是否存在
             int nodeStatus = progress == null ? 0 : 1;
-            String userApy = Optional.ofNullable(nodeInfoOffChain.getUserApy()).orElse("");
+            String userApy = progress == null ? "" : Optional.ofNullable(nodeInfoOffChain.getUserApy()).orElse("");
             JSONObject stakingInfoObj = JSONObject.parseObject(stakingInfo);
             Long consensusPos = stakingInfoObj.getLong("consensusPos");
             Long freezePos = stakingInfoObj.getLong("freezePos");
