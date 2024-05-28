@@ -1584,8 +1584,8 @@ public class AddressServiceImpl implements IAddressService {
     public ResponseBean getAddressStakingInfo(String address, String channel) {
         List<NodeInfoOffChain> currentOffChainInfo = nodeInfoOffChainMapper.selectAllStakingNodeInfo();
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
+        initSDK();
         if (ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
-            initSDK();
             int currentRound = sdk.getGovernanceView();
             for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
                 String publicKey = nodeInfoOffChain.getPublicKey();
