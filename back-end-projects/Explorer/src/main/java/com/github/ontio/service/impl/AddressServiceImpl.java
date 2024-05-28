@@ -1643,7 +1643,7 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setNodePubKey(publicKey);
                 dto.setNodeWalletAddress(address);
                 dto.setAmount(String.valueOf(stakedAmount));
-                dto.setProcessingAmount(newPos.toString());
+                dto.setProcessingAmount(newPos == 0 ? "" : newPos.toString());
                 dto.setState(StakeStatusEnum.IN_STAKE.state());
                 dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
