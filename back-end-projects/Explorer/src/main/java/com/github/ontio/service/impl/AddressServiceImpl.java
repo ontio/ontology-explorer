@@ -1581,26 +1581,40 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean getAddressStakingInfo(String address) {
-        initSDK();
-        int currentRound = sdk.getGovernanceView();
+    public ResponseBean getAddressStakingInfo(String address, String channel) {
         List<NodeInfoOffChain> currentOffChainInfo = nodeInfoOffChainMapper.selectAllStakingNodeInfo();
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
-        for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
-            String publicKey = nodeInfoOffChain.getPublicKey();
-            try {
-                if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
-                    String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
-                    putStakingInfoList(stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
+        if (ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
+            initSDK();
+            int currentRound = sdk.getGovernanceView();
+            for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
+                String publicKey = nodeInfoOffChain.getPublicKey();
+                try {
+                    if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
+                        String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                        putStakingInfoList4Onto(stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
+                    }
+                } catch (Exception e) {
+                    log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+            }
+        } else {
+            for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
+                String publicKey = nodeInfoOffChain.getPublicKey();
+                try {
+                    if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
+                        String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                        putStakingInfoList(stakingInfo, nodeInfoOffChain, nodeStakeDtos);
+                    }
+                } catch (Exception e) {
+                    log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+                }
             }
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeStakeDtos);
     }
 
-    private void putStakingInfoList(String stakingInfo, NodeInfoOffChain nodeInfoOffChain, List<NodeStakeDto> nodeStakeDtos, int currentRound) {
+    private void putStakingInfoList4Onto(String stakingInfo, NodeInfoOffChain nodeInfoOffChain, List<NodeStakeDto> nodeStakeDtos, int currentRound) {
         if (stakingInfo != null) {
             String publicKey = nodeInfoOffChain.getPublicKey();
             String nodeName = nodeInfoOffChain.getName();
@@ -1621,31 +1635,16 @@ public class AddressServiceImpl implements IAddressService {
             Long withdrawPos = stakingInfoObj.getLong("withdrawPos");
             Long withdrawFreezePos = stakingInfoObj.getLong("withdrawFreezePos");
             Long withdrawUnfreezePos = stakingInfoObj.getLong("withdrawUnfreezePos");
+            long stakedAmount = consensusPos + freezePos;
 
-            if (consensusPos + freezePos > 0) {
-                long amount = consensusPos + freezePos;
+            if (newPos > 0 || stakedAmount > 0) {
                 NodeStakeDto dto = new NodeStakeDto();
                 dto.setNodeName(nodeName);
                 dto.setNodePubKey(publicKey);
                 dto.setNodeWalletAddress(address);
-                dto.setAmount(Long.toString(amount));
+                dto.setAmount(String.valueOf(stakedAmount));
+                dto.setProcessingAmount(newPos.toString());
                 dto.setState(StakeStatusEnum.IN_STAKE.state());
-                dto.setNodeType(nodeType);
-                dto.setNodeState(nodeStatus);
-                dto.setAllowStake(allowStake);
-                dto.setTotalPos(totalPos);
-                dto.setMaxAuthorize(maxAuthorize);
-                dto.setCurrentRound(currentRound);
-                dto.setApr(userApy);
-                nodeStakeDtos.add(dto);
-            }
-            if (newPos > 0) {
-                NodeStakeDto dto = new NodeStakeDto();
-                dto.setNodeName(nodeName);
-                dto.setNodePubKey(publicKey);
-                dto.setNodeWalletAddress(address);
-                dto.setAmount(newPos.toString());
-                dto.setState(StakeStatusEnum.PENDING.state());
                 dto.setNodeType(nodeType);
                 dto.setNodeState(nodeStatus);
                 dto.setAllowStake(allowStake);
@@ -1686,6 +1685,55 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
+                nodeStakeDtos.add(dto);
+            }
+        }
+    }
+
+    private void putStakingInfoList(String stakingInfo, NodeInfoOffChain nodeInfoOffChain, List<NodeStakeDto> nodeStakeDtos) {
+        if (stakingInfo != null) {
+            String publicKey = nodeInfoOffChain.getPublicKey();
+            String nodeName = nodeInfoOffChain.getName();
+            JSONObject stakingInfoObj = JSONObject.parseObject(stakingInfo);
+            Long consensusPos = stakingInfoObj.getLong("consensusPos");
+            Long freezePos = stakingInfoObj.getLong("freezePos");
+            Long newPos = stakingInfoObj.getLong("newPos");
+            Long withdrawPos = stakingInfoObj.getLong("withdrawPos");
+            Long withdrawFreezePos = stakingInfoObj.getLong("withdrawFreezePos");
+            Long withdrawUnfreezePos = stakingInfoObj.getLong("withdrawUnfreezePos");
+
+            if (newPos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                dto.setAmount(newPos.toString());
+                dto.setState(StakeStatusEnum.PENDING.state());
+                nodeStakeDtos.add(dto);
+            }
+            if (consensusPos + freezePos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                Long amount = consensusPos + freezePos;
+                dto.setAmount(amount.toString());
+                dto.setState(StakeStatusEnum.IN_STAKE.state());
+                nodeStakeDtos.add(dto);
+            }
+            if (withdrawUnfreezePos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                dto.setAmount(withdrawUnfreezePos.toString());
+                dto.setState(StakeStatusEnum.WITHDRAWABLE.state());
+                nodeStakeDtos.add(dto);
+            }
+            if (withdrawPos + withdrawFreezePos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                Long amount = withdrawPos + withdrawFreezePos;
+                dto.setAmount(amount.toString());
+                dto.setState(StakeStatusEnum.CANCELLING.state());
                 nodeStakeDtos.add(dto);
             }
         }

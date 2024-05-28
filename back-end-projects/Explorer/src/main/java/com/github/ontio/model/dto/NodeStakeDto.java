@@ -1,5 +1,6 @@
 package com.github.ontio.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @date 2019/8/6
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeStakeDto {
 
     private String nodeName;
@@ -17,6 +19,8 @@ public class NodeStakeDto {
     private String nodeWalletAddress;
 
     private String amount;
+
+    private String processingAmount;
 
     // 1-待生效;2-质押中;3-可提取;4-取消中
     private int state;
