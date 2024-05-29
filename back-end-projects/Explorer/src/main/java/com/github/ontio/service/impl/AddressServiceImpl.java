@@ -1592,7 +1592,7 @@ public class AddressServiceImpl implements IAddressService {
                 try {
                     if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
                         String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
-                        putStakingInfoList4Onto(stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
+                        putStakingInfoList4Onto(address, stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
                     }
                 } catch (Exception e) {
                     log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
@@ -1614,11 +1614,14 @@ public class AddressServiceImpl implements IAddressService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeStakeDtos);
     }
 
-    private void putStakingInfoList4Onto(String stakingInfo, NodeInfoOffChain nodeInfoOffChain, List<NodeStakeDto> nodeStakeDtos, int currentRound) {
+    private void putStakingInfoList4Onto(String address, String stakingInfo, NodeInfoOffChain nodeInfoOffChain, List<NodeStakeDto> nodeStakeDtos, int currentRound) {
         if (stakingInfo != null) {
             String publicKey = nodeInfoOffChain.getPublicKey();
             String nodeName = nodeInfoOffChain.getName();
-            String address = nodeInfoOffChain.getAddress();
+            String stakeWalletAddress = nodeInfoOffChain.getAddress();
+            if (address.equalsIgnoreCase(stakeWalletAddress)) {
+                return;
+            }
             String progress = nodeInfoOffChain.getProgress();
             Long totalPos = Optional.ofNullable(nodeInfoOffChain.getTotalPos()).orElse(0L);
             Long maxAuthorize = Optional.ofNullable(nodeInfoOffChain.getMaxAuthorize()).orElse(0L);
@@ -1641,7 +1644,7 @@ public class AddressServiceImpl implements IAddressService {
                 NodeStakeDto dto = new NodeStakeDto();
                 dto.setNodeName(nodeName);
                 dto.setNodePubKey(publicKey);
-                dto.setNodeWalletAddress(address);
+                dto.setNodeWalletAddress(stakeWalletAddress);
                 dto.setAmount(String.valueOf(stakedAmount));
                 if (newPos > 0) {
                     dto.setProcessingAmount(newPos.toString());
@@ -1660,7 +1663,7 @@ public class AddressServiceImpl implements IAddressService {
                 NodeStakeDto dto = new NodeStakeDto();
                 dto.setNodeName(nodeName);
                 dto.setNodePubKey(publicKey);
-                dto.setNodeWalletAddress(address);
+                dto.setNodeWalletAddress(stakeWalletAddress);
                 dto.setAmount(withdrawUnfreezePos.toString());
                 dto.setState(StakeStatusEnum.WITHDRAWABLE.state());
                 dto.setNodeType(nodeType);
@@ -1677,7 +1680,7 @@ public class AddressServiceImpl implements IAddressService {
                 NodeStakeDto dto = new NodeStakeDto();
                 dto.setNodeName(nodeName);
                 dto.setNodePubKey(publicKey);
-                dto.setNodeWalletAddress(address);
+                dto.setNodeWalletAddress(stakeWalletAddress);
                 dto.setAmount(Long.toString(amount));
                 dto.setState(StakeStatusEnum.CANCELLING.state());
                 dto.setNodeType(nodeType);
