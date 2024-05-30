@@ -1,6 +1,5 @@
 package com.github.ontio.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 /**
@@ -9,7 +8,6 @@ import lombok.Data;
  * @date 2024/5/30
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeManagementDto {
 
     private String nodeApr = "0.00%";
