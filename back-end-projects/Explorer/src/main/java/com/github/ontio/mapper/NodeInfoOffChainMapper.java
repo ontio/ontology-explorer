@@ -19,4 +19,5 @@ public interface NodeInfoOffChainMapper extends Mapper<NodeInfoOffChain> {
 
     List<NodeInfoOffChain> selectAllStakingNodeInfo();
 
+    List<NodeInfoOffChain> selectAllRegisterNodeInfo(String address);
 }

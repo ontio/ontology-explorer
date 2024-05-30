@@ -39,6 +39,7 @@ import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
+import com.github.ontio.model.dto.PromisePosInfo;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
@@ -628,6 +629,41 @@ public class OntologySDKService {
         OntSdk ontSdk = getOntSdk();
         Address addr = Address.decodeBase58(address);
         return ontSdk.nativevm().governance().getAuthorizeInfo(publicKey, addr);
+    }
+
+    public Map getPeerPoolMap() throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        return ontSdk.nativevm().governance().getPeerPoolMap();
+    }
+
+    public String getPeerPoolInfo(String publicKey) throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        return ontSdk.nativevm().governance().getPeerInfo(publicKey);
+    }
+
+    public String getAttributes(String publicKey) throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        return ontSdk.nativevm().governance().getPeerAttributes(publicKey);
+    }
+
+    public long getPromisePos(String publicKey) {
+        OntSdk ontSdk = getOntSdk();
+        byte[] publicKeyPrefix = Helper.hexToBytes(publicKey);
+        byte[] promisePos = "promisePos".getBytes();
+        byte[] key = new byte[promisePos.length + publicKeyPrefix.length];
+        System.arraycopy(promisePos, 0, key, 0, promisePos.length);
+        System.arraycopy(publicKeyPrefix, 0, key, promisePos.length, publicKeyPrefix.length);
+
+        try {
+            String res = ontSdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString(key));
+            if (res != null && !res.equals("")) {
+                PromisePosInfo promisePosInfo = Serializable.from(Helper.hexToBytes(res), PromisePosInfo.class);
+                return promisePosInfo.promisePos.longValue();
+            }
+        } catch (Exception e) {
+            log.error("getPromisePos error", e);
+        }
+        return 0;
     }
 
     public int getPreConsensusCount() {

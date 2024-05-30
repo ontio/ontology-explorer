@@ -86,6 +86,9 @@ public class NodeInfoOffChain {
     private String progress;
 
     @Transient
+    private Long initPos;
+
+    @Transient
     private Long totalPos;
 
     @Transient

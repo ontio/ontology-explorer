@@ -1,6 +1,7 @@
 package com.github.ontio.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
@@ -154,13 +155,6 @@ public class NodesController {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
-    }
-
-    //    @ApiOperation(value = "insert or update node register information by public key")
-//    @PostMapping(value = "/off-chain-info")
-    public ResponseBean updateOffChainInfoByPublicKey(@RequestBody UpdateOffChainNodeInfoDto updateOffChainNodeInfoDto) throws Exception {
-        ResponseBean responseBean = nodesService.updateOffChainInfoByPublicKey(updateOffChainNodeInfoDto);
-        return responseBean;
     }
 
     @ApiOperation(value = "Get reward per 10000 ONT stake unit")
@@ -378,4 +372,18 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get address register node info")
+    @GetMapping(value = "/register-node-list")
+    public ResponseBean getAddressRegisterNodeList(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
+        return nodesService.getAddressRegisterNodeList(address);
+    }
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get node on chain config")
+    @GetMapping(value = "/node-on-chain-config")
+    public ResponseBean getNodeOnChainConfig(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+                                             @RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        return nodesService.getNodeOnChainConfig(address,publicKey);
+    }
 }
