@@ -36,6 +36,8 @@ public class NodeManagementDto {
 
     private String cap = "0";
 
+    private String reward = "0";
+
     private String withdrawableAmount;
 
     private String lockedAmount;

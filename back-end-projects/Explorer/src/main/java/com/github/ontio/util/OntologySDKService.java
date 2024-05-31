@@ -666,6 +666,11 @@ public class OntologySDKService {
         return 0;
     }
 
+    public String getSplitFee(String address) throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        return ontSdk.nativevm().governance().getSplitFeeAddress(address);
+    }
+
     public int getPreConsensusCount() {
         try {
             Configuration preConfiguration = getPreConfiguration();

@@ -54,24 +54,17 @@ public class ConstantParam {
 
     public static final String OEP8_PUMPKIN_PREFIX = "pumpkin";
 
-
     public static final BigDecimal ZERO = BigDecimal.ZERO;
 
+    public static final BigDecimal NINE_BIT_DECIMAL = new BigDecimal("1000000000");
 
-    public static final BigDecimal ONG_SECONDMAKE = new BigDecimal("5");
+    public static final BigDecimal ONT_TOTAL = NINE_BIT_DECIMAL;
 
+    public static final BigDecimal ONG_TOTAL = NINE_BIT_DECIMAL;
 
-    public static final BigDecimal ONT_TOTAL = new BigDecimal("1000000000");
-
-    public static final BigDecimal ONG_TOTAL = ONT_TOTAL;
-
-    public static final BigDecimal NEW_ONT_DECIMAL = ONT_TOTAL;
+    public static final BigDecimal NEW_ONT_DECIMAL = NINE_BIT_DECIMAL;
 
     public static final BigDecimal NEW_ONG_DECIMAL = new BigDecimal("1000000000000000000");
-
-
-    public static final String GO_TOTALSUPPLY_URL = "/getAssetHolder";
-
 
     public static final List<String> SPECIALADDRLIST = Arrays.asList(
             //团队锁仓地址
