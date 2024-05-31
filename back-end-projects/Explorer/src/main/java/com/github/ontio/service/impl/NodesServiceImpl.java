@@ -19,30 +19,14 @@
 package com.github.ontio.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.common.Helper;
 import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.core.governance.PeerPoolItem;
 import com.github.ontio.exception.ExplorerException;
 import com.github.ontio.mapper.*;
+import com.github.ontio.model.common.PageResponseBean;
 import com.github.ontio.model.common.ResponseBean;
 import com.github.ontio.model.dao.*;
 import com.github.ontio.model.dto.*;
-import com.github.ontio.mapper.CommonMapper;
-import com.github.ontio.mapper.NetNodeInfoMapper;
-import com.github.ontio.mapper.NodeBonusMapper;
-import com.github.ontio.mapper.NodeInfoOffChainMapper;
-import com.github.ontio.mapper.NodeInfoOnChainMapper;
-import com.github.ontio.mapper.NodeOverviewMapper;
-import com.github.ontio.mapper.NodeRankChangeMapper;
-import com.github.ontio.mapper.NodeRankHistoryMapper;
-import com.github.ontio.model.common.PageResponseBean;
-import com.github.ontio.model.dao.NetNodeInfo;
-import com.github.ontio.model.dao.NodeBonus;
-import com.github.ontio.model.dao.NodeInfoOffChain;
-import com.github.ontio.model.dao.NodeInfoOnChain;
-import com.github.ontio.model.dao.NodeInfoOnChainWithBonus;
-import com.github.ontio.model.dao.NodeInfoOnChainWithRankChange;
-import com.github.ontio.model.dao.NodeRankChange;
-import com.github.ontio.model.dao.NodeRankHistory;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.service.INodesService;
 import com.github.ontio.util.ConstantParam;
@@ -281,35 +265,6 @@ public class NodesServiceImpl implements INodesService {
             log.warn("Select node off chain info by public key {} failed: {}", publicKey, e.getMessage());
             return new NodeInfoOffChain();
         }
-    }
-
-    @Override
-    public ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto updateOffChainNodeInfoDto) throws Exception {
-        String nodeInfo = updateOffChainNodeInfoDto.getNodeInfo();
-        String stakePublicKey = updateOffChainNodeInfoDto.getPublicKey();
-        String signature = updateOffChainNodeInfoDto.getSignature();
-
-        byte[] nodeInfoBytes = Helper.hexToBytes(nodeInfo);
-        initSDK();
-        boolean verify = sdk.verifySignatureByPublicKey(stakePublicKey, nodeInfoBytes, signature);
-        if (!verify) {
-            return new ResponseBean(ErrorInfo.VERIFY_SIGN_FAILED.code(), ErrorInfo.VERIFY_SIGN_FAILED.desc(), "");
-        }
-        String nodeInfoStr = new String(nodeInfoBytes, "UTF-8");
-        NodeInfoOffChain nodeInfoOffChain = JSONObject.parseObject(nodeInfoStr, NodeInfoOffChain.class);
-        nodeInfoOffChain.setVerification(ConstantParam.NODE_NOT_VERIFIED);
-        nodeInfoOffChain.setOntId("");
-        nodeInfoOffChain.setNodeType(ConstantParam.CANDIDATE_NODE);
-        String nodePublicKey = nodeInfoOffChain.getPublicKey();
-        NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey(nodePublicKey, null);
-        if (null == nodeInfoOffChainDto) {
-            // insert
-            nodeInfoOffChainMapper.insertSelective(nodeInfoOffChain);
-        } else {
-            // update
-            nodeInfoOffChainMapper.updateByPrimaryKeySelective(nodeInfoOffChain);
-        }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), ErrorInfo.SUCCESS.desc());
     }
 
     @Override
@@ -872,7 +827,7 @@ public class NodesServiceImpl implements INodesService {
 
         Long maxAuthorize = calculationNode.getMaxAuthorize();
         // 考虑此节点用户质押部分满了的情况,此时用户不能再进行质押,收益为0
-        if ((maxAuthorize == 0 && totalPos1 == 0) || (maxAuthorize - totalPos1 == 0)) {
+        if (maxAuthorize == 0 && totalPos1 == 0) {
             nodeInspire.setUserReleasedOngIncentive("0");
             nodeInspire.setUserGasFeeIncentive("0");
             nodeInspire.setUserFoundationBonusIncentive("0");
@@ -1042,5 +997,99 @@ public class NodesServiceImpl implements INodesService {
         } else {
             return new PageResponseBean(respDtoList.subList(start, Math.min(start + pageSize, respSize)), respSize);
         }
+    }
+
+    @Override
+    public ResponseBean getAddressRegisterNodeList(String address) {
+        List<NodeInfoOffChain> registerNodeList = nodeInfoOffChainMapper.selectAllRegisterNodeInfo(address);
+        if (!CollectionUtils.isEmpty(registerNodeList)) {
+            try {
+                initSDK();
+                Map peerPoolMap = sdk.getPeerPoolMap();
+                for (NodeInfoOffChain registerNodeInfo : registerNodeList) {
+                    String publicKey = registerNodeInfo.getPublicKey();
+                    long initPos = 0;
+                    long totalPos = 0;
+                    // status:1-在线;2-正在退出;3-已退出
+                    int status = 3;
+                    if (peerPoolMap.containsKey(publicKey)) {
+                        PeerPoolItem item = (PeerPoolItem) peerPoolMap.get(publicKey);
+                        initPos = item.initPos;
+                        totalPos = item.totalPos;
+                        if (item.status == 1 || item.status == 2) {
+                            status = 1;
+                        } else {
+                            status = 2;
+                        }
+                    } else {
+                        String authorizeInfo = sdk.getAuthorizeInfo(publicKey, address);
+                        if (StringUtils.hasLength(authorizeInfo)) {
+                            JSONObject jsonObject = JSONObject.parseObject(authorizeInfo);
+                            initPos = jsonObject.getLong("withdrawUnfreezePos");
+                        }
+                    }
+                    registerNodeInfo.setStatus(status);
+                    registerNodeInfo.setInitPos(initPos);
+                    registerNodeInfo.setTotalPos(totalPos);
+                }
+            } catch (Exception e) {
+                log.error("getAddressRegisterNodeInfo error:{},{}", address, e.getMessage());
+            }
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), registerNodeList);
+    }
+
+    @Override
+    public ResponseBean getNodeOnChainConfig(String address, String publicKey) {
+        NodeManagementDto nodeManagementDto = new NodeManagementDto();
+        NodeInspire nodeInspire = nodeInspireMapper.selectByPrimaryKey(publicKey);
+        if (nodeInspire != null) {
+            String nodeApr = Optional.ofNullable(nodeInspire.getNodeApy()).orElse("0.00%");
+            String userApr = Optional.ofNullable(nodeInspire.getUserApy()).orElse("0.00%");
+            nodeManagementDto.setNodeApr(nodeApr);
+            nodeManagementDto.setUserApr(userApr);
+        }
+        try {
+            initSDK();
+            String peerPoolInfoStr = sdk.getPeerPoolInfo(publicKey);
+            if (StringUtils.hasLength(peerPoolInfoStr)) {
+                JSONObject peerPoolInfo = JSONObject.parseObject(peerPoolInfoStr);
+                Long initPos = peerPoolInfo.getLong("initPos");
+                Long totalPos = peerPoolInfo.getLong("totalPos");
+                long allStake = initPos + totalPos;
+                nodeManagementDto.setNodeStake(initPos.toString());
+                nodeManagementDto.setUserStake(totalPos.toString());
+                nodeManagementDto.setTotalStake(String.valueOf(allStake));
+            }
+
+            long promisePos = sdk.getPromisePos(publicKey);
+            nodeManagementDto.setPromiseStake(String.valueOf(promisePos));
+
+            String attributesStr = sdk.getAttributes(publicKey);
+            if (StringUtils.hasLength(attributesStr)) {
+                JSONObject attributes = JSONObject.parseObject(attributesStr);
+                nodeManagementDto.setCap(attributes.getLong("maxAuthorize").toString());
+                nodeManagementDto.setFeeSharingRatioNodeT(attributes.getLong("tPeerCost") + "%");
+                nodeManagementDto.setFeeSharingRatioNodeT1(attributes.getLong("t1PeerCost") + "%");
+                nodeManagementDto.setFeeSharingRatioNodeT2(attributes.getLong("t2PeerCost") + "%");
+                nodeManagementDto.setFeeSharingRatioUserT(attributes.getLong("tStakeCost") + "%");
+                nodeManagementDto.setFeeSharingRatioUserT1(attributes.getLong("t1StakeCost") + "%");
+                nodeManagementDto.setFeeSharingRatioUserT2(attributes.getLong("t2StakeCost") + "%");
+            }
+
+            String authorizeInfoStr = sdk.getAuthorizeInfo(publicKey, address);
+            if (StringUtils.hasLength(authorizeInfoStr)) {
+                JSONObject authorizeInfo = JSONObject.parseObject(authorizeInfoStr);
+                Long withdrawPos = authorizeInfo.getLong("withdrawPos");
+                Long withdrawFreezePos = authorizeInfo.getLong("withdrawFreezePos");
+                Long withdrawUnfreezePos = authorizeInfo.getLong("withdrawUnfreezePos");
+                long lockedAmount = withdrawPos + withdrawFreezePos;
+                nodeManagementDto.setWithdrawableAmount(withdrawUnfreezePos.toString());
+                nodeManagementDto.setLockedAmount(String.valueOf(lockedAmount));
+            }
+        } catch (Exception e) {
+            log.error("getNodeOnChainConfig error:{},{},{}", address, publicKey, e.getMessage());
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeManagementDto);
     }
 }

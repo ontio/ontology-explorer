@@ -34,32 +34,32 @@
     </cache>
 
     <sql id="baseColumns">
-        public_key,
-           name,
-           address,
-           ont_id,
-           node_type,
-           introduction,
-           logo_url,
-           region,
-           longitude,
-           latitude,
-           ip,
-           website,
-           social_media,
-           telegram,
-           twitter,
-           facebook,
-           open_mail,
-           contact_mail,
-           open_flag,
-           verification,
-           fee_sharing_ratio AS feeSharingRatio,
-           ontology_harbinger AS ontologyHarbinger,
-           contact_info_verified AS contactInfoVerified,
-           old_node AS oldNode,
-            risky,
-            bad_actor AS badActor
+    public_key,
+    name,
+    address,
+    ont_id,
+    node_type,
+    introduction,
+    logo_url,
+    region,
+    longitude,
+    latitude,
+    ip,
+    website,
+    social_media,
+    telegram,
+    twitter,
+    facebook,
+    open_mail,
+    contact_mail,
+    open_flag,
+    verification,
+    fee_sharing_ratio AS feeSharingRatio,
+    ontology_harbinger AS ontologyHarbinger,
+    contact_info_verified AS contactInfoVerified,
+    old_node AS oldNode,
+    risky,
+    bad_actor AS badActor
     </sql>
 
     <select id="selectByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOffChainDto" useCache="true">
@@ -89,5 +89,28 @@
         FROM tbl_node_info_off_chain
         WHERE node_type = 2
         AND open_flag = 1;;
+    </select>
+
+    <select id="selectAllStakingNodeInfo" resultType="com.github.ontio.model.dao.NodeInfoOffChain" useCache="true">
+        SELECT
+            a.public_key,
+            a.name,
+            a.address,
+            a.node_type,
+            b.progress,
+            b.total_pos,
+            b.max_authorize,
+            c.user_apy
+        FROM tbl_node_info_off_chain a
+        LEFT JOIN tbl_node_info_on_chain b ON a.public_key = b.public_key
+        LEFT JOIN tbl_node_inspire c ON a.public_key = c.public_key
+        ORDER BY b.progress IS NULL, b.progress = '100.00%', a.public_key
+    </select>
+
+    <select id="selectAllRegisterNodeInfo" resultType="com.github.ontio.model.dao.NodeInfoOffChain">
+        SELECT
+        <include refid="baseColumns"/>
+        FROM tbl_node_info_off_chain
+        WHERE address = #{address}
     </select>
 </mapper>

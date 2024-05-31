@@ -212,14 +212,15 @@ public class AddressController {
     @RequestLimit(count = 30)
     @ApiOperation(value = "get address staking info")
     @GetMapping(value = "/{address}/staking-info")
-    public ResponseBean getAddressStakingInfo(@PathVariable @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
-        return addressService.getAddressStakingInfo(address);
+    public ResponseBean getAddressStakingInfo(@PathVariable @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+                                              @RequestParam(required = false) String channel) {
+        return addressService.getAddressStakingInfo(address, channel);
     }
 
     @RequestLimit(count = 30)
     @ApiOperation(value = "get address staking info when round start")
     @GetMapping(value = "/{address}/staking-info/round-start")
-    public ResponseBean getAddressStakingInfoWhenRoundStart(@PathVariable @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
+    public ResponseBean getAddressStakingInfoWhenRoundStart(@PathVariable @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
         return addressService.getAddressStakingInfoWhenRoundStart(address);
     }
 }

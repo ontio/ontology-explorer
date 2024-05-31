@@ -18,7 +18,6 @@ import com.github.ontio.model.dto.aggregation.AddressBalanceAggregationsDto;
 import com.github.ontio.model.dto.aggregation.ExtremeBalanceDto;
 import com.github.ontio.model.dto.ranking.AddressRankingDto;
 import com.github.ontio.service.IAddressService;
-import com.github.ontio.service.INodesService;
 import com.github.ontio.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -61,14 +60,14 @@ public class AddressServiceImpl implements IAddressService {
     private final CommonService commonService;
     private final AddressDailyAggregationMapper addressDailyAggregationMapper;
     private final RankingMapper rankingMapper;
-    private final INodesService nodesService;
+    private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
     private final CommonMapper commonMapper;
 
 
     @Autowired
     public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper,
                               TxDetailMapper txDetailMapper, TxDetailIndexMapper txDetailIndexMapper, ParamsConfig paramsConfig, CommonService commonService,
-                              AddressDailyAggregationMapper addressDailyAggregationMapper, RankingMapper rankingMapper, INodesService nodesService, CommonMapper commonMapper) {
+                              AddressDailyAggregationMapper addressDailyAggregationMapper, RankingMapper rankingMapper, NodeInfoOffChainMapper nodeInfoOffChainMapper, CommonMapper commonMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
@@ -81,7 +80,7 @@ public class AddressServiceImpl implements IAddressService {
         this.commonService = commonService;
         this.addressDailyAggregationMapper = addressDailyAggregationMapper;
         this.rankingMapper = rankingMapper;
-        this.nodesService = nodesService;
+        this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
         this.commonMapper = commonMapper;
     }
 
@@ -1582,27 +1581,124 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean getAddressStakingInfo(String address) {
-        List<NodeInfoOffChain> currentOffChainInfo = nodesService.getCurrentOffChainInfo();
+    public ResponseBean getAddressStakingInfo(String address, String channel) {
+        List<NodeInfoOffChain> currentOffChainInfo = nodeInfoOffChainMapper.selectAllStakingNodeInfo();
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
         initSDK();
-        for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
-            String publicKey = nodeInfoOffChain.getPublicKey();
-            try {
-                if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
-                    String name = nodeInfoOffChain.getName();
-                    String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
-                    putStakingInfoList(stakingInfo, name, publicKey, nodeStakeDtos);
+        if (ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
+            int currentRound = sdk.getGovernanceView();
+            for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
+                String publicKey = nodeInfoOffChain.getPublicKey();
+                try {
+                    if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
+                        String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                        putStakingInfoList4Onto(address, stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
+                    }
+                } catch (Exception e) {
+                    log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+            }
+        } else {
+            for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
+                String publicKey = nodeInfoOffChain.getPublicKey();
+                try {
+                    if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
+                        String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                        putStakingInfoList(stakingInfo, nodeInfoOffChain, nodeStakeDtos);
+                    }
+                } catch (Exception e) {
+                    log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+                }
             }
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeStakeDtos);
     }
 
-    private void putStakingInfoList(String stakingInfo, String nodeName, String publicKey, List<NodeStakeDto> nodeStakeDtos) {
+    private void putStakingInfoList4Onto(String address, String stakingInfo, NodeInfoOffChain nodeInfoOffChain, List<NodeStakeDto> nodeStakeDtos, int currentRound) {
         if (stakingInfo != null) {
+            String publicKey = nodeInfoOffChain.getPublicKey();
+            String nodeName = nodeInfoOffChain.getName();
+            String stakeWalletAddress = nodeInfoOffChain.getAddress();
+            if (address.equalsIgnoreCase(stakeWalletAddress)) {
+                return;
+            }
+            String progress = nodeInfoOffChain.getProgress();
+            Long totalPos = Optional.ofNullable(nodeInfoOffChain.getTotalPos()).orElse(0L);
+            Long maxAuthorize = Optional.ofNullable(nodeInfoOffChain.getMaxAuthorize()).orElse(0L);
+            int nodeType = nodeInfoOffChain.getNodeType();
+            // 节点存在且质押进度没到100%,则可以质押
+            boolean allowStake = progress != null && !"100.00%".equals(progress);
+            // 判断节点存在是否存在
+            int nodeStatus = progress == null ? 0 : 1;
+            String userApy = progress == null ? "" : Optional.ofNullable(nodeInfoOffChain.getUserApy()).orElse("");
+            JSONObject stakingInfoObj = JSONObject.parseObject(stakingInfo);
+            Long consensusPos = stakingInfoObj.getLong("consensusPos");
+            Long freezePos = stakingInfoObj.getLong("freezePos");
+            Long newPos = stakingInfoObj.getLong("newPos");
+            Long withdrawPos = stakingInfoObj.getLong("withdrawPos");
+            Long withdrawFreezePos = stakingInfoObj.getLong("withdrawFreezePos");
+            Long withdrawUnfreezePos = stakingInfoObj.getLong("withdrawUnfreezePos");
+            long stakedAmount = consensusPos + freezePos;
+
+            if (newPos > 0 || stakedAmount > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                dto.setNodeWalletAddress(stakeWalletAddress);
+                dto.setAmount(String.valueOf(stakedAmount));
+                if (newPos > 0) {
+                    dto.setProcessingAmount(newPos.toString());
+                }
+                dto.setState(StakeStatusEnum.IN_STAKE.state());
+                dto.setNodeType(nodeType);
+                dto.setNodeState(nodeStatus);
+                dto.setAllowStake(allowStake);
+                dto.setTotalPos(totalPos);
+                dto.setMaxAuthorize(maxAuthorize);
+                dto.setCurrentRound(currentRound);
+                dto.setApr(userApy);
+                nodeStakeDtos.add(dto);
+            }
+            if (withdrawUnfreezePos > 0) {
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                dto.setNodeWalletAddress(stakeWalletAddress);
+                dto.setAmount(withdrawUnfreezePos.toString());
+                dto.setState(StakeStatusEnum.WITHDRAWABLE.state());
+                dto.setNodeType(nodeType);
+                dto.setNodeState(nodeStatus);
+                dto.setAllowStake(allowStake);
+                dto.setTotalPos(totalPos);
+                dto.setMaxAuthorize(maxAuthorize);
+                dto.setCurrentRound(currentRound);
+                dto.setApr(userApy);
+                nodeStakeDtos.add(dto);
+            }
+            if (withdrawPos + withdrawFreezePos > 0) {
+                long amount = withdrawPos + withdrawFreezePos;
+                NodeStakeDto dto = new NodeStakeDto();
+                dto.setNodeName(nodeName);
+                dto.setNodePubKey(publicKey);
+                dto.setNodeWalletAddress(stakeWalletAddress);
+                dto.setAmount(Long.toString(amount));
+                dto.setState(StakeStatusEnum.CANCELLING.state());
+                dto.setNodeType(nodeType);
+                dto.setNodeState(nodeStatus);
+                dto.setAllowStake(allowStake);
+                dto.setTotalPos(totalPos);
+                dto.setMaxAuthorize(maxAuthorize);
+                dto.setCurrentRound(currentRound);
+                dto.setApr(userApy);
+                nodeStakeDtos.add(dto);
+            }
+        }
+    }
+
+    private void putStakingInfoList(String stakingInfo, NodeInfoOffChain nodeInfoOffChain, List<NodeStakeDto> nodeStakeDtos) {
+        if (stakingInfo != null) {
+            String publicKey = nodeInfoOffChain.getPublicKey();
+            String nodeName = nodeInfoOffChain.getName();
             JSONObject stakingInfoObj = JSONObject.parseObject(stakingInfo);
             Long consensusPos = stakingInfoObj.getLong("consensusPos");
             Long freezePos = stakingInfoObj.getLong("freezePos");

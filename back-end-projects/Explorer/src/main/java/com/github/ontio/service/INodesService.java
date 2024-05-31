@@ -43,8 +43,6 @@ public interface INodesService {
 
     NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag);
 
-    ResponseBean updateOffChainInfoByPublicKey(UpdateOffChainNodeInfoDto nodeInfoOffChainDto) throws Exception;
-
     List<NodeInfoOffChain> getCurrentOffChainInfo();
 
     NodeInfoOnChain getCurrentOnChainInfo(String publicKey);
@@ -100,4 +98,7 @@ public interface INodesService {
 
     PageResponseBean getNodesByFilter(NodesInfoDto nodesInfo);
 
+    ResponseBean getAddressRegisterNodeList(String address);
+
+    ResponseBean getNodeOnChainConfig(String address, String publicKey);
 }
