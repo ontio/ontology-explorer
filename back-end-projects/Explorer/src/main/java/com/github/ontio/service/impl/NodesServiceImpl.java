@@ -39,6 +39,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1064,6 +1065,13 @@ public class NodesServiceImpl implements INodesService {
 
             long promisePos = sdk.getPromisePos(publicKey);
             nodeManagementDto.setPromiseStake(String.valueOf(promisePos));
+
+            String splitFeeStr = sdk.getSplitFee(address);
+            if (StringUtils.hasLength(splitFeeStr)) {
+                JSONObject splitFee = JSONObject.parseObject(splitFeeStr);
+                String reward = splitFee.getBigDecimal("amount").divide(ConstantParam.NINE_BIT_DECIMAL, 9, RoundingMode.DOWN).stripTrailingZeros().toPlainString();
+                nodeManagementDto.setReward(reward);
+            }
 
             String attributesStr = sdk.getAttributes(publicKey);
             if (StringUtils.hasLength(attributesStr)) {
