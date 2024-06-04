@@ -633,11 +633,13 @@ public class NodesServiceImpl implements INodesService {
         String[] addressSplit = paramsConfig.FOUNDATION_ADDRESSES.split(",");
         List<String> foundationAddresses = Arrays.asList(addressSplit);
 
-        Long stakeAmount = dto.getStakeAmount();
+        Long nodeAddAmount = Optional.ofNullable(dto.getNodeAddAmount()).orElse(0L);
+        Long stakeAmount = Optional.ofNullable(dto.getStakeAmount()).orElse(0L);
         String publicKey = dto.getPublicKey();
-        if (stakeAmount <= 0) {
+        if (nodeAddAmount <= 0 && stakeAmount <= 0) {
             throw new ExplorerException(ErrorInfo.PARAM_ERROR);
         }
+
         Long oldCurrentStake = 0L;
         Long newCurrentStake = 0L;
         initSDK();
@@ -654,6 +656,7 @@ public class NodesServiceImpl implements INodesService {
             if (one.getPublicKey().equals(publicKey)) {
                 oldCurrentStake = one.getCurrentStake();
                 Long initPos = one.getInitPos();
+                Long newInitPos = initPos + nodeAddAmount;
                 Long totalPos = one.getTotalPos();
                 Long maxAuthorize = one.getMaxAuthorize();
                 Long allowMaxStake = maxAuthorize - totalPos;
@@ -662,7 +665,8 @@ public class NodesServiceImpl implements INodesService {
                     stakeAmount = allowMaxStake;
                 }
 
-                newCurrentStake = initPos + newTotalPos;
+                newCurrentStake = newInitPos + newTotalPos;
+                one.setInitPos(newInitPos);
                 one.setTotalPos(newTotalPos);
                 one.setCurrentStake(newCurrentStake);
                 // 候选节点顶掉共识的情况
@@ -692,8 +696,10 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal newSr = BigDecimal.ZERO;
         String initProportion = calculationNode.getNodeProportion().replace("%", "");
         String stakeProportion = calculationNode.getUserProportion().replace("%", "");
-        BigDecimal initUserProportion = new BigDecimal(initProportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal stakeUserProportion = new BigDecimal(stakeProportion).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal initUserProportion = new BigDecimal(initProportion).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+        BigDecimal initNodeProportion = new BigDecimal(1).subtract(initUserProportion);
+        BigDecimal stakeUserProportion = new BigDecimal(stakeProportion).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+        BigDecimal stakeNodeProportion = new BigDecimal(1).subtract(stakeUserProportion);
         if (foundationNodes.contains(publicKey)) {
             initSDK();
             Long fu = 0L;
@@ -708,13 +714,13 @@ public class NodesServiceImpl implements INodesService {
             }
 
             // old sr
-            BigDecimal decimal1 = initUserProportion.multiply(new BigDecimal(fu * oldCurrentStake)).divide(new BigDecimal(oldCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal decimal1 = initUserProportion.multiply(new BigDecimal(fu * oldCurrentStake)).divide(new BigDecimal(oldCurrentStake - fp), 12, RoundingMode.HALF_UP);
             BigDecimal subtract1 = new BigDecimal(1).subtract(initUserProportion);
             BigDecimal decimal2 = new BigDecimal(fp).multiply(subtract1);
             oldSr = decimal1.add(decimal2);
 
             // new sr
-            BigDecimal decimal3 = initUserProportion.multiply(new BigDecimal(fu * newCurrentStake)).divide(new BigDecimal(newCurrentStake - fp), 12, BigDecimal.ROUND_HALF_UP);
+            BigDecimal decimal3 = initUserProportion.multiply(new BigDecimal(fu * newCurrentStake)).divide(new BigDecimal(newCurrentStake - fp), 12, RoundingMode.HALF_UP);
             BigDecimal subtract2 = new BigDecimal(1).subtract(initUserProportion);
             BigDecimal decimal4 = new BigDecimal(fp).multiply(subtract2);
             newSr = decimal3.add(decimal4);
@@ -739,7 +745,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal topStake = new BigDecimal(top49Stake);
 
         // 第一轮
-        BigDecimal first = new BigDecimal(10000000).divide(topStake, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal first = new BigDecimal(10000000).divide(topStake, 12, RoundingMode.HALF_UP);
         // 第二轮 数据库获取
         List<InspireCalculationParams> inspireCalculationParams = inspireCalculationParamsMapper.selectAll();
         if (CollectionUtils.isEmpty(inspireCalculationParams)) {
@@ -752,7 +758,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal ont = params.getOntPrice();
         BigDecimal ong = params.getOngPrice();
         BigDecimal subtract = topStake.subtract(totalFpFu);
-        BigDecimal second = totalSr.divide(subtract, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal second = totalSr.divide(subtract, 12, RoundingMode.HALF_UP);
 
         //  候选节点的质押总和
         BigDecimal candidateTotalStake = getTotalStake(candidateNodes);
@@ -760,7 +766,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal consensusTotalStake = getTotalStake(consensusNodes);
         BigDecimal consensusCount = new BigDecimal(consensusNodes.size());
         //  共识节点的平均质押量
-        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal consensusAverageStake = consensusTotalStake.divide(consensusCount, 12, RoundingMode.HALF_UP);
 
         // A 为所有共识节点的激励系数总和
         Map<String, BigDecimal> consensusInspireMap = new HashMap<>();
@@ -777,6 +783,7 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal finalReleaseOng = BigDecimal.ZERO;
         BigDecimal finalCommission = BigDecimal.ZERO;
         BigDecimal userFoundationInspire = BigDecimal.ZERO;
+        BigDecimal nodeFoundationInspire = BigDecimal.ZERO;
 
         Integer status = calculationNode.getStatus();
 
@@ -802,15 +809,15 @@ public class NodesServiceImpl implements INodesService {
             BigDecimal siSubFp = currentStake.subtract(fp);
             // 用户收益
             BigDecimal siPb = currentStake.multiply(initUserProportion);
-            BigDecimal add = siPb.divide(siSubFp, 12, BigDecimal.ROUND_HALF_UP).add(second);
+            BigDecimal add = siPb.divide(siSubFp, 12, RoundingMode.HALF_UP).add(second);
             userFoundationInspire = first.multiply(stakeAmountDecimal).multiply(add);
         }
         if (totalPos.compareTo(BigDecimal.ZERO) == 0) {
             totalPos = new BigDecimal(1);
         }
-        BigDecimal userStakePercentInTotalPos = stakeAmountDecimal.divide(totalPos, 12, BigDecimal.ROUND_HALF_UP);
-        BigDecimal initPercent = nodeStake.divide(currentStake, 12, BigDecimal.ROUND_HALF_UP);
-        BigDecimal stakePercent = totalPos.divide(currentStake, 12, BigDecimal.ROUND_HALF_UP);
+        BigDecimal userStakePercentInTotalPos = stakeAmountDecimal.divide(totalPos, 12, RoundingMode.HALF_UP);
+        BigDecimal initPercent = nodeStake.divide(currentStake, 12, RoundingMode.HALF_UP);
+        BigDecimal stakePercent = totalPos.divide(currentStake, 12, RoundingMode.HALF_UP);
 
         BigDecimal initPartFinalReleaseOng = finalReleaseOng.multiply(initPercent);
         BigDecimal stakePartFinalReleaseOng = finalReleaseOng.multiply(stakePercent);
@@ -818,14 +825,33 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal initPartFinalCommission = finalCommission.multiply(initPercent);
         BigDecimal stakePartFinalCommission = finalCommission.multiply(stakePercent);
 
+        BigDecimal finalNodeReleaseOng = ((initPartFinalReleaseOng.multiply(initNodeProportion)).add((stakePartFinalReleaseOng.multiply(stakeNodeProportion))));
         BigDecimal finalUserReleaseOng = ((initPartFinalReleaseOng.multiply(initUserProportion)).add((stakePartFinalReleaseOng.multiply(stakeUserProportion)))).multiply(userStakePercentInTotalPos);
+        BigDecimal finalNodeCommission = ((initPartFinalCommission.multiply(initNodeProportion)).add((stakePartFinalCommission.multiply(stakeNodeProportion))));
         BigDecimal finalUserCommission = ((initPartFinalCommission.multiply(initUserProportion)).add((stakePartFinalCommission.multiply(stakeUserProportion)))).multiply(userStakePercentInTotalPos);
 
-        BigDecimal stakeAmountUsd = stakeAmountDecimal.multiply(ont);
+        BigDecimal nodeStakeAmountUsd = nodeStake.multiply(ont);
+        BigDecimal nodeReleaseUsd = finalNodeReleaseOng.multiply(ong);
+        BigDecimal nodeCommissionUsd = finalNodeCommission.multiply(ong);
+        BigDecimal nodeFoundationUsd = nodeFoundationInspire.multiply(ong);
+        BigDecimal userStakeAmountUsd = stakeAmountDecimal.multiply(ont);
         BigDecimal userReleaseUsd = finalUserReleaseOng.multiply(ong);
         BigDecimal userCommissionUsd = finalUserCommission.multiply(ong);
         BigDecimal userFoundationUsd = userFoundationInspire.multiply(ong);
 
+        if (initPos > 0) {
+            nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.setScale(4, RoundingMode.DOWN).toPlainString());
+            nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.setScale(4, RoundingMode.DOWN).toPlainString());
+            nodeInspire.setNodeFoundationBonusIncentive(nodeFoundationInspire.setScale(4, RoundingMode.DOWN).toPlainString());
+            BigDecimal nodeReleasedOngIncentiveRate = nodeReleaseUsd.divide(nodeStakeAmountUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal nodeGasFeeIncentiveRate = nodeCommissionUsd.divide(nodeStakeAmountUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal nodeFoundationBonusIncentiveRate = nodeFoundationUsd.divide(nodeStakeAmountUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+            String nodeApr = nodeReleasedOngIncentiveRate.add(nodeGasFeeIncentiveRate).add(nodeFoundationBonusIncentiveRate).toPlainString() + "%";
+            nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleasedOngIncentiveRate.toPlainString() + "%");
+            nodeInspire.setNodeGasFeeIncentiveRate(nodeGasFeeIncentiveRate.toPlainString() + "%");
+            nodeInspire.setNodeFoundationBonusIncentiveRate(nodeFoundationBonusIncentiveRate.toPlainString() + "%");
+            nodeInspire.setNodeApr(nodeApr);
+        }
         Long maxAuthorize = calculationNode.getMaxAuthorize();
         // 考虑此节点用户质押部分满了的情况,此时用户不能再进行质押,收益为0
         if (maxAuthorize == 0 && totalPos1 == 0) {
@@ -835,13 +861,19 @@ public class NodesServiceImpl implements INodesService {
             nodeInspire.setUserReleasedOngIncentiveRate("0.00%");
             nodeInspire.setUserGasFeeIncentiveRate("0.00%");
             nodeInspire.setUserFoundationBonusIncentiveRate("0.00%");
+            nodeInspire.setUserApr("0.00%");
         } else {
-            nodeInspire.setUserReleasedOngIncentive(finalUserReleaseOng.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
-            nodeInspire.setUserGasFeeIncentive(finalUserCommission.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
-            nodeInspire.setUserFoundationBonusIncentive(userFoundationInspire.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
-            nodeInspire.setUserReleasedOngIncentiveRate(userReleaseUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-            nodeInspire.setUserGasFeeIncentiveRate(userCommissionUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-            nodeInspire.setUserFoundationBonusIncentiveRate(userFoundationUsd.divide(stakeAmountUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
+            nodeInspire.setUserReleasedOngIncentive(finalUserReleaseOng.setScale(4, RoundingMode.DOWN).toPlainString());
+            nodeInspire.setUserGasFeeIncentive(finalUserCommission.setScale(4, RoundingMode.DOWN).toPlainString());
+            nodeInspire.setUserFoundationBonusIncentive(userFoundationInspire.setScale(4, RoundingMode.DOWN).toPlainString());
+            BigDecimal userReleasedOngIncentiveRate = userReleaseUsd.divide(userStakeAmountUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal userGasFeeIncentiveRate = userCommissionUsd.divide(userStakeAmountUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal userFoundationBonusIncentiveRate = userFoundationUsd.divide(userStakeAmountUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+            String userApr = userReleasedOngIncentiveRate.add(userGasFeeIncentiveRate).add(userFoundationBonusIncentiveRate).toPlainString() + "%";
+            nodeInspire.setUserReleasedOngIncentiveRate(userReleasedOngIncentiveRate.toPlainString() + "%");
+            nodeInspire.setUserGasFeeIncentiveRate(userGasFeeIncentiveRate.toPlainString() + "%");
+            nodeInspire.setUserFoundationBonusIncentiveRate(userFoundationBonusIncentiveRate.toPlainString() + "%");
+            nodeInspire.setUserApr(userApr);
         }
 
         return nodeInspire;
@@ -1002,10 +1034,24 @@ public class NodesServiceImpl implements INodesService {
 
     @Override
     public ResponseBean getAddressRegisterNodeList(String address) {
+        RegisterNodeDto result = new RegisterNodeDto();
+        initSDK();
+        try {
+            String splitFeeStr = sdk.getSplitFee(address);
+            if (StringUtils.hasLength(splitFeeStr)) {
+                JSONObject splitFee = JSONObject.parseObject(splitFeeStr);
+                String reward = splitFee.getBigDecimal("amount").divide(ConstantParam.NINE_BIT_DECIMAL, 9, RoundingMode.DOWN).stripTrailingZeros().toPlainString();
+                result.setReward(reward);
+            }
+        } catch (Exception e) {
+            log.error("getAddressRegisterNodeInfo error:{},{}", address, e.getMessage());
+        }
+
         List<NodeInfoOffChain> registerNodeList = nodeInfoOffChainMapper.selectAllRegisterNodeInfo(address);
+        List<NodeInfoOffChain> list = Collections.emptyList();
         if (!CollectionUtils.isEmpty(registerNodeList)) {
+            list = new ArrayList<>();
             try {
-                initSDK();
                 Map peerPoolMap = sdk.getPeerPoolMap();
                 for (NodeInfoOffChain registerNodeInfo : registerNodeList) {
                     String publicKey = registerNodeInfo.getPublicKey();
@@ -1027,17 +1073,36 @@ public class NodesServiceImpl implements INodesService {
                         if (StringUtils.hasLength(authorizeInfo)) {
                             JSONObject jsonObject = JSONObject.parseObject(authorizeInfo);
                             initPos = jsonObject.getLong("withdrawUnfreezePos");
+                        } else {
+                            continue;
                         }
                     }
                     registerNodeInfo.setStatus(status);
                     registerNodeInfo.setInitPos(initPos);
                     registerNodeInfo.setTotalPos(totalPos);
+                    list.add(registerNodeInfo);
                 }
+                list.sort((o1, o2) -> {
+                    // 先按照status排序(1-在线->3-已退出->2-正在退出)，status相同的情况下按照节点质押数量倒序
+                    int compareByPrice = Integer.compare(o1.getStatus(), o2.getStatus());
+                    if (compareByPrice != 0) {
+                        if (o1.getStatus() == 2 && o2.getStatus() == 3) {
+                            return 1;
+                        } else if (o1.getStatus() == 3 && o2.getStatus() == 2) {
+                            return -1;
+                        } else {
+                            return compareByPrice;
+                        }
+                    } else {
+                        return Long.compare(o2.getInitPos(), o1.getInitPos());
+                    }
+                });
             } catch (Exception e) {
                 log.error("getAddressRegisterNodeInfo error:{},{}", address, e.getMessage());
             }
         }
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), registerNodeList);
+        result.setRegisterNodeList(list);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
     @Override
