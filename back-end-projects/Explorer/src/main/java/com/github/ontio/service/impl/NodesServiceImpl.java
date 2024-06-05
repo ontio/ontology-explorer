@@ -1117,6 +1117,9 @@ public class NodesServiceImpl implements INodesService {
         }
         try {
             initSDK();
+            int currentRound = sdk.getGovernanceView();
+            nodeManagementDto.setCurrentRound(currentRound);
+
             String peerPoolInfoStr = sdk.getPeerPoolInfo(publicKey);
             if (StringUtils.hasLength(peerPoolInfoStr)) {
                 JSONObject peerPoolInfo = JSONObject.parseObject(peerPoolInfoStr);

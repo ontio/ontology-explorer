@@ -41,4 +41,6 @@ public class NodeManagementDto {
     private String withdrawableAmount;
 
     private String lockedAmount;
+
+    private int currentRound;
 }
