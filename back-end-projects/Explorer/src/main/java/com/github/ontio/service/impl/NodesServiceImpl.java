@@ -259,9 +259,27 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag) {
+    public NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag, String channel) {
         try {
-            return nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
+            NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
+            if (nodeInfoOffChainDto != null && ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
+                int nodeStatus;
+                initSDK();
+                String peerPoolInfoStr = sdk.getPeerPoolInfo(publicKey);
+                if (StringUtils.hasLength(peerPoolInfoStr)) {
+                    JSONObject peerPoolInfo = JSONObject.parseObject(peerPoolInfoStr);
+                    int status = peerPoolInfo.getIntValue("status");
+                    if (status == 1 || status == 2) {
+                        nodeStatus = 1;
+                    } else {
+                        nodeStatus = 2;
+                    }
+                } else {
+                    nodeStatus = 3;
+                }
+                nodeInfoOffChainDto.setStatus(nodeStatus);
+            }
+            return nodeInfoOffChainDto;
         } catch (Exception e) {
             log.warn("Select node off chain info by public key {} failed: {}", publicKey, e.getMessage());
             return new NodeInfoOffChain();

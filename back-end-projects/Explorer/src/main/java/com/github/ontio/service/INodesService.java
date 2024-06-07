@@ -41,7 +41,7 @@ public interface INodesService {
 
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag);
 
-    NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag);
+    NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag, String channel);
 
     List<NodeInfoOffChain> getCurrentOffChainInfo();
 
