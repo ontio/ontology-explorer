@@ -263,7 +263,7 @@ public class NodesServiceImpl implements INodesService {
         try {
             NodeInfoOffChainDto nodeInfoOffChainDto = nodeInfoOffChainMapper.selectByPublicKey(publicKey, openFlag);
             if (nodeInfoOffChainDto != null && ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
-                int nodeStatus;
+                int nodeStatus = 3;
                 initSDK();
                 String peerPoolInfoStr = sdk.getPeerPoolInfo(publicKey);
                 if (StringUtils.hasLength(peerPoolInfoStr)) {
@@ -271,11 +271,9 @@ public class NodesServiceImpl implements INodesService {
                     int status = peerPoolInfo.getIntValue("status");
                     if (status == 1 || status == 2) {
                         nodeStatus = 1;
-                    } else {
+                    } else if (status == 3 || status == 4) {
                         nodeStatus = 2;
                     }
-                } else {
-                    nodeStatus = 3;
                 }
                 nodeInfoOffChainDto.setStatus(nodeStatus);
             }
@@ -669,7 +667,7 @@ public class NodesServiceImpl implements INodesService {
         if (CollectionUtils.isEmpty(nodeInfoOnChains)) {
             return null;
         }
-        NodeInfoOnChain calculationNode = new NodeInfoOnChain();
+        NodeInfoOnChain calculationNode = null;
         for (NodeInfoOnChain one : nodeInfoOnChains) {
             if (one.getPublicKey().equals(publicKey)) {
                 oldCurrentStake = one.getCurrentStake();
@@ -702,6 +700,10 @@ public class NodesServiceImpl implements INodesService {
                 calculationNode = one;
                 break;
             }
+        }
+
+        if (calculationNode == null) {
+            throw new ExplorerException(ErrorInfo.NOT_REGISTRY);
         }
         nodeInfoOnChains.sort((v1, v2) -> Long.compare(v2.getInitPos() + v2.getTotalPos(), v1.getInitPos() + v1.getTotalPos()));
         BigDecimal stakeAmountDecimal = new BigDecimal(stakeAmount);
@@ -872,7 +874,7 @@ public class NodesServiceImpl implements INodesService {
         }
         Long maxAuthorize = calculationNode.getMaxAuthorize();
         // 考虑此节点用户质押部分满了的情况,此时用户不能再进行质押,收益为0
-        if (maxAuthorize == 0 && totalPos1 == 0) {
+        if (maxAuthorize == 0 || totalPos1 == 0) {
             nodeInspire.setUserReleasedOngIncentive("0");
             nodeInspire.setUserGasFeeIncentive("0");
             nodeInspire.setUserFoundationBonusIncentive("0");
@@ -1083,8 +1085,17 @@ public class NodesServiceImpl implements INodesService {
                         totalPos = item.totalPos;
                         if (item.status == 1 || item.status == 2) {
                             status = 1;
-                        } else {
+                        } else if (item.status == 3 || item.status == 4) {
                             status = 2;
+                        } else if (item.status == 5) {
+                            // 黑名单节点为退出状态
+                            String authorizeInfo = sdk.getAuthorizeInfo(publicKey, address);
+                            if (StringUtils.hasLength(authorizeInfo)) {
+                                JSONObject jsonObject = JSONObject.parseObject(authorizeInfo);
+                                initPos = jsonObject.getLong("withdrawUnfreezePos");
+                            } else {
+                                continue;
+                            }
                         }
                     } else {
                         String authorizeInfo = sdk.getAuthorizeInfo(publicKey, address);
