@@ -874,7 +874,7 @@ public class NodesServiceImpl implements INodesService {
         }
         Long maxAuthorize = calculationNode.getMaxAuthorize();
         // 考虑此节点用户质押部分满了的情况,此时用户不能再进行质押,收益为0
-        if (maxAuthorize == 0 || totalPos1 == 0) {
+        if (maxAuthorize == 0 || totalPos1 == 0 || stakeAmount == 0) {
             nodeInspire.setUserReleasedOngIncentive("0");
             nodeInspire.setUserGasFeeIncentive("0");
             nodeInspire.setUserFoundationBonusIncentive("0");
@@ -1079,8 +1079,12 @@ public class NodesServiceImpl implements INodesService {
                     long totalPos = 0;
                     // status:1-在线;2-正在退出;3-已退出
                     int status = 3;
-                    if (peerPoolMap.containsKey(publicKey)) {
+                    if (peerPoolMap.containsKey(publicKey) || peerPoolMap.containsKey(publicKey.toUpperCase())) {
                         PeerPoolItem item = (PeerPoolItem) peerPoolMap.get(publicKey);
+                        if (item == null) {
+                            item = (PeerPoolItem) peerPoolMap.get(publicKey.toUpperCase());
+                            registerNodeInfo.setPublicKey(publicKey.toUpperCase());
+                        }
                         initPos = item.initPos;
                         totalPos = item.totalPos;
                         if (item.status == 1 || item.status == 2) {
