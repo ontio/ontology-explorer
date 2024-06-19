@@ -691,10 +691,12 @@ public class NodesServiceImpl implements INodesService {
                         || (newCurrentStake.equals(theLastConsensusNodeStake) && publicKey.compareTo(theLastConsensusNodePublicKey) == 1)) {
 
                     one.setStatus(2);
-                    for (NodeInfoOnChain consensus : nodeInfoOnChains) {
-                        if (consensus.getPublicKey().equals(theLastConsensusNodePublicKey)) {
-                            consensus.setStatus(1);
-                            break;
+                    if (!publicKey.equals(theLastConsensusNodePublicKey)) {
+                        for (NodeInfoOnChain consensus : nodeInfoOnChains) {
+                            if (consensus.getPublicKey().equals(theLastConsensusNodePublicKey)) {
+                                consensus.setStatus(1);
+                                break;
+                            }
                         }
                     }
                 }
