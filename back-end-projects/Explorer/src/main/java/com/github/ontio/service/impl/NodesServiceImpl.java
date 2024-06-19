@@ -676,9 +676,10 @@ public class NodesServiceImpl implements INodesService {
                 Long totalPos = one.getTotalPos();
                 Long maxAuthorize = one.getMaxAuthorize();
                 Long allowMaxStake = maxAuthorize - totalPos;
-                Long newTotalPos = (totalPos + stakeAmount) > maxAuthorize ? maxAuthorize : (totalPos + stakeAmount);
+                long originAddNewUserStake = totalPos + stakeAmount;
+                Long newTotalPos = originAddNewUserStake > maxAuthorize ? Math.max(totalPos, maxAuthorize) : originAddNewUserStake;
                 if (stakeAmount > allowMaxStake) {
-                    stakeAmount = allowMaxStake;
+                    stakeAmount = Math.max(0, allowMaxStake);
                 }
 
                 newCurrentStake = newInitPos + newTotalPos;
