@@ -7,6 +7,8 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInspireCalculationDto {
 
+    private Long nodeAddAmount;
+
     private Long stakeAmount;
 
     private String publicKey;

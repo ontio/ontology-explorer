@@ -20,6 +20,8 @@ public class InspireResultDto {
 
     private String nodeGasFeeIncentiveRate;
 
+    private String nodeApr;
+
     private String userGasFeeIncentive;
 
     private String userGasFeeIncentiveRate;
@@ -31,4 +33,6 @@ public class InspireResultDto {
     private String userFoundationBonusIncentive;
 
     private String userFoundationBonusIncentiveRate;
+
+    private String userApr;
 }

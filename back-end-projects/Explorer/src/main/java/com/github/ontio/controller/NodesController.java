@@ -149,8 +149,9 @@ public class NodesController {
 
     @ApiOperation(value = "Get node register information by public key")
     @GetMapping(value = "/off-chain-info/public")
-    public ResponseBean getOffChainInfoByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
-        NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfoPublic(publicKey, null);
+    public ResponseBean getOffChainInfoByPublicKey(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey,
+                                                   @RequestParam(value = "channel", required = false) String channel) {
+        NodeInfoOffChain nodeInfoList = nodesService.getCurrentOffChainInfoPublic(publicKey, null, channel);
         if (nodeInfoList == null) {
             return new ResponseBean(ErrorInfo.NOT_FOUND.code(), ErrorInfo.NOT_FOUND.desc(), "");
         }
@@ -384,6 +385,6 @@ public class NodesController {
     @GetMapping(value = "/node-on-chain-config")
     public ResponseBean getNodeOnChainConfig(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address,
                                              @RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
-        return nodesService.getNodeOnChainConfig(address,publicKey);
+        return nodesService.getNodeOnChainConfig(address, publicKey);
     }
 }
