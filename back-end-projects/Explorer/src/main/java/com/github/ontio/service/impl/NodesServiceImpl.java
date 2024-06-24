@@ -1005,6 +1005,9 @@ public class NodesServiceImpl implements INodesService {
                             .feeSharingRatio(nodeInfoOffChain.getFeeSharingRatio()).ontologyHarbinger(nodeInfoOffChain.getOntologyHarbinger()).risky(nodeInfoOffChain.getRisky()).badActor(nodeInfoOffChain.getBadActor())
                             .build();
                     NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
+                    if (nodeInspire == null) {
+                        continue;
+                    }
                     String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
                     String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
                     String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
@@ -1024,6 +1027,9 @@ public class NodesServiceImpl implements INodesService {
                             .feeSharingRatio(nodeInfoOffChain.getFeeSharingRatio()).ontologyHarbinger(nodeInfoOffChain.getOntologyHarbinger()).risky(nodeInfoOffChain.getRisky()).badActor(nodeInfoOffChain.getBadActor())
                             .build();
                     NodeInspire nodeInspire = nodeInspireMap.get(infoRespDto.getPublicKey());
+                    if (nodeInspire == null) {
+                        continue;
+                    }
                     String userFoundationBonusIncentiveRate = nodeInspire.getUserFoundationBonusIncentiveRate();
                     String userGasFeeIncentiveRate = nodeInspire.getUserGasFeeIncentiveRate();
                     String userReleasedOngIncentiveRate = nodeInspire.getUserReleasedOngIncentiveRate();
