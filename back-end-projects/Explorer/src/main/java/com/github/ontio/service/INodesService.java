@@ -37,7 +37,7 @@ import java.util.List;
 
 public interface INodesService {
 
-    List<NodeInfoOnChainWithRankChange> getCurrentOnChainInfo();
+    List<NodeInfoOnChainWithRankChange> getCurrentOnChainStakeInfo(String publicKey);
 
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag);
 

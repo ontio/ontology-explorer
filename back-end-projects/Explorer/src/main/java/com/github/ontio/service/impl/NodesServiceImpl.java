@@ -137,9 +137,9 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
-    public List<NodeInfoOnChainWithRankChange> getCurrentOnChainInfo() {
+    public List<NodeInfoOnChainWithRankChange> getCurrentOnChainStakeInfo(String publicKey) {
         try {
-            List<NodeInfoOnChainDto> nodeInfoOnChainList = nodeInfoOnChainMapper.selectAllInfo();
+            List<NodeInfoOnChainDto> nodeInfoOnChainList = nodeInfoOnChainMapper.selectAllInfo(publicKey);
             Map<String, NodeRankChange> nodeRankChangeMap = getNodeRankChange();
             List<NodeInfoOnChainWithRankChange> nodeInfoOnChainWithRankChanges = new ArrayList<>();
             for (NodeInfoOnChainDto nodeInfo : nodeInfoOnChainList) {
@@ -320,7 +320,7 @@ public class NodesServiceImpl implements INodesService {
         List<NodeInfoOnChainDto> nodeInfoOnChainLst;
         List<NodeBonus> nodeBonusLst;
         try {
-            nodeInfoOnChainLst = nodeInfoOnChainMapper.selectAllInfo();
+            nodeInfoOnChainLst = nodeInfoOnChainMapper.selectAllInfo(null);
             int nodeCount = nodeBonusMapper.selectNodeCount();
             nodeBonusLst = nodeBonusMapper.selectLatestNodeBonusList(nodeCount);
         } catch (Exception e) {

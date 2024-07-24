@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface NodeInfoOnChainMapper extends Mapper<NodeInfoOnChain> {
 
-    List<NodeInfoOnChainDto> selectAllInfo();
+    List<NodeInfoOnChainDto> selectAllInfo(String publicKey);
 
     Long selectTotalStake();
 
