@@ -48,7 +48,7 @@
                b.fee_sharing_ratio,
                b.risky,
                b.bad_actor,
-               IFNULL(c.user_apy,'0.00%') as user_apy
+               IFNULL(c.user_apy,'0.00%') as apr
         FROM tbl_node_info_on_chain a
         LEFT JOIN tbl_node_info_off_chain b ON a.public_key = b.public_key
         LEFT JOIN tbl_node_inspire c ON a.public_key = c.public_key
