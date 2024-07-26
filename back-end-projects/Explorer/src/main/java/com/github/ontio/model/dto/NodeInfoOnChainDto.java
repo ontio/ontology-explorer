@@ -30,6 +30,9 @@ public class NodeInfoOnChainDto extends NodeInfoOnChain {
     @Transient
     private Integer badActor;
 
+    @Transient
+    private String apr;
+
     public NodeInfoOnChainDto() {
 
     }
@@ -42,5 +45,6 @@ public class NodeInfoOnChainDto extends NodeInfoOnChain {
         this.ontologyHarbinger = nodeInfoOnChain.getOntologyHarbinger();
         this.risky = nodeInfoOnChain.getRisky();
         this.badActor = nodeInfoOnChain.getBadActor();
+        this.apr = nodeInfoOnChain.getApr();
     }
 }
