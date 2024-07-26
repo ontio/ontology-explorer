@@ -213,8 +213,9 @@ public class AddressController {
     @ApiOperation(value = "get address staking info")
     @GetMapping(value = "/{address}/staking-info")
     public ResponseBean getAddressStakingInfo(@PathVariable @Length(min = 34, max = 34, message = "Incorrect address format") String address,
-                                              @RequestParam(required = false) String channel) {
-        return addressService.getAddressStakingInfo(address, channel);
+                                              @RequestParam(required = false) String channel,
+                                              @RequestParam(value = "public_key", required = false) String publicKey) {
+        return addressService.getAddressStakingInfo(address, channel, publicKey);
     }
 
     @RequestLimit(count = 30)

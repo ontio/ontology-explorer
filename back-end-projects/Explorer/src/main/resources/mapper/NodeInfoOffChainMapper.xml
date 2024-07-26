@@ -107,6 +107,22 @@
         ORDER BY b.progress IS NULL, b.progress = '100.00%', a.public_key
     </select>
 
+    <select id="selectOneStakingNodeInfo" resultType="com.github.ontio.model.dao.NodeInfoOffChain" useCache="true">
+        SELECT
+            a.public_key,
+            a.name,
+            a.address,
+            a.node_type,
+            b.progress,
+            b.total_pos,
+            b.max_authorize,
+            c.user_apy
+        FROM tbl_node_info_off_chain a
+                 LEFT JOIN tbl_node_info_on_chain b ON a.public_key = b.public_key
+                 LEFT JOIN tbl_node_inspire c ON a.public_key = c.public_key
+        WHERE a.public_key = #{publicKey}
+    </select>
+
     <select id="selectAllRegisterNodeInfo" resultType="com.github.ontio.model.dao.NodeInfoOffChain">
         SELECT
         <include refid="baseColumns"/>

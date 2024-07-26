@@ -1581,33 +1581,56 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public ResponseBean getAddressStakingInfo(String address, String channel) {
-        List<NodeInfoOffChain> currentOffChainInfo = nodeInfoOffChainMapper.selectAllStakingNodeInfo();
+    public ResponseBean getAddressStakingInfo(String address, String channel, String specificPublicKey) {
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
         initSDK();
-        if (ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
-            int currentRound = sdk.getGovernanceView();
-            for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
-                String publicKey = nodeInfoOffChain.getPublicKey();
+        if (StringUtils.hasLength(specificPublicKey)) {
+            NodeInfoOffChain nodeInfoOffChain = nodeInfoOffChainMapper.selectOneStakingNodeInfo(specificPublicKey);
+            if (nodeInfoOffChain == null) {
+                throw new ExplorerException(ErrorInfo.NOT_FOUND);
+            }
+            if (ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
+                int currentRound = sdk.getGovernanceView();
                 try {
-                    if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
-                        String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
-                        putStakingInfoList4Onto(address, stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
-                    }
+                    String stakingInfo = sdk.getAuthorizeInfo(specificPublicKey, address);
+                    putStakingInfoList4Onto(address, stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
                 } catch (Exception e) {
-                    log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+                    log.error("getAddressStakingInfo error:{},{},{}", address, specificPublicKey, e.getMessage());
+                }
+            } else {
+                try {
+                    String stakingInfo = sdk.getAuthorizeInfo(specificPublicKey, address);
+                    putStakingInfoList(stakingInfo, nodeInfoOffChain, nodeStakeDtos);
+                } catch (Exception e) {
+                    log.error("getAddressStakingInfo error:{},{},{}", address, specificPublicKey, e.getMessage());
                 }
             }
         } else {
-            for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
-                String publicKey = nodeInfoOffChain.getPublicKey();
-                try {
-                    if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
-                        String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
-                        putStakingInfoList(stakingInfo, nodeInfoOffChain, nodeStakeDtos);
+            List<NodeInfoOffChain> currentOffChainInfo = nodeInfoOffChainMapper.selectAllStakingNodeInfo();
+            if (ConstantParam.CHANNEL_ONTO.equalsIgnoreCase(channel)) {
+                int currentRound = sdk.getGovernanceView();
+                for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
+                    String publicKey = nodeInfoOffChain.getPublicKey();
+                    try {
+                        if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
+                            String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                            putStakingInfoList4Onto(address, stakingInfo, nodeInfoOffChain, nodeStakeDtos, currentRound);
+                        }
+                    } catch (Exception e) {
+                        log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
                     }
-                } catch (Exception e) {
-                    log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+                }
+            } else {
+                for (NodeInfoOffChain nodeInfoOffChain : currentOffChainInfo) {
+                    String publicKey = nodeInfoOffChain.getPublicKey();
+                    try {
+                        if (!publicKey.startsWith(ConstantParam.FAKE_NODE_PUBKEY_PREFIX)) {
+                            String stakingInfo = sdk.getAuthorizeInfo(publicKey, address);
+                            putStakingInfoList(stakingInfo, nodeInfoOffChain, nodeStakeDtos);
+                        }
+                    } catch (Exception e) {
+                        log.error("getAddressStakingInfo error:{},{},{}", address, publicKey, e.getMessage());
+                    }
                 }
             }
         }
