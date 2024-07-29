@@ -33,6 +33,7 @@ import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.ErrorInfo;
 import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -942,6 +943,39 @@ public class NodesServiceImpl implements INodesService {
         int start = Math.max(pageSize * (pageNum - 1), 0);
         int count = nodeCycleMapper.selectNodeCycleCountByPublicKey(publicKey);
         List<NodeCycle> result = nodeCycleMapper.selectCycleByPubKey(publicKey, start, pageSize);
+        try {
+            initSDK();
+            String attributesStr = sdk.getAttributes(publicKey);
+            if (StringUtils.hasLength(attributesStr)) {
+                JSONObject attributes = JSONObject.parseObject(attributesStr);
+                String tPeerCost = (100 - attributes.getLong("tPeerCost")) + "%";
+                String t1PeerCost = (100 - attributes.getLong("t1PeerCost")) + "%";
+                String t2PeerCost = (100 - attributes.getLong("t2PeerCost")) + "%";
+                String tStakeCost = (100 - attributes.getLong("tStakeCost")) + "%";
+                String t1StakeCost = (100 - attributes.getLong("t1StakeCost")) + "%";
+                String t2StakeCost = (100 - attributes.getLong("t2StakeCost")) + "%";
+                if (result.size() > 0) {
+                    NodeCycle nodeCycleT = result.get(0);
+                    nodeCycleT.setNodeProportionT(tPeerCost);
+                    nodeCycleT.setUserProportionT(tStakeCost);
+                    nodeCycleT.setNodeProportionT2(t2PeerCost);
+                    nodeCycleT.setUserProportionT2(t2StakeCost);
+                    if (result.size() == 1) {
+                        // new register node
+                        NodeCycle simulatePreNodeCycle = new NodeCycle();
+                        Integer cycle = nodeCycleT.getCycle();
+                        BeanUtils.copyProperties(nodeCycleT, simulatePreNodeCycle);
+                        simulatePreNodeCycle.setCycle(cycle - 1);
+                        simulatePreNodeCycle.setNodeProportionT2(t1PeerCost);
+                        simulatePreNodeCycle.setUserProportionT2(t1StakeCost);
+                        result.add(simulatePreNodeCycle);
+                        count++;
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
         return new PageResponseBean(result, count);
 
     }
