@@ -1642,6 +1642,10 @@ public class AddressServiceImpl implements IAddressService {
             String publicKey = nodeInfoOffChain.getPublicKey();
             String nodeName = nodeInfoOffChain.getName();
             String stakeWalletAddress = nodeInfoOffChain.getAddress();
+            Integer badActor = nodeInfoOffChain.getBadActor();
+            Integer risky = nodeInfoOffChain.getRisky();
+            Integer feeSharingRatio = nodeInfoOffChain.getFeeSharingRatio();
+            Integer ontologyHarbinger = nodeInfoOffChain.getOntologyHarbinger();
             if (address.equalsIgnoreCase(stakeWalletAddress)) {
                 return;
             }
@@ -1680,6 +1684,10 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
+                dto.setFeeSharingRatio(feeSharingRatio);
+                dto.setOntologyHarbinger(ontologyHarbinger);
+                dto.setRisky(risky);
+                dto.setBadActor(badActor);
                 nodeStakeDtos.add(dto);
             }
             if (withdrawUnfreezePos > 0) {
@@ -1696,6 +1704,10 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
+                dto.setFeeSharingRatio(feeSharingRatio);
+                dto.setOntologyHarbinger(ontologyHarbinger);
+                dto.setRisky(risky);
+                dto.setBadActor(badActor);
                 nodeStakeDtos.add(dto);
             }
             if (withdrawPos + withdrawFreezePos > 0) {
@@ -1713,6 +1725,10 @@ public class AddressServiceImpl implements IAddressService {
                 dto.setMaxAuthorize(maxAuthorize);
                 dto.setCurrentRound(currentRound);
                 dto.setApr(userApy);
+                dto.setFeeSharingRatio(feeSharingRatio);
+                dto.setOntologyHarbinger(ontologyHarbinger);
+                dto.setRisky(risky);
+                dto.setBadActor(badActor);
                 nodeStakeDtos.add(dto);
             }
         }

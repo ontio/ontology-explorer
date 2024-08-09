@@ -41,4 +41,12 @@ public class NodeStakeDto {
 
     // user apr
     private String apr;
+
+    private Integer feeSharingRatio;
+
+    private Integer ontologyHarbinger;
+
+    private Integer risky;
+
+    private Integer badActor;
 }
