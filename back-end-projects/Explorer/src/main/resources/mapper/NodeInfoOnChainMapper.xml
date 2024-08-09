@@ -59,6 +59,38 @@
         </where>
     </select>
 
+    <select id="selectNodeInfoByPublicKey" resultType="com.github.ontio.model.dto.NodeInfoOnChainDto" useCache="true">
+        SELECT a.node_rank,
+        a.name,
+        a.current_stake,
+        a.progress,
+        a.detail_url,
+        a.public_key,
+        a.address,
+        a.status,
+        a.init_pos,
+        a.total_pos,
+        a.max_authorize,
+        a.node_proportion,
+        a.user_proportion,
+        a.current_stake_percentage,
+        b.introduction,
+        b.logo_url,
+        b.ontology_harbinger,
+        b.fee_sharing_ratio,
+        b.risky,
+        b.bad_actor,
+        IFNULL(c.user_apy,'0.00%') as apr,
+        d.id IS NOT NULL as lastBadNode,
+        e.id IS NOT NULL as newBadNode
+        FROM tbl_node_info_on_chain a
+        LEFT JOIN tbl_node_info_off_chain b ON a.public_key = b.public_key
+        LEFT JOIN tbl_node_inspire c ON a.public_key = c.public_key
+        LEFT JOIN tbl_bad_node d ON a.public_key = d.public_key AND d.cycle = #{lastCycle}
+        LEFT JOIN tbl_bad_node e ON a.public_key = e.public_key AND e.cycle = #{currentCycle}
+        WHERE a.public_key = #{publicKey}
+    </select>
+
     <select id="selectTotalStake" resultType="java.lang.Long" useCache="true">
         SELECT SUM(current_stake)
         FROM tbl_node_info_on_chain

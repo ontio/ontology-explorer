@@ -18,4 +18,7 @@ public interface CommonMapper {
 
     List<GovernanceInfoDto> getStakingInfoByAddress(@Param("address") String address);
 
+    List<String> getStakingAddressByPublicKey(@Param("pubKey") String pubKey);
+
+    List<String> getAllStakingAddress();
 }

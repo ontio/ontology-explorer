@@ -13,6 +13,8 @@ public interface NodeInfoOnChainMapper extends Mapper<NodeInfoOnChain> {
 
     List<NodeInfoOnChainDto> selectAllInfo(String publicKey);
 
+    NodeInfoOnChainDto selectNodeInfoByPublicKey(String publicKey, int lastCycle, int currentCycle);
+
     Long selectTotalStake();
 
     NodeInfoOnChainDto selectByPublicKey(String publicKey);

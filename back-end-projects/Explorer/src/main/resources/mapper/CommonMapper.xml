@@ -35,4 +35,17 @@
            INNER JOIN tbl_node_info_off_chain b ON a.peer_pub_key = b.public_key
     WHERE a.address = #{address}
   </select>
+
+    <select id="getStakingAddressByPublicKey" resultType="String">
+        SELECT address
+        FROM tbl_governance_info
+        WHERE peer_pub_key = #{pubKey}
+        AND (consensus_pos > 0 OR candidate_pos > 0)
+    </select>
+
+    <select id="getAllStakingAddress" resultType="String">
+        SELECT DISTINCT address
+        FROM tbl_governance_info
+        WHERE consensus_pos > 0 OR candidate_pos > 0 OR withdraw_candidate_pos > 0
+    </select>
 </mapper>
