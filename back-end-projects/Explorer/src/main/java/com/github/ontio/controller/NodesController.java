@@ -411,6 +411,13 @@ public class NodesController {
     }
 
     @RequestLimit(count = 60)
+    @ApiOperation(value = "get max node date cycle")
+    @GetMapping(value = "/node-data-cycle")
+    public ResponseBean getMaxNodeDataCycle() {
+        return nodesService.getMaxNodeDataCycle();
+    }
+
+    @RequestLimit(count = 60)
     @ApiOperation(value = "get bad nodes")
     @GetMapping(value = "/bad-node")
     public ResponseBean getBadNode(@RequestParam Integer cycle) {

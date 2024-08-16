@@ -106,5 +106,7 @@ public interface INodesService {
 
     ResponseBean getStakingAddressByNode(String publicKey);
 
+    ResponseBean getMaxNodeDataCycle();
+
     ResponseBean getBadNode(Integer cycle);
 }

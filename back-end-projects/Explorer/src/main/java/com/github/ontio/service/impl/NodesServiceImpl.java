@@ -1292,6 +1292,12 @@ public class NodesServiceImpl implements INodesService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), addressList);
     }
 
+    @Override
+    public ResponseBean getMaxNodeDataCycle() {
+        int maxCycle = nodeCycleMapper.selectMaxNodeCycle();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), maxCycle);
+    }
+
     public ResponseBean getBadNode(Integer cycle) {
         List<String> nodeList = badNodeMapper.selectBadNodeByCycle(cycle);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeList);
