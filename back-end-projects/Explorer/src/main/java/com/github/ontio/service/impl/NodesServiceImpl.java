@@ -73,11 +73,11 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeInspireMapper nodeInspireMapper;
 
-    private final TokenServiceImpl tokenService;
-
     private final InspireCalculationParamsMapper inspireCalculationParamsMapper;
 
     private final NodeCycleMapper nodeCycleMapper;
+
+    private final BadNodeMapper badNodeMapper;
 
     @Autowired
     public NodesServiceImpl(ParamsConfig paramsConfig,
@@ -93,7 +93,8 @@ public class NodesServiceImpl implements INodesService {
                             NodeInspireMapper nodeInspireMapper,
                             TokenServiceImpl tokenService,
                             InspireCalculationParamsMapper inspireCalculationParamsMapper,
-                            NodeCycleMapper nodeCycleMapper
+                            NodeCycleMapper nodeCycleMapper,
+                            BadNodeMapper badNodeMapper
     ) {
         this.paramsConfig = paramsConfig;
         this.nodeBonusMapper = nodeBonusMapper;
@@ -106,9 +107,9 @@ public class NodesServiceImpl implements INodesService {
         this.commonMapper = commonMapper;
         this.nodeOverviewHistoryMapper = nodeOverviewHistoryMapper;
         this.nodeInspireMapper = nodeInspireMapper;
-        this.tokenService = tokenService;
         this.inspireCalculationParamsMapper = inspireCalculationParamsMapper;
         this.nodeCycleMapper = nodeCycleMapper;
+        this.badNodeMapper = badNodeMapper;
     }
 
     private OntologySDKService sdk;
@@ -162,6 +163,43 @@ public class NodesServiceImpl implements INodesService {
             log.warn("Select node infos in chain failed: {}", e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public NodeInfoOnChainDto getSingleNodeInfo(String publicKey) {
+        initSDK();
+        int currentRound = sdk.getGovernanceView();
+        NodeInfoOnChainDto nodeInfo = nodeInfoOnChainMapper.selectNodeInfoByPublicKey(publicKey, currentRound - 1, currentRound);
+        if (nodeInfo == null) {
+            throw new ExplorerException(ErrorInfo.NOT_FOUND);
+        }
+        String tPeerCost = "";
+        String t1PeerCost = "";
+        String tStakeCost = "";
+        String t1StakeCost = "";
+        try {
+            String attributesStr = sdk.getAttributes(publicKey);
+            if (StringUtils.hasLength(attributesStr)) {
+                JSONObject attributes = JSONObject.parseObject(attributesStr);
+                tPeerCost = (100 - attributes.getLong("tPeerCost")) + "%";
+                t1PeerCost = (100 - attributes.getLong("t1PeerCost")) + "%";
+                tStakeCost = (100 - attributes.getLong("tStakeCost")) + "%";
+                t1StakeCost = (100 - attributes.getLong("t1StakeCost")) + "%";
+            }
+        } catch (Exception e) {
+            log.error("getSingleNodeInfo sdk.getAttributes error:{}", e.getMessage());
+        }
+        nodeInfo.setFeeSharingRatioNodeT(tPeerCost);
+        nodeInfo.setFeeSharingRatioNodeT1(t1PeerCost);
+        nodeInfo.setFeeSharingRatioUserT(tStakeCost);
+        nodeInfo.setFeeSharingRatioUserT1(t1StakeCost);
+        Long maxAuthorize = nodeInfo.getMaxAuthorize();
+        Long initPos = nodeInfo.getInitPos();
+        long tenTimesInitPos = initPos * 10;
+        if (maxAuthorize > tenTimesInitPos) {
+            nodeInfo.setMaxAuthorize(tenTimesInitPos);
+        }
+        return nodeInfo;
     }
 
     public long getCurrentTotalStake() {
@@ -1181,7 +1219,6 @@ public class NodesServiceImpl implements INodesService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
     }
 
-    @Override
     public ResponseBean getNodeOnChainConfig(String address, String publicKey) {
         NodeManagementDto nodeManagementDto = new NodeManagementDto();
         NodeInspire nodeInspire = nodeInspireMapper.selectByPrimaryKey(publicKey);
@@ -1243,5 +1280,26 @@ public class NodesServiceImpl implements INodesService {
             log.error("getNodeOnChainConfig error:{},{},{}", address, publicKey, e.getMessage());
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeManagementDto);
+    }
+
+    public ResponseBean getAllStakingAddress() {
+        List<String> addressList = commonMapper.getAllStakingAddress();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), addressList);
+    }
+
+    public ResponseBean getStakingAddressByNode(String publicKey) {
+        List<String> addressList = commonMapper.getStakingAddressByPublicKey(publicKey);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), addressList);
+    }
+
+    @Override
+    public ResponseBean getMaxNodeDataCycle() {
+        int maxCycle = nodeCycleMapper.selectMaxNodeCycle();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), maxCycle);
+    }
+
+    public ResponseBean getBadNode(Integer cycle) {
+        List<String> nodeList = badNodeMapper.selectBadNodeByCycle(cycle);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeList);
     }
 }

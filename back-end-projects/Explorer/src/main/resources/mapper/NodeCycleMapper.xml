@@ -48,4 +48,8 @@
         where public_key = #{publicKey}
     </select>
 
+    <select id="selectMaxNodeCycle" resultType="Integer">
+        SELECT MAX(cycle)
+        FROM tbl_node_cycle_data
+    </select>
 </mapper>

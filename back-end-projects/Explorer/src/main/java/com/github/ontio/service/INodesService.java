@@ -39,6 +39,8 @@ public interface INodesService {
 
     List<NodeInfoOnChainWithRankChange> getCurrentOnChainStakeInfo(String publicKey);
 
+    NodeInfoOnChainDto getSingleNodeInfo(String publicKey);
+
     NodeInfoOffChain getCurrentOffChainInfo(String publicKey, Integer openFlag);
 
     NodeInfoOffChain getCurrentOffChainInfoPublic(String publicKey, Integer openFlag, String channel);
@@ -100,5 +102,11 @@ public interface INodesService {
 
     ResponseBean getAddressRegisterNodeList(String address);
 
-    ResponseBean getNodeOnChainConfig(String address, String publicKey);
+    ResponseBean getAllStakingAddress();
+
+    ResponseBean getStakingAddressByNode(String publicKey);
+
+    ResponseBean getMaxNodeDataCycle();
+
+    ResponseBean getBadNode(Integer cycle);
 }

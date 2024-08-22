@@ -33,6 +33,24 @@ public class NodeInfoOnChainDto extends NodeInfoOnChain {
     @Transient
     private String apr;
 
+    @Transient
+    private String feeSharingRatioNodeT;
+
+    @Transient
+    private String feeSharingRatioNodeT1;
+
+    @Transient
+    private String feeSharingRatioUserT;
+
+    @Transient
+    private String feeSharingRatioUserT1;
+
+    @Transient
+    private Boolean lastBadNode;
+
+    @Transient
+    private Boolean newBadNode;
+
     public NodeInfoOnChainDto() {
 
     }
@@ -46,5 +64,7 @@ public class NodeInfoOnChainDto extends NodeInfoOnChain {
         this.risky = nodeInfoOnChain.getRisky();
         this.badActor = nodeInfoOnChain.getBadActor();
         this.apr = nodeInfoOnChain.getApr();
+        this.lastBadNode = nodeInfoOnChain.getLastBadNode();
+        this.newBadNode = nodeInfoOnChain.getNewBadNode();
     }
 }

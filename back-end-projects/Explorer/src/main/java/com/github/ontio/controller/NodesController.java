@@ -108,6 +108,14 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeInfoList);
     }
 
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get single node information")
+    @GetMapping(value = "/single-node-info")
+    public ResponseBean getSingleNodeInfo(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        NodeInfoOnChainDto singleNodeInfo = nodesService.getSingleNodeInfo(publicKey);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), singleNodeInfo);
+    }
+
     @ApiOperation(value = "Get nodes register information")
     @GetMapping(value = "/off-chain-infos")
     public ResponseBean getOffChainInfo(@RequestParam(value = "node_type", defaultValue = "-1") Integer nodeType) {
@@ -387,4 +395,34 @@ public class NodesController {
                                              @RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
         return nodesService.getNodeOnChainConfig(address, publicKey);
     }
+
+    @RequestLimit(count = 10)
+    @ApiOperation(value = "get all staking address")
+    @GetMapping(value = "/all-staking-address")
+    public ResponseBean getAllStakingAddress() {
+        return nodesService.getAllStakingAddress();
+    }
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get staking address by node")
+    @GetMapping(value = "/staking-address")
+    public ResponseBean getStakingAddressByNode(@RequestParam("public_key") @Length(min = 56, max = 128, message = "invalid public key") String publicKey) {
+        return nodesService.getStakingAddressByNode(publicKey);
+    }
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get max node date cycle")
+    @GetMapping(value = "/node-data-cycle")
+    public ResponseBean getMaxNodeDataCycle() {
+        return nodesService.getMaxNodeDataCycle();
+    }
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get bad nodes")
+    @GetMapping(value = "/bad-node")
+    public ResponseBean getBadNode(@RequestParam Integer cycle) {
+        return nodesService.getBadNode(cycle);
+    }
+
+
 }
