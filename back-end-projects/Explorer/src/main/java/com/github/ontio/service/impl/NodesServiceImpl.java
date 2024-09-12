@@ -1302,4 +1302,9 @@ public class NodesServiceImpl implements INodesService {
         List<BadNode> nodeList = badNodeMapper.selectBadNodeByCycle(cycle);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeList);
     }
+
+    public ResponseBean getBestApr() {
+        String apr = nodeInspireMapper.selectBestApr();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), apr);
+    }
 }

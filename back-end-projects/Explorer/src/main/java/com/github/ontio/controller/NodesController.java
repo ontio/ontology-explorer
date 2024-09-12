@@ -424,5 +424,10 @@ public class NodesController {
         return nodesService.getBadNode(cycle);
     }
 
-
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get best apr")
+    @GetMapping(value = "/best-apr")
+    public ResponseBean getBestApr() {
+        return nodesService.getBestApr();
+    }
 }
