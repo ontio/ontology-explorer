@@ -1,0 +1,1 @@
+ALTER TABLE `tbl_bad_node` ADD COLUMN `name` varchar(70) NOT NULL DEFAULT '' COMMENT '节点名称' AFTER `public_key`;

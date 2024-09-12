@@ -1299,7 +1299,7 @@ public class NodesServiceImpl implements INodesService {
     }
 
     public ResponseBean getBadNode(Integer cycle) {
-        List<String> nodeList = badNodeMapper.selectBadNodeByCycle(cycle);
+        List<BadNode> nodeList = badNodeMapper.selectBadNodeByCycle(cycle);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeList);
     }
 }
