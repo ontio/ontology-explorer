@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface BadNodeMapper extends Mapper<BadNode> {
 
-    List<String> selectBadNodeByCycle(int cycle);
+    List<BadNode> selectBadNodeByCycle(int cycle);
 
 }

@@ -23,5 +23,7 @@ public class BadNode {
     @Column(name = "public_key")
     private String publicKey;
 
+    private String name;
+
     private Integer cycle;
 }

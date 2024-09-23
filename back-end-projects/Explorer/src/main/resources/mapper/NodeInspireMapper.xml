@@ -59,4 +59,14 @@
         COUNT(1)
         FROM tbl_node_inspire
     </select>
+
+    <select id="selectBestApr" resultType="java.lang.String">
+        SELECT a.user_apy
+        FROM tbl_node_inspire a
+        INNER JOIN tbl_node_info_off_chain b
+        ON a.public_key = b.public_key
+        WHERE b.bad_actor = 0
+        ORDER BY a.user_apy+0 DESC
+        LIMIT 1;
+    </select>
 </mapper>

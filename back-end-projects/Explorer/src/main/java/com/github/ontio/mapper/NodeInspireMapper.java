@@ -14,4 +14,5 @@ public interface NodeInspireMapper extends Mapper<NodeInspire> {
 
     int selectNodesInspireCount();
 
+    String selectBestApr();
 }
