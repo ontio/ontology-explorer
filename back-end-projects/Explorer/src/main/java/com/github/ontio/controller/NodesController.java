@@ -430,4 +430,11 @@ public class NodesController {
     public ResponseBean getBestApr() {
         return nodesService.getBestApr();
     }
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get address register node ONT")
+    @GetMapping(value = "/register-node-ont")
+    public ResponseBean getAddressRegisterNodeOnt(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
+        return nodesService.getAddressRegisterNodeOnt(address);
+    }
 }

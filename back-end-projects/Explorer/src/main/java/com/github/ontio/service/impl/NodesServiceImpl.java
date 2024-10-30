@@ -1298,13 +1298,48 @@ public class NodesServiceImpl implements INodesService {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), maxCycle);
     }
 
+    @Override
     public ResponseBean getBadNode(Integer cycle) {
         List<BadNode> nodeList = badNodeMapper.selectBadNodeByCycle(cycle);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), nodeList);
     }
 
+    @Override
     public ResponseBean getBestApr() {
         String apr = nodeInspireMapper.selectBestApr();
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), apr);
+    }
+
+    @Override
+    public ResponseBean getAddressRegisterNodeOnt(String address) {
+        long registerNodeOnt = 0;
+        List<NodeInfoOffChain> registerNodeList = nodeInfoOffChainMapper.selectAllRegisterNodeInfo(address);
+        if (!CollectionUtils.isEmpty(registerNodeList)) {
+            try {
+                initSDK();
+                for (NodeInfoOffChain registerNodeInfo : registerNodeList) {
+                    String publicKey = registerNodeInfo.getPublicKey();
+                    String peerPoolInfoStr = sdk.getPeerPoolInfo(publicKey);
+                    if (StringUtils.hasLength(peerPoolInfoStr)) {
+                        JSONObject peerPoolInfo = JSONObject.parseObject(peerPoolInfoStr);
+                        Long initPos = peerPoolInfo.getLong("initPos");
+                        registerNodeOnt += initPos;
+                    }
+                    String authorizeInfoStr = sdk.getAuthorizeInfo(publicKey, address);
+                    if (StringUtils.hasLength(authorizeInfoStr)) {
+                        JSONObject authorizeInfo = JSONObject.parseObject(authorizeInfoStr);
+                        Long withdrawPos = authorizeInfo.getLong("withdrawPos");
+                        Long withdrawFreezePos = authorizeInfo.getLong("withdrawFreezePos");
+                        Long withdrawUnfreezePos = authorizeInfo.getLong("withdrawUnfreezePos");
+                        long lockedAmount = withdrawPos + withdrawFreezePos;
+                        registerNodeOnt += lockedAmount;
+                        registerNodeOnt += withdrawUnfreezePos;
+                    }
+                }
+            } catch (Exception e) {
+                log.error("getAddressRegisterNodeOnt error:{},{}", address, e.getMessage());
+            }
+        }
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), registerNodeOnt);
     }
 }

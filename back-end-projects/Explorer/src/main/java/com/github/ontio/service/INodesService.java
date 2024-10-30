@@ -109,4 +109,8 @@ public interface INodesService {
     ResponseBean getMaxNodeDataCycle();
 
     ResponseBean getBadNode(Integer cycle);
+
+    ResponseBean getBestApr();
+
+    ResponseBean getAddressRegisterNodeOnt(String address);
 }
