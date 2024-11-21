@@ -67,7 +67,7 @@ public class NodesServiceImpl implements INodesService {
 
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
 
-    private final CommonMapper commonMapper;
+    private final GovernanceMapper governanceMapper;
 
     private final NodeOverviewHistoryMapper nodeOverviewHistoryMapper;
 
@@ -88,7 +88,7 @@ public class NodesServiceImpl implements INodesService {
                             NodeInfoOnChainMapper nodeInfoOnChainMapper,
                             NodeRankHistoryMapper nodeRankHistoryMapper,
                             NodeInfoOffChainMapper nodeInfoOffChainMapper,
-                            CommonMapper commonMapper,
+                            GovernanceMapper governanceMapper,
                             NodeOverviewHistoryMapper nodeOverviewHistoryMapper,
                             NodeInspireMapper nodeInspireMapper,
                             TokenServiceImpl tokenService,
@@ -104,7 +104,7 @@ public class NodesServiceImpl implements INodesService {
         this.nodeInfoOnChainMapper = nodeInfoOnChainMapper;
         this.nodeRankHistoryMapper = nodeRankHistoryMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
-        this.commonMapper = commonMapper;
+        this.governanceMapper = governanceMapper;
         this.nodeOverviewHistoryMapper = nodeOverviewHistoryMapper;
         this.nodeInspireMapper = nodeInspireMapper;
         this.inspireCalculationParamsMapper = inspireCalculationParamsMapper;
@@ -498,8 +498,8 @@ public class NodesServiceImpl implements INodesService {
     @Override
     public PageResponseBean getGovernanceInfo(String pubKey, Integer pageNum, Integer pageSize) {
         int start = Math.max(pageSize * (pageNum - 1), 0);
-        List<GovernanceInfoDto> result = commonMapper.findGovernanceInfo(pubKey, start, pageSize);
-        int count = commonMapper.countGovernanceInfo(pubKey);
+        List<GovernanceInfoDto> result = governanceMapper.findGovernanceInfo(pubKey, start, pageSize);
+        int count = governanceMapper.countGovernanceInfo(pubKey);
         return new PageResponseBean(result, count);
     }
 
@@ -1283,12 +1283,12 @@ public class NodesServiceImpl implements INodesService {
     }
 
     public ResponseBean getAllStakingAddress() {
-        List<String> addressList = commonMapper.getAllStakingAddress();
+        List<String> addressList = governanceMapper.getAllStakingAddress();
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), addressList);
     }
 
     public ResponseBean getStakingAddressByNode(String publicKey) {
-        List<String> addressList = commonMapper.getStakingAddressByPublicKey(publicKey);
+        List<String> addressList = governanceMapper.getStakingAddressByPublicKey(publicKey);
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), addressList);
     }
 
@@ -1341,5 +1341,11 @@ public class NodesServiceImpl implements INodesService {
             }
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), registerNodeOnt);
+    }
+
+    @Override
+    public ResponseBean getAddressStakingRewards(String address, String publicKey, Integer round) {
+        List<StakingRewardsDto> list = governanceMapper.getStakingRewardsByAddress(address, publicKey, round);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), list);
     }
 }
