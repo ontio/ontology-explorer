@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
-import com.github.ontio.mapper.CommonMapper;
+import com.github.ontio.mapper.GovernanceMapper;
 import com.github.ontio.mapper.NodeInfoOnChainMapper;
 import com.github.ontio.mapper.Oep4TxDetailMapper;
 import com.github.ontio.mapper.TxDetailMapper;
@@ -28,7 +28,7 @@ import java.util.*;
 @Service
 public class ActivityDataServiceImpl implements IActivityDataService {
     @Autowired
-    private CommonMapper commonMapper;
+    private GovernanceMapper governanceMapper;
     @Autowired
     private TxDetailMapper txDetailMapper;
     @Autowired
@@ -53,7 +53,7 @@ public class ActivityDataServiceImpl implements IActivityDataService {
     @Override
     public Anniversary6thDataDto queryAddress6thAnniversaryData(String address) {
         // ONT质押数量
-        List<GovernanceInfoDto> stakingInfoByAddress = commonMapper.getStakingInfoByAddress(address);
+        List<GovernanceInfoDto> stakingInfoByAddress = governanceMapper.getStakingInfoByAddress(address);
         long stakingAmount = 0;
         for (GovernanceInfoDto governanceInfoDto : stakingInfoByAddress) {
             Long consensusPos = governanceInfoDto.getConsensusPos();

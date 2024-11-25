@@ -437,4 +437,13 @@ public class NodesController {
     public ResponseBean getAddressRegisterNodeOnt(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
         return nodesService.getAddressRegisterNodeOnt(address);
     }
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get address staking rewards")
+    @GetMapping(value = "/staking-rewards")
+    public ResponseBean getAddressStakingRewards(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+                                                 @RequestParam(value = "public_key", required = false) String publicKey,
+                                                 @RequestParam(required = false) Integer round) {
+        return nodesService.getAddressStakingRewards(address, publicKey, round);
+    }
 }

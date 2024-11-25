@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.github.ontio.mapper.CommonMapper">
+<mapper namespace="com.github.ontio.mapper.GovernanceMapper">
 
   <select id="findGovernanceInfo" resultType="com.github.ontio.model.dto.GovernanceInfoDto">
     SELECT address,
@@ -47,5 +47,24 @@
         SELECT DISTINCT address
         FROM tbl_governance_info
         WHERE consensus_pos > 0 OR candidate_pos > 0 OR withdraw_candidate_pos > 0
+    </select>
+
+    <select id="getStakingRewardsByAddress" resultType="com.github.ontio.model.dto.StakingRewardsDto">
+        SELECT
+               address,
+               peer_pub_key AS publicKey,
+               ong_income AS rewards,
+               cycle AS round
+        FROM tbl_income_info
+        <where>
+            address = #{address}
+            <if test="publicKey !=null and publicKey != ''">
+                AND peer_pub_key = #{publicKey}
+            </if>
+            <if test="round !=null">
+                AND cycle = #{round}
+            </if>
+        </where>
+        ORDER BY cycle DESC
     </select>
 </mapper>

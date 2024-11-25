@@ -61,13 +61,13 @@ public class AddressServiceImpl implements IAddressService {
     private final AddressDailyAggregationMapper addressDailyAggregationMapper;
     private final RankingMapper rankingMapper;
     private final NodeInfoOffChainMapper nodeInfoOffChainMapper;
-    private final CommonMapper commonMapper;
+    private final GovernanceMapper governanceMapper;
 
 
     @Autowired
     public AddressServiceImpl(Oep4Mapper oep4Mapper, Oep8Mapper oep8Mapper, Oep5Mapper oep5Mapper, Orc20Mapper orc20Mapper, Orc721Mapper orc721Mapper, Orc1155Mapper orc1155Mapper,
                               TxDetailMapper txDetailMapper, TxDetailIndexMapper txDetailIndexMapper, ParamsConfig paramsConfig, CommonService commonService,
-                              AddressDailyAggregationMapper addressDailyAggregationMapper, RankingMapper rankingMapper, NodeInfoOffChainMapper nodeInfoOffChainMapper, CommonMapper commonMapper) {
+                              AddressDailyAggregationMapper addressDailyAggregationMapper, RankingMapper rankingMapper, NodeInfoOffChainMapper nodeInfoOffChainMapper, GovernanceMapper governanceMapper) {
         this.oep4Mapper = oep4Mapper;
         this.oep8Mapper = oep8Mapper;
         this.oep5Mapper = oep5Mapper;
@@ -81,7 +81,7 @@ public class AddressServiceImpl implements IAddressService {
         this.addressDailyAggregationMapper = addressDailyAggregationMapper;
         this.rankingMapper = rankingMapper;
         this.nodeInfoOffChainMapper = nodeInfoOffChainMapper;
-        this.commonMapper = commonMapper;
+        this.governanceMapper = governanceMapper;
     }
 
     private OntologySDKService sdk;
@@ -1456,6 +1456,10 @@ public class AddressServiceImpl implements IAddressService {
     // 查询所有交易的接口
     @Override
     public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
+        if ("AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK".equalsIgnoreCase(address)) {
+            PageResponseBean pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
+        }
         PageResponseBean pageResponse;
         Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
 //        Integer txCount = txDetailMapper.selectTransferTxsCount(address, assetName);
@@ -1473,6 +1477,10 @@ public class AddressServiceImpl implements IAddressService {
     // 查询一个地址的所有转账信息
     @Override
     public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize) {
+        if ("AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK".equalsIgnoreCase(address)) {
+            PageResponseBean pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
+        }
         tokenType = tokenType.toLowerCase();
         PageResponseBean pageResponse;
         Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
@@ -1785,7 +1793,7 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public ResponseBean getAddressStakingInfoWhenRoundStart(String address) {
-        List<GovernanceInfoDto> stakingInfoList = commonMapper.getStakingInfoByAddress(address);
+        List<GovernanceInfoDto> stakingInfoList = governanceMapper.getStakingInfoByAddress(address);
         List<NodeStakeDto> nodeStakeDtos = new ArrayList<>();
         for (GovernanceInfoDto governanceInfoDto : stakingInfoList) {
             putStakingInfoList(governanceInfoDto, nodeStakeDtos);

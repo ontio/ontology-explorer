@@ -107,7 +107,7 @@ public class ParamsConfig {
 
     @Value("${batchInsert.sqlCount}")
     public int BATCHINSERT_SQL_COUNT;
-    
+
     @Value("${reSync.enabled:true}")
     public boolean reSyncEnabled = true;
 
