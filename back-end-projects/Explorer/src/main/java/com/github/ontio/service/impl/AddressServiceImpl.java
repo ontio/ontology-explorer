@@ -1456,6 +1456,10 @@ public class AddressServiceImpl implements IAddressService {
     // 查询所有交易的接口
     @Override
     public ResponseBean queryTransferTxsWithTotalByPage(String address, String assetName, Integer pageNumber, Integer pageSize) {
+        if ("AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK".equalsIgnoreCase(address)) {
+            PageResponseBean pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
+        }
         PageResponseBean pageResponse;
         Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
 //        Integer txCount = txDetailMapper.selectTransferTxsCount(address, assetName);
@@ -1473,6 +1477,10 @@ public class AddressServiceImpl implements IAddressService {
     // 查询一个地址的所有转账信息
     @Override
     public ResponseBean queryTransferTxsOfTokenTypeByPage(String address, String tokenType, Integer pageNumber, Integer pageSize) {
+        if ("AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK".equalsIgnoreCase(address)) {
+            PageResponseBean pageResponse = new PageResponseBean(Collections.emptyList(), 0);
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
+        }
         tokenType = tokenType.toLowerCase();
         PageResponseBean pageResponse;
         Integer txCount = addressDailyAggregationMapper.countAddressTotalTxOfTokenType(address, tokenType);
