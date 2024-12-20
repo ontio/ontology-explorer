@@ -1,22 +1,22 @@
 package com.github.ontio.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
-import com.github.ontio.mapper.GovernanceMapper;
-import com.github.ontio.mapper.NodeInfoOnChainMapper;
-import com.github.ontio.mapper.Oep4TxDetailMapper;
-import com.github.ontio.mapper.TxDetailMapper;
+import com.github.ontio.config.ParamsConfig;
+import com.github.ontio.mapper.*;
 import com.github.ontio.model.dao.NodeInfoOnChain;
-import com.github.ontio.model.dto.Anniversary6thDataDto;
-import com.github.ontio.model.dto.GovernanceInfoDto;
+import com.github.ontio.model.dto.*;
 import com.github.ontio.service.IActivityDataService;
 import com.github.ontio.util.ConstantParam;
 import com.github.ontio.util.OntologySDKService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
@@ -28,6 +28,8 @@ import java.util.*;
 @Service
 public class ActivityDataServiceImpl implements IActivityDataService {
     @Autowired
+    private ParamsConfig paramsConfig;
+    @Autowired
     private GovernanceMapper governanceMapper;
     @Autowired
     private TxDetailMapper txDetailMapper;
@@ -35,6 +37,8 @@ public class ActivityDataServiceImpl implements IActivityDataService {
     private Oep4TxDetailMapper oep4TxDetailMapper;
     @Autowired
     private NodeInfoOnChainMapper nodeInfoOnChainMapper;
+    @Autowired
+    private OntidTxDetailMapper ontidTxDetailMapper;
     @Autowired
     private OntologySDKService sdk;
 
@@ -120,5 +124,72 @@ public class ActivityDataServiceImpl implements IActivityDataService {
         BigDecimal toAmount = txDetailMapper.selectAssetTransferAmountByAddress(ConstantParam.ONT, null, address, timestamp);
         BigDecimal certainTimeBalance = ontBalance.add(fromAmount).subtract(toAmount);
         return certainTimeBalance.stripTrailingZeros().toPlainString();
+    }
+
+    @Override
+    public JSONObject queryAddressActiveTime(String address) {
+        Integer activeTime = 0;
+        boolean registerOntId = false;
+        String ontId = Common.didont + address;
+        OntidTxDetailDto ontidTxDetailDto = ontidTxDetailMapper.selectOntIdCreateTime(ontId);
+        if (ontidTxDetailDto != null) {
+            activeTime = ontidTxDetailDto.getTxTime();
+            registerOntId = true;
+        } else {
+            Example example = new Example(TxDetailDto.class);
+            example.selectProperties("txTime");
+            example.createCriteria().andEqualTo("toAddress", address);
+            example.setOrderByClause("id LIMIT 1");
+            TxDetailDto txDetailDto = txDetailMapper.selectOneByExample(example);
+            if (txDetailDto != null) {
+                activeTime = txDetailDto.getTxTime();
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("registerOntId", registerOntId);
+        result.put("activeTime", activeTime);
+        return result;
+    }
+
+    @Override
+    public JSONObject queryAddressSendTxInfo(String address) {
+        int firstTxTime = 0;
+        int startBlock2024 = 16980450;
+        int txCount = txDetailMapper.selectSendTxCountByBlockHeight(address, startBlock2024, paramsConfig.BLOCK_END_2024);
+        if (txCount > 0) {
+            TxDetailDto txDetailDto = txDetailMapper.selectFirstSendTxByBlockHeight(address, startBlock2024, paramsConfig.BLOCK_END_2024);
+            if (txDetailDto != null) {
+                firstTxTime = txDetailDto.getTxTime();
+            }
+        }
+        JSONObject result = new JSONObject();
+        result.put("txCount", txCount);
+        result.put("firstTxTime", firstTxTime);
+        return result;
+    }
+
+    @Override
+    public JSONObject queryRunningNodeInfo(String address) {
+        String name = null;
+        int stakingAddress = 0;
+        List<NodeInfoOnChainDto> nodeInfoOnChainDtos = nodeInfoOnChainMapper.selectNodesByFilter("", address, "", 0, 0);
+        if (!CollectionUtils.isEmpty(nodeInfoOnChainDtos)) {
+            List<String> publicKeyList = new ArrayList<>();
+            for (NodeInfoOnChainDto nodeInfoOnChainDto : nodeInfoOnChainDtos) {
+                if (name == null) {
+                    name = nodeInfoOnChainDto.getName();
+                }
+                String publicKey = nodeInfoOnChainDto.getPublicKey();
+                publicKeyList.add(publicKey);
+            }
+            stakingAddress = governanceMapper.getStakingAddressCount(publicKeyList);
+        }
+        boolean multipleNode = nodeInfoOnChainDtos.size() > 1;
+
+        JSONObject result = new JSONObject();
+        result.put("name", name);
+        result.put("stakingAddress", stakingAddress);
+        result.put("multipleNode", multipleNode);
+        return result;
     }
 }

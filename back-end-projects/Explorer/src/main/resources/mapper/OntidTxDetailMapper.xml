@@ -60,4 +60,13 @@
     where tx_hash = #{txHash}
   </select>
 
+    <select id="selectOntIdCreateTime" resultType="com.github.ontio.model.dto.OntidTxDetailDto">
+        select <include refid="detailColumns"/>
+        from tbl_ontid_tx_detail
+        where ontid = #{ontId}
+        AND description LIKE 'Register%'
+        ORDER BY id
+        LIMIT 1
+    </select>
+
 </mapper>

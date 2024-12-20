@@ -178,5 +178,6 @@ public class ParamsConfig {
     @Value("${recaptcha.secret.key}")
     public String RECAPTCHA_SECRET_KEY;
 
-
+    @Value("${block.end.2024}")
+    public int BLOCK_END_2024;
 }
