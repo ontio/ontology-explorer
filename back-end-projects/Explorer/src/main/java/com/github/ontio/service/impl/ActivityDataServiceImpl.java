@@ -154,10 +154,9 @@ public class ActivityDataServiceImpl implements IActivityDataService {
     @Override
     public JSONObject queryAddressSendTxInfo(String address) {
         int firstTxTime = 0;
-        int startBlock2024 = 16980450;
-        int txCount = txDetailMapper.selectSendTxCountByBlockHeight(address, startBlock2024, paramsConfig.BLOCK_END_2024);
+        int txCount = txDetailMapper.selectSendTxCountByBlockHeight(address, paramsConfig.BLOCK_START_2024, paramsConfig.BLOCK_END_2024);
         if (txCount > 0) {
-            TxDetailDto txDetailDto = txDetailMapper.selectFirstSendTxByBlockHeight(address, startBlock2024, paramsConfig.BLOCK_END_2024);
+            TxDetailDto txDetailDto = txDetailMapper.selectFirstSendTxByBlockHeight(address, paramsConfig.BLOCK_START_2024, paramsConfig.BLOCK_END_2024);
             if (txDetailDto != null) {
                 firstTxTime = txDetailDto.getTxTime();
             }

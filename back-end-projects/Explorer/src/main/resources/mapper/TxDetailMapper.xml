@@ -668,7 +668,7 @@
         SELECT COUNT(DISTINCT tx_hash)
         FROM tbl_tx_detail
         WHERE from_address = #{address}
-        AND block_height > #{startBlock}
+        AND block_height >= #{startBlock}
         AND block_height <![CDATA[<=]]> #{endBlock};
     </select>
 
@@ -677,7 +677,7 @@
         <include refid="txDetailColumns"/>
         FROM tbl_tx_detail
         WHERE from_address = #{address}
-        AND block_height > #{startBlock}
+        AND block_height >= #{startBlock}
         AND block_height <![CDATA[<=]]> #{endBlock}
         ORDER BY block_height LIMIT 1
     </select>
