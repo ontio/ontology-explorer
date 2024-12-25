@@ -676,7 +676,13 @@ public class OntologySDKService {
             Configuration preConfiguration = getPreConfiguration();
             return preConfiguration.K;
         } catch (Exception e) {
-            log.warn("Getting authorize info failed: {}", e.getMessage());
+            log.warn("getPreConfiguration failed: {}", e.getMessage());
+            try {
+                Configuration vbftConfiguration = getVbftConfiguration();
+                return vbftConfiguration.K;
+            } catch (Exception e1) {
+                log.warn("getVbftConfiguration failed: {}", e.getMessage());
+            }
         }
         return 0;
     }
@@ -684,6 +690,19 @@ public class OntologySDKService {
     public Configuration getPreConfiguration() throws Exception {
         OntSdk ontSdk = getOntSdk();
         String res = ontSdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString("preConfig".getBytes()));
+        if (res == null) {
+            return null;
+        }
+        Configuration configuration = new Configuration();
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(res));
+        BinaryReader reader = new BinaryReader(in);
+        configuration.deserialize(reader);
+        return configuration;
+    }
+
+    public Configuration getVbftConfiguration() throws Exception {
+        OntSdk ontSdk = getOntSdk();
+        String res = ontSdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString("vbftConfig".getBytes()));
         if (res == null) {
             return null;
         }
