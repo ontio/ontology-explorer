@@ -16,4 +16,5 @@ public interface OntidTxDetailMapper extends Mapper<OntidTxDetailDto> {
 
     OntidTxDetailDto selectOneByTxHash(@Param("txHash") String txHash);
 
+    OntidTxDetailDto selectOntIdCreateTime(@Param("ontId") String ontId);
 }

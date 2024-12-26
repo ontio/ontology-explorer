@@ -1198,14 +1198,14 @@ public class NodesServiceImpl implements INodesService {
                 }
                 list.sort((o1, o2) -> {
                     // 先按照status排序(1-在线->3-已退出->2-正在退出)，status相同的情况下按照节点质押数量倒序
-                    int compareByPrice = Integer.compare(o1.getStatus(), o2.getStatus());
-                    if (compareByPrice != 0) {
+                    int compareByStatus = Integer.compare(o1.getStatus(), o2.getStatus());
+                    if (compareByStatus != 0) {
                         if (o1.getStatus() == 2 && o2.getStatus() == 3) {
                             return 1;
                         } else if (o1.getStatus() == 3 && o2.getStatus() == 2) {
                             return -1;
                         } else {
-                            return compareByPrice;
+                            return compareByStatus;
                         }
                     } else {
                         return Long.compare(o2.getInitPos(), o1.getInitPos());

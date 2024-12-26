@@ -12,6 +12,7 @@
       withdraw_unfreeze_pos AS withdrawUnfreezePos
     FROM tbl_governance_info
     WHERE peer_pub_key = #{pubKey}
+    AND (consensus_pos > 0 OR candidate_pos > 0)
     ORDER BY consensus_pos + candidate_pos + new_pos DESC
     LIMIT #{start}, #{size}
   </select>
@@ -20,6 +21,7 @@
     SELECT count(0)
     FROM tbl_governance_info
     WHERE peer_pub_key = #{pubKey}
+    AND (consensus_pos > 0 OR candidate_pos > 0)
   </select>
 
   <select id="getStakingInfoByAddress" resultType="com.github.ontio.model.dto.GovernanceInfoDto">
@@ -66,5 +68,17 @@
             </if>
         </where>
         ORDER BY cycle DESC
+    </select>
+
+    <select id="getStakingAddressCount" resultType="java.lang.Integer">
+        SELECT count(DISTINCT address)
+        FROM tbl_governance_info
+        WHERE peer_pub_key IN
+        (
+        <foreach collection="publicKeyList" item="publicKey" separator=",">
+            #{publicKey}
+        </foreach>
+        )
+          AND (consensus_pos > 0 OR candidate_pos > 0)
     </select>
 </mapper>

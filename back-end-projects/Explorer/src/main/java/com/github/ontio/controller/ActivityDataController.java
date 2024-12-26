@@ -1,5 +1,6 @@
 package com.github.ontio.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.dto.Anniversary6thDataDto;
 import com.github.ontio.service.IActivityDataService;
@@ -38,5 +39,26 @@ public class ActivityDataController {
     @GetMapping(value = "/certain_time_balance")
     public String queryAddressCertainTimeBalance(@RequestParam @Length(min = 34, max = 42, message = "Incorrect address format") String address, @RequestParam Integer timestamp) {
         return activityDataService.queryAddressCertainTimeBalance(address, timestamp);
+    }
+
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get ont id or address active time")
+    @GetMapping(value = "/active_time")
+    public JSONObject queryAddressActiveTime(@RequestParam @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
+        return activityDataService.queryAddressActiveTime(address);
+    }
+
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get address send tx count and first tx time")
+    @GetMapping(value = "/send_tx_info")
+    public JSONObject queryAddressSendTxInfo(@RequestParam @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
+        return activityDataService.queryAddressSendTxInfo(address);
+    }
+
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get running node info")
+    @GetMapping(value = "/running_node_info")
+    public JSONObject queryRunningNodeInfo(@RequestParam @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
+        return activityDataService.queryRunningNodeInfo(address);
     }
 }
