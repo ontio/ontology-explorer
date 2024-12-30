@@ -94,7 +94,7 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
         if (dto.getStrategy() == PushStrategyEnum.DepositPush.value()) {
             return;
         }
-        PushEmailDto pushEmailDto = new PushEmailDto();
+        PushEmailDto pushEmailDto;
         if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())
                 || ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
             pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.WITHDRAW);
@@ -113,7 +113,7 @@ public class TransferTransactionPush implements DisruptorEventPublisher, EventHa
         if (dto.getStrategy() == PushStrategyEnum.WithdrawPush.value()) {
             return;
         }
-        PushEmailDto pushEmailDto = new PushEmailDto();
+        PushEmailDto pushEmailDto;
         if (ConstantParam.ASSET_NAME_ONT.equals(txDetail.getAssetName())
                 || ConstantParam.ASSET_NAME_ONG.equals(txDetail.getAssetName())) {
             pushEmailDto = PushEmailDto.buildDto(dto, txDetail, PushEmailDto.DEPOSIT);
