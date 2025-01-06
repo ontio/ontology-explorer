@@ -47,12 +47,26 @@
     <trim prefix="order by" prefixOverrides=",">
       <if test="ascending != null">
         <foreach collection="ascending" item="sort">
-          , a.${sort}
+          <choose>
+            <when test="sort == 'address_count'">
+              , addressCount
+            </when>
+            <otherwise>
+              , a.${sort}
+            </otherwise>
+          </choose>
         </foreach>
       </if>
       <if test="descending != null">
         <foreach collection="descending" item="sort">
-          , a.${sort} desc
+          <choose>
+            <when test="sort == 'address_count'">
+              , addressCount desc
+            </when>
+            <otherwise>
+              , a.${sort} desc
+            </otherwise>
+          </choose>
         </foreach>
       </if>
     </trim>
