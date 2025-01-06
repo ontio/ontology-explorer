@@ -522,8 +522,8 @@ public class TransactionServiceImpl implements ITransactionService {
                 break;
             case "Uint64":
             case "BigInt":
-                data = Helper.parseInputDataNumber(arg, isNative);
-                BigInteger number = (BigInteger) data;
+                BigInteger number = Helper.parseInputDataNumber(arg, isNative);
+                data = number.toString();
                 if (isNative) {
                     BigInteger rawNumber;
                     int value = number.intValue();
