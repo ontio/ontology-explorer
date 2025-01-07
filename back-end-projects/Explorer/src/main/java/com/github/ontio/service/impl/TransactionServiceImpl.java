@@ -324,6 +324,9 @@ public class TransactionServiceImpl implements ITransactionService {
                 int index = removeVarBytes.indexOf(rawData);
                 args = removeVarBytes.substring(index + rawData.length());
                 Object data = map.get("data");
+                if (data instanceof BigInteger) {
+                    data = data.toString();
+                }
                 params.add(rawData);
                 inputDataDecode.setName(name);
                 inputDataDecode.setType(type);
@@ -436,6 +439,9 @@ public class TransactionServiceImpl implements ITransactionService {
                             Map<String, Object> map = decodeDataByType(sType, arg, true);
                             String rawData = (String) map.get("rawData");
                             Object data = map.get("data");
+                            if (data instanceof BigInteger) {
+                                data = data.toString();
+                            }
                             params.add(rawData);
                             inputDataDecode.setName(subParameter.getName());
                             inputDataDecode.setType(sType);
@@ -456,6 +462,9 @@ public class TransactionServiceImpl implements ITransactionService {
                             Map<String, Object> map = decodeDataByType(sType, arg, true);
                             String rawData = (String) map.get("rawData");
                             Object data = map.get("data");
+                            if (data instanceof BigInteger) {
+                                data = data.toString();
+                            }
                             params.add(rawData);
                             dataList.add(data);
                             argIndex++;
@@ -483,6 +492,7 @@ public class TransactionServiceImpl implements ITransactionService {
                     params.add(rawData);
                     if (data instanceof BigInteger) {
                         lastLength = ((BigInteger) data).intValue();
+                        data = data.toString();
                     }
                     function.append(type).append(ConstantParam.BLANK).append(name).append(ConstantParam.FUNCTION_PARAM_SPLIT);
                     inputDataDecode.setName(name);
@@ -522,8 +532,8 @@ public class TransactionServiceImpl implements ITransactionService {
                 break;
             case "Uint64":
             case "BigInt":
-                BigInteger number = Helper.parseInputDataNumber(arg, isNative);
-                data = number.toString();
+                data = Helper.parseInputDataNumber(arg, isNative);
+                BigInteger number = (BigInteger) data;
                 if (isNative) {
                     BigInteger rawNumber;
                     int value = number.intValue();
