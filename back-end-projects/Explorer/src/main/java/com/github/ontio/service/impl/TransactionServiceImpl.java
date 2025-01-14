@@ -717,18 +717,31 @@ public class TransactionServiceImpl implements ITransactionService {
             calledContractHash = "";
         } else {
             if (NATIVE_CALLED_CONTRACT_HASH.equals(calledContractHash)) {
-                if (eventLog.getOntidTxFlag()) {
-                    txType = TxTypeEnum.ONT_ID;
-                    calledContractHash = ConstantParam.CONTRACTHASH_ONTID;
-                } else if (eventLog.getEventLog().contains(ConstantParam.CONTRACTHASH_ONT)) {
-                    txType = TxTypeEnum.ONT_TRANSFER;
-                    calledContractHash = ConstantParam.CONTRACTHASH_ONT;
-                } else if (eventLog.getEventLog().contains(ConstantParam.CONTRACTHASH_ONG)) {
-                    txType = TxTypeEnum.ONG_TRANSFER;
-                    calledContractHash = ConstantParam.CONTRACTHASH_ONG;
+                calledContractHash = decodeNativeContractHash(eventLog.getTxHash());
+                if (calledContractHash == null) {
+                    if (eventLog.getOntidTxFlag()) {
+                        txType = TxTypeEnum.ONT_ID;
+                        calledContractHash = ConstantParam.CONTRACTHASH_ONTID;
+                    } else if (eventLog.getEventLog().contains(ConstantParam.CONTRACTHASH_ONT)) {
+                        txType = TxTypeEnum.ONT_TRANSFER;
+                        calledContractHash = ConstantParam.CONTRACTHASH_ONT;
+                    } else if (eventLog.getEventLog().contains(ConstantParam.CONTRACTHASH_ONG)) {
+                        txType = TxTypeEnum.ONG_TRANSFER;
+                        calledContractHash = ConstantParam.CONTRACTHASH_ONG;
+                    } else {
+                        calledContractHash = ConstantParam.CONTRACTHASH_ONG;
+                        txType = TxTypeEnum.CONTRACT_CALL;
+                    }
                 } else {
-                    calledContractHash = ConstantParam.CONTRACTHASH_ONG;
-                    txType = TxTypeEnum.CONTRACT_CALL;
+                    if (ConstantParam.CONTRACTHASH_ONTID.equalsIgnoreCase(calledContractHash)) {
+                        txType = TxTypeEnum.ONT_ID;
+                    } else if (ConstantParam.CONTRACTHASH_ONT.equalsIgnoreCase(calledContractHash)) {
+                        txType = TxTypeEnum.ONT_TRANSFER;
+                    } else if (ConstantParam.CONTRACTHASH_ONG.equalsIgnoreCase(calledContractHash)) {
+                        txType = TxTypeEnum.ONG_TRANSFER;
+                    } else {
+                        txType = TxTypeEnum.CONTRACT_CALL;
+                    }
                 }
             } else {
                 ContractType contractType = contractTypes.get(calledContractHash);
@@ -758,6 +771,44 @@ public class TransactionServiceImpl implements ITransactionService {
         map.put("txType", txType);
         map.put("calledContractHash", calledContractHash);
         return map;
+    }
+
+    private String decodeNativeContractHash(String txHash) {
+        String contractHash = null;
+        try {
+            String inputData = "";
+            int txType = 0;
+            String resp = HttpClientUtil.getRequest(String.format(ConstantParam.GET_TRANSACTION_URL, paramsConfig.MASTERNODE_RESTFUL_URL, txHash), Collections.emptyMap(), Collections.emptyMap());
+            JSONObject jsonObject = JSONObject.parseObject(resp);
+            Integer error = jsonObject.getInteger("Error");
+            if (error == 0) {
+                JSONObject result = jsonObject.getJSONObject("Result");
+                JSONObject payload = result.getJSONObject("Payload");
+                txType = result.getInteger("TxType");
+                inputData = payload.getString("Code");
+            }
+            if (txType == 209) {
+                int nativeInvokeIndex = inputData.lastIndexOf(ConstantParam.NATIVE_INPUT_DATA_END);
+                if (nativeInvokeIndex != -1) {
+                    if (inputData.startsWith(ConstantParam.NATIVE_STRUCT_START)) {
+                        // 有参数
+                        String argsMethodContract = inputData.substring(6, nativeInvokeIndex);
+                        int length = argsMethodContract.length();
+                        String contract = argsMethodContract.substring(length - 40);
+                        contractHash = com.github.ontio.common.Helper.reverse(contract);
+                    } else {
+                        // native方法无参数
+                        String methodContract = inputData.substring(0, nativeInvokeIndex);
+                        int length = methodContract.length();
+                        String contract = methodContract.substring(length - 40);
+                        contractHash = com.github.ontio.common.Helper.reverse(contract);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("decodeNativeContractHash error", e);
+        }
+        return contractHash;
     }
 
     @Autowired
