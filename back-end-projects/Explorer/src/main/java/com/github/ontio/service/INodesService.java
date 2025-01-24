@@ -115,4 +115,6 @@ public interface INodesService {
     ResponseBean getAddressRegisterNodeOnt(String address);
 
     ResponseBean getAddressStakingRewards(String address, String publicKey, Integer round);
+
+    ResponseBean getAddressStakingSnapshot(String address, String publicKey, Integer round);
 }

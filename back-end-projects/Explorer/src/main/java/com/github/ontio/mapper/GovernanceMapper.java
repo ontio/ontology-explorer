@@ -25,5 +25,7 @@ public interface GovernanceMapper {
 
     List<StakingRewardsDto> getStakingRewardsByAddress(String address, String publicKey, Integer round);
 
+    List<StakingRewardsDto> getStakingSnapshotByAddress(String address, String publicKey, Integer round);
+
     int getStakingAddressCount(List<String> publicKeyList);
 }

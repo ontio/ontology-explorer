@@ -53,13 +53,14 @@
 
     <select id="getStakingRewardsByAddress" resultType="com.github.ontio.model.dto.StakingRewardsDto">
         SELECT
-               address,
-               peer_pub_key AS publicKey,
-               ong_income AS rewards,
-               cycle AS round
+        address,
+        peer_pub_key AS publicKey,
+        ong_income AS rewards,
+        cycle AS round
         FROM tbl_income_info
         <where>
             address = #{address}
+            AND ong_income+0 > 0
             <if test="publicKey !=null and publicKey != ''">
                 AND peer_pub_key = #{publicKey}
             </if>
@@ -68,6 +69,37 @@
             </if>
         </where>
         ORDER BY cycle DESC
+    </select>
+
+    <select id="getStakingSnapshotByAddress" resultType="com.github.ontio.model.dto.StakingRewardsDto">
+        SELECT
+        a.address,
+        a.peer_pub_key AS publicKey,
+        a.ong_income AS rewards,
+        a.staking_pos AS staked,
+        a.withdraw_pos AS unstaking,
+        CASE
+        WHEN a.peer = 1 THEN
+        GREATEST(IFNULL(c.staking_pos,0) - a.staking_pos,0)
+        ELSE a.new_pos
+        END AS processing,
+        IFNULL(b.next_withdrawable_pos,0) AS withdrawable,
+        a.cycle AS round
+        FROM tbl_income_info a
+        LEFT JOIN tbl_income_info b
+        ON a.address = b.address AND a.peer_pub_key = b.peer_pub_key AND a.cycle-1 = b.cycle
+        LEFT JOIN tbl_income_info c
+        ON a.address = c.address AND a.peer_pub_key = c.peer_pub_key AND a.cycle = c.cycle-1
+        <where>
+            a.address = #{address}
+            <if test="publicKey !=null and publicKey != ''">
+                AND a.peer_pub_key = #{publicKey}
+            </if>
+            <if test="round !=null">
+                AND a.cycle = #{round}
+            </if>
+        </where>
+        ORDER BY a.cycle DESC, a.peer_pub_key
     </select>
 
     <select id="getStakingAddressCount" resultType="java.lang.Integer">
