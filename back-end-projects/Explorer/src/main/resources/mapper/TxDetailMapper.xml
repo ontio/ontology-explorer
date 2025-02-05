@@ -146,6 +146,7 @@
         d.from_address as fromAddress,
         d.tx_index as txIndex,
         d.contract_hash as contractHash,
+        d.called_contract_hash as calledContractHash,
         c.type AS assetType
         FROM tbl_tx_detail d
         INNER JOIN

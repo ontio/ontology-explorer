@@ -446,4 +446,13 @@ public class NodesController {
                                                  @RequestParam(required = false) Integer round) {
         return nodesService.getAddressStakingRewards(address, publicKey, round);
     }
+
+    @RequestLimit(count = 60)
+    @ApiOperation(value = "get address staking snapshot")
+    @GetMapping(value = "/staking-snapshot")
+    public ResponseBean getAddressStakingSnapshot(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address,
+                                                  @RequestParam(value = "public_key", required = false) String publicKey,
+                                                  @RequestParam(required = false) Integer round) {
+        return nodesService.getAddressStakingSnapshot(address, publicKey, round);
+    }
 }
