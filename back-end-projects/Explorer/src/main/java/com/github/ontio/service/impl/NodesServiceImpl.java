@@ -1345,13 +1345,21 @@ public class NodesServiceImpl implements INodesService {
 
     @Override
     public ResponseBean getAddressStakingRewards(String address, String publicKey, Integer round) {
-        List<StakingRewardsDto> list = governanceMapper.getStakingRewardsByAddress(address, publicKey, round);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), list);
+        if (round < 244) {
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), Collections.emptyList());
+        } else {
+            List<StakingRewardsDto> list = governanceMapper.getStakingRewardsByAddress(address, publicKey, round);
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), list);
+        }
     }
 
     @Override
     public ResponseBean getAddressStakingSnapshot(String address, String publicKey, Integer round) {
-        List<StakingRewardsDto> list = governanceMapper.getStakingSnapshotByAddress(address, publicKey, round);
-        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), list);
+        if (round < 244) {
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), Collections.emptyList());
+        } else {
+            List<StakingRewardsDto> list = governanceMapper.getStakingSnapshotByAddress(address, publicKey, round);
+            return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), list);
+        }
     }
 }

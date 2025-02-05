@@ -60,7 +60,7 @@
         FROM tbl_income_info
         <where>
             address = #{address}
-            AND ong_income+0 > 0
+            AND staking_pos > 0
             <if test="publicKey !=null and publicKey != ''">
                 AND peer_pub_key = #{publicKey}
             </if>
