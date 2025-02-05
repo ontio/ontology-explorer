@@ -67,6 +67,7 @@
             <if test="round !=null">
                 AND cycle = #{round}
             </if>
+            AND cycle >= 244
         </where>
         ORDER BY cycle DESC
     </select>
@@ -98,6 +99,7 @@
             <if test="round !=null">
                 AND a.cycle = #{round}
             </if>
+            AND a.cycle >= 244
         </where>
         ORDER BY a.cycle DESC, a.peer_pub_key
     </select>
