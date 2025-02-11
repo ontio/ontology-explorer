@@ -670,14 +670,18 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal nodeFoundationUsd = foundationInspire.multiply(ong);
 
 
-        nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
-        nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
-        nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.setScale(4, BigDecimal.ROUND_DOWN).toPlainString());
+        nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.setScale(4, RoundingMode.DOWN).toPlainString());
+        nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.setScale(4, RoundingMode.DOWN).toPlainString());
+        nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.setScale(4, RoundingMode.DOWN).toPlainString());
 
-        nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleaseUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-        nodeInspire.setNodeGasFeeIncentiveRate(nodeCommissionUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-        nodeInspire.setNodeFoundationBonusIncentiveRate(nodeFoundationUsd.divide(nodeStakeUsd, 12, BigDecimal.ROUND_HALF_UP).multiply(oneHundred).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "%");
-
+        BigDecimal nodeReleasedOngIncentiveRate = nodeReleaseUsd.divide(nodeStakeUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal nodeGasFeeIncentiveRate = nodeCommissionUsd.divide(nodeStakeUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal nodeFoundationBonusIncentiveRate = nodeFoundationUsd.divide(nodeStakeUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
+        String nodeApr = nodeReleasedOngIncentiveRate.add(nodeGasFeeIncentiveRate).add(nodeFoundationBonusIncentiveRate).toPlainString() + "%";
+        nodeInspire.setNodeReleasedOngIncentiveRate(nodeReleasedOngIncentiveRate.toPlainString() + "%");
+        nodeInspire.setNodeGasFeeIncentiveRate(nodeGasFeeIncentiveRate.toPlainString() + "%");
+        nodeInspire.setNodeFoundationBonusIncentiveRate(nodeFoundationBonusIncentiveRate.toPlainString() + "%");
+        nodeInspire.setNodeApr(nodeApr);
         return nodeInspire;
     }
 
