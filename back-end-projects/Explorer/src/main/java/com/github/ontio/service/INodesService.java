@@ -112,6 +112,8 @@ public interface INodesService {
 
     ResponseBean getBestApr();
 
+    ResponseBean getBestAprAndNode();
+
     ResponseBean getAddressRegisterNodeOnt(String address);
 
     ResponseBean getAddressStakingRewards(String address, String publicKey, Integer round);

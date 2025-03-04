@@ -1315,6 +1315,13 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
+    public ResponseBean getBestAprAndNode() {
+        Map<String, String> result = nodeInspireMapper.selectBestAprAndNode();
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+
+    @Override
     public ResponseBean getAddressRegisterNodeOnt(String address) {
         long registerNodeOnt = 0;
         List<NodeInfoOffChain> registerNodeList = nodeInfoOffChainMapper.selectAllRegisterNodeInfo(address);

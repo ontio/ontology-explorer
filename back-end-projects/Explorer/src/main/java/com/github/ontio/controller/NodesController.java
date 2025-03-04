@@ -432,6 +432,13 @@ public class NodesController {
     }
 
     @RequestLimit(count = 60)
+    @ApiOperation(value = "get best apr")
+    @GetMapping(value = "/best-apr-node")
+    public ResponseBean getBestAprNode() {
+        return nodesService.getBestAprAndNode();
+    }
+
+    @RequestLimit(count = 60)
     @ApiOperation(value = "get address register node ONT")
     @GetMapping(value = "/register-node-ont")
     public ResponseBean getAddressRegisterNodeOnt(@RequestParam @Length(min = 34, max = 34, message = "Incorrect address format") String address) {
