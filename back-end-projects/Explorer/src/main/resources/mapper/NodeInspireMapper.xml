@@ -74,7 +74,10 @@
     </select>
 
     <select id="selectBestAprAndNode" resultType="Map">
-        SELECT a.public_key, a.user_apy as apr
+        SELECT
+        a.public_key,
+        a.name,
+        a.user_apy as apr
         FROM tbl_node_inspire a
         INNER JOIN tbl_node_info_off_chain b
         ON a.public_key = b.public_key
