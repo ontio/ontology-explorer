@@ -1315,6 +1315,17 @@ public class NodesServiceImpl implements INodesService {
     }
 
     @Override
+    public ResponseBean getBestAprAndNode() {
+        Map<String, String> result = nodeInspireMapper.selectBestAprAndNode();
+        String publicKey = result.get("public_key");
+        String appLink = "https://link.onto.app/stake?chain=ont&publicKey=" + publicKey;
+        result.put("app_link", appLink);
+        result.put("web_link", "https://node.ont.io/app/node-stake");
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), result);
+    }
+
+
+    @Override
     public ResponseBean getAddressRegisterNodeOnt(String address) {
         long registerNodeOnt = 0;
         List<NodeInfoOffChain> registerNodeList = nodeInfoOffChainMapper.selectAllRegisterNodeInfo(address);

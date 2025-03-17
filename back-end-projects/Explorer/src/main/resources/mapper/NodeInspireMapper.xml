@@ -72,4 +72,20 @@
         ORDER BY a.user_apy+0 DESC
         LIMIT 1;
     </select>
+
+    <select id="selectBestAprAndNode" resultType="Map">
+        SELECT
+        a.public_key,
+        a.name,
+        a.user_apy as apr
+        FROM tbl_node_inspire a
+        INNER JOIN tbl_node_info_off_chain b
+        ON a.public_key = b.public_key
+        INNER JOIN tbl_node_info_on_chain c
+        ON a.public_key = c.public_key
+        WHERE b.bad_actor = 0
+        AND c.progress+0 <![CDATA[<]]> 100
+        ORDER BY a.user_apy+0 DESC
+        LIMIT 1;
+    </select>
 </mapper>
