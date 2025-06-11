@@ -79,6 +79,7 @@ public class NodeInfoOffChain {
     @Column(name = "bad_actor")
     private Integer badActor;
 
+    // 1-在线 2-正在退出 3-已退出
     @Transient
     private Integer status;
 

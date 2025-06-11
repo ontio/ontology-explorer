@@ -86,7 +86,7 @@ public interface TxDetailMapper extends Mapper<TxDetailDto> {
 
     BigDecimal selectAssetTransferAmountByAddress(String assetName, String fromAddress, String toAddress, Integer time);
 
-    int selectSendTxCountByBlockHeight(String address, int startBlock, int endBlock);
+    int selectSendTxCountByBlockHeight(String address, Integer startBlock, Integer endBlock);
 
-    TxDetailDto selectFirstSendTxByBlockHeight(String address, int startBlock, int endBlock);
+    TxDetailDto selectFirstSendTxByBlockHeight(String address, Integer startBlock, Integer endBlock);
 }
