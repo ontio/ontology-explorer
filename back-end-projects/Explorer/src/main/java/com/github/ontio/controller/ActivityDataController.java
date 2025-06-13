@@ -1,5 +1,6 @@
 package com.github.ontio.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.aop.RequestLimit;
 import com.github.ontio.model.dto.Anniversary6thDataDto;
 import com.github.ontio.service.IActivityDataService;
@@ -47,12 +48,12 @@ public class ActivityDataController {
 //        return activityDataService.queryAddressActiveTime(address);
 //    }
 //
-//    @RequestLimit(count = 120)
-//    @ApiOperation(value = "Get address send tx count and first tx time")
-//    @GetMapping(value = "/send_tx_info")
-//    public JSONObject queryAddressSendTxInfo(@RequestParam @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
-//        return activityDataService.queryAddressSendTxInfo(address);
-//    }
+    @RequestLimit(count = 120)
+    @ApiOperation(value = "Get address send tx count and first tx time")
+    @GetMapping(value = "/send_tx_info")
+    public JSONObject queryAddressSendTxInfo(@RequestParam @Length(min = 34, max = 42, message = "Incorrect address format") String address) {
+        return activityDataService.queryAddressSendTxInfo(address);
+    }
 //
 //    @RequestLimit(count = 120)
 //    @ApiOperation(value = "Get running node info")

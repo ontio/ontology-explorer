@@ -678,8 +678,13 @@
         <include refid="txDetailColumns"/>
         FROM tbl_tx_detail
         WHERE from_address = #{address}
-        AND block_height >= #{startBlock}
-        AND block_height <![CDATA[<=]]> #{endBlock}
+        AND payer = #{address}
+        <if  test="startBlock != null">
+            AND block_height >= #{startBlock}
+        </if>
+        <if  test="endBlock != null">
+            AND block_height <![CDATA[<=]]> #{endBlock}
+        </if>
         ORDER BY block_height LIMIT 1
     </select>
 </mapper>
