@@ -7,9 +7,16 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NodeInspireCalculationDto {
 
+    private String publicKey;
+
     private Long initPos;
 
-    private String nodeProportion;
+    private String initPosNodeProportion;
 
-    private Integer nodeType;
+    private Long totalPos;
+
+    private String totalPosNodeProportion;
+
+    // Deprecated
+    private String nodeProportion;
 }

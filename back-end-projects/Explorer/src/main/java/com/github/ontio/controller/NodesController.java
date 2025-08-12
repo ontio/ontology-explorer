@@ -349,6 +349,13 @@ public class NodesController {
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
     }
 
+    @ApiOperation(value = "calculate node inspire")
+    @PostMapping(value = "/node-incentives/calculation/v2")
+    public ResponseBean calculationNodeIncentivesV2(@RequestBody NodeInspireCalculationDto dto) {
+        InspireResultDto response = nodesService.calculationNodeIncentivesV2(dto);
+        return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), response);
+    }
+
     @ApiOperation(value = "calculate user inspire")
     @PostMapping(value = "/user-incentives/calculation")
     public ResponseBean calculationUserIncentives(@RequestBody UserInspireCalculationDto dto) throws SDKException {
