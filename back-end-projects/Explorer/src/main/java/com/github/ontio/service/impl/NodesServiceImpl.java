@@ -861,13 +861,17 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal userReleaseUsd = finalUserReleaseOng.multiply(ong);
         BigDecimal userCommissionUsd = finalUserCommission.multiply(ong);
 
+        String nodeTotalIncentive = finalNodeReleaseOng.add(finalNodeCommission).add(foundationInspire).stripTrailingZeros().toPlainString();
         nodeInspire.setNodeReleasedOngIncentive(finalNodeReleaseOng.setScale(4, RoundingMode.DOWN).toPlainString());
         nodeInspire.setNodeGasFeeIncentive(finalNodeCommission.setScale(4, RoundingMode.DOWN).toPlainString());
         nodeInspire.setNodeFoundationBonusIncentive(foundationInspire.setScale(4, RoundingMode.DOWN).toPlainString());
+        nodeInspire.setNodeTotalIncentive(nodeTotalIncentive);
 
+        String userTotalIncentive = finalUserReleaseOng.add(finalUserCommission).stripTrailingZeros().toPlainString();
         nodeInspire.setUserReleasedOngIncentive(finalUserReleaseOng.setScale(4, RoundingMode.DOWN).toPlainString());
         nodeInspire.setUserGasFeeIncentive(finalUserCommission.setScale(4, RoundingMode.DOWN).toPlainString());
         nodeInspire.setUserFoundationBonusIncentive(BigDecimal.ZERO.setScale(4, RoundingMode.DOWN).toPlainString());
+        nodeInspire.setUserTotalIncentive(userTotalIncentive);
 
         BigDecimal nodeReleasedOngIncentiveRate = nodeReleaseUsd.divide(nodeStakeUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
         BigDecimal nodeGasFeeIncentiveRate = nodeCommissionUsd.divide(nodeStakeUsd, 12, RoundingMode.HALF_UP).multiply(oneHundred).setScale(2, RoundingMode.HALF_UP);
