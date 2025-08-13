@@ -822,6 +822,12 @@ public class NodesServiceImpl implements INodesService {
         BigDecimal currentStake = new BigDecimal(currentStakeLong);
         BigDecimal nodeStake = new BigDecimal(initPos);
         BigDecimal userStake = new BigDecimal(totalPos);
+        if (BigDecimal.ZERO.compareTo(nodeStake) == 0) {
+            nodeStake = BigDecimal.ONE;
+        }
+        if (BigDecimal.ZERO.compareTo(userStake) == 0) {
+            userStake = BigDecimal.ONE;
+        }
         BigDecimal nodeStakePercent = nodeStake.divide(currentStake, 4, RoundingMode.DOWN);
         BigDecimal userStakePercent = BigDecimal.ONE.subtract(nodeStakePercent);
 
