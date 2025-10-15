@@ -1461,8 +1461,12 @@ public class AddressServiceImpl implements IAddressService {
             return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
         }
         PageResponseBean pageResponse;
-        Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
-//        Integer txCount = txDetailMapper.selectTransferTxsCount(address, assetName);
+        Integer txCount;
+        if ("ong".equalsIgnoreCase(assetName)) {
+            txCount = txDetailMapper.selectTransferTxsCount(address, assetName);
+        } else {
+            txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
+        }
         if (txCount == null || txCount == 0) {
             pageResponse = new PageResponseBean(Collections.emptyList(), 0);
         } else {

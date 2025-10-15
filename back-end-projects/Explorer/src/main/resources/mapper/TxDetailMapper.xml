@@ -124,10 +124,13 @@
 
     <select id="selectTransferTxsCount" resultType="Integer">
         SELECT COUNT(DISTINCT tx_hash)
-        FROM tbl_tx_detail_index
-        WHERE address = #{address}
+        FROM tbl_tx_detail
+        WHERE (from_address = #{address} OR to_address = #{address})
         <if test="assetName != '' and assetName != null">
             AND asset_name = #{assetName}
+        </if>
+        <if test="assetName = 'ong' or assetName = 'ONG'">
+            AND event_type = 3
         </if>
     </select>
 
@@ -166,8 +169,15 @@
         <if test="assetName != '' and assetName != null">
             AND d.asset_name = #{assetName}
         </if>
-        AND d.event_type IN (2, 3)
-        ORDER BY block_height DESC, block_index, tx_index
+        <choose>
+            <when test="assetName = 'ong' or assetName = 'ONG'">
+                AND d.event_type = 3
+            </when>
+          <otherwise>
+              AND d.event_type IN (2, 3)
+          </otherwise>
+        </choose>
+        ORDER BY block_height DESC, block_index DESC, tx_index
     </select>
 
     <select id="selectTransferTxsByTime" resultType="com.github.ontio.model.dto.TransferTxDto">
@@ -186,7 +196,7 @@
         </if>
         ORDER BY desc_block_height, block_index
         ) idx ON idx.hash = d.tx_hash AND idx.`index` = d.tx_index
-        ORDER BY block_height DESC, block_index, tx_index
+        ORDER BY block_height DESC, block_index DESC, tx_index
     </select>
 
 
@@ -231,7 +241,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index DESC, tx_hash, tx_index
     </select>
 
 
@@ -246,7 +256,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index DESC, tx_hash, tx_index
     </select>
 
 
@@ -343,7 +353,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index DESC, tx_hash, tx_index
     </select>
 
 
@@ -357,7 +367,7 @@
         AND event_type = 3
         AND tx_time &gt;= #{startTime}
         and <![CDATA[ tx_time <= #{endTime} ]]>
-        ORDER BY block_height DESC, block_index, tx_hash, tx_index
+        ORDER BY block_height DESC, block_index DESC, tx_hash, tx_index
     </select>
 
 
@@ -458,7 +468,7 @@
         WHERE d.from_address = #{address}
         OR d.to_address = #{address}
         AND d.event_type IN (2, 3)
-        ORDER BY block_height DESC, block_index, tx_index
+        ORDER BY block_height DESC, block_index DESC, tx_index
     </select>
 
     <select id="selectCalledContractHashesOfTokenType" resultType="java.lang.String">
@@ -605,7 +615,7 @@
         ) idx ON idx.hash = d.tx_hash
         WHERE (d.from_address = #{address}
         OR d.to_address = #{address})
-        ORDER BY block_height DESC, block_index, tx_index
+        ORDER BY block_height DESC, block_index DESC, tx_index
     </select>
 
     <select id="selectPayerByHash" resultType="String">
