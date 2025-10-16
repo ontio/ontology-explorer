@@ -150,6 +150,7 @@
         d.tx_index as txIndex,
         d.contract_hash as contractHash,
         d.called_contract_hash as calledContractHash,
+        d.event_type as eventType,
         c.type AS assetType
         FROM tbl_tx_detail d
         INNER JOIN
@@ -169,14 +170,7 @@
         <if test="assetName != '' and assetName != null">
             AND d.asset_name = #{assetName}
         </if>
-        <choose>
-            <when test="assetName = 'ong' or assetName = 'ONG'">
-                AND d.event_type = 3
-            </when>
-          <otherwise>
-              AND d.event_type IN (2, 3)
-          </otherwise>
-        </choose>
+        AND d.event_type IN (2, 3)
         ORDER BY block_height DESC, block_index DESC, tx_index
     </select>
 

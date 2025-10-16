@@ -1461,18 +1461,23 @@ public class AddressServiceImpl implements IAddressService {
             return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
         }
         PageResponseBean pageResponse;
-        Integer txCount;
-        if ("ong".equalsIgnoreCase(assetName)) {
-            txCount = txDetailMapper.selectTransferTxsCount(address, assetName);
-        } else {
-            txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
-        }
+//        Integer txCount;
+//        if ("ong".equalsIgnoreCase(assetName)) {
+//            txCount = txDetailMapper.selectTransferTxsCount(address, assetName);
+//        } else {
+//            txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
+//        }
+        Integer txCount = addressDailyAggregationMapper.countAddressTotalTx(address, assetName);
         if (txCount == null || txCount == 0) {
             pageResponse = new PageResponseBean(Collections.emptyList(), 0);
         } else {
             int start = Math.max(pageSize * (pageNumber - 1), 0);
             List<TransferTxDto> transferTxDtos = txDetailMapper.selectTransferTxsByPage(address, assetName, start, pageSize);
-            transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
+            if ("ong".equalsIgnoreCase(assetName)) {
+                transferTxDtos = formatOngTransferTx(transferTxDtos);
+            } else {
+                transferTxDtos = formatTransferTxDtos(transferTxDtos, null);
+            }
             pageResponse = new PageResponseBean(transferTxDtos, txCount);
         }
         return new ResponseBean(ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.desc(), pageResponse);
@@ -1949,5 +1954,68 @@ public class AddressServiceImpl implements IAddressService {
         return formattedTransferTxs;
     }
 
+    private List<TransferTxDto> formatOngTransferTx(List<TransferTxDto> transferTxDtos) {
+
+        List<TransferTxDto> formattedTransferTxs = new ArrayList<>();
+
+        String previousTxHash = "";
+        int previousTxIndex = 0;
+        for (int i = 0; i < transferTxDtos.size(); i++) {
+            TransferTxDto transferTxDto = transferTxDtos.get(i);
+            String assetName = transferTxDto.getAssetName();
+            BigDecimal amount = transferTxDto.getAmount();
+            String assetType = transferTxDto.getAssetType();
+
+            String txHash = transferTxDto.getTxHash();
+            Integer eventType = transferTxDto.getEventType();
+            if (txHash.equals(previousTxHash)) {
+                //自己给自己转账，sql会查询出两条记录.需要判断tx_index是否一样
+                if (previousTxIndex != transferTxDto.getTxIndex() && eventType != 2) {
+
+                    TransferTxDetailDto transferTxDetailDto = TransferTxDetailDto.builder()
+                            .amount(amount)
+                            .fromAddress(transferTxDto.getFromAddress())
+                            .toAddress(transferTxDto.getToAddress())
+                            .assetName(assetName)
+                            .contractHash(transferTxDto.getContractHash())
+                            .assetType(assetType)
+                            .build();
+
+                    List<TransferTxDetailDto> transferTxnList =
+                            (List<TransferTxDetailDto>) (formattedTransferTxs.get(formattedTransferTxs.size() - 1)).getTransfers();
+                    transferTxnList.add(transferTxDetailDto);
+                }
+                previousTxIndex = transferTxDto.getTxIndex();
+            } else {
+
+                previousTxIndex = transferTxDto.getTxIndex();
+
+                TransferTxDetailDto transferTxDetailDto = TransferTxDetailDto.builder()
+                        .amount(eventType == 2 ? BigDecimal.ZERO : amount)
+                        .fromAddress(transferTxDto.getFromAddress())
+                        .toAddress(transferTxDto.getToAddress())
+                        .assetName(assetName)
+                        .contractHash(transferTxDto.getContractHash())
+                        .assetType(assetType)
+                        .build();
+                List<TransferTxDetailDto> transferTxnList = new ArrayList<>();
+                transferTxnList.add(transferTxDetailDto);
+
+                transferTxDto.setTransfers(transferTxnList);
+                transferTxDto.setFromAddress(null);
+                transferTxDto.setToAddress(null);
+                transferTxDto.setAmount(null);
+                transferTxDto.setAssetName(null);
+                transferTxDto.setTxIndex(null);
+                transferTxDto.setContractHash(null);
+
+                formattedTransferTxs.add(transferTxDto);
+            }
+
+            previousTxHash = txHash;
+        }
+
+        return formattedTransferTxs;
+    }
 
 }
