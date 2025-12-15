@@ -109,8 +109,10 @@ public class SummaryController {
     @ApiOperation(value = "Get ONT,ONG total supply")
     @GetMapping(value = "/v2/summary/native/total-supply/{token}")
     public BigDecimal queryNativeTotalSupply(@PathVariable String token) {
-        if (ConstantParam.ONT.equalsIgnoreCase(token) || ConstantParam.ONG.equalsIgnoreCase(token)) {
+        if (ConstantParam.ONT.equalsIgnoreCase(token)) {
             return new BigDecimal("1000000000");
+        } else if (ConstantParam.ONG.equalsIgnoreCase(token)) {
+            return new BigDecimal("800000000");
         } else {
             return null;
         }
