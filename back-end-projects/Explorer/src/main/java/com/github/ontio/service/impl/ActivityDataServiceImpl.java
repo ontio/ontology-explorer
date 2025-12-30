@@ -153,19 +153,16 @@ public class ActivityDataServiceImpl implements IActivityDataService {
 
     @Override
     public JSONObject queryAddressSendTxInfo(String address) {
-        Integer firstTxTime = null;
-//        int txCount = txDetailMapper.selectSendTxCountByBlockHeight(address, paramsConfig.BLOCK_START_2024, paramsConfig.BLOCK_END_2024);
-//        if (txCount > 0) {
-//            TxDetailDto txDetailDto = txDetailMapper.selectFirstSendTxByBlockHeight(address, paramsConfig.BLOCK_START_2024, paramsConfig.BLOCK_END_2024);
-//            if (txDetailDto != null) {
-//                firstTxTime = txDetailDto.getTxTime();
-//            }
-//        }
-        TxDetailDto txDetailDto = txDetailMapper.selectFirstSendTxByBlockHeight(address, null, null);
-        if (txDetailDto != null) {
-            firstTxTime = txDetailDto.getTxTime();
+        int firstTxTime = 0;
+        int txCount = txDetailMapper.selectSendTxCountByBlockHeight(address, paramsConfig.BLOCK_START_2024, paramsConfig.BLOCK_END_2024);
+        if (txCount > 0) {
+            TxDetailDto txDetailDto = txDetailMapper.selectFirstSendTxByBlockHeight(address, paramsConfig.BLOCK_START_2024, paramsConfig.BLOCK_END_2024);
+            if (txDetailDto != null) {
+                firstTxTime = txDetailDto.getTxTime();
+            }
         }
         JSONObject result = new JSONObject();
+        result.put("txCount", txCount);
         result.put("firstTxTime", firstTxTime);
         return result;
     }

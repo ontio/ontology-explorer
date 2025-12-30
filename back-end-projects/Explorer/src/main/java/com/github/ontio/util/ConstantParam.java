@@ -56,6 +56,8 @@ public class ConstantParam {
 
     public static final BigDecimal ZERO = BigDecimal.ZERO;
 
+    public static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
+
     public static final BigDecimal NINE_BIT_DECIMAL = new BigDecimal("1000000000");
 
     public static final BigDecimal ONT_TOTAL = NINE_BIT_DECIMAL;
